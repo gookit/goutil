@@ -1,0 +1,27 @@
+root = true
+
+# 对所有文件生效
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 4
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.go]
+indent_size = 4
+indent_style = tab
+
+# 对后缀名为 md 的文件生效
+[*.md]
+trim_trailing_whitespace = false
+
+[*.css]
+indent_size = 2
+
+[*.js]
+indent_size = 2
+
+[*.tag]
+indent_size = 2
