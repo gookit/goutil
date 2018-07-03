@@ -3,7 +3,8 @@ package fs
 import (
 	"encoding/json"
 	"github.com/json-iterator/go"
-	"ioutil"
+	"io/ioutil"
+	"os"
 )
 
 // WriteJsonFile

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"encoding/base64"
 	"text/template"
+	"bytes"
 )
 
 // FindSimilar
