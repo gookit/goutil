@@ -1,13 +1,13 @@
 package str
 
 import (
-	"strings"
+	"bytes"
 	"crypto/md5"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
-	"encoding/base64"
+	"strings"
 	"text/template"
-	"bytes"
 )
 
 // FindSimilar
@@ -17,7 +17,7 @@ func FindSimilar(input string, samples []string) []string {
 
 	// fmt.Print(input, ins)
 
-	for _, str := range samples{
+	for _, str := range samples {
 		if strings.Contains(str, input) {
 			ss = append(ss, str)
 		} else {

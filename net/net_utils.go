@@ -1,8 +1,8 @@
 package net
 
 import (
-    "os"
-    "net"
+	"net"
+	"os"
 )
 
 // InternalIP

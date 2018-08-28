@@ -1,9 +1,9 @@
 package env
 
 import (
-	"runtime"
 	"io"
 	"os"
+	"runtime"
 	"strings"
 )
 

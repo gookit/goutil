@@ -1,10 +1,10 @@
 package cli
 
 import (
-	"os/exec"
 	"bytes"
-	"strings"
+	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 // ExecCommand
