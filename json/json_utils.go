@@ -1,4 +1,4 @@
-package fs
+package json
 
 import (
 	"encoding/json"

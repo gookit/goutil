@@ -66,9 +66,7 @@ func LowerFirst(s string) string {
 	}
 
 	f := s[0]
-	isUpper := f >= 'A' && f <= 'Z'
-
-	if isUpper {
+	if f >= 'A' && f <= 'Z' {
 		return strings.ToLower(string(f)) + string(s[1:])
 	}
 
@@ -82,13 +80,26 @@ func UpperFirst(s string) string {
 	}
 
 	f := s[0]
-	isLower := f >= 'a' && f <= 'z'
-
-	if isLower {
+	if f >= 'a' && f <= 'z' {
 		return strings.ToUpper(string(f)) + string(s[1:])
 	}
 
 	return s
+}
+
+// UpperWord Change the first character of each word to uppercase
+func UpperWord(s string) string {
+	if len(s) == 0 {
+		return s
+	}
+
+	ss := strings.Split(s, " ")
+	ns := make([]string, len(ss))
+	for i, word := range ss {
+		ns[i] = UpperFirst(word)
+	}
+
+	return strings.Join(ns, " ")
 }
 
 // PrettyJson get pretty Json string
