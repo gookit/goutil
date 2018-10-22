@@ -5,10 +5,9 @@ import (
 	"os"
 )
 
-// InternalIP
+// InternalIP get
 func InternalIP() (ip string) {
 	addrs, err := net.InterfaceAddrs()
-
 	if err != nil {
 		os.Stderr.WriteString("Oops: " + err.Error())
 		os.Exit(1)

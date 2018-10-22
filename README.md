@@ -6,6 +6,10 @@ some go util functions collection
 - env 
 - web
 - cli
+- format
+- json
+- maps
+- arr
 
 ## License
 

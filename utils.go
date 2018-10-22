@@ -31,4 +31,3 @@ func Filling(data interface{}, model interface{}) error {
 
 	return json.JsonDecode(jsonBytes, model)
 }
-

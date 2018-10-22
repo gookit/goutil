@@ -6,45 +6,74 @@ import (
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"text/template"
 )
 
-// FindSimilar
-func FindSimilar(input string, samples []string) []string {
-	var ss []string
-	// ins := strings.Split(input, "")
-
-	// fmt.Print(input, ins)
-
-	for _, str := range samples {
-		if strings.Contains(str, input) {
-			ss = append(ss, str)
-		} else {
-			// sns := strings.Split(str, "")
-		}
-
-		// max find four items
-		if len(ss) == 4 {
-			break
-		}
-	}
-
-	// fmt.Println("found ", ss)
-
-	return ss
-}
-
-// Substr
+// Substr for a string.
 func Substr(s string, pos, length int) string {
 	runes := []rune(s)
 	l := pos + length
-
 	if l > len(runes) {
 		l = len(runes)
 	}
 
 	return string(runes[pos:l])
+}
+
+// Padding a string.
+func Padding(s, pad string, length int, pos uint8) string {
+	diff := len(s) - length
+	if diff >= 0 { // do not need padding.
+		return s
+	}
+
+	if pad == "" || pad == " " {
+		mark := ""
+		if pos == 1 { // to right
+			mark = "-"
+		}
+
+		// padding left: "%7s", padding right: "%-7s"
+		tpl := fmt.Sprintf("%s%d", mark, length)
+		return fmt.Sprintf(`%`+tpl+`s`, s)
+	}
+
+	if pos == 1 { // to right
+		return s + Repeat(pad, diff)
+	}
+
+	return Repeat(pad, diff) + s
+}
+
+// PadLeft a string.
+func PadLeft(s, pad string, length int) string {
+	return Padding(s, pad, length, 0)
+}
+
+// PadRight a string.
+func PadRight(s, pad string, length int) string {
+	return Padding(s, pad, length, 1)
+}
+
+// Repeat repeat a string
+func Repeat(s string, times int) string {
+	var ss []string
+	for i := 0; i < times; i++ {
+		ss = append(ss, s)
+	}
+
+	return strings.Join(ss, "")
+}
+
+// RepeatRune repeat a rune char.
+func RepeatRune(char rune, times int) (chars []rune) {
+	for i := 0; i < times; i++ {
+		chars = append(chars, char)
+	}
+
+	return
 }
 
 // Replaces replace multi strings
