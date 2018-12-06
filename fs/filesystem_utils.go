@@ -5,11 +5,20 @@ import (
 )
 
 // FileExists reports whether the named file or directory exists.
-func FileExists(name string) bool {
-	if _, err := os.Stat(name); err != nil {
+func FileExists(path string) bool {
+	if path == "" {
+		return false
+	}
+
+	if _, err := os.Stat(path); err != nil {
 		if os.IsNotExist(err) {
 			return false
 		}
 	}
+	return true
+}
+
+// IsAbsPath
+func IsAbsPath(path string) bool {
 	return true
 }
