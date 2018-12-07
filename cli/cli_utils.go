@@ -7,9 +7,28 @@ import (
 	"strings"
 )
 
-// ExecCommand
+// ExecCmd a CLI bin file and return output.
+// usage:
+// 	ExecCmd("ls", []string{"-al"})
+func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
+	// create a new Cmd instance
+	cmd := exec.Command(binName, args...)
+	if len(workDir) > 0 {
+		cmd.Dir = workDir[0]
+	}
+
+	bs, err := cmd.Output()
+	return string(bs), err
+}
+
+// ExecCommand alias of the ExecCmd()
+func ExecCommand(binName string, args []string, workDir ...string) (string, error) {
+	return ExecCmd(binName, args, workDir...)
+}
+
+// ShellExec exec command by shell
 // cmdStr eg. "ls -al"
-func ExecCommand(cmdStr string, shells ...string) (string, error) {
+func ShellExec(cmdStr string, shells ...string) (string, error) {
 	shell := "/bin/sh"
 
 	if len(shells) > 0 {
@@ -35,14 +54,12 @@ func ExecCommand(cmdStr string, shells ...string) (string, error) {
 
 // GetCurShell get current used shell env file. eg "/bin/zsh" "/bin/bash"
 func GetCurShell(onlyName bool) string {
-	path, err := ExecCommand("echo $SHELL")
-
+	path, err := ShellExec("echo $SHELL")
 	if err != nil {
 		return ""
 	}
 
 	path = strings.TrimSpace(path)
-
 	if onlyName && len(path) > 0 {
 		path = filepath.Base(path)
 	}

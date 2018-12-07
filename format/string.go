@@ -2,8 +2,8 @@ package format
 
 import "fmt"
 
-// MemoryVal format bytes number friendly
-func MemoryVal(bytes uint64) string {
+// DataSize format bytes number friendly
+func DataSize(bytes uint64) string {
 	switch {
 	case bytes < 1024:
 		return fmt.Sprintf("%dB", bytes)
@@ -15,4 +15,3 @@ func MemoryVal(bytes uint64) string {
 		return fmt.Sprintf("%.2fG", float64(bytes)/1024/1024/1024)
 	}
 }
-

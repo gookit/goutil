@@ -72,7 +72,6 @@ func RepeatRune(char rune, times int) (chars []rune) {
 	for i := 0; i < times; i++ {
 		chars = append(chars, char)
 	}
-
 	return
 }
 

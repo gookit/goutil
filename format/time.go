@@ -50,4 +50,3 @@ func HowLongAgo(sec int64) string {
 
 	return "unknown" // He should never happen
 }
-

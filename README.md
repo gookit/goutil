@@ -6,10 +6,12 @@ some go util functions collection
 - env 
 - web
 - cli
-- format
+- `format` format data tool
+- `fs` file system tool
 - json
 - maps
 - arr
+- num
 
 ## License
 

@@ -2,6 +2,7 @@ package fs
 
 import (
 	"os"
+	"path"
 )
 
 // FileExists reports whether the named file or directory exists.
@@ -18,7 +19,7 @@ func FileExists(path string) bool {
 	return true
 }
 
-// IsAbsPath
-func IsAbsPath(path string) bool {
-	return true
+// IsAbsPath is abs path.
+func IsAbsPath(filename string) bool {
+	return path.IsAbs(filename)
 }

@@ -1,5 +1,4 @@
-package math
-
+package num
 
 // Percent returns a values percent of the total
 func Percent(val, total int) float64 {

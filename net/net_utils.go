@@ -1,16 +1,15 @@
 package net
 
 import (
+	"log"
 	"net"
-	"os"
 )
 
 // InternalIP get
 func InternalIP() (ip string) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		os.Stderr.WriteString("Oops: " + err.Error())
-		os.Exit(1)
+		log.Fatal("Oops: " + err.Error())
 	}
 
 	for _, a := range addrs {
