@@ -1,28 +1,29 @@
 package env
 
 import (
+	"github.com/gookit/goutil/cli"
 	"io"
 	"os"
 	"runtime"
 	"strings"
 )
 
-// IsWin linux windows darwin
+// IsWin system. linux windows darwin
 func IsWin() bool {
 	return runtime.GOOS == "windows"
 }
 
-// IsMac
+// IsMac system
 func IsMac() bool {
 	return runtime.GOOS == "darwin"
 }
 
-// IsLinux
+// IsLinux system
 func IsLinux() bool {
 	return runtime.GOOS == "linux"
 }
 
-// 判断 w 是否为 stderr、stdout、stdin 三者之一
+// IsConsole 判断 w 是否为 stderr、stdout、stdin 三者之一
 func IsConsole(out io.Writer) bool {
 	o, ok := out.(*os.File)
 	if !ok {
@@ -40,6 +41,20 @@ func IsMSys() bool {
 	}
 
 	return false
+}
+
+// HasShellEnv check
+// Usage:
+// 	HasShellEnv("sh")
+// 	HasShellEnv("bash")
+func HasShellEnv(shell string) bool {
+	// can also use: "echo $0"
+	out, err := cli.ShellExec("echo OK", "", shell)
+	if err != nil {
+		return false
+	}
+
+	return strings.TrimSpace(out) == "OK"
 }
 
 // IsSupportColor check console is support color.
@@ -67,7 +82,7 @@ func IsSupportColor() bool {
 	return false
 }
 
-// IsSupport256Color
+// IsSupport256Color is support 256 color
 func IsSupport256Color() bool {
 	// "TERM=xterm-256color"
 	return strings.Contains(os.Getenv("TERM"), "256color")
