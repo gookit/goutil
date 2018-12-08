@@ -1,4 +1,4 @@
-package cli
+package cliUtil
 
 import (
 	"bytes"

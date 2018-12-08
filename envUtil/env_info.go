@@ -1,7 +1,7 @@
-package env
+package envUtil
 
 import (
-	"github.com/gookit/goutil/cli"
+	"github.com/gookit/goutil/cliUtil"
 	"io"
 	"os"
 	"runtime"
@@ -49,7 +49,7 @@ func IsMSys() bool {
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	// can also use: "echo $0"
-	out, err := cli.ShellExec("echo OK", "", shell)
+	out, err := cliUtil.ShellExec("echo OK", "", shell)
 	if err != nil {
 		return false
 	}

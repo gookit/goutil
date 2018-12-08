@@ -1,4 +1,4 @@
-package fs
+package fsUtil
 
 import (
 	"archive/zip"

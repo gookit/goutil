@@ -1,4 +1,4 @@
-package str
+package strUtil
 
 // SimilarComparator definition
 // links:
