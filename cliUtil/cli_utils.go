@@ -1,3 +1,4 @@
+// Package cliUtil provides some util functions for CLI
 package cliUtil
 
 import (
