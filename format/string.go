@@ -2,7 +2,11 @@ package format
 
 import "fmt"
 
-// DataSize format bytes number friendly
+// DataSize format bytes number friendly.
+// Usage:
+// 	file, err := os.Open(path)
+// 	fl, err := file.Stat()
+// 	fmtSize := DataSize(fl.Size())
 func DataSize(bytes uint64) string {
 	switch {
 	case bytes < 1024:

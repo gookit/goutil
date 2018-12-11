@@ -1,6 +1,6 @@
-# go utils
+# goutil
 
-some go util functions collection
+一些Go工具函数收集和整理
 
 - str 
 - env 
@@ -9,10 +9,11 @@ some go util functions collection
 - `format` format data tool
 - `fs` file system tool
 - json
-- maps
+- map
 - arr
 - num
+- test
 
 ## License
 
-MIT
+[MIT](LICENSE)
