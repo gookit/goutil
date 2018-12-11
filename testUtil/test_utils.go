@@ -36,6 +36,10 @@ func RewriteStdout() {
 	os.Stdout = w
 }
 
+// ReadOutput restore os.Stdout
+// func ReadOutput() (s string) {
+// }
+
 // RestoreStdout restore os.Stdout
 func RestoreStdout() (s string) {
 	if oldStdout == nil {
