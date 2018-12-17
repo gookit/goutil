@@ -11,6 +11,21 @@ import (
 	"text/template"
 )
 
+// Split string to slice. will clear empty string node.
+func Split(s, sep string) (ss []string) {
+	if s = strings.TrimSpace(s); s == "" {
+		return
+	}
+
+	for _, val := range strings.Split(s, sep) {
+		if val = strings.TrimSpace(val); val != "" {
+			ss = append(ss, val)
+		}
+	}
+
+	return
+}
+
 // Substr for a string.
 func Substr(s string, pos, length int) string {
 	runes := []rune(s)

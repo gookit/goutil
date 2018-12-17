@@ -40,7 +40,7 @@ func MockRequest(h http.Handler, method, path string, data *MD) *httptest.Respon
 	}
 
 	req.RequestURI = req.URL.String()
-	if data != nil  {
+	if data != nil {
 		if len(data.Headers) > 0 {
 			// req.Header.Set("Content-Type", "text/plain")
 			for k, v := range data.Headers {
