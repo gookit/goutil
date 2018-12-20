@@ -99,6 +99,7 @@ func Encode(v interface{}) ([]byte, error)
 func Pretty(v interface{}) (string, error)
 func ReadFile(filePath string, v interface{}) error
 func WriteFile(filePath string, data interface{}) error
+func StripComments(src string) string
 ```
 
 ### Map Util

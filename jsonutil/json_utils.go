@@ -1,10 +1,14 @@
 package jsonutil
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/json-iterator/go"
 	"io/ioutil"
 	"os"
+	"regexp"
+	"strings"
+	"text/scanner"
 )
 
 var parser = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -47,4 +51,38 @@ func Decode(json []byte, v interface{}) error {
 func Pretty(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
+}
+
+// `(?s:` enable match multi line
+var jsonMLComments = regexp.MustCompile(`(?s:/\*.*?\*/\s*)`)
+
+// StripComments strip comments for a JSON string
+func StripComments(src string) string {
+	// multi line comments
+	if strings.Contains(src, "/*") {
+		src = jsonMLComments.ReplaceAllString(src, "")
+	}
+
+	// single line comments
+	if !strings.Contains(src, "//") {
+		return strings.TrimSpace(src)
+	}
+
+	var s scanner.Scanner
+
+	s.Init(strings.NewReader(src))
+	s.Filename = "comments"
+	s.Mode ^= scanner.SkipComments // don't skip comments
+
+	buf := new(bytes.Buffer)
+	for tok := s.Scan(); tok != scanner.EOF; tok = s.Scan() {
+		txt := s.TokenText()
+		if !strings.HasPrefix(txt, "//") && !strings.HasPrefix(txt, "/*") {
+			buf.WriteString(txt)
+			// } else {
+			// fmt.Printf("%s: %s\n", s.Position, txt)
+		}
+	}
+
+	return buf.String()
 }
