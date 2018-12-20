@@ -1,6 +1,9 @@
 package mapUtil
 
-import "strings"
+import (
+	"reflect"
+	"strings"
+)
 
 // MergeStringMap simple merge two string map
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string {
@@ -69,4 +72,40 @@ func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 	}
 
 	return item, true
+}
+
+// Keys get all keys of the given map.
+func Keys(mp interface{}) (keys []string) {
+	rftTyp := reflect.TypeOf(mp)
+	if rftTyp.Kind() == reflect.Ptr {
+		rftTyp = rftTyp.Elem()
+	}
+
+	if rftTyp.Kind() != reflect.Map {
+		return
+	}
+
+	rftVal := reflect.ValueOf(mp)
+	for _, key := range rftVal.MapKeys() {
+		keys = append(keys, key.String())
+	}
+	return
+}
+
+// Values get all values from the given map.
+func Values(mp interface{}) (values []interface{}) {
+	rftTyp := reflect.TypeOf(mp)
+	if rftTyp.Kind() == reflect.Ptr {
+		rftTyp = rftTyp.Elem()
+	}
+
+	if rftTyp.Kind() != reflect.Map {
+		return
+	}
+
+	rftVal := reflect.ValueOf(mp)
+	for _, key := range rftVal.MapKeys() {
+		values = append(values, rftVal.MapIndex(key).String())
+	}
+	return
 }
