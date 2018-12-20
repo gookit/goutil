@@ -1,4 +1,4 @@
-package fsUtil
+package fsutil
 
 import (
 	"archive/zip"
@@ -28,7 +28,7 @@ func IsAbsPath(filename string) bool {
 	return path.IsAbs(filename)
 }
 
-// IsZipFile check is zip file
+// IsZipFile check is zip file.
 // from https://blog.csdn.net/wangshubo1989/article/details/71743374
 func IsZipFile(filepath string) bool {
 	f, err := os.Open(filepath)

@@ -1,4 +1,4 @@
-package testUtil
+package testutil
 
 import (
 	"io"
@@ -8,7 +8,9 @@ import (
 
 // some data.
 type (
-	M  map[string]string
+	// M short name for map
+	M map[string]string
+	// MD simple request data
 	MD struct {
 		// Body body
 		Body io.Reader

@@ -1,5 +1,5 @@
-// Package cliUtil provides some util functions for CLI
-package cliUtil
+// Package cliutil provides some util functions for CLI
+package cliutil
 
 import (
 	"bytes"
@@ -53,8 +53,8 @@ func ShellExec(cmdStr string, shells ...string) (string, error) {
 	return out.String(), nil
 }
 
-// GetCurShell get current used shell env file. eg "/bin/zsh" "/bin/bash"
-func GetCurShell(onlyName bool) string {
+// CurrentShell get current used shell env file. eg "/bin/zsh" "/bin/bash"
+func CurrentShell(onlyName bool) (path string) {
 	path, err := ShellExec("echo $SHELL")
 	if err != nil {
 		return ""
@@ -64,6 +64,19 @@ func GetCurShell(onlyName bool) string {
 	if onlyName && len(path) > 0 {
 		path = filepath.Base(path)
 	}
+	return
+}
 
-	return path
+// HasShellEnv has shell env check.
+// Usage:
+// 	HasShellEnv("sh")
+// 	HasShellEnv("bash")
+func HasShellEnv(shell string) bool {
+	// can also use: "echo $0"
+	out, err := ShellExec("echo OK", "", shell)
+	if err != nil {
+		return false
+	}
+
+	return strings.TrimSpace(out) == "OK"
 }

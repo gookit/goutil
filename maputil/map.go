@@ -1,4 +1,4 @@
-package mapUtil
+package maputil
 
 import (
 	"reflect"

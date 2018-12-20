@@ -1,11 +1,11 @@
-package netUtil
+package netutil
 
 import (
 	"log"
 	"net"
 )
 
-// InternalIP get
+// InternalIP get internal IP
 func InternalIP() (ip string) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

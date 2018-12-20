@@ -1,4 +1,4 @@
-package strUtil
+package strutil
 
 import (
 	"bytes"
@@ -102,7 +102,7 @@ func Replaces(str string, pairs map[string]string) string {
 	return str
 }
 
-// LowerFirst
+// LowerFirst lower first char for a string.
 func LowerFirst(s string) string {
 	if len(s) == 0 {
 		return s
@@ -145,64 +145,60 @@ func UpperWord(s string) string {
 	return strings.Join(ns, " ")
 }
 
-// PrettyJson get pretty Json string
-func PrettyJson(v interface{}) (string, error) {
+// PrettyJSON get pretty Json string
+func PrettyJSON(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
-
 	return string(out), err
 }
 
-// GenMd5 生成32位md5字串
-func GenMd5(s string) string {
+// GenMd5 Generate a 32-bit md5 string
+func GenMd5(src interface{}) string {
 	h := md5.New()
-	h.Write([]byte(s))
+
+	if s, ok := src.(string); ok {
+		h.Write([]byte(s))
+	} else {
+		h.Write([]byte(fmt.Sprint(src)))
+	}
 
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// Base64Encode
+// Base64Encode base64 encode
 func Base64Encode(src []byte) []byte {
 	return []byte(base64.StdEncoding.EncodeToString(src))
 }
 
-// RenderTemplate
+// RenderTemplate render text template
 func RenderTemplate(input string, data interface{}, isFile ...bool) string {
-	// use buffer receive rendered content
-	var buf bytes.Buffer
-	var isFilename bool
-
-	if len(isFile) > 0 {
-		isFilename = isFile[0]
-	}
-
 	t := template.New("cli")
+	t.Funcs(template.FuncMap{
+		// don't escape content
+		"raw": func(s string) string {
+			return s
+		},
+		"trim": func(s string) string {
+			return strings.TrimSpace(string(s))
+		},
+		// join strings
+		"join": func(ss []string, sep string) string {
+			return strings.Join(ss, sep)
+		},
+		// upper first char
+		"upFirst": func(s string) string {
+			return UpperFirst(s)
+		},
+	})
 
-	// don't escape content
-	t.Funcs(template.FuncMap{"raw": func(s string) string {
-		return s
-	}})
-
-	t.Funcs(template.FuncMap{"trim": func(s string) string {
-		return strings.TrimSpace(string(s))
-	}})
-
-	// join strings
-	t.Funcs(template.FuncMap{"join": func(ss []string, sep string) string {
-		return strings.Join(ss, sep)
-	}})
-
-	// upper first char
-	t.Funcs(template.FuncMap{"upFirst": func(s string) string {
-		return UpperFirst(s)
-	}})
-
-	if isFilename {
+	if len(isFile) > 0 && isFile[0] {
 		template.Must(t.ParseFiles(input))
 	} else {
 		template.Must(t.Parse(input))
 	}
 
-	if err := t.Execute(&buf, data); err != nil {
+	// use buffer receive rendered content
+	buf := new(bytes.Buffer)
+	if err := t.Execute(buf, data); err != nil {
 		panic(err)
 	}
 

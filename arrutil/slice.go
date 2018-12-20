@@ -1,5 +1,5 @@
-// Package arrUtil provides some util functions for array, slice
-package arrUtil
+// Package arrutil provides some util functions for array, slice
+package arrutil
 
 // Reverse string slice [site user info 0] -> [0 info user site]
 func Reverse(ss []string) {

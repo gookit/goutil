@@ -1,4 +1,4 @@
-package jsonUtil
+package jsonutil
 
 import (
 	"encoding/json"
@@ -9,17 +9,16 @@ import (
 
 var parser = jsoniter.ConfigCompatibleWithStandardLibrary
 
-// WriteFile
+// WriteFile write data to JSON file
 func WriteFile(filePath string, data interface{}) error {
 	jsonBytes, err := Encode(data)
 	if err != nil {
 		return err
 	}
-
 	return ioutil.WriteFile(filePath, jsonBytes, 0664)
 }
 
-// ReadFile
+// ReadFile Read JSON file data
 func ReadFile(filePath string, v interface{}) error {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -31,16 +30,15 @@ func ReadFile(filePath string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-
 	return Decode(content, v)
 }
 
-// JsonEncode encode data to json bytes. use it instead of json.Marshal
+// Encode encode data to json bytes. use it instead of json.Marshal
 func Encode(v interface{}) ([]byte, error) {
 	return parser.Marshal(v)
 }
 
-// JsonEncode decode json bytes to data. use it instead of json.Unmarshal
+// Decode decode json bytes to data. use it instead of json.Unmarshal
 func Decode(json []byte, v interface{}) error {
 	return parser.Unmarshal(json, v)
 }

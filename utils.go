@@ -1,9 +1,9 @@
-package utils
+package goutil
 
 import (
 	"bufio"
 	"bytes"
-	"github.com/gookit/goutil/jsonUtil"
+	"github.com/gookit/goutil/jsonutil"
 	"os"
 	"reflect"
 	"runtime"
@@ -25,8 +25,8 @@ func Go(f func() error) chan error {
 // model 定义表模型的数据结构体
 // 相当于是在合并两个结构体(data 必须是 model 的子集)
 func Filling(data interface{}, model interface{}) error {
-	jsonBytes, _ := jsonUtil.Encode(data)
-	return jsonUtil.Decode(jsonBytes, model)
+	jsonBytes, _ := jsonutil.Encode(data)
+	return jsonutil.Decode(jsonBytes, model)
 }
 
 // FuncName get func name
@@ -34,8 +34,8 @@ func FuncName(f interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
 }
 
-// GetPkgName get current package name
-func GetPkgName() string {
+// PkgName get current package name
+func PkgName() string {
 	_, filePath, _, _ := runtime.Caller(0)
 	file, _ := os.Open(filePath)
 	r := bufio.NewReader(file)

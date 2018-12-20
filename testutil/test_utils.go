@@ -1,4 +1,4 @@
-package testUtil
+package testutil
 
 import (
 	"io/ioutil"
@@ -7,7 +7,7 @@ import (
 
 var oldStdout, newReader *os.File
 
-// Discard os.Stdout output
+// DiscardStdout Discard os.Stdout output
 // Usage:
 // 	DiscardStdout()
 // 	fmt.Println("Hello, playground")
@@ -24,7 +24,7 @@ func DiscardStdout() error {
 	return err
 }
 
-// Rewrite os.Stdout
+// RewriteStdout rewrite os.Stdout
 // Usage:
 // 	RewriteStdout()
 // 	fmt.Println("Hello, playground")

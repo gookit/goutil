@@ -20,7 +20,7 @@ func ElapsedTime(startTime time.Time) string {
 	return fmt.Sprintf("%.3f", time.Since(startTime).Seconds()*1000)
 }
 
-// DataSize format value. alias format.HowLongAgo()
+// DataSize format value. alias format.DataSize()
 func DataSize(size uint64) string {
 	return format.DataSize(size)
 }

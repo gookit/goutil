@@ -1,7 +1,7 @@
-package envUtil
+package envutil
 
 import (
-	"github.com/gookit/goutil/cliUtil"
+	"github.com/gookit/goutil/cliutil"
 	"io"
 	"os"
 	"runtime"
@@ -43,18 +43,12 @@ func IsMSys() bool {
 	return false
 }
 
-// HasShellEnv check
+// HasShellEnv has shell env check.
 // Usage:
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
-	// can also use: "echo $0"
-	out, err := cliUtil.ShellExec("echo OK", "", shell)
-	if err != nil {
-		return false
-	}
-
-	return strings.TrimSpace(out) == "OK"
+	return cliutil.HasShellEnv(shell)
 }
 
 // IsSupportColor check console is support color.

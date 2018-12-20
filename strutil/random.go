@@ -1,4 +1,4 @@
-package strUtil
+package strutil
 
 import (
 	"crypto/rand"
@@ -25,7 +25,6 @@ func RandomBytes(length int) ([]byte, error) {
 //     // Serve an appropriately vague error to the
 //     // user, but log the details internally.
 // 	}
-
 func RandomString(length int) (string, error) {
 	b, err := RandomBytes(length)
 	return base64.URLEncoding.EncodeToString(b), err
