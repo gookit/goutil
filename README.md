@@ -3,19 +3,19 @@
 [![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://godoc.org/github.com/gookit/goutil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gookit/goutil)](https://goreportcard.com/report/github.com/gookit/goutil)
 
-一些Go工具函数收集和整理实现
+Go一些常用的工具函数收集、实现和整理
 
-- str 
-- env 
-- web
-- cli
-- `format` format data tool
-- `fs` file system tool
-- json
-- map
-- arr
-- num
-- test
+- `arrutil` array/slice util
+- `calc` number format calc
+- `cliutil` CLI util
+- `envutil` ENV util
+- `fmtutil` format data tool
+- `fsutil` filesystem util
+- `jsonutil` JSON util
+- `maputil` map util
+- `netutil` network util
+- `strutil` string util
+- `testutil` test help util
 
 ## GoDoc
 
