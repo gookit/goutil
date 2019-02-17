@@ -2,8 +2,9 @@ package calc
 
 import (
 	"fmt"
-	"github.com/gookit/goutil/format"
 	"time"
+
+	"github.com/gookit/goutil/fmtutil"
 )
 
 // Percent returns a values percent of the total
@@ -22,10 +23,10 @@ func ElapsedTime(startTime time.Time) string {
 
 // DataSize format value. alias format.DataSize()
 func DataSize(size uint64) string {
-	return format.DataSize(size)
+	return fmtutil.DataSize(size)
 }
 
 // HowLongAgo calc time. alias format.HowLongAgo()
 func HowLongAgo(sec int64) string {
-	return format.HowLongAgo(sec)
+	return fmtutil.HowLongAgo(sec)
 }

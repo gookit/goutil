@@ -170,7 +170,7 @@ func Base64Encode(src []byte) []byte {
 }
 
 // RenderTemplate render text template
-func RenderTemplate(input string, data interface{}, isFile ...bool) string {
+func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
 	t := template.New("cli")
 	t.Funcs(template.FuncMap{
 		// don't escape content
@@ -189,6 +189,11 @@ func RenderTemplate(input string, data interface{}, isFile ...bool) string {
 			return UpperFirst(s)
 		},
 	})
+
+	// custom add template functions
+	if len(fns) > 0 {
+		t.Funcs(fns)
+	}
 
 	if len(isFile) > 0 && isFile[0] {
 		template.Must(t.ParseFiles(input))

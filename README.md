@@ -71,7 +71,7 @@ func IsWin() bool
 
 ### Format Util
 
-- package `github.com/gookit/goutil/format`
+- package `github.com/gookit/goutil/fmtutil`
 
 ```go
 func DataSize(bytes uint64) string
