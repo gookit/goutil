@@ -3,12 +3,13 @@ package jsonutil
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/json-iterator/go"
 	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
 	"text/scanner"
+
+	"github.com/json-iterator/go"
 )
 
 var parser = jsoniter.ConfigCompatibleWithStandardLibrary

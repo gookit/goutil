@@ -2,9 +2,10 @@ package strutil_test
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/gookit/goutil/strutil"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestSimilarity(t *testing.T) {

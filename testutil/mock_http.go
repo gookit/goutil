@@ -26,7 +26,7 @@ type (
 // 	handler := router.New()
 // 	res := mockRequest(handler, "GET", "/path", nil)
 // 	// with data
-//	body := strings.NewReader("string ...")
+// 	body := strings.NewReader("string ...")
 // 	res := mockRequest(handler, "GET", "/path", &MD{Body: "data", Headers: M{"x-head": "val"}})
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder {
 	var body io.Reader

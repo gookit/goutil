@@ -1,11 +1,12 @@
 package envutil
 
 import (
-	"github.com/gookit/goutil/cliutil"
 	"io"
 	"os"
 	"runtime"
 	"strings"
+
+	"github.com/gookit/goutil/cliutil"
 )
 
 // IsWin system. linux windows darwin

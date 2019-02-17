@@ -3,10 +3,11 @@ package goutil
 import (
 	"bufio"
 	"bytes"
-	"github.com/gookit/goutil/jsonutil"
 	"os"
 	"reflect"
 	"runtime"
+
+	"github.com/gookit/goutil/jsonutil"
 )
 
 // Go is a basic promise implementation: it wraps calls a function in a goroutine

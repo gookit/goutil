@@ -14,8 +14,8 @@ func NewComparator(src, dst string) *SimilarComparator {
 
 // Similar by minDifferRate
 // Usage:
-//	c := NewComparator("hello", "he")
-//	rate, ok :c.Similar(0.3)
+// 	c := NewComparator("hello", "he")
+// 	rate, ok :c.Similar(0.3)
 func (c *SimilarComparator) Similar(minDifferRate float32) (float32, bool) {
 	dist := c.editDistance([]byte(c.src), []byte(c.dst))
 	differRate := float32(dist) / float32(max(len(c.src), len(c.dst))+4)
@@ -68,7 +68,7 @@ func max(x, y int) int {
 
 // Similarity calc for two string.
 // Usage:
-//	rate, ok := Similarity("hello", "he")
+// 	rate, ok := Similarity("hello", "he")
 func Similarity(s, t string, rate float32) (float32, bool) {
 	return NewComparator(s, t).Similar(rate)
 }
