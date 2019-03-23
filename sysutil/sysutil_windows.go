@@ -1,13 +1,18 @@
+// +build windows
+
 package sysutil
 
-import "syscall"
+import (
+	"errors"
+	"syscall"
+)
 
 // Kill process by pid
 func Kill(pid int, signal syscall.Signal) error {
-	return syscall.Kill(pid, signal)
+	return errors.New("not support")
 }
 
 // ProcessExists check process exists by pid
 func ProcessExists(pid int) bool {
-	return nil == syscall.Kill(pid, 0)
+	return false
 }
