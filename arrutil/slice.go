@@ -11,3 +11,17 @@ func Reverse(ss []string) {
 		ss[i], ss[li] = ss[li], ss[i]
 	}
 }
+
+// StringsRemove an value form an string slice
+func StringsRemove(ss []string, s string) []string {
+	var ns []string
+	for _, v := range ss {
+		if v == s {
+			continue
+		}
+
+		ns = append(ns, v)
+	}
+
+	return ns
+}
