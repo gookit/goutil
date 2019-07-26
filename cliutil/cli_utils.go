@@ -6,7 +6,16 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	
+	"github.com/gookit/goutil/strutil"
 )
+
+// QuickExec quick exec an simple command line
+func QuickExec(cmdLine string, workDir ...string) (string, error) {
+	ss := strutil.Split(cmdLine)
+
+	return ExecCmd(ss[0], ss[1:], workDir...)
+}
 
 // ExecCmd a CLI bin file and return output.
 // usage:

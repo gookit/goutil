@@ -3,7 +3,7 @@
 [![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://godoc.org/github.com/gookit/goutil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gookit/goutil)](https://goreportcard.com/report/github.com/gookit/goutil)
 
-Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
+Go一些常用的工具函数收集、实现和整理
 
 - `arrutil` array/slice util
 - `calc` number format calc
@@ -21,7 +21,7 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 
 - [godoc for github](https://godoc.org/github.com/gookit/goutil)
 
-## Packages
+## Util Packages
 
 ### Array/Slice
 
