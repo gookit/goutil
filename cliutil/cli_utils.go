@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
-	
+
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -18,7 +18,7 @@ func QuickExec(cmdLine string, workDir ...string) (string, error) {
 }
 
 // ExecCmd a CLI bin file and return output.
-// usage:
+// Usage:
 // 	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	// create a new Cmd instance

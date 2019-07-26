@@ -2,7 +2,11 @@
 
 package sysutil
 
-import "syscall"
+import (
+	"syscall"
+
+	"github.com/gookit/goutil/cliutil"
+)
 
 // Kill process by pid
 func Kill(pid int, signal syscall.Signal) error {
