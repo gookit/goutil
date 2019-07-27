@@ -5,6 +5,8 @@
 
 Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
 
+> **[中文说明](README.zh-CN.md)**
+
 - `arrutil` array/slice util
 - `calc` number format calc
 - `cliutil` CLI util

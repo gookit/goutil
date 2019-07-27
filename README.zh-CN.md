@@ -5,6 +5,8 @@
 
 Go一些常用的工具函数收集、实现和整理
 
+> **[EN README](README.md)**
+
 - `arrutil` array/slice util
 - `calc` number format calc
 - `cliutil` CLI util
