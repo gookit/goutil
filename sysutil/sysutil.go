@@ -4,8 +4,6 @@ package sysutil
 
 import (
 	"syscall"
-
-	"github.com/gookit/goutil/cliutil"
 )
 
 // Kill process by pid

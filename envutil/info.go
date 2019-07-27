@@ -6,7 +6,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/sysutil"
 )
 
 // IsWin system. linux windows darwin
@@ -49,7 +49,7 @@ func IsMSys() bool {
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
-	return cliutil.HasShellEnv(shell)
+	return sysutil.HasShellEnv(shell)
 }
 
 // IsSupportColor check console is support color.
