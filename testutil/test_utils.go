@@ -48,7 +48,7 @@ func RestoreStdout() (s string) {
 
 	// Notice: must close writer before read data
 	// close now reader
-	os.Stdout.Close()
+	_= os.Stdout.Close()
 	// restore
 	os.Stdout = oldStdout
 	oldStdout = nil
@@ -59,9 +59,21 @@ func RestoreStdout() (s string) {
 		s = string(out)
 
 		// close reader
-		newReader.Close()
+		_= newReader.Close()
 		newReader = nil
 	}
 
 	return
+}
+
+// will store old env value, set new val. will restore old value on end.
+func mockEnvValue(key, val string, fn func()) {
+	old := os.Getenv(key)
+	_ = os.Setenv(key, val)
+
+	fn()
+
+	if old != "" {
+		_ = os.Setenv(key, old)
+	}
 }
