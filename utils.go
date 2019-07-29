@@ -22,11 +22,11 @@ func Go(f func() error) chan error {
 }
 
 // Filling filling a model from submitted data
-// data 提交过来的数据结构体
+// form 提交过来的数据结构体
 // model 定义表模型的数据结构体
 // 相当于是在合并两个结构体(data 必须是 model 的子集)
-func Filling(data interface{}, model interface{}) error {
-	jsonBytes, _ := jsonutil.Encode(data)
+func Filling(form interface{}, model interface{}) error {
+	jsonBytes, _ := jsonutil.Encode(form)
 	return jsonutil.Decode(jsonBytes, model)
 }
 
