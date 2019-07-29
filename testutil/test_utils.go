@@ -48,7 +48,7 @@ func RestoreStdout() (s string) {
 
 	// Notice: must close writer before read data
 	// close now reader
-	_= os.Stdout.Close()
+	_ = os.Stdout.Close()
 	// restore
 	os.Stdout = oldStdout
 	oldStdout = nil
@@ -59,7 +59,7 @@ func RestoreStdout() (s string) {
 		s = string(out)
 
 		// close reader
-		_= newReader.Close()
+		_ = newReader.Close()
 		newReader = nil
 	}
 
