@@ -66,14 +66,43 @@ func RestoreStdout() (s string) {
 	return
 }
 
-// will store old env value, set new val. will restore old value on end.
-func mockEnvValue(key, val string, fn func()) {
+// MockEnvValue will store old env value, set new val. will restore old value on end.
+func MockEnvValue(key, val string, fn func(nv string)) {
 	old := os.Getenv(key)
-	_ = os.Setenv(key, val)
+	err := os.Setenv(key, val)
+	if err != nil {
+		panic(err)
+	}
+
+	fn(os.Getenv(key))
+
+	// if old is empty, unset key.
+	if old == "" {
+		err = os.Unsetenv(key)
+	} else {
+		err = os.Setenv(key, old)
+	}
+	if err != nil {
+		panic(err)
+	}
+}
+
+// MockEnvValues will store old env value, set new val. will restore old value on end.
+func MockEnvValues(kvMap map[string]string, fn func()) {
+	backups := make(map[string]string, len(kvMap))
+
+	for key, val := range kvMap {
+		backups[key] = os.Getenv(key)
+		_ = os.Setenv(key, val)
+	}
 
 	fn()
 
-	if old != "" {
-		_ = os.Setenv(key, old)
+	for key := range kvMap {
+		if old := backups[key]; old == "" {
+			_ = os.Unsetenv(key)
+		} else {
+			_ = os.Setenv(key, old)
+		}
 	}
 }
