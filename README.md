@@ -28,15 +28,16 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 
 ### Array/Slice
 
-- package `github.com/gookit/goutil/arrutil`
+> package `github.com/gookit/goutil/arrutil`
 
 ```go
 func Reverse(ss []string)
+func StringsRemove(ss []string, s string) []string
 ```
 
 ### Calc
 
-- package `github.com/gookit/goutil/calc`
+> package `github.com/gookit/goutil/calc`
 
 ```go
 func DataSize(size uint64) string
@@ -47,14 +48,15 @@ func Percent(val, total int) float64
 
 ### CLI Util
 
-- package `github.com/gookit/goutil/cliutil`
+> package `github.com/gookit/goutil/cliutil`
 
 ```go
+func CurrentShell(onlyName bool) (path string)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ExecCommand(binName string, args []string, workDir ...string) (string, error)
-func CurrentShell(onlyName bool) string
-func ShellExec(cmdStr string, shells ...string) (string, error)
 func HasShellEnv(shell string) bool
+func QuickExec(cmdLine string, workDir ...string) (string, error)
+func ShellExec(cmdLine string, shells ...string) (string, error)
 ```
 
 ### ENV Util
@@ -62,6 +64,7 @@ func HasShellEnv(shell string) bool
 - package `github.com/gookit/goutil/envutil`
 
 ```go
+func Getenv(name string, def ...string) string
 func HasShellEnv(shell string) bool
 func IsConsole(out io.Writer) bool
 func IsLinux() bool
@@ -70,11 +73,12 @@ func IsMac() bool
 func IsSupport256Color() bool
 func IsSupportColor() bool
 func IsWin() bool
+func ParseEnvValue(val string) (newVal string)
 ```
 
 ### Format Util
 
-- package `github.com/gookit/goutil/fmtutil`
+> package `github.com/gookit/goutil/fmtutil`
 
 ```go
 func DataSize(bytes uint64) string
@@ -83,7 +87,7 @@ func HowLongAgo(sec int64) string
 
 ### Filesystem Util
 
-- package `github.com/gookit/goutil/fsutil`
+> package `github.com/gookit/goutil/fsutil`
 
 ```go
 func FileExists(path string) bool
@@ -94,7 +98,7 @@ func Unzip(archive, targetDir string) (err error)
 
 ### JSON Util
 
-- package `github.com/gookit/goutil/jsonutil`
+> package `github.com/gookit/goutil/jsonutil`
 
 ```go
 func Decode(json []byte, v interface{}) error
@@ -119,7 +123,7 @@ func Values(mp interface{}) (values []interface{})
 
 ### String Util
 
-- package `github.com/gookit/goutil/strutil`
+> package `github.com/gookit/goutil/strutil`
 
 ```go
 func Base64Encode(src []byte) []byte
@@ -142,10 +146,28 @@ func UpperFirst(s string) string
 func UpperWord(s string) string
 ```
 
+### System Util
+
+> package `github.com/gookit/goutil/sysutil`
+
+```go
+func CurrentShell(onlyName bool) (path string)
+func ExecCmd(binName string, args []string, workDir ...string) (string, error)
+func HasShellEnv(shell string) bool
+func Kill(pid int, signal syscall.Signal) error
+func ProcessExists(pid int) bool
+func QuickExec(cmdLine string, workDir ...string) (string, error)
+func ShellExec(cmdStr string, shells ...string) (string, error)
+```
+
 ### Test Util
+
+> package `github.com/gookit/goutil/testutil`
 
 ```go
 func DiscardStdout() error
+func MockEnvValue(key, val string, fn func(nv string))
+func MockEnvValues(kvMap map[string]string, fn func())
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
 func RestoreStdout() (s string)
 func RewriteStdout()
