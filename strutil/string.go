@@ -171,7 +171,7 @@ func Base64Encode(src []byte) []byte {
 
 // RenderTemplate render text template
 func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
-	t := template.New("cli")
+	t := template.New("simple-text")
 	t.Funcs(template.FuncMap{
 		// don't escape content
 		"raw": func(s string) string {
@@ -183,6 +183,10 @@ func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile
 		// join strings
 		"join": func(ss []string, sep string) string {
 			return strings.Join(ss, sep)
+		},
+		// lower first char
+		"lcFirst": func(s string) string {
+			return LowerFirst(s)
 		},
 		// upper first char
 		"upFirst": func(s string) string {
