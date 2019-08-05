@@ -1,3 +1,4 @@
+// Package dump like fmt.Println but more clear and beautiful print data.
 package dump
 
 import (
@@ -10,11 +11,22 @@ import (
 	"github.com/gookit/color"
 )
 
+// Config dump data
 var Config = struct {
-	ShowFile   bool
+	NoPosition bool
 	ShowMethod bool
+	ShowFile   bool
+	NoColor    bool
 }{
 	ShowMethod: true,
+}
+
+// ResetConfig reset config data
+func ResetConfig() {
+	Config.NoColor = false
+	Config.ShowFile = false
+	Config.ShowMethod = true
+	Config.NoPosition = false
 }
 
 // P print input params for pretty
@@ -32,20 +44,39 @@ func Println(vs ...interface{}) {
 	Fprint(2, os.Stdout, vs...)
 }
 
-// Print print input params for pretty
+// Fprint print input params for pretty
 func Fprint(skip int, w io.Writer, vs ...interface{}) {
-	// get the print position
-	pc, _, line, ok := runtime.Caller(skip)
-	if ok {
-		fnName := runtime.FuncForPC(pc).Name()
-		content := fmt.Sprint("<mga>PRINT AT ", fnName, "(LINE ", line, "):</>\n")
-		color.Fprint(w, content)
-		// mustFprint(w, )
+	// show print position
+	if !Config.NoPosition {
+		// get the print position
+		pc, file, line, ok := runtime.Caller(skip)
+		if ok {
+			printPosition(w, pc, file, line)
+		}
 	}
 
+	// print data
 	for _, v := range vs {
 		printOne(w, v)
 	}
+}
+
+func printPosition(w io.Writer, pc uintptr, file string, line int) {
+	var text string
+	fnName := runtime.FuncForPC(pc).Name()
+
+	if Config.ShowFile {
+		text = fmt.Sprint("PRINT AT ", fnName, "(", file, " LINE ", line, "):")
+	} else {
+		text = fmt.Sprint("PRINT AT ", fnName, "(LINE ", line, "):")
+	}
+
+	if Config.NoColor {
+		mustFprint(w, text, "\n")
+		return
+	}
+
+	color.Fprint(w, "<mga>", text, "</>\n")
 }
 
 func printOne(w io.Writer, v interface{}) {
@@ -63,7 +94,7 @@ func printOne(w io.Writer, v interface{}) {
 
 		mustFprint(w, rType.String(), " [\n")
 		for i := 0; i < eleNum; i++ {
-			mustFprintf(w, "  %#v\n", rValue.Index(i).Interface())
+			mustFprintf(w, "  %v,\n", rValue.Index(i).Interface())
 		}
 		mustFprint(w, "]\n")
 	case reflect.Struct:
