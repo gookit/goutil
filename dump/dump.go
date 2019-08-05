@@ -37,20 +37,15 @@ func Fprint(skip int, w io.Writer, vs ...interface{}) {
 	// get the print position
 	pc, _, line, ok := runtime.Caller(skip)
 	if ok {
-		mName := runtime.FuncForPC(pc).Name()
-		text := fmt.Sprint("<mga>PRINT AT ", mName, "(LINE ", line, ")</>:\n")
-		color.Fprint(w, text)
+		fnName := runtime.FuncForPC(pc).Name()
+		content := fmt.Sprint("<mga>PRINT AT ", fnName, "(LINE ", line, "):</>\n")
+		color.Fprint(w, content)
 		// mustFprint(w, )
-		// new line
-		// _, _ = w.Write([]byte("\n"))
 	}
 
 	for _, v := range vs {
 		printOne(w, v)
 	}
-
-	// new line
-	// _, _ = w.Write([]byte("\n"))
 }
 
 func printOne(w io.Writer, v interface{}) {
@@ -84,9 +79,9 @@ func printOne(w io.Writer, v interface{}) {
 			fv := rValue.Field(i)
 
 			if fv.CanInterface() {
-				mustFprintf(w, "  %v: %#v\n", tn, rValue.Field(i).Interface())
+				mustFprintf(w, "  %s: %#v\n", tn, rValue.Field(i).Interface())
 			} else {
-				mustFprintf(w, "  %v: %#v\n", tn, rValue.Field(i).String())
+				mustFprintf(w, "  %s: %#v\n", tn, rValue.Field(i).String())
 			}
 		}
 		mustFprint(w, "}\n")
@@ -99,7 +94,7 @@ func printOne(w io.Writer, v interface{}) {
 
 		mustFprint(w, "}\n")
 	default:
-		mustFprintf(w, "%v\n", v)
+		mustFprintf(w, "%s(%v)\n", rType.String(), v)
 	}
 }
 

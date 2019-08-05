@@ -2,6 +2,7 @@ package main
 
 import "github.com/gookit/goutil/dump"
 
+// rum demo:
 func main() {
 	dump.P(
 		23,
@@ -18,4 +19,13 @@ func main() {
 			"ab", 23,
 		},
 	)
+
+	otherFunc()
+}
+
+func otherFunc() {
+	dump.P(234, int64(56))
+	dump.P("abc", "def")
+	dump.P([]string{"ab", "cd"})
+	dump.P([]interface{}{"ab", 234, []int{1, 3}})
 }
