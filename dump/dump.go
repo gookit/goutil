@@ -29,22 +29,27 @@ func ResetConfig() {
 	Config.NoPosition = false
 }
 
-// P print input params for pretty
+// P like fmt.Println, but the output is clearer and more beautiful
 func P(vs ...interface{}) {
 	Fprint(2, os.Stdout, vs...)
 }
 
-// Print print input params for pretty
+// V like fmt.Println, but the output is clearer and more beautiful
+func V(vs ...interface{}) {
+	Fprint(2, os.Stdout, vs...)
+}
+
+// Print like fmt.Println, but the output is clearer and more beautiful
 func Print(vs ...interface{}) {
 	Fprint(2, os.Stdout, vs...)
 }
 
-// Println print input params for pretty
+// Println like fmt.Println, but the output is clearer and more beautiful
 func Println(vs ...interface{}) {
 	Fprint(2, os.Stdout, vs...)
 }
 
-// Fprint print input params for pretty
+// Fprint like fmt.Println, but the output is clearer and more beautiful
 func Fprint(skip int, w io.Writer, vs ...interface{}) {
 	// show print position
 	if !Config.NoPosition {

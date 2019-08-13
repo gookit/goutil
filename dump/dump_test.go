@@ -14,8 +14,8 @@ func ExamplePrint() {
 		23,
 		[]string{"ab", "cd"},
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
+		map[string]string{"key": "val"},
 		map[string]interface{}{
-			"key": "val",
 			"sub": map[string]string{"k": "v"},
 		},
 		struct {
@@ -44,8 +44,10 @@ func ExamplePrint() {
 	//   10,
 	//   11,
 	// ]
-	// map[string]interface {} {
+	// map[string]string {
 	//   key: "val"
+	// }
+	// map[string]interface {} {
 	//   sub: map[string]string{"k":"v"}
 	// }
 	// struct { ab string; Cd int }{ab:"ab", Cd:23}
