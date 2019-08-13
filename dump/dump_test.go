@@ -59,7 +59,7 @@ func TestPrint(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	Fprint(1, buf, 123)
-	is.Equal("\x1b[0;35mPRINT AT github.com/gookit/goutil/dump.TestPrint(LINE 59):\x1b[0m\nint(123)\n", buf.String())
+	is.Equal("\x1b[0;35mPRINT AT github.com/gookit/goutil/dump.TestPrint(LINE 61):\x1b[0m\nint(123)\n", buf.String())
 
 	// disable position for test
 	Config.NoPosition = true
