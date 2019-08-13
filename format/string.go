@@ -7,6 +7,8 @@ import "fmt"
 // 	file, err := os.Open(path)
 // 	fl, err := file.Stat()
 // 	fmtSize := DataSize(fl.Size())
+// Deprecated
+//	please use fmtutil.DataSize() instead
 func DataSize(bytes uint64) string {
 	switch {
 	case bytes < 1024:

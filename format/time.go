@@ -19,6 +19,8 @@ var timeMessages = []string{
 }
 
 // HowLongAgo format a seconds, get how lang ago
+// Deprecated
+//	please use fmtutil.HowLongAgo() instead
 func HowLongAgo(sec int64) string {
 	intVal := int(sec)
 	length := len(timeFormats)
