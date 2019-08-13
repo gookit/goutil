@@ -104,10 +104,6 @@ func printOne(w io.Writer, v interface{}) {
 		mustFprint(w, "]\n")
 	case reflect.Struct:
 		fldNum := rValue.NumField()
-		if fldNum < 8 {
-			mustFprintf(w, "%#v\n", v)
-			return
-		}
 
 		mustFprint(w, rType.String(), " {\n")
 		for i := 0; i < fldNum; i++ {
@@ -115,9 +111,9 @@ func printOne(w io.Writer, v interface{}) {
 			fv := rValue.Field(i)
 
 			if fv.CanInterface() {
-				mustFprintf(w, "  %s: %#v\n", tn, rValue.Field(i).Interface())
+				mustFprintf(w, "  %s: %#v,\n", tn, rValue.Field(i).Interface())
 			} else {
-				mustFprintf(w, "  %s: %#v\n", tn, rValue.Field(i).String())
+				mustFprintf(w, "  %s: %#v,\n", tn, rValue.Field(i).String())
 			}
 		}
 		mustFprint(w, "}\n")
@@ -125,7 +121,7 @@ func printOne(w io.Writer, v interface{}) {
 		mustFprint(w, rType.String(), " {\n")
 
 		for _, key := range rValue.MapKeys() {
-			mustFprintf(w, "  %v: %#v\n", key.Interface(), rValue.MapIndex(key).Interface())
+			mustFprintf(w, "  %v: %#v,\n", key.Interface(), rValue.MapIndex(key).Interface())
 		}
 
 		mustFprint(w, "}\n")

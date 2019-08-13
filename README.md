@@ -10,13 +10,14 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 > **[中文说明](README.zh-CN.md)**
 
 - `arrutil` array/slice util
-- `calc` number format calc
+- `dump`  print debug vars
 - `cliutil` CLI util
 - `envutil` ENV util
 - `fmtutil` format data tool
 - `fsutil` filesystem util
 - `jsonutil` JSON util
 - `maputil` map util
+- `mathutil` math util
 - `netutil` network util
 - `strutil` string util
 - `testutil` test help util
@@ -36,17 +37,6 @@ func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 ```
 
-### Calc
-
-> package `github.com/gookit/goutil/calc`
-
-```go
-func DataSize(size uint64) string
-func ElapsedTime(startTime time.Time) string
-func HowLongAgo(sec int64) string
-func Percent(val, total int) float64
-```
-
 ### CLI Util
 
 > package `github.com/gookit/goutil/cliutil`
@@ -60,9 +50,19 @@ func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
 ```
 
+### Dump Util
+
+> package `github.com/gookit/goutil/dump`
+
+```go
+func P(vs ...interface{})
+func V(vs ...interface{})
+func Print(vs ...interface{})
+```
+
 ### ENV Util
 
-- package `github.com/gookit/goutil/envutil`
+> package `github.com/gookit/goutil/envutil`
 
 ```go
 func Getenv(name string, def ...string) string
@@ -120,6 +120,17 @@ func KeyToLower(src map[string]string) map[string]string
 func Keys(mp interface{}) (keys []string)
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func Values(mp interface{}) (values []interface{})
+```
+
+### Math Util
+
+> package `github.com/gookit/goutil/mathutil`
+
+```go
+func DataSize(size uint64) string
+func ElapsedTime(startTime time.Time) string
+func HowLongAgo(sec int64) string
+func Percent(val, total int) float64
 ```
 
 ### String Util

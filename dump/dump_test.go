@@ -45,12 +45,15 @@ func ExamplePrint() {
 	//   11,
 	// ]
 	// map[string]string {
-	//   key: "val"
+	//   key: "val",
 	// }
 	// map[string]interface {} {
-	//   sub: map[string]string{"k":"v"}
+	//   sub: map[string]string{"k":"v"},
 	// }
-	// struct { ab string; Cd int }{ab:"ab", Cd:23}
+	// struct { ab string; Cd int } {
+	//   ab: "ab",
+	//   Cd: 23,
+	// }
 	//
 }
 
@@ -59,7 +62,9 @@ func TestPrint(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	Fprint(1, buf, 123)
-	is.Equal("\x1b[0;35mPRINT AT github.com/gookit/goutil/dump.TestPrint(LINE 61):\x1b[0m\nint(123)\n", buf.String())
+	str := buf.String()
+	is.Contains(str, "\x1b[0;35mPRINT AT github.com/gookit/goutil/dump.TestPrint(LINE ")
+	is.Contains(str, "\x1b[0m\nint(123)")
 
 	// disable position for test
 	Config.NoPosition = true
@@ -97,7 +102,10 @@ func TestPrint(t *testing.T) {
 	}{
 		"ab", 23,
 	})
-	is.Equal(`struct { ab string; Cd int }{ab:"ab", Cd:23}
+	is.Equal(`struct { ab string; Cd int } {
+  ab: "ab",
+  Cd: 23,
+}
 `, buf.String())
 
 	buf.Reset()
@@ -105,7 +113,7 @@ func TestPrint(t *testing.T) {
 		"key": "val",
 		"sub": map[string]string{"k": "v"},
 	})
-	is.Contains(buf.String(), `sub: map[string]string{"k":"v"}`)
+	is.Contains(buf.String(), `sub: map[string]string{"k":"v"},`)
 
 	ResetConfig()
 }

@@ -10,13 +10,14 @@ Go一些常用的工具函数收集、实现和整理
 > **[EN README](README.md)**
 
 - `arrutil` array/slice util
-- `calc` number format calc
+- `dump`  print debug vars
 - `cliutil` CLI util
 - `envutil` ENV util
 - `fmtutil` format data tool
 - `fsutil` filesystem util
 - `jsonutil` JSON util
 - `maputil` map util
+- `mathutil` math util
 - `netutil` network util
 - `strutil` string util
 - `testutil` test help util
@@ -60,9 +61,19 @@ func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
 ```
 
+### Dump Util
+
+> package `github.com/gookit/goutil/dump`
+
+```go
+func P(vs ...interface{})
+func V(vs ...interface{})
+func Print(vs ...interface{})
+```
+
 ### ENV Util
 
-- package `github.com/gookit/goutil/envutil`
+> package `github.com/gookit/goutil/envutil`
 
 ```go
 func Getenv(name string, def ...string) string
@@ -120,6 +131,17 @@ func KeyToLower(src map[string]string) map[string]string
 func Keys(mp interface{}) (keys []string)
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func Values(mp interface{}) (values []interface{})
+```
+
+### Math Util
+
+> package `github.com/gookit/goutil/mathutil`
+
+```go
+func DataSize(size uint64) string
+func ElapsedTime(startTime time.Time) string
+func HowLongAgo(sec int64) string
+func Percent(val, total int) float64
 ```
 
 ### String Util
