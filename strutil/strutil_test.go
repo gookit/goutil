@@ -17,6 +17,14 @@ func TestSimilarity(t *testing.T) {
 func TestSplit(t *testing.T) {
 	ss := strutil.Split("a, , b,c", ",")
 	assert.Equal(t, `[]string{"a", "b", "c"}`, fmt.Sprintf("%#v", ss))
+
+	ss = strutil.Split(" ", ",")
+	assert.Nil(t, ss)
+}
+
+func TestSubstr(t *testing.T) {
+	assert.Equal(t, "abc", strutil.Substr("abcDef", 0, 3))
+	assert.Equal(t, "cD", strutil.Substr("abcDef", 2, 2))
 }
 
 func TestUpperFirst(t *testing.T) {

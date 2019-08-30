@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// MergeStringMap simple merge two string map
+// MergeStringMap simple merge two string map. merge src to dst map
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string {
 	for k, v := range src {
 		if ignoreCase {

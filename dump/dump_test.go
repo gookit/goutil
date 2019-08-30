@@ -63,8 +63,8 @@ func TestPrint(t *testing.T) {
 
 	Fprint(1, buf, 123)
 	str := buf.String()
-	is.Contains(str, "\x1b[0;35mPRINT AT github.com/gookit/goutil/dump.TestPrint(LINE ")
-	is.Contains(str, "\x1b[0m\nint(123)")
+	is.Contains(str, "PRINT AT github.com/gookit/goutil/dump.TestPrint(LINE ")
+	is.Contains(str, "int(123)")
 
 	// disable position for test
 	Config.NoPosition = true

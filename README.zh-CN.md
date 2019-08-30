@@ -37,17 +37,6 @@ func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 ```
 
-### Calc
-
-> package `github.com/gookit/goutil/calc`
-
-```go
-func DataSize(size uint64) string
-func ElapsedTime(startTime time.Time) string
-func HowLongAgo(sec int64) string
-func Percent(val, total int) float64
-```
-
 ### CLI Util
 
 > package `github.com/gookit/goutil/cliutil`

@@ -18,7 +18,7 @@ func NewComparator(src, dst string) *SimilarComparator {
 // 	rate, ok :c.Similar(0.3)
 func (c *SimilarComparator) Similar(minDifferRate float32) (float32, bool) {
 	dist := c.editDistance([]byte(c.src), []byte(c.dst))
-	differRate := float32(dist) / float32(max(len(c.src), len(c.dst))+4)
+	differRate := dist / float32(max(len(c.src), len(c.dst))+4)
 
 	return differRate, differRate >= minDifferRate
 }
