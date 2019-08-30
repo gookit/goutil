@@ -11,4 +11,5 @@ before_install:
 
 script:
   #  - go test -v -cover
-  - $HOME/gopath/bin/goveralls -v -service=travis-ci
+#  - $HOME/gopath/bin/goveralls -v -service=travis-ci
+  - go test -v -covermode=count -coverprofile=coverage.out ./... && $HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci
