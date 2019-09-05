@@ -16,11 +16,9 @@ func Reverse(ss []string) {
 func StringsRemove(ss []string, s string) []string {
 	var ns []string
 	for _, v := range ss {
-		if v == s {
-			continue
+		if v != s {
+			ns = append(ns, v)
 		}
-
-		ns = append(ns, v)
 	}
 
 	return ns

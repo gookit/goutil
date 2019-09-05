@@ -20,8 +20,7 @@ func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]stri
 
 // KeyToLower convert keys to lower case.
 func KeyToLower(src map[string]string) map[string]string {
-	newMp := make(map[string]string)
-
+	newMp := make(map[string]string, len(src))
 	for k, v := range src {
 		k = strings.ToLower(k)
 		newMp[k] = v
@@ -105,7 +104,7 @@ func Values(mp interface{}) (values []interface{}) {
 
 	rftVal := reflect.ValueOf(mp)
 	for _, key := range rftVal.MapKeys() {
-		values = append(values, rftVal.MapIndex(key).String())
+		values = append(values, rftVal.MapIndex(key).Interface())
 	}
 	return
 }
