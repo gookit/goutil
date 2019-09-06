@@ -5,7 +5,7 @@ package arrutil
 func Reverse(ss []string) {
 	ln := len(ss)
 
-	for i := 0; i < int(ln/2); i++ {
+	for i := 0; i < ln/2; i++ {
 		li := ln - i - 1
 		// fmt.Println(i, "<=>", li)
 		ss[i], ss[li] = ss[li], ss[i]

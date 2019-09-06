@@ -39,7 +39,18 @@ func TestGetByPath(t *testing.T) {
 	assert.True(t, ok)
 	assert.Equal(t, "sv0", v)
 
+	v, ok = maputil.GetByPath("key3.sk1", mp)
+	assert.True(t, ok)
+	assert.Equal(t, "sv1", v)
+
+	// not exists
+	v, ok = maputil.GetByPath("not-exits", mp)
+	assert.False(t, ok)
+	assert.Nil(t, v)
 	v, ok = maputil.GetByPath("key2.not-exits", mp)
+	assert.False(t, ok)
+	assert.Nil(t, v)
+	v, ok = maputil.GetByPath("not-exits.subkey", mp)
 	assert.False(t, ok)
 	assert.Nil(t, v)
 
@@ -47,4 +58,52 @@ func TestGetByPath(t *testing.T) {
 	v, ok = maputil.GetByPath("key2.1", mp)
 	assert.False(t, ok)
 	assert.Nil(t, v)
+}
+
+func TestKeys(t *testing.T) {
+	mp := map[string]interface{}{
+		"key0": "v0",
+		"key1": "v1",
+		"key2": 34,
+	}
+
+	ln := len(mp)
+	ret := maputil.Keys(mp)
+	assert.Len(t, ret, ln)
+	assert.Contains(t, ret, "key0")
+	assert.Contains(t, ret, "key1")
+	assert.Contains(t, ret, "key2")
+
+	ret = maputil.Keys(&mp)
+	assert.Len(t, ret, ln)
+	assert.Contains(t, ret, "key0")
+	assert.Contains(t, ret, "key1")
+
+	ret = maputil.Keys(struct {
+		a string
+	}{"v"})
+
+	assert.Len(t, ret, 0)
+}
+
+func TestValues(t *testing.T) {
+	mp := map[string]interface{}{
+		"key0": "v0",
+		"key1": "v1",
+		"key2": 34,
+	}
+
+	ln := len(mp)
+	ret := maputil.Values(mp)
+
+	assert.Len(t, ret, ln)
+	assert.Contains(t, ret, "v0")
+	assert.Contains(t, ret, "v1")
+	assert.Contains(t, ret, 34)
+
+	ret = maputil.Values(struct {
+		a string
+	}{"v"})
+
+	assert.Len(t, ret, 0)
 }

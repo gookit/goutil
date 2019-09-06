@@ -75,16 +75,15 @@ func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 
 // Keys get all keys of the given map.
 func Keys(mp interface{}) (keys []string) {
-	rftTyp := reflect.TypeOf(mp)
-	if rftTyp.Kind() == reflect.Ptr {
-		rftTyp = rftTyp.Elem()
+	rftVal := reflect.ValueOf(mp)
+	if rftVal.Type().Kind() == reflect.Ptr {
+		rftVal = rftVal.Elem()
 	}
 
-	if rftTyp.Kind() != reflect.Map {
+	if rftVal.Kind() != reflect.Map {
 		return
 	}
 
-	rftVal := reflect.ValueOf(mp)
 	for _, key := range rftVal.MapKeys() {
 		keys = append(keys, key.String())
 	}

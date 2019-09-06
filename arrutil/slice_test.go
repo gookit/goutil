@@ -7,6 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestReverse(t *testing.T) {
+	ss := []string{"a", "b", "c"}
+
+	arrutil.Reverse(ss)
+
+	assert.Equal(t, []string{"c", "b", "a"}, ss)
+}
+
 func TestStringsRemove(t *testing.T) {
 	ss := []string{"a", "b", "c"}
 
