@@ -35,7 +35,7 @@ func CurrentShell(onlyName bool) (path string) {
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	// can also use: "echo $0"
-	out, err := ShellExec("echo OK", "", shell)
+	out, err := ShellExec("echo OK", shell)
 	if err != nil {
 		return false
 	}

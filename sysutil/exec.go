@@ -8,6 +8,8 @@ import (
 )
 
 // QuickExec quick exec an simple command line
+// Usage:
+//	QuickExec("git status")
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
 	ss := strutil.Split(cmdLine, " ")
 
@@ -31,7 +33,8 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 // ShellExec exec command by shell
 // cmdStr eg. "ls -al"
 func ShellExec(cmdStr string, shells ...string) (string, error) {
-	shell := "/bin/sh"
+	// shell := "/bin/sh"
+	shell := "sh"
 	if len(shells) > 0 {
 		shell = shells[0]
 	}

@@ -10,7 +10,14 @@ import (
 )
 
 // FileExists reports whether the named file or directory exists.
+// Deprecated
+//  please use PathExists instead it
 func FileExists(path string) bool {
+	return PathExists(path)
+}
+
+// PathExists reports whether the named file or directory exists.
+func PathExists(path string) bool {
 	if path == "" {
 		return false
 	}
@@ -21,6 +28,30 @@ func FileExists(path string) bool {
 		}
 	}
 	return true
+}
+
+// IsDir reports whether the named directory exists.
+func IsDir(path string) bool {
+	if path == "" {
+		return false
+	}
+
+	if fi, err := os.Stat(path); err == nil {
+		return fi.IsDir()
+	}
+	return false
+}
+
+// IsFile reports whether the named file or directory exists.
+func IsFile(path string) bool {
+	if path == "" {
+		return false
+	}
+
+	if fi, err := os.Stat(path); err == nil {
+		return !fi.IsDir()
+	}
+	return false
 }
 
 // IsAbsPath is abs path.
