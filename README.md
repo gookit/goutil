@@ -92,9 +92,11 @@ func HowLongAgo(sec int64) string
 > package `github.com/gookit/goutil/fsutil`
 
 ```go
-func FileExists(path string) bool
-func IsAbsPath(filename string) bool
+func IsAbsPath(path string) bool
+func IsDir(path string) bool
+func IsFile(path string) bool
 func IsZipFile(filepath string) bool
+func PathExists(path string) bool
 func Unzip(archive, targetDir string) (err error)
 ```
 

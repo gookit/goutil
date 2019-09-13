@@ -55,8 +55,8 @@ func IsFile(path string) bool {
 }
 
 // IsAbsPath is abs path.
-func IsAbsPath(filename string) bool {
-	return path.IsAbs(filename)
+func IsAbsPath(filepath string) bool {
+	return path.IsAbs(filepath)
 }
 
 // IsZipFile check is zip file.
