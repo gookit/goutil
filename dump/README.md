@@ -1,3 +1,18 @@
+# Dump
+
+> package `github.com/gookit/goutil/dump`
+
+## Install
+
+```bash
+go get github.com/gookit/goutil/dump
+```
+
+## Usage
+
+run demo: `go run ./dump/_examples/demo1.go`
+
+```go
 package main
 
 import "github.com/gookit/goutil/dump"
@@ -23,3 +38,16 @@ func otherFunc1() {
 		},
 	)
 }
+```
+
+You will see:
+
+![](_examples/demo1-preview.png)
+
+## Functions
+
+```go
+func P(vs ...interface{})
+func V(vs ...interface{})
+func Print(vs ...interface{})
+```

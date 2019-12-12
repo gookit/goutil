@@ -11,22 +11,23 @@ import (
 	"github.com/gookit/color"
 )
 
-// Config dump data
-var Config = struct {
-	NoPosition bool
+type dumpConfig struct {
 	ShowMethod bool
 	ShowFile   bool
+	NoPosition bool
 	NoColor    bool
-}{
+	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
+	MoreLenNL int
+}
+
+// Config dump data settings
+var Config = dumpConfig{
 	ShowMethod: true,
 }
 
 // ResetConfig reset config data
 func ResetConfig() {
-	Config.NoColor = false
-	Config.ShowFile = false
-	Config.ShowMethod = true
-	Config.NoPosition = false
+	Config = dumpConfig{ShowMethod: true,}
 }
 
 // P like fmt.Println, but the output is clearer and more beautiful
@@ -85,43 +86,42 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 }
 
 func printOne(w io.Writer, v interface{}) {
-	rValue := reflect.ValueOf(v)
-	rType := rValue.Type()
+	rVal := reflect.ValueOf(v)
+	rType := rVal.Type()
 
 	switch rType.Kind() {
 	case reflect.Slice, reflect.Array:
-		eleNum := rValue.Len()
-
-		if eleNum < 10 {
+		eleNum := rVal.Len()
+		if eleNum < Config.MoreLenNL {
 			mustFprintf(w, "%#v\n", v)
 			return
 		}
 
 		mustFprint(w, rType.String(), " [\n")
 		for i := 0; i < eleNum; i++ {
-			mustFprintf(w, "  %v,\n", rValue.Index(i).Interface())
+			mustFprintf(w, "  %v,\n", rVal.Index(i).Interface())
 		}
 		mustFprint(w, "]\n")
 	case reflect.Struct:
-		fldNum := rValue.NumField()
+		fldNum := rVal.NumField()
 
 		mustFprint(w, rType.String(), " {\n")
 		for i := 0; i < fldNum; i++ {
 			tn := rType.Field(i).Name
-			fv := rValue.Field(i)
+			fv := rVal.Field(i)
 
 			if fv.CanInterface() {
-				mustFprintf(w, "  %s: %#v,\n", tn, rValue.Field(i).Interface())
+				mustFprintf(w, "  %s: %#v,\n", tn, rVal.Field(i).Interface())
 			} else {
-				mustFprintf(w, "  %s: %#v,\n", tn, rValue.Field(i).String())
+				mustFprintf(w, "  %s: %#v,\n", tn, rVal.Field(i).String())
 			}
 		}
 		mustFprint(w, "}\n")
 	case reflect.Map:
 		mustFprint(w, rType.String(), " {\n")
 
-		for _, key := range rValue.MapKeys() {
-			mustFprintf(w, "  %v: %#v,\n", key.Interface(), rValue.MapIndex(key).Interface())
+		for _, key := range rVal.MapKeys() {
+			mustFprintf(w, "  %v: %#v,\n", key.Interface(), rVal.MapIndex(key).Interface())
 		}
 
 		mustFprint(w, "}\n")

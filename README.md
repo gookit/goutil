@@ -61,6 +61,8 @@ func V(vs ...interface{})
 func Print(vs ...interface{})
 ```
 
+Usage please see [dump/README.md](dump/README.md)
+
 ### ENV Util
 
 > package `github.com/gookit/goutil/envutil`
@@ -96,6 +98,7 @@ func IsAbsPath(path string) bool
 func IsDir(path string) bool
 func IsFile(path string) bool
 func IsZipFile(filepath string) bool
+func MkdirMkdir(name string, perm os.FileMode) error
 func PathExists(path string) bool
 func Unzip(archive, targetDir string) (err error)
 ```

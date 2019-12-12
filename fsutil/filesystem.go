@@ -11,7 +11,7 @@ import (
 
 // FileExists reports whether the named file or directory exists.
 // Deprecated
-//  please use PathExists instead it
+//  please use PathExists() or IsFile() instead it
 func FileExists(path string) bool {
 	return PathExists(path)
 }
@@ -122,4 +122,9 @@ func Unzip(archive, targetDir string) (err error) {
 	}
 
 	return
+}
+
+// Mkdir alias of os.Mkdir()
+func Mkdir(name string, perm os.FileMode) error {
+	return os.Mkdir(name, perm)
 }
