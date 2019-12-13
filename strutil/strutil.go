@@ -151,14 +151,18 @@ func RepeatRune(char rune, times int) (chars []rune) {
 }
 
 // Replaces replace multi strings
-// pairs - [old => new]
-// can also use:
-// strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
+//
+// 	pairs: {old1: new1, old2: new2, ...}
+//
+// Can also use:
+// 	strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
 func Replaces(str string, pairs map[string]string) string {
+	ss := make([]string, len(pairs) * 2)
 	for old, newVal := range pairs {
-		str = strings.Replace(str, old, newVal, -1)
+		ss = append(ss, old, newVal)
 	}
-	return str
+
+	return strings.NewReplacer(ss...).Replace(str)
 }
 
 // PrettyJSON get pretty Json string
@@ -171,6 +175,11 @@ func PrettyJSON(v interface{}) (string, error) {
 
 // RenderTemplate render text template
 func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
+	return RenderText(input, data, fns, isFile...)
+}
+
+// RenderText render text template
+func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
 	t := template.New("simple-text")
 	t.Funcs(template.FuncMap{
 		// don't escape content
