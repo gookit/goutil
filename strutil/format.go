@@ -117,4 +117,3 @@ func CamelCase(s string, sep ...string) string {
 		return UpperFirst(s)
 	})
 }
-

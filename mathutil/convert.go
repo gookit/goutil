@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	errConvertFail  = errors.New("convert data type is failure")
+	errConvertFail = errors.New("convert data type is failure")
 )
 
 /*************************************************************

@@ -8,6 +8,7 @@ import (
 	"text/template"
 )
 
+// Position for padding string
 const (
 	PosLeft uint8 = iota
 	PosRight
@@ -123,7 +124,7 @@ func PadRight(s, pad string, length int) string {
 // Repeat repeat a string
 func Repeat(s string, times int) string {
 	if times < 2 {
-		 return s
+		return s
 	}
 
 	var ss []string

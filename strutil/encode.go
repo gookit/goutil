@@ -11,8 +11,9 @@ import (
 )
 
 var (
-	// escape string.
+	// EscapeJS escape javascript string
 	EscapeJS   = template.JSEscapeString
+	// EscapeHTML escape html string
 	EscapeHTML = template.HTMLEscapeString
 )
 
@@ -59,4 +60,3 @@ func URLDecode(s string) string {
 
 	return s
 }
-

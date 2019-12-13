@@ -237,6 +237,13 @@ func RestoreStdout() (s string)
 func RewriteStdout()
 ```
 
+## Code Check
+
+```bash
+gofmt -w -l ./
+golint ./... 
+```
+
 ## License
 
 [MIT](LICENSE)

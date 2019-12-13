@@ -78,11 +78,11 @@ func TestRepeat(t *testing.T) {
 }
 
 func TestPadding(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		want, give, pad string
-		len int
-		pos uint8
-	} {
+		len             int
+		pos             uint8
+	}{
 		{"ab000", "ab", "0", 5, strutil.PosRight},
 		{"000ab", "ab", "0", 5, strutil.PosLeft},
 	}

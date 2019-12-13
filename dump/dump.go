@@ -23,14 +23,14 @@ type dumpConfig struct {
 // Config dump data settings
 var Config = dumpConfig{
 	ShowMethod: true,
-	MoreLenNL: 8,
+	MoreLenNL:  8,
 }
 
 // ResetConfig reset config data
 func ResetConfig() {
 	Config = dumpConfig{
 		ShowMethod: true,
-		MoreLenNL: 8,
+		MoreLenNL:  8,
 	}
 }
 
