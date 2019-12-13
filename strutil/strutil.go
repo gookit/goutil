@@ -2,9 +2,6 @@ package strutil
 
 import (
 	"bytes"
-	"crypto/md5"
-	"encoding/base64"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -22,7 +19,6 @@ func Split(s, sep string) (ss []string) {
 			ss = append(ss, val)
 		}
 	}
-
 	return
 }
 
@@ -102,71 +98,12 @@ func Replaces(str string, pairs map[string]string) string {
 	return str
 }
 
-// LowerFirst lower first char for a string.
-func LowerFirst(s string) string {
-	if len(s) == 0 {
-		return s
-	}
-
-	f := s[0]
-	if f >= 'A' && f <= 'Z' {
-		return strings.ToLower(string(f)) + string(s[1:])
-	}
-
-	return s
-}
-
-// UpperFirst upper first char
-func UpperFirst(s string) string {
-	if len(s) == 0 {
-		return s
-	}
-
-	f := s[0]
-	if f >= 'a' && f <= 'z' {
-		return strings.ToUpper(string(f)) + string(s[1:])
-	}
-
-	return s
-}
-
-// UpperWord Change the first character of each word to uppercase
-func UpperWord(s string) string {
-	if len(s) == 0 {
-		return s
-	}
-
-	ss := strings.Split(s, " ")
-	ns := make([]string, len(ss))
-	for i, word := range ss {
-		ns[i] = UpperFirst(word)
-	}
-
-	return strings.Join(ns, " ")
-}
-
 // PrettyJSON get pretty Json string
+// Deprecated
+//  please use fmtutil.PrettyJSON() or jsonutil.Pretty() instead it
 func PrettyJSON(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
-}
-
-// GenMd5 Generate a 32-bit md5 string
-func GenMd5(src interface{}) string {
-	h := md5.New()
-
-	if s, ok := src.(string); ok {
-		h.Write([]byte(s))
-	} else {
-		h.Write([]byte(fmt.Sprint(src)))
-	}
-
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-// Base64Encode base64 encode
-func Base64Encode(src []byte) []byte {
-	return []byte(base64.StdEncoding.EncodeToString(src))
 }
 
 // RenderTemplate render text template

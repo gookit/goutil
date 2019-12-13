@@ -1,6 +1,9 @@
 package fmtutil
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // DataSize format bytes number friendly.
 // Usage:
@@ -18,4 +21,10 @@ func DataSize(bytes uint64) string {
 	default:
 		return fmt.Sprintf("%.2fG", float64(bytes)/1024/1024/1024)
 	}
+}
+
+// PrettyJSON get pretty Json string
+func PrettyJSON(v interface{}) (string, error) {
+	out, err := json.MarshalIndent(v, "", "    ")
+	return string(out), err
 }

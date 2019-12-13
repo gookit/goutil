@@ -22,3 +22,20 @@ func TestDataSize(t *testing.T) {
 		assert.Equal(t, tt.want, fmtutil.DataSize(tt.args))
 	}
 }
+
+func TestPrettyJSON(t *testing.T) {
+	tests := []interface{}{
+		map[string]int{"a": 1},
+		struct {
+			A int `json:"a"`
+		}{1},
+	}
+	want := `{
+    "a": 1
+}`
+	for _, sample := range tests {
+		got, err := fmtutil.PrettyJSON(sample)
+		assert.NoError(t, err)
+		assert.Equal(t, want, got)
+	}
+}

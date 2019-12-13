@@ -1,15 +1,33 @@
-package jsonutil
+package jsonutil_test
 
 import (
 	"testing"
 
+	"github.com/gookit/goutil/jsonutil"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestPretty(t *testing.T) {
+	tests := []interface{}{
+		map[string]int{"a": 1},
+		struct {
+			A int `json:"a"`
+		}{1},
+	}
+	want := `{
+    "a": 1
+}`
+	for _, sample := range tests {
+		got, err := jsonutil.Pretty(sample)
+		assert.NoError(t, err)
+		assert.Equal(t, want, got)
+	}
+}
 
 func TestStripComments(t *testing.T) {
 	is := assert.New(t)
 
-	str := StripComments(`{"name":"app"}`)
+	str := jsonutil.StripComments(`{"name":"app"}`)
 	is.Equal(`{"name":"app"}`, str)
 
 	givens := []string{
@@ -73,17 +91,17 @@ comments
 	}
 
 	for i, s := range givens {
-		is.Equal(wants[i], StripComments(s))
+		is.Equal(wants[i], jsonutil.StripComments(s))
 	}
 
-	str = StripComments(`{"name":"app"} // comments`)
+	str = jsonutil.StripComments(`{"name":"app"} // comments`)
 	is.Equal(`{"name":"app"}`, str)
 
 	// fix https://github.com/gookit/config/issues/2
-	str = StripComments(`{"name":"http://abc.com"} // comments`)
+	str = jsonutil.StripComments(`{"name":"http://abc.com"} // comments`)
 	is.Equal(`{"name":"http://abc.com"}`, str)
 
-	str = StripComments(`{
+	str = jsonutil.StripComments(`{
 "address": [
 	"http://192.168.1.XXX:2379"
 ]
@@ -91,7 +109,7 @@ comments
 	is.Equal(`{"address":["http://192.168.1.XXX:2379"]}`, str)
 
 	s := `{"name":"http://abc.com"} // comments`
-	s = StripComments(s)
+	s = jsonutil.StripComments(s)
 	assert.Equal(t, `{"name":"http://abc.com"}`, s)
 
 	s = `
@@ -129,10 +147,7 @@ comments
         }
     }
 }`
-	s = StripComments(s)
-	assert.Equal(
-		t,
-		`{"name":"app","debug":false,"baseKey":"value","age":123,"envKey1":"${NotExist|defValue}","map1":{"key":"val","key1":"val1","key2":"val2"},"arr1":["val","val1","val2","http://a.com"],"lang":{"dir":"res/lang","allowed":{"en":"val","zh-CN":"val2"}}}`,
-		s,
-	)
+	ep := `{"name":"app","debug":false,"baseKey":"value","age":123,"envKey1":"${NotExist|defValue}","map1":{"key":"val","key1":"val1","key2":"val2"},"arr1":["val","val1","val2","http://a.com"],"lang":{"dir":"res/lang","allowed":{"en":"val","zh-CN":"val2"}}}`
+	s = jsonutil.StripComments(s)
+	assert.Equal(t, ep, s)
 }
