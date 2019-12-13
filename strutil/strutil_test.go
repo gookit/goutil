@@ -27,49 +27,30 @@ func TestSubstr(t *testing.T) {
 	assert.Equal(t, "cD", strutil.Substr("abcDef", 2, 2))
 }
 
-func TestUpperFirst(t *testing.T) {
-	tests := []struct {
-		give string
-		want string
-	}{
-		{"a", "A"},
-		{"", ""},
-		{"ab", "Ab"},
-		{"Ab", "Ab"},
-	}
-	for _, tt := range tests {
-		assert.Equal(t, tt.want, strutil.UpperFirst(tt.give))
-	}
+func TestRepeat(t *testing.T) {
+	assert.Equal(t, "aaa", strutil.Repeat("a", 3))
+	assert.Equal(t, "D", strutil.Repeat("D", 1))
+	assert.Equal(t, "D", strutil.Repeat("D", 0))
+	assert.Equal(t, "D", strutil.Repeat("D", -3))
 }
 
-func TestLowerFirst(t *testing.T) {
-	tests := []struct {
-		give string
-		want string
-	}{
-		{"A", "a"},
-		{"", ""},
-		{"Ab", "ab"},
-		{"ab", "ab"},
+func TestPadding(t *testing.T) {
+	tests := []struct{
+		want, give, pad string
+		len int
+		pos uint8
+	} {
+		{"ab000", "ab", "0", 5, strutil.PosRight},
+		{"000ab", "ab", "0", 5, strutil.PosLeft},
 	}
-	for _, tt := range tests {
-		assert.Equal(t, tt.want, strutil.LowerFirst(tt.give))
-	}
-}
 
-func TestUpperWord(t *testing.T) {
-	tests := []struct {
-		give string
-		want string
-	}{
-		{"a", "A"},
-		{"", ""},
-		{"ab", "Ab"},
-		{"Ab", "Ab"},
-		{"hi lo", "Hi Lo"},
-		{"hi lo wr", "Hi Lo Wr"},
-	}
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, strutil.UpperWord(tt.give))
+		assert.Equal(t, tt.want, strutil.Padding(tt.give, tt.pad, tt.len, tt.pos))
+
+		if tt.pos == strutil.PosRight {
+			assert.Equal(t, tt.want, strutil.PadRight(tt.give, tt.pad, tt.len))
+		} else {
+			assert.Equal(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
+		}
 	}
 }

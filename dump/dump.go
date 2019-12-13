@@ -23,11 +23,15 @@ type dumpConfig struct {
 // Config dump data settings
 var Config = dumpConfig{
 	ShowMethod: true,
+	MoreLenNL: 8,
 }
 
 // ResetConfig reset config data
 func ResetConfig() {
-	Config = dumpConfig{ShowMethod: true,}
+	Config = dumpConfig{
+		ShowMethod: true,
+		MoreLenNL: 8,
+	}
 }
 
 // P like fmt.Println, but the output is clearer and more beautiful

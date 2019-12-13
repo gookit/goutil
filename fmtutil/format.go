@@ -3,6 +3,7 @@ package fmtutil
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 )
 
 // DataSize format bytes number friendly.
@@ -27,4 +28,18 @@ func DataSize(bytes uint64) string {
 func PrettyJSON(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
+}
+
+// StringsToInts string slice to int slice
+func StringsToInts(ss []string) (ints []int, err error) {
+	for _, str := range ss {
+		iVal, err := strconv.Atoi(str)
+		if err != nil {
+			return []int{}, err
+		}
+
+		ints = append(ints, iVal)
+	}
+
+	return
 }

@@ -8,6 +8,11 @@ import (
 	"text/template"
 )
 
+const (
+	PosLeft uint8 = iota
+	PosRight
+)
+
 // Split string to slice. will clear empty string node.
 func Split(s, sep string) (ss []string) {
 	if s = strings.TrimSpace(s); s == "" {
@@ -42,7 +47,7 @@ func Padding(s, pad string, length int, pos uint8) string {
 
 	if pad == "" || pad == " " {
 		mark := ""
-		if pos == 1 { // to right
+		if pos == PosRight { // to right
 			mark = "-"
 		}
 
@@ -51,25 +56,29 @@ func Padding(s, pad string, length int, pos uint8) string {
 		return fmt.Sprintf(`%`+tpl+`s`, s)
 	}
 
-	if pos == 1 { // to right
-		return s + Repeat(pad, diff)
+	if pos == PosRight { // to right
+		return s + Repeat(pad, -diff)
 	}
 
-	return Repeat(pad, diff) + s
+	return Repeat(pad, -diff) + s
 }
 
 // PadLeft a string.
 func PadLeft(s, pad string, length int) string {
-	return Padding(s, pad, length, 0)
+	return Padding(s, pad, length, PosLeft)
 }
 
 // PadRight a string.
 func PadRight(s, pad string, length int) string {
-	return Padding(s, pad, length, 1)
+	return Padding(s, pad, length, PosRight)
 }
 
 // Repeat repeat a string
 func Repeat(s string, times int) string {
+	if times < 2 {
+		 return s
+	}
+
 	var ss []string
 	for i := 0; i < times; i++ {
 		ss = append(ss, s)

@@ -14,6 +14,11 @@ var (
 	EscapeHTML = template.HTMLEscapeString
 )
 
+// Md5 Generate a 32-bit md5 string
+func Md5(src interface{}) string {
+	return GenMd5(src)
+}
+
 // GenMd5 Generate a 32-bit md5 string
 func GenMd5(src interface{}) string {
 	h := md5.New()
@@ -28,6 +33,6 @@ func GenMd5(src interface{}) string {
 }
 
 // Base64Encode base64 encode
-func Base64Encode(src []byte) []byte {
-	return []byte(base64.StdEncoding.EncodeToString(src))
+func Base64Encode(src []byte) string {
+	return base64.StdEncoding.EncodeToString(src)
 }

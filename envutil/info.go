@@ -24,24 +24,14 @@ func IsLinux() bool {
 	return runtime.GOOS == "linux"
 }
 
-// IsConsole 判断 w 是否为 stderr、stdout、stdin 三者之一
+// IsConsole check out is console env. alias of the sysutil.IsConsole()
 func IsConsole(out io.Writer) bool {
-	o, ok := out.(*os.File)
-	if !ok {
-		return false
-	}
-
-	return o == os.Stdout || o == os.Stderr || o == os.Stdin
+	return sysutil.IsConsole(out)
 }
 
-// IsMSys msys(MINGW64) 环境，不一定支持颜色
+// IsMSys msys(MINGW64) env. alias of the sysutil.IsMSys()
 func IsMSys() bool {
-	// "MSYSTEM=MINGW64"
-	if len(os.Getenv("MSYSTEM")) > 0 {
-		return true
-	}
-
-	return false
+	return sysutil.IsMSys()
 }
 
 // HasShellEnv has shell env check.

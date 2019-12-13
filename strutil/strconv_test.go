@@ -1,6 +1,7 @@
 package strutil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
@@ -64,4 +65,75 @@ func TestValToString(t *testing.T) {
 
 	_, err = strutil.String([]string{"a"})
 	is.Error(err)
+}
+
+func TestStrToInts(t *testing.T) {
+	is := assert.New(t)
+
+	ints, err := strutil.ToInts("a,b,c")
+	is.Error(err)
+	is.Len(ints, 0)
+
+	ints, err = strutil.ToIntSlice("1,2,3")
+	is.Nil(err)
+	is.Equal([]int{1, 2, 3}, ints)
+}
+
+func TestStr2Array(t *testing.T) {
+	is := assert.New(t)
+
+	ss := strutil.ToArray("a,b,c", ",")
+	is.Len(ss, 3)
+	is.Equal(`[]string{"a", "b", "c"}`, fmt.Sprintf("%#v", ss))
+
+	tests := []string{
+		// sample
+		"a,b,c",
+		"a,b,c,",
+		",a,b,c",
+		"a, b,c",
+		"a,,b,c",
+		"a, , b,c",
+	}
+
+	for _, sample := range tests {
+		ss = strutil.ToArray(sample)
+		is.Equal(`[]string{"a", "b", "c"}`, fmt.Sprintf("%#v", ss))
+	}
+
+	ss = strutil.ToSlice("", ",")
+	is.Len(ss, 0)
+
+	ss = strutil.ToArray(", , ", ",")
+	is.Len(ss, 0)
+}
+
+func TestToTime(t *testing.T) {
+	is := assert.New(t)
+	tests := map[string]string{
+		"20180927":             "2018-09-27 00:00:00 +0000 UTC",
+		"2018-09-27":           "2018-09-27 00:00:00 +0000 UTC",
+		"2018-09-27 12":        "2018-09-27 12:00:00 +0000 UTC",
+		"2018-09-27T12":        "2018-09-27 12:00:00 +0000 UTC",
+		"2018-09-27 12:34":     "2018-09-27 12:34:00 +0000 UTC",
+		"2018-09-27T12:34":     "2018-09-27 12:34:00 +0000 UTC",
+		"2018-09-27 12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
+		"2018-09-27T12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
+		"2018/09/27 12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
+		"2018/09/27T12:34:45Z": "2018-09-27 12:34:45 +0000 UTC",
+	}
+
+	for sample, want := range tests {
+		tm, err := strutil.ToTime(sample)
+		is.Nil(err)
+		is.Equal(want, tm.String())
+	}
+
+	tm, err := strutil.ToTime("invalid")
+	is.Error(err)
+	is.True(tm.IsZero())
+
+	tm, err = strutil.ToTime("2018-09-27T15:34", "2018-09-27 15:34:23")
+	is.Error(err)
+	is.True(tm.IsZero())
 }

@@ -1,6 +1,7 @@
 package fmtutil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/fmtutil"
@@ -38,4 +39,15 @@ func TestPrettyJSON(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, want, got)
 	}
+}
+
+func TestStringsToInts(t *testing.T) {
+	is := assert.New(t)
+
+	ints, err := fmtutil.StringsToInts([]string{"1", "2"})
+	is.Nil(err)
+	is.Equal("[]int{1, 2}", fmt.Sprintf("%#v", ints))
+
+	_, err = fmtutil.StringsToInts([]string{"a", "b"})
+	is.Error(err)
 }
