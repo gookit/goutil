@@ -13,6 +13,53 @@ const (
 	PosRight
 )
 
+/*************************************************************
+ * String filtering
+ *************************************************************/
+
+// Trim string
+func Trim(s string, cutSet ...string) string {
+	if len(cutSet) > 0 && cutSet[0] != "" {
+		return strings.Trim(s, cutSet[0])
+	}
+
+	return strings.TrimSpace(s)
+}
+
+// TrimLeft char in the string.
+func TrimLeft(s string, cutSet ...string) string {
+	if len(cutSet) > 0 {
+		return strings.TrimLeft(s, cutSet[0])
+	}
+
+	return strings.TrimLeft(s, " ")
+}
+
+// TrimRight char in the string.
+func TrimRight(s string, cutSet ...string) string {
+	if len(cutSet) > 0 {
+		return strings.TrimRight(s, cutSet[0])
+	}
+
+	return strings.TrimRight(s, " ")
+}
+
+// FilterEmail filter email, clear invalid chars.
+func FilterEmail(s string) string {
+	s = strings.TrimSpace(s)
+	i := strings.LastIndex(s, "@")
+	if i == -1 {
+		return s
+	}
+
+	// According to rfc5321, "The local-part of a mailbox MUST BE treated as case sensitive"
+	return s[0:i] + "@" + strings.ToLower(s[i+1:])
+}
+
+/*************************************************************
+ * String operation
+ *************************************************************/
+
 // Split string to slice. will clear empty string node.
 func Split(s, sep string) (ss []string) {
 	if s = strings.TrimSpace(s); s == "" {
