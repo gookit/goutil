@@ -19,7 +19,7 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 
 // ExecCommand alias of the ExecCmd()
 func ExecCommand(binName string, args []string, workDir ...string) (string, error) {
-	return ExecCmd(binName, args, workDir...)
+	return sysutil.ExecCmd(binName, args, workDir...)
 }
 
 // ShellExec exec command by shell

@@ -16,6 +16,11 @@ func TestToInt(t *testing.T) {
 		float32(2.2), 2.3,
 		"2",
 	}
+	errTests := []interface{} {
+		nil,
+		"2a",
+		[]int{1},
+	}
 
 	// To int
 	intVal, err := Int("2")
@@ -27,10 +32,11 @@ func TestToInt(t *testing.T) {
 	is.Equal(-2, intVal)
 
 	is.Equal(-2, MustInt("-2"))
-	is.Equal(0, MustInt("2a"))
-	is.Equal(0, MustInt(nil))
 	for _, in := range tests {
 		is.Equal(2, MustInt(in))
+	}
+	for _, in := range errTests {
+		is.Equal(0, MustInt(in))
 	}
 
 	// To uint
@@ -42,10 +48,11 @@ func TestToInt(t *testing.T) {
 	is.Error(err)
 
 	is.Equal(uint64(0), MustUint("-2"))
-	is.Equal(uint64(0), MustUint("2a"))
-	is.Equal(uint64(0), MustUint(nil))
 	for _, in := range tests {
 		is.Equal(uint64(2), MustUint(in))
+	}
+	for _, in := range errTests {
+		is.Equal(uint64(0), MustUint(in))
 	}
 
 	// To int64
@@ -57,10 +64,11 @@ func TestToInt(t *testing.T) {
 	is.Nil(err)
 	is.Equal(int64(-2), i64Val)
 
-	is.Equal(int64(0), MustInt64("2a"))
-	is.Equal(int64(0), MustInt64(nil))
 	for _, in := range tests {
 		is.Equal(int64(2), MustInt64(in))
+	}
+	for _, in := range errTests {
+		is.Equal(int64(0), MustInt64(in))
 	}
 }
 

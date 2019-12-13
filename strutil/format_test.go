@@ -7,6 +7,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUpperOrLowerCase(t *testing.T) {
+	// Uppercase, Lowercase
+	assert.Equal(t, "ABC", strutil.Uppercase("abc"))
+	assert.Equal(t, "abc", strutil.Lowercase("ABC"))
+}
+
 func TestUpperFirst(t *testing.T) {
 	tests := []struct {
 		give string

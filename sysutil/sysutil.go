@@ -54,6 +54,11 @@ func IsWin() bool {
 	return runtime.GOOS == "windows"
 }
 
+// IsWindows system. linux windows darwin
+func IsWindows() bool {
+	return runtime.GOOS == "windows"
+}
+
 // IsMac system
 func IsMac() bool {
 	return runtime.GOOS == "darwin"

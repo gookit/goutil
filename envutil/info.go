@@ -55,7 +55,7 @@ func IsSupportColor() bool {
 	}
 
 	// like on ConEmu software, e.g "ConEmuANSI=ON"
-	if os.Getenv("ConEmuANSI") == "NO" {
+	if os.Getenv("ConEmuANSI") == "ON" {
 		return true
 	}
 

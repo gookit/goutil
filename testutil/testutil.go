@@ -62,7 +62,6 @@ func RestoreStdout() (s string) {
 		_ = newReader.Close()
 		newReader = nil
 	}
-
 	return
 }
 

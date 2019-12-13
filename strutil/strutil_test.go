@@ -68,6 +68,7 @@ func TestSplit(t *testing.T) {
 func TestSubstr(t *testing.T) {
 	assert.Equal(t, "abc", strutil.Substr("abcDef", 0, 3))
 	assert.Equal(t, "cD", strutil.Substr("abcDef", 2, 2))
+	assert.Equal(t, "", strutil.Substr("abcDEF", 23, 5))
 }
 
 func TestRepeat(t *testing.T) {
@@ -95,5 +96,22 @@ func TestPadding(t *testing.T) {
 		} else {
 			assert.Equal(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
 		}
+	}
+}
+
+func TestPrettyJSON(t *testing.T) {
+	tests := []interface{}{
+		map[string]int{"a": 1},
+		struct {
+			A int `json:"a"`
+		}{1},
+	}
+	want := `{
+    "a": 1
+}`
+	for _, sample := range tests {
+		got, err := strutil.PrettyJSON(sample)
+		assert.NoError(t, err)
+		assert.Equal(t, want, got)
 	}
 }

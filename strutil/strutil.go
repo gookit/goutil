@@ -78,9 +78,16 @@ func Split(s, sep string) (ss []string) {
 // Substr for a string.
 func Substr(s string, pos, length int) string {
 	runes := []rune(s)
+	strLen := len(runes)
+
+	// pos is to large
+	if pos >= strLen {
+		return ""
+	}
+
 	l := pos + length
-	if l > len(runes) {
-		l = len(runes)
+	if l > strLen {
+		l = strLen
 	}
 
 	return string(runes[pos:l])
@@ -151,7 +158,6 @@ func Replaces(str string, pairs map[string]string) string {
 	for old, newVal := range pairs {
 		str = strings.Replace(str, old, newVal, -1)
 	}
-
 	return str
 }
 

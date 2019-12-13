@@ -16,9 +16,11 @@ func Exists(pid int) bool {
 	if err != nil {
 		return false
 	}
+
 	var c uint32
 	err = windows.GetExitCodeProcess(h, &c)
 	windows.Close(h)
+
 	if err != nil {
 		return c == stillActive
 	}
