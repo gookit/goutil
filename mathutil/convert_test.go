@@ -16,7 +16,7 @@ func TestToInt(t *testing.T) {
 		float32(2.2), 2.3,
 		"2",
 	}
-	errTests := []interface{} {
+	errTests := []interface{}{
 		nil,
 		"2a",
 		[]int{1},

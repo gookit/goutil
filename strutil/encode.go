@@ -12,7 +12,7 @@ import (
 
 var (
 	// EscapeJS escape javascript string
-	EscapeJS   = template.JSEscapeString
+	EscapeJS = template.JSEscapeString
 	// EscapeHTML escape html string
 	EscapeHTML = template.HTMLEscapeString
 )
