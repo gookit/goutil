@@ -1,6 +1,9 @@
 # Dump
 
-> package `github.com/gookit/goutil/dump`
+This is an print debug vars util package.
+
+- Github: https://github.com/gookit/goutil/dump
+- GoDoc: https://godoc.org/github.com/gookit/goutil/dump
 
 ## Install
 

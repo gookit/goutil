@@ -3,7 +3,8 @@ package fmtutil
 import (
 	"encoding/json"
 	"fmt"
-	"strconv"
+
+	"github.com/gookit/goutil/arrutil"
 )
 
 // DataSize format bytes number friendly.
@@ -30,16 +31,7 @@ func PrettyJSON(v interface{}) (string, error) {
 	return string(out), err
 }
 
-// StringsToInts string slice to int slice
+// StringsToInts string slice to int slice. alias of the arrutil.StringsToInts()
 func StringsToInts(ss []string) (ints []int, err error) {
-	for _, str := range ss {
-		iVal, err := strconv.Atoi(str)
-		if err != nil {
-			return []int{}, err
-		}
-
-		ints = append(ints, iVal)
-	}
-
-	return
+	return arrutil.StringsToInts(ss)
 }
