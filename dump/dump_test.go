@@ -115,5 +115,25 @@ func TestPrint(t *testing.T) {
 	})
 	is.Contains(buf.String(), `sub: map[string]string{"k":"v"},`)
 
+	buf.Reset()
+	Fprint(1, buf, nil)
+	is.Equal("", buf.String())
+
+	buf.Reset()
+	ResetConfig()
+}
+
+func TestPrintNil(t *testing.T)  {
+	is := assert.New(t)
+	buf := new(bytes.Buffer)
+
+	// disable position for test
+	Config.NoPosition = true
+
+	buf.Reset()
+	Fprint(1, buf, nil)
+	is.Equal("<nil>\n", buf.String())
+
+	buf.Reset()
 	ResetConfig()
 }

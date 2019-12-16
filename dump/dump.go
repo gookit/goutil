@@ -90,6 +90,11 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 }
 
 func printOne(w io.Writer, v interface{}) {
+	if v == nil {
+		mustFprintf(w, "<nil>\n")
+		return
+	}
+
 	rVal := reflect.ValueOf(v)
 	rType := rVal.Type()
 
