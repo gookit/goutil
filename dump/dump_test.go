@@ -2,6 +2,7 @@ package dump
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,8 +28,8 @@ func ExamplePrint() {
 	)
 	Config.NoColor = false
 
-	// Output:
-	// PRINT AT github.com/gookit/goutil/dump.ExamplePrint(LINE 13):
+	// Output like:
+	// PRINT AT github.com/gookit/goutil/dump.ExamplePrint(LINE 14):
 	// int(23)
 	// []string{"ab", "cd"}
 	// []int [
@@ -116,10 +117,6 @@ func TestPrint(t *testing.T) {
 	is.Contains(buf.String(), `sub: map[string]string{"k":"v"},`)
 
 	buf.Reset()
-	Fprint(1, buf, nil)
-	is.Equal("", buf.String())
-
-	buf.Reset()
 	ResetConfig()
 }
 
@@ -127,13 +124,45 @@ func TestPrintNil(t *testing.T)  {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
 
+	// set output for test
+	Output = buf
 	// disable position for test
 	Config.NoPosition = true
 
-	buf.Reset()
-	Fprint(1, buf, nil)
+	Print(nil)
 	is.Equal("<nil>\n", buf.String())
-
 	buf.Reset()
+
+	var i int
+	Println(i)
+	is.Equal("int(0)\n", buf.String())
+	buf.Reset()
+
+	var f interface{}
+	V(f)
+	is.Equal("<nil>\n", buf.String())
+	buf.Reset()
+
+	// reset
+	Output = os.Stdout
+	ResetConfig()
+}
+
+func TestConfig(t *testing.T) {
+	is := assert.New(t)
+	buf := new(bytes.Buffer)
+
+	Output = buf
+
+	// show file
+	Config.ShowFile = true
+	Config.NoColor = true
+
+	P("hi")
+	is.Contains(buf.String(),"goutil/dump/dump_test.go LINE 1")
+	buf.Reset()
+
+	// reset
+	Output = os.Stdout
 	ResetConfig()
 }

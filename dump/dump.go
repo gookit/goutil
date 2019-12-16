@@ -20,6 +20,9 @@ type dumpConfig struct {
 	MoreLenNL int
 }
 
+// Output set print content to the io.Writer
+var Output io.Writer = os.Stdout
+
 // Config dump data settings
 var Config = dumpConfig{
 	ShowMethod: true,
@@ -36,22 +39,22 @@ func ResetConfig() {
 
 // P like fmt.Println, but the output is clearer and more beautiful
 func P(vs ...interface{}) {
-	Fprint(2, os.Stdout, vs...)
+	Fprint(2, Output, vs...)
 }
 
 // V like fmt.Println, but the output is clearer and more beautiful
 func V(vs ...interface{}) {
-	Fprint(2, os.Stdout, vs...)
+	Fprint(2, Output, vs...)
 }
 
 // Print like fmt.Println, but the output is clearer and more beautiful
 func Print(vs ...interface{}) {
-	Fprint(2, os.Stdout, vs...)
+	Fprint(2, Output, vs...)
 }
 
 // Println like fmt.Println, but the output is clearer and more beautiful
 func Println(vs ...interface{}) {
-	Fprint(2, os.Stdout, vs...)
+	Fprint(2, Output, vs...)
 }
 
 // Fprint like fmt.Println, but the output is clearer and more beautiful
