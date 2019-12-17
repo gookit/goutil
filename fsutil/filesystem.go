@@ -4,9 +4,15 @@ import (
 	"archive/zip"
 	"bytes"
 	"io"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
+)
+
+const (
+	// sniff Length, use for detect file mime type
+	MimeSniffLen = 512
 )
 
 // FileExists reports whether the named file or directory exists.
@@ -127,4 +133,35 @@ func Unzip(archive, targetDir string) (err error) {
 // Mkdir alias of os.Mkdir()
 func Mkdir(name string, perm os.FileMode) error {
 	return os.Mkdir(name, perm)
+}
+
+// MimeType get File Mime Type name. eg "image/png"
+func MimeType(filepath string) (mime string) {
+	if filepath == "" {
+		return
+	}
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		return
+	}
+
+	return ReaderMimeType(file)
+}
+
+// ReaderMimeType get the io.Reader mimeType
+// Usage:
+// 	file, err := os.Open(filepath)
+// 	if err != nil {
+// 		return
+// 	}
+//	mime := ReaderMimeType(file)
+func ReaderMimeType(r io.Reader) (mime string) {
+	var buf [MimeSniffLen]byte
+	n, _ := io.ReadFull(r, buf[:])
+	if n == 0 {
+		return ""
+	}
+
+	return http.DetectContentType(buf[:n])
 }
