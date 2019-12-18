@@ -1,17 +1,27 @@
-package testutil
+package testutil_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
+	"github.com/gookit/goutil/testutil"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRewriteStdout(t *testing.T) {
+	testutil.RewriteStdout()
+	fmt.Println("Hello, playground")
+	msg := testutil.RestoreStdout()
+
+	assert.Equal(t, "Hello, playground\n", msg)
+}
 
 func TestMockEnvValue(t *testing.T) {
 	ris := assert.New(t)
 	ris.Equal("", os.Getenv("APP_COMMAND"))
 
-	MockEnvValue("APP_COMMAND", "new val", func(nv string) {
+	testutil.MockEnvValue("APP_COMMAND", "new val", func(nv string) {
 		ris.Equal("new val", nv)
 	})
 
@@ -22,7 +32,7 @@ func TestMockEnvValues(t *testing.T) {
 	ris := assert.New(t)
 	ris.Equal("", os.Getenv("APP_COMMAND"))
 
-	MockEnvValues(map[string]string{
+	testutil.MockEnvValues(map[string]string{
 		"APP_COMMAND": "new val",
 	}, func() {
 		ris.Equal("new val", os.Getenv("APP_COMMAND"))

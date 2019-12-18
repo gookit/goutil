@@ -10,17 +10,21 @@ import (
 
 func TestPathExists(t *testing.T) {
 	assert.False(t, fsutil.FileExists(""))
+	assert.False(t, fsutil.PathExists(""))
 	assert.False(t, fsutil.PathExists("/not-exist"))
+	assert.True(t, fsutil.PathExists("testdata/test.jpg"))
 }
 
 func TestIsFile(t *testing.T) {
 	assert.False(t, fsutil.IsFile(""))
 	assert.False(t, fsutil.IsFile("/not-exist"))
+	assert.True(t, fsutil.IsFile("testdata/test.jpg"))
 }
 
 func TestIsDir(t *testing.T) {
 	assert.False(t, fsutil.IsDir(""))
 	assert.False(t, fsutil.IsDir("/not-exist"))
+	assert.True(t, fsutil.IsDir("testdata"))
 }
 
 func TestIsAbsPath(t *testing.T) {
@@ -28,19 +32,20 @@ func TestIsAbsPath(t *testing.T) {
 }
 
 func TestMimeType(t *testing.T) {
+	assert.Equal(t, "", fsutil.MimeType(""))
 	assert.Equal(t, "", fsutil.MimeType("not-exist"))
-	assert.Equal(t,"image/jpeg", fsutil.MimeType("testdata/test.jpg"))
+	assert.Equal(t, "image/jpeg", fsutil.MimeType("testdata/test.jpg"))
 
 	buf := new(bytes.Buffer)
 	buf.Write([]byte("\xFF\xD8\xFF"))
-	assert.Equal(t,"image/jpeg", fsutil.ReaderMimeType(buf))
+	assert.Equal(t, "image/jpeg", fsutil.ReaderMimeType(buf))
 	buf.Reset()
 
 	buf.Write([]byte("text"))
-	assert.Equal(t,"text/plain; charset=utf-8", fsutil.ReaderMimeType(buf))
+	assert.Equal(t, "text/plain; charset=utf-8", fsutil.ReaderMimeType(buf))
 	buf.Reset()
 
-	// buf.Write([]byte(""))
-	// assert.Equal(t,"", fsutil.ReaderMimeType(buf))
-	// buf.Reset()
+	buf.Write([]byte(""))
+	assert.Equal(t, "", fsutil.ReaderMimeType(buf))
+	buf.Reset()
 }

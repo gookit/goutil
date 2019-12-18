@@ -120,7 +120,7 @@ func TestPrint(t *testing.T) {
 	ResetConfig()
 }
 
-func TestPrintNil(t *testing.T)  {
+func TestPrintNil(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
 
@@ -159,7 +159,7 @@ func TestConfig(t *testing.T) {
 	Config.NoColor = true
 
 	P("hi")
-	is.Contains(buf.String(),"goutil/dump/dump_test.go LINE 1")
+	is.Contains(buf.String(), "goutil/dump/dump_test.go LINE 1")
 	buf.Reset()
 
 	// reset

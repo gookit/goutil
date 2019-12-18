@@ -157,7 +157,7 @@ func RepeatRune(char rune, times int) (chars []rune) {
 // Can also use:
 // 	strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
 func Replaces(str string, pairs map[string]string) string {
-	ss := make([]string, len(pairs) * 2)
+	ss := make([]string, len(pairs)*2)
 	for old, newVal := range pairs {
 		ss = append(ss, old, newVal)
 	}

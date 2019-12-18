@@ -98,9 +98,9 @@ func TestReplaces(t *testing.T) {
 	assert.Equal(t, "tom age is 20", strutil.Replaces(
 		"{name} age is {age}",
 		map[string]string{
-		"{name}": "tom",
-		"{age}": "20",
-	}))
+			"{name}": "tom",
+			"{age}":  "20",
+		}))
 }
 
 func TestPadding(t *testing.T) {
