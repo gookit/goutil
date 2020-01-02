@@ -42,15 +42,22 @@ func HasShellEnv(shell string) bool {
 	return sysutil.HasShellEnv(shell)
 }
 
-// IsSupportColor check console is support color.
-// supported: linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
-// not support: windows cmd, powerShell
+// IsSupportColor check current console is support color.
+//
+// Supported:
+// 	linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
+// Not support:
+// 	windows cmd.exe, powerShell.exe
 func IsSupportColor() bool {
-	// "TERM=xterm"  support color
-	// "TERM=xterm-vt220" support color
-	// "TERM=xterm-256color" support color
-	// "TERM=cygwin" don't support color
-	if strings.Contains(os.Getenv("TERM"), "xterm") {
+	// Support color:
+	// 	"TERM=xterm"
+	// 	"TERM=xterm-vt220"
+	// 	"TERM=xterm-256color"
+	// 	"TERM=screen-256color"
+	// Don't support color:
+	// 	"TERM=cygwin"
+	envTerm := os.Getenv("TERM")
+	if strings.Contains(envTerm, "xterm") || strings.Contains(envTerm, "screen") {
 		return true
 	}
 
@@ -67,8 +74,14 @@ func IsSupportColor() bool {
 	return false
 }
 
-// IsSupport256Color is support 256 color
+// IsSupport256Color render
 func IsSupport256Color() bool {
-	// "TERM=xterm-256color"
+	// "TERM=xterm-256color" "TERM=screen-256color"
 	return strings.Contains(os.Getenv("TERM"), "256color")
+}
+
+// IsSupportTrueColor render. IsSupportRGBColor
+func IsSupportTrueColor() bool {
+	// "COLORTERM=truecolor"
+	return strings.Contains(os.Getenv("COLORTERM"), "truecolor")
 }

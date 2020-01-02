@@ -61,6 +61,16 @@ func TestIsSupportColor(t *testing.T) {
 		is.True(envutil.IsSupportColor())
 	})
 
+	// "COLORTERM=truecolor"
+	testutil.MockEnvValue("COLORTERM", "truecolor", func(_ string) {
+		is.True(envutil.IsSupportTrueColor())
+	})
+
+	// TERM
+	testutil.MockEnvValue("TERM", "screen-256color", func(_ string) {
+		is.True(envutil.IsSupportColor())
+	})
+
 	is.NoError(os.Setenv("TERM", "xterm-vt220"))
 	is.True(envutil.IsSupportColor())
 	// revert
