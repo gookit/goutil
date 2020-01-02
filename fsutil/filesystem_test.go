@@ -48,4 +48,6 @@ func TestMimeType(t *testing.T) {
 	buf.Write([]byte(""))
 	assert.Equal(t, "", fsutil.ReaderMimeType(buf))
 	buf.Reset()
+
+	assert.True(t, fsutil.IsImageFile("testdata/test.jpg"))
 }

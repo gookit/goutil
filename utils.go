@@ -13,12 +13,12 @@ import (
 // Go is a basic promise implementation: it wraps calls a function in a goroutine
 // and returns a channel which will later return the function's return value.
 // from beego/bee
-func Go(f func() error) chan error {
+func Go(f func() error) error {
 	ch := make(chan error)
 	go func() {
 		ch <- f()
 	}()
-	return ch
+	return <-ch
 }
 
 // Filling filling a model from submitted data
