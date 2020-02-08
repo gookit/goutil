@@ -36,13 +36,18 @@ func GenMd5(src interface{}) string {
 }
 
 // Base64 base64 encode
-func Base64(str string) string {
+// func Base64(str string) string {
+// 	return base64.StdEncoding.EncodeToString([]byte(str))
+// }
+
+// B64Encode base64 encode
+func Base64Encode(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
-// B64Encode base64 encode
-func B64Encode(str string) string {
-	return base64.StdEncoding.EncodeToString([]byte(str))
+// B64Decode base64 decode
+func Base64Decode(str string)  string{
+	return base64.StdEncoding.DecodeString([]byte(str))
 }
 
 // URLEncode encode url string.
