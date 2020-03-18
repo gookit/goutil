@@ -1,7 +1,7 @@
 # Go Util
 
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gookit/goutil)](https://github.com/gookit/goutil)
-[![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://godoc.org/github.com/gookit/goutil)
+[![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gookit/goutil)](https://goreportcard.com/report/github.com/gookit/goutil)
 [![Build Status](https://travis-ci.org/gookit/goutil.svg?branch=master)](https://travis-ci.org/gookit/goutil)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
@@ -25,7 +25,7 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 
 ## GoDoc
 
-- [godoc for github](https://godoc.org/github.com/gookit/goutil)
+- [godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
 
 ## Packages
 
