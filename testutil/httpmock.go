@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 )
 
 // some data.
@@ -12,10 +13,12 @@ type (
 	M map[string]string
 	// MD simple request data
 	MD struct {
-		// Body body
-		Body io.Reader
 		// Headers headers
 		Headers M
+		// Body body. eg: strings.NewReader("name=inhere")
+		Body io.Reader
+		// BodyString quick add body.
+		BodyString string
 		// BeforeSend callback
 		BeforeSend func(req *http.Request)
 	}
@@ -25,13 +28,25 @@ type (
 // Usage:
 // 	handler := router.New()
 // 	res := MockRequest(handler, "GET", "/path", nil)
-// 	// with data
+// 	// with data 1
 // 	body := strings.NewReader("string ...")
-// 	res := MockRequest(handler, "POST", "/path", &MD{Body: "data", Headers: M{"x-head": "val"}})
+// 	res := MockRequest(handler, "POST", "/path", &MD{
+// 		Body: body,
+// 		Headers: M{"x-head": "val"}
+// 	})
+// 	// with data 2
+// 	res := MockRequest(handler, "POST", "/path", &MD{
+// 		BodyString: "data string",
+// 		Headers: M{"x-head": "val"}
+// 	})
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder {
 	var body io.Reader
-	if data != nil && data.Body != nil {
-		body = data.Body
+	if data != nil {
+		if data.Body != nil {
+			body = data.Body
+		} else if data.BodyString != "" {
+			body = strings.NewReader(data.BodyString)
+		}
 	}
 
 	// create fake request
