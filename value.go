@@ -13,7 +13,7 @@ type Value struct {
 }
 
 // Reset value
-func (v *Value) Reset()  {
+func (v *Value) Reset() {
 	v.V = nil
 }
 

@@ -57,8 +57,14 @@ func TestOS(t *testing.T) {
 func TestIsConsole(t *testing.T) {
 	is := assert.New(t)
 
+	// IsConsole
+	is.True(sysutil.IsConsole(os.Stdin))
 	is.True(sysutil.IsConsole(os.Stdout))
+	is.True(sysutil.IsConsole(os.Stderr))
 	is.False(sysutil.IsConsole(&bytes.Buffer{}))
+	ff, err := os.OpenFile("sysutil.go", os.O_WRONLY, 0)
+	is.NoError(err)
+	is.False(sysutil.IsConsole(ff))
 }
 
 func TestExecCmd(t *testing.T) {

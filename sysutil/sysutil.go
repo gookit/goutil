@@ -86,7 +86,10 @@ func IsConsole(out io.Writer) bool {
 		return false
 	}
 
-	return o == os.Stdout || o == os.Stderr || o == os.Stdin
+	fd := o.Fd()
+
+	// fix: cannot use 'o == os.Stdout' to compare
+	return fd == uintptr(syscall.Stdout) || fd == uintptr(syscall.Stdin) || fd == uintptr(syscall.Stderr)
 }
 
 // Kill process by pid

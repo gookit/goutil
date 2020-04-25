@@ -121,7 +121,7 @@ func ReaderMimeType(r io.Reader) (mime string) {
 func IsImageFile(path string) bool {
 	mime := MimeType(path)
 	if mime == "" {
-		return  false
+		return false
 	}
 
 	for _, imgMime := range imageMimeTypes {
@@ -129,7 +129,7 @@ func IsImageFile(path string) bool {
 			return true
 		}
 	}
-	return  false
+	return false
 }
 
 // IsZipFile check is zip file.
