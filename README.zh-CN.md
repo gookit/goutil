@@ -10,7 +10,7 @@ Go一些常用的工具函数收集、实现和整理
 > **[EN README](README.md)**
 
 - `arrutil` array/slice util
-- `dump`  print debug vars
+- `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - `cliutil` CLI util
 - `envutil` ENV util
 - `fmtutil` format data tool
@@ -56,13 +56,17 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 
 > package `github.com/gookit/goutil/dump`
 
+简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
+
 ```text
 func P(vs ...interface{})
 func V(vs ...interface{})
 func Print(vs ...interface{})
 ```
 
-Usage please see [dump/README.md](dump/README.md)
+使用请查看 [dump/README.md](dump/README.md)
+
+![](dump/_examples/demo1-preview.png)
 
 ### ENV Util
 

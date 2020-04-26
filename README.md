@@ -11,9 +11,9 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 > **[中文说明](README.zh-CN.md)**
 
 - `arrutil` array/slice util
-- `dump`  print debug vars
+- `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` CLI util
-- `envutil` ENV util
+- `envutil` ENV util for check current runtime env information
 - `fmtutil` format data tool
 - `fsutil` filesystem util
 - `jsonutil` JSON util
@@ -57,6 +57,8 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 
 > package `github.com/gookit/goutil/dump`
 
+Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
+
 ```text
 func P(vs ...interface{})
 func V(vs ...interface{})
@@ -64,6 +66,8 @@ func Print(vs ...interface{})
 ```
 
 Usage please see [dump/README.md](dump/README.md)
+
+![](dump/_examples/demo1-preview.png)
 
 ### ENV Util
 
