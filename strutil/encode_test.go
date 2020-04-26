@@ -15,11 +15,10 @@ func TestEscape(t *testing.T) {
 
 	assert.Equal(t, tests.want, strutil.EscapeHTML(tests.give))
 
-	tests = struct{ give, want string }{
-		"<script>var a = 23;</script>",
-		`\x3Cscript\x3Evar a = 23;\x3C/script\x3E`,
-	}
-	assert.Equal(t, tests.want, strutil.EscapeJS(tests.give))
+
+	ret := strutil.EscapeJS("<script>var a = 23;</script>")
+	assert.NotContains(t, ret, "<script>")
+	assert.NotContains(t, ret, "</script>")
 }
 
 func TestMd5(t *testing.T) {
