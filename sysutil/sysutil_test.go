@@ -2,6 +2,7 @@ package sysutil_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 
@@ -12,14 +13,14 @@ import (
 
 func TestCurrentShell(t *testing.T) {
 	path := sysutil.CurrentShell(true)
-	assert.NotEmpty(t, path)
 
 	if path != "" {
+		assert.NotEmpty(t, path)
+		assert.True(t, sysutil.HasShellEnv(path))
+
 		path = sysutil.CurrentShell(false)
 		assert.NotEmpty(t, path)
 	}
-
-	assert.True(t, sysutil.HasShellEnv("sh"))
 }
 
 func TestOS(t *testing.T) {
@@ -90,5 +91,6 @@ func TestShellExec(t *testing.T) {
 func TestProcessExists(t *testing.T) {
 	pid := os.Getpid()
 
+	fmt.Println(pid)
 	assert.True(t, sysutil.ProcessExists(pid))
 }

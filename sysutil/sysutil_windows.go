@@ -5,6 +5,8 @@ package sysutil
 import (
 	"errors"
 	"syscall"
+
+	"github.com/gookit/goutil/sysutil/process"
 )
 
 // Kill process by pid
@@ -14,5 +16,5 @@ func Kill(pid int, signal syscall.Signal) error {
 
 // ProcessExists check process exists by pid
 func ProcessExists(pid int) bool {
-	return false
+	return process.Exists(pid)
 }
