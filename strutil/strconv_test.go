@@ -67,6 +67,18 @@ func TestValToString(t *testing.T) {
 	is.Error(err)
 }
 
+func TestStrToInt(t *testing.T) {
+	is := assert.New(t)
+
+	iVal, err := strutil.ToInt("23")
+	is.Nil(err)
+	is.Equal(23, iVal)
+
+	iVal, err = strutil.ToInt("-23")
+	is.Nil(err)
+	is.Equal(-23, iVal)
+}
+
 func TestStrToInts(t *testing.T) {
 	is := assert.New(t)
 

@@ -109,6 +109,11 @@ func Bool(s string) (bool, error) {
  * convert string value to int/string slice, time.Time
  *************************************************************/
 
+// ToInt convert string to int
+func ToInt(s string) (int, error) {
+	return mathutil.Int(s)
+}
+
 // ToInts alias of the ToIntSlice()
 func ToInts(s string, sep ...string) ([]int, error) {
 	return ToIntSlice(s, sep...)
