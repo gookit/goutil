@@ -1,6 +1,7 @@
 package cliutil_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/cliutil"
@@ -22,15 +23,16 @@ func TestCurrentShell(t *testing.T) {
 func TestExecCmd(t *testing.T) {
 	ret, err := cliutil.ExecCmd("echo", []string{"OK"})
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	// *nix: "OK\n" win: "OK\r\n"
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 
 	ret, err = cliutil.ExecCommand("echo", []string{"OK1"})
 	assert.NoError(t, err)
-	assert.Equal(t, "OK1\n", ret)
+	assert.Equal(t, "OK1", strings.TrimSpace(ret))
 
 	ret, err = cliutil.QuickExec("echo OK")
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 }
 
 func TestShellExec(t *testing.T) {
