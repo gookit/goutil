@@ -9,14 +9,14 @@ import (
 
 func TestCurrentShell(t *testing.T) {
 	path := cliutil.CurrentShell(true)
-	assert.NotEmpty(t, path)
 
 	if path != "" {
+		assert.NotEmpty(t, path)
+		assert.True(t, cliutil.HasShellEnv(path))
+
 		path = cliutil.CurrentShell(false)
 		assert.NotEmpty(t, path)
 	}
-
-	assert.True(t, cliutil.HasShellEnv("sh"))
 }
 
 func TestExecCmd(t *testing.T) {
