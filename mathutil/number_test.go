@@ -15,9 +15,10 @@ func TestPercent(t *testing.T) {
 }
 
 func TestElapsedTime(t *testing.T) {
-	ct := time.Now()
-	time.Sleep(time.Second * 1)
-	assert.Contains(t, mathutil.ElapsedTime(ct), "100")
+	nt := time.Now().Add(- time.Second * 3)
+	num := mathutil.ElapsedTime(nt)
+
+	assert.Equal(t, 3000, int(mathutil.MustFloat(num)))
 }
 
 func TestDataSize(t *testing.T) {
