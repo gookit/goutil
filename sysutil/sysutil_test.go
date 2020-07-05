@@ -2,8 +2,8 @@ package sysutil_test
 
 import (
 	"bytes"
-	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/sysutil"
@@ -71,26 +71,27 @@ func TestIsConsole(t *testing.T) {
 func TestExecCmd(t *testing.T) {
 	ret, err := sysutil.ExecCmd("echo", []string{"OK"})
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	// *nix: "OK\n" win: "OK\r\n"
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 
 	ret, err = sysutil.QuickExec("echo OK")
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 }
 
 func TestShellExec(t *testing.T) {
 	ret, err := sysutil.ShellExec("echo OK")
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	// *nix: "OK\n" win: "OK\r\n"
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 
 	ret, err = sysutil.ShellExec("echo OK", "bash")
 	assert.NoError(t, err)
-	assert.Equal(t, "OK\n", ret)
+	assert.Equal(t, "OK", strings.TrimSpace(ret))
 }
 
 func TestProcessExists(t *testing.T) {
 	pid := os.Getpid()
 
-	fmt.Println(pid)
 	assert.True(t, sysutil.ProcessExists(pid))
 }

@@ -106,13 +106,27 @@ func Bool(s string) (bool, error) {
 }
 
 /*************************************************************
- * convert string value to int/string slice, time.Time
+ * convert string value to int, float
  *************************************************************/
+
+// Int convert string to int
+func Int(s string) (int, error) {
+	return mathutil.Int(s)
+}
 
 // ToInt convert string to int
 func ToInt(s string) (int, error) {
 	return mathutil.Int(s)
 }
+
+// ToInt convert string to int
+func MustInt(s string) int {
+	return mathutil.MustInt(s)
+}
+
+/*************************************************************
+ * convert string value to int/string slice, time.Time
+ *************************************************************/
 
 // ToInts alias of the ToIntSlice()
 func ToInts(s string, sep ...string) ([]int, error) {

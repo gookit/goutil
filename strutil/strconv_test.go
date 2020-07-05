@@ -70,12 +70,15 @@ func TestValToString(t *testing.T) {
 func TestStrToInt(t *testing.T) {
 	is := assert.New(t)
 
-	iVal, err := strutil.ToInt("23")
+	iVal, err := strutil.Int("23")
 	is.Nil(err)
 	is.Equal(23, iVal)
 
 	iVal, err = strutil.ToInt("-23")
 	is.Nil(err)
+	is.Equal(-23, iVal)
+
+	iVal = strutil.MustInt("-23")
 	is.Equal(-23, iVal)
 }
 
