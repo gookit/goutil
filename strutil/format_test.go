@@ -9,7 +9,9 @@ import (
 
 func TestUpperOrLowerCase(t *testing.T) {
 	// Uppercase, Lowercase
+	assert.Equal(t, "ABC", strutil.Upper("abc"))
 	assert.Equal(t, "ABC", strutil.Uppercase("abc"))
+	assert.Equal(t, "abc", strutil.Lower("ABC"))
 	assert.Equal(t, "abc", strutil.Lowercase("ABC"))
 }
 
