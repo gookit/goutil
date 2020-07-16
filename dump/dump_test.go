@@ -148,6 +148,15 @@ func TestPrintNil(t *testing.T) {
 	ResetConfig()
 }
 
+func TestPrintPtr(t *testing.T) {
+	user := &struct {
+		id string
+		Name string
+		Age int
+	}{}
+	P(user)
+}
+
 func TestConfig(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)

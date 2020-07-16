@@ -101,6 +101,14 @@ func printOne(w io.Writer, v interface{}) {
 	rVal := reflect.ValueOf(v)
 	rType := rVal.Type()
 
+	// if is an ptr, get real type and value
+	if rType.Kind() == reflect.Ptr {
+		rVal  = rVal.Elem()
+		rType = rType.Elem()
+		// add "*" prefix
+		mustFprintf(w, "*")
+	}
+
 	switch rType.Kind() {
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
@@ -122,6 +130,7 @@ func printOne(w io.Writer, v interface{}) {
 			tn := rType.Field(i).Name
 			fv := rVal.Field(i)
 
+			// TODO format print sub-struct
 			if fv.CanInterface() {
 				mustFprintf(w, "  %s: %#v,\n", tn, rVal.Field(i).Interface())
 			} else {
