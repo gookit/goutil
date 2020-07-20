@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var oldStdout, newReader *os.File
+var oldStdout, oldStderr, newReader *os.File
 
 // DiscardStdout Discard os.Stdout output
 // Usage:
@@ -24,6 +24,10 @@ func DiscardStdout() error {
 	return err
 }
 
+// ReadOutput restore os.Stdout
+// func ReadOutput() (s string) {
+// }
+
 // RewriteStdout rewrite os.Stdout
 // Usage:
 // 	RewriteStdout()
@@ -35,10 +39,6 @@ func RewriteStdout() {
 	newReader = r
 	os.Stdout = w
 }
-
-// ReadOutput restore os.Stdout
-// func ReadOutput() (s string) {
-// }
 
 // RestoreStdout restore os.Stdout
 func RestoreStdout() (s string) {
@@ -64,6 +64,45 @@ func RestoreStdout() (s string) {
 	}
 	return
 }
+
+// RewriteStderr rewrite os.Stderr
+// Usage:
+// 	RewriteStderr()
+// 	fmt.Fprintln(os.Stderr, "Hello, playground")
+// 	msg := RestoreStderr()
+func RewriteStderr() {
+	oldStderr = os.Stderr
+	r, w, _ := os.Pipe()
+	newReader = r
+	os.Stderr = w
+}
+
+// RestoreStderr restore os.Stderr
+func RestoreStderr() (s string) {
+	if oldStderr == nil {
+		return
+	}
+
+	// Notice: must close writer before read data
+	// close now reader
+	_ = os.Stderr.Close()
+	// restore
+	os.Stderr = oldStderr
+	oldStderr = nil
+
+	// read output data
+	if newReader != nil {
+		out, _ := ioutil.ReadAll(newReader)
+		s = string(out)
+
+		// close reader
+		_ = newReader.Close()
+		newReader = nil
+	}
+	return
+}
+
+// Env mocking
 
 // MockEnvValue will store old env value, set new val. will restore old value on end.
 func MockEnvValue(key, val string, fn func(nv string)) {

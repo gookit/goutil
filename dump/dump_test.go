@@ -150,9 +150,9 @@ func TestPrintNil(t *testing.T) {
 
 func TestPrintPtr(t *testing.T) {
 	user := &struct {
-		id string
+		id   string
 		Name string
-		Age int
+		Age  int
 	}{}
 	P(user)
 }

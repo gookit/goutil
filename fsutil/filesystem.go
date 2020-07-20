@@ -81,9 +81,24 @@ func IsAbsPath(filepath string) bool {
 	return path.IsAbs(filepath)
 }
 
-// Mkdir alias of os.Mkdir()
-func Mkdir(name string, perm os.FileMode) error {
-	return os.Mkdir(name, perm)
+// Mkdir alias of os.MkdirAll()
+func Mkdir(dirPath string, perm os.FileMode) error {
+	return os.MkdirAll(dirPath, perm)
+}
+
+// CreateFile if not exists
+// Usage:
+// 	CreateFile("path/to/file.txt", 0664, 0666)
+func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
+	dirPath := path.Dir(fpath)
+	if !IsDir(dirPath) {
+		err := os.MkdirAll(dirPath, dirPerm)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return os.OpenFile(fpath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, filePerm)
 }
 
 // MimeType get File Mime Type name. eg "image/png"
@@ -195,4 +210,13 @@ func Unzip(archive, targetDir string) (err error) {
 	}
 
 	return
+}
+
+// DeleteIfFileExist operate
+func DeleteIfFileExist(fpath string) error {
+	if !IsFile(fpath) {
+		return nil
+	}
+
+	return os.Remove(fpath)
 }

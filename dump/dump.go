@@ -103,7 +103,7 @@ func printOne(w io.Writer, v interface{}) {
 
 	// if is an ptr, get real type and value
 	if rType.Kind() == reflect.Ptr {
-		rVal  = rVal.Elem()
+		rVal = rVal.Elem()
 		rType = rType.Elem()
 		// add "*" prefix
 		mustFprintf(w, "*")

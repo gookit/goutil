@@ -2,6 +2,7 @@ package fsutil_test
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
@@ -29,6 +30,38 @@ func TestIsDir(t *testing.T) {
 
 func TestIsAbsPath(t *testing.T) {
 	assert.True(t, fsutil.IsAbsPath("/data/some.txt"))
+}
+
+func TestMkdir(t *testing.T) {
+	err := os.Chmod("./testdata", os.ModePerm)
+
+	if assert.NoError(t, err) {
+		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub21", os.ModePerm))
+		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub22", 0666))
+		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub23/sub31", 0777)) // 066X will error
+
+		assert.NoError(t, os.RemoveAll("./testdata/sub"))
+	}
+}
+
+func TestCreateFile(t *testing.T) {
+	file, err := fsutil.CreateFile("./testdata/test.txt", 0664, 0666)
+	if assert.NoError(t, err) {
+		assert.Equal(t, "./testdata/test.txt", file.Name())
+		assert.NoError(t, os.Remove(file.Name()))
+	}
+
+	file, err = fsutil.CreateFile("./testdata/sub/test.txt", 0664, 0777)
+	if assert.NoError(t, err) {
+		assert.Equal(t, "./testdata/sub/test.txt", file.Name())
+		assert.NoError(t, os.RemoveAll("./testdata/sub"))
+	}
+
+	file, err = fsutil.CreateFile("./testdata/sub/sub2/test.txt", 0664, 0777)
+	if assert.NoError(t, err) {
+		assert.Equal(t, "./testdata/sub/sub2/test.txt", file.Name())
+		assert.NoError(t, os.RemoveAll("./testdata/sub"))
+	}
 }
 
 func TestMimeType(t *testing.T) {

@@ -15,7 +15,6 @@ func TestEscape(t *testing.T) {
 
 	assert.Equal(t, tests.want, strutil.EscapeHTML(tests.give))
 
-
 	ret := strutil.EscapeJS("<script>var a = 23;</script>")
 	assert.NotContains(t, ret, "<script>")
 	assert.NotContains(t, ret, "</script>")

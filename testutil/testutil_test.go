@@ -9,12 +9,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestDiscardStdout(t *testing.T) {
+	err := testutil.DiscardStdout()
+	fmt.Println("Hello, playground")
+	str := testutil.RestoreStdout()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "", str)
+}
+
 func TestRewriteStdout(t *testing.T) {
 	testutil.RewriteStdout()
 	fmt.Println("Hello, playground")
 	msg := testutil.RestoreStdout()
 
 	assert.Equal(t, "Hello, playground\n", msg)
+}
+
+func TestRewriteStderr(t *testing.T) {
+	testutil.RewriteStderr()
+	_, err := fmt.Fprint(os.Stderr, "Hello, playground")
+	msg := testutil.RestoreStderr()
+
+	assert.NoError(t, err)
+	assert.Equal(t, "Hello, playground", msg)
 }
 
 func TestMockEnvValue(t *testing.T) {

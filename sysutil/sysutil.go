@@ -1,4 +1,3 @@
-
 package sysutil
 
 import (
