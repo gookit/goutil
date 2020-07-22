@@ -40,6 +40,18 @@ func (v Value) Int64() int64 {
 	return mathutil.MustInt64(v.V)
 }
 
+// Bool value
+func (v Value) Bool() bool {
+	if v.V == nil {
+		return false
+	}
+
+	if bl, ok := v.V.(bool); ok {
+		return bl
+	}
+	return false
+}
+
 // String value
 func (v Value) String() string {
 	if v.V == nil {
