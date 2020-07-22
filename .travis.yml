@@ -1,5 +1,8 @@
 language: go
 dist: bionic
+env:
+  GO111MODULE: on
+
 go:
 #  - '1.10'
   - '1.11'
