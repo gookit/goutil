@@ -2,7 +2,8 @@ package main
 
 import "github.com/gookit/goutil/dump"
 
-// rum demo: go run ./dump/_examples/demo1.go
+// rum demo:
+// 	go run ./dump/_examples/demo1.go
 func main() {
 	otherFunc1()
 }

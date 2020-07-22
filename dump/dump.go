@@ -5,35 +5,48 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"reflect"
 	"runtime"
+	"strconv"
+	"strings"
 
 	"github.com/gookit/color"
 )
 
+// These flags define which print information
+const (
+	Fnopos = 1 << iota // no position
+	Ffunc
+	Ffile
+	Ffname
+	Fline
+)
+
 type dumpConfig struct {
-	ShowMethod bool
-	ShowFile   bool
-	NoPosition bool
-	NoColor    bool
+	NoColor  bool
+	ShowFlag int
 	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
 	MoreLenNL int
 }
+
+var flags = []int{Ffunc, Ffile, Ffname, Fline}
 
 // Output set print content to the io.Writer
 var Output io.Writer = os.Stdout
 
 // Config dump data settings
-var Config = dumpConfig{
-	ShowMethod: true,
-	MoreLenNL:  8,
-}
+var Config = newDefaultConfig()
 
 // ResetConfig reset config data
 func ResetConfig() {
-	Config = dumpConfig{
-		ShowMethod: true,
-		MoreLenNL:  8,
+	Config = newDefaultConfig()
+}
+
+func newDefaultConfig() dumpConfig {
+	return dumpConfig{
+		ShowFlag:  Ffunc | Ffname | Fline,
+		MoreLenNL: 8,
 	}
 }
 
@@ -60,7 +73,7 @@ func Println(vs ...interface{}) {
 // Fprint like fmt.Println, but the output is clearer and more beautiful
 func Fprint(skip int, w io.Writer, vs ...interface{}) {
 	// show print position
-	if !Config.NoPosition {
+	if Config.ShowFlag != Fnopos {
 		// get the print position
 		pc, file, line, ok := runtime.Caller(skip)
 		if ok {
@@ -75,14 +88,42 @@ func Fprint(skip int, w io.Writer, vs ...interface{}) {
 }
 
 func printPosition(w io.Writer, pc uintptr, file string, line int) {
-	var text string
+	// eg: github.com/gookit/goutil/dump.ExamplePrint
 	fnName := runtime.FuncForPC(pc).Name()
 
-	if Config.ShowFile {
-		text = fmt.Sprint("PRINT AT ", fnName, "(", file, " LINE ", line, "):")
-	} else {
-		text = fmt.Sprint("PRINT AT ", fnName, "(LINE ", line, "):")
+	lineS := strconv.Itoa(line)
+	nodes := []string{"PRINT AT "}
+
+	// eg:
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(goutil/dump/dump_test.go:23)"
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(dump_test.go:23)"
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(:23)"
+	for _, flag := range flags {
+		// has flag
+		if Config.ShowFlag&flag == 0 {
+			continue
+		}
+		switch flag {
+		case Ffunc: // full func name
+			nodes = append(nodes, fnName, "(")
+		case Ffile: // full file path
+			nodes = append(nodes, file)
+		case Ffname: // only file name
+			fName := path.Base(file) // file name
+			nodes = append(nodes, fName)
+		case Fline:
+			nodes = append(nodes, ":", lineS)
+		}
 	}
+
+	// fallback. eg: "PRINT AT goutil/dump/dump_test.go:23"
+	if len(nodes) == 1 {
+		nodes = append(nodes, file, ":", lineS)
+	} else if Config.ShowFlag & Ffunc != 0 { // has func, add ")"
+		nodes = append(nodes, ")")
+	}
+
+	text := strings.Join(nodes, "")
 
 	if Config.NoColor {
 		mustFprint(w, text, "\n")

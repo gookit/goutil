@@ -63,12 +63,13 @@ func TestPrint(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	Fprint(1, buf, 123)
+	// "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:65)"
 	str := buf.String()
-	is.Contains(str, "PRINT AT github.com/gookit/goutil/dump.TestPrint(LINE ")
+	is.Contains(str, "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:")
 	is.Contains(str, "int(123)")
 
 	// disable position for test
-	Config.NoPosition = true
+	Config.ShowFlag = Fnopos
 
 	buf.Reset()
 	Fprint(1, buf, "abc")
@@ -127,7 +128,7 @@ func TestPrintNil(t *testing.T) {
 	// set output for test
 	Output = buf
 	// disable position for test
-	Config.NoPosition = true
+	Config.ShowFlag = Fnopos
 
 	Print(nil)
 	is.Equal("<nil>\n", buf.String())
@@ -144,8 +145,7 @@ func TestPrintNil(t *testing.T) {
 	buf.Reset()
 
 	// reset
-	Output = os.Stdout
-	ResetConfig()
+	resetDump()
 }
 
 func TestPrintPtr(t *testing.T) {
@@ -155,6 +155,14 @@ func TestPrintPtr(t *testing.T) {
 		Age  int
 	}{}
 	P(user)
+
+	// Out:
+	// PRINT AT github.com/gookit/goutil/dump.TestPrintPtr(dump_test.go:157)
+	// *struct { id string; Name string; Age int } {
+	//  id: "",
+	//  Name: "",
+	//  Age: 0,
+	// }
 }
 
 func TestConfig(t *testing.T) {
@@ -162,16 +170,22 @@ func TestConfig(t *testing.T) {
 	buf := new(bytes.Buffer)
 
 	Output = buf
-
-	// show file
-	Config.ShowFile = true
+	// no color on tests
 	Config.NoColor = true
 
+	// show file
+	Config.ShowFlag = Ffile|Fline
+
 	P("hi")
-	is.Contains(buf.String(), "goutil/dump/dump_test.go LINE 1")
+	// PRINT AT /Users/inhere/Workspace/godev/gookit/goutil/dump/dump_test.go:171
+	is.Contains(buf.String(), "goutil/dump/dump_test.go:1")
 	buf.Reset()
 
 	// reset
+	resetDump()
+}
+
+func resetDump() {
 	Output = os.Stdout
 	ResetConfig()
 }
