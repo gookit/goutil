@@ -52,6 +52,15 @@ func (v Value) Bool() bool {
 	return false
 }
 
+// Float64 value
+func (v Value) Float64() float64 {
+	if v.V == nil {
+		return 0
+	}
+
+	return mathutil.MustFloat(v.V)
+}
+
 // String value
 func (v Value) String() string {
 	if v.V == nil {

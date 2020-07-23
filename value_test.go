@@ -13,6 +13,7 @@ func TestValue_Val(t *testing.T) {
 	assert.Equal(t, 23, v.Val())
 	assert.Equal(t, 23, v.Int())
 	assert.Equal(t, int64(23), v.Int64())
+	assert.Equal(t, float64(23), v.Float64())
 	assert.Equal(t, "23", v.String())
 	assert.False(t, v.IsEmpty())
 	assert.False(t, v.Bool())

@@ -170,18 +170,50 @@ func ToInt64(in interface{}) (i64 int64, err error) {
  * convert value to float
  *************************************************************/
 
-// Float convert string to float
-func Float(s string) (float64, error) {
-	return ToFloat(s)
+// Float convert value to float64
+func Float(in interface{}) (float64, error) {
+	return ToFloat(in)
 }
 
-// ToFloat convert string to float
-func ToFloat(s string) (float64, error) {
-	return strconv.ParseFloat(strings.TrimSpace(s), 0)
+// ToFloat convert value to float64
+func ToFloat(in interface{}) (f64 float64, err error) {
+	switch tVal := in.(type) {
+	case string:
+		f64, err = strconv.ParseFloat(strings.TrimSpace(tVal), 0)
+	case int:
+		f64 = float64(tVal)
+	case int8:
+		f64 = float64(tVal)
+	case int16:
+		f64 = float64(tVal)
+	case int32:
+		f64 = float64(tVal)
+	case int64:
+		f64 = float64(tVal)
+	case uint:
+		f64 = float64(tVal)
+	case uint8:
+		f64 = float64(tVal)
+	case uint16:
+		f64 = float64(tVal)
+	case uint32:
+		f64 = float64(tVal)
+	case uint64:
+		f64 = float64(tVal)
+	case float32:
+		f64 = float64(tVal)
+	case float64:
+		f64 = tVal
+	case nil:
+		f64 = 0
+	default:
+		err = errConvertFail
+	}
+	return
 }
 
-// MustFloat convert string to float
-func MustFloat(s string) float64 {
-	val, _ := strconv.ParseFloat(strings.TrimSpace(s), 0)
+// MustFloat convert value to float64
+func MustFloat(in interface{}) float64 {
+	val, _ := ToFloat(in)
 	return val
 }

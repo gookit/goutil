@@ -75,6 +75,17 @@ func TestToInt(t *testing.T) {
 func TestToFloat(t *testing.T) {
 	is := assert.New(t)
 
+	tests := []interface{}{
+		2,
+		int8(2), int16(2), int32(2), int64(2),
+		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
+		float32(2), float64(2),
+		"2",
+	}
+	for _, in := range tests {
+		is.Equal(float64(2), MustFloat(in))
+	}
+
 	is.Equal(123.5, MustFloat("123.5"))
 	is.Equal(float64(0), MustFloat("invalid"))
 
