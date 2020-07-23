@@ -8,6 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsAlphabet(t *testing.T) {
+	assert.False(t, strutil.IsAlphabet('9'))
+	assert.False(t, strutil.IsAlphabet('+'))
+
+	assert.True(t, strutil.IsAlphabet('A'))
+	assert.True(t, strutil.IsAlphabet('a'))
+	assert.True(t, strutil.IsAlphabet('Z'))
+	assert.True(t, strutil.IsAlphabet('z'))
+}
+
 func TestTrim(t *testing.T) {
 	is := assert.New(t)
 
