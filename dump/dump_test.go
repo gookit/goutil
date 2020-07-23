@@ -58,6 +58,26 @@ func ExamplePrint() {
 	//
 }
 
+func TestConfig(t *testing.T) {
+	is := assert.New(t)
+	buf := new(bytes.Buffer)
+
+	Output = buf
+	// no color on tests
+	Config.NoColor = true
+
+	// show file
+	Config.ShowFlag = Ffile|Fline
+
+	P("hi")
+	// PRINT AT /Users/inhere/Workspace/godev/gookit/goutil/dump/dump_test.go:171
+	is.Contains(buf.String(), "goutil/dump/dump_test.go:")
+	buf.Reset()
+
+	// reset
+	resetDump()
+}
+
 func TestPrint(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
@@ -153,36 +173,38 @@ func TestPrintPtr(t *testing.T) {
 		id   string
 		Name string
 		Age  int
-	}{}
+	}{"ab1234", "inhere", 22}
 	P(user)
 
 	// Out:
 	// PRINT AT github.com/gookit/goutil/dump.TestPrintPtr(dump_test.go:157)
 	// *struct { id string; Name string; Age int } {
-	//  id: "",
-	//  Name: "",
-	//  Age: 0,
+	//  id: "ab1234",
+	//  Name: "inhere",
+	//  Age: 22,
 	// }
 }
 
-func TestConfig(t *testing.T) {
-	is := assert.New(t)
-	buf := new(bytes.Buffer)
+func TestPrintStructCannotExportField(t *testing.T) {
+	myOpts := struct {
+		opt0 *int
+		opt1 bool
+		opt2 int
+		opt3 float64
+		opt4 string
+	}{ nil,true, 22, 34.45, "abc"}
 
-	Output = buf
-	// no color on tests
-	Config.NoColor = true
+	Print(myOpts)
 
-	// show file
-	Config.ShowFlag = Ffile|Fline
-
-	P("hi")
-	// PRINT AT /Users/inhere/Workspace/godev/gookit/goutil/dump/dump_test.go:171
-	is.Contains(buf.String(), "goutil/dump/dump_test.go:1")
-	buf.Reset()
-
-	// reset
-	resetDump()
+	// OUT:
+	// PRINT AT github.com/gookit/goutil/dump.TestPrintStructCannotExportField(dump_test.go:177)
+	// struct { opt0 *int; opt1 bool; opt2 int; opt3 float64; opt4 string } {
+	//  opt0: <nil>,
+	//  opt1: true,
+	//  opt2: 22,
+	//  opt3: 34.45,
+	//  opt4: "abc",
+	// }
 }
 
 func resetDump() {

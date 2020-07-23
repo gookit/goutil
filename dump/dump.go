@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/gookit/color"
+	"github.com/gookit/goutil/strutil"
 )
 
 // These flags define which print information
@@ -83,7 +84,7 @@ func Fprint(skip int, w io.Writer, vs ...interface{}) {
 
 	// print data
 	for _, v := range vs {
-		printOne(w, v)
+		printOne(w, v, 2)
 	}
 }
 
@@ -133,7 +134,7 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 	color.Fprint(w, "<mga>", text, "</>\n")
 }
 
-func printOne(w io.Writer, v interface{}) {
+func printOne(w io.Writer, v interface{}, indent int) {
 	if v == nil {
 		mustFprintf(w, "<nil>\n")
 		return
@@ -150,6 +151,7 @@ func printOne(w io.Writer, v interface{}) {
 		mustFprintf(w, "*")
 	}
 
+	indentStr := strutil.Repeat(" ", indent)
 	switch rType.Kind() {
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
@@ -160,7 +162,7 @@ func printOne(w io.Writer, v interface{}) {
 
 		mustFprint(w, rType.String(), " [\n")
 		for i := 0; i < eleNum; i++ {
-			mustFprintf(w, "  %v,\n", rVal.Index(i).Interface())
+			mustFprintf(w, "%s%v,\n", indentStr, rVal.Index(i).Interface())
 		}
 		mustFprint(w, "]\n")
 	case reflect.Struct:
@@ -168,14 +170,32 @@ func printOne(w io.Writer, v interface{}) {
 
 		mustFprint(w, rType.String(), " {\n")
 		for i := 0; i < fldNum; i++ {
-			tn := rType.Field(i).Name
 			fv := rVal.Field(i)
+			fName := rType.Field(i).Name
+			// print field name
+			mustFprintf(w, "%s%s: ", indentStr, fName)
 
 			// TODO format print sub-struct
-			if fv.CanInterface() {
-				mustFprintf(w, "  %s: %#v,\n", tn, rVal.Field(i).Interface())
-			} else {
-				mustFprintf(w, "  %s: %#v,\n", tn, rVal.Field(i).String())
+			// print field value
+			switch fv.Kind() {
+			case reflect.Bool:
+				mustFprintf(w, "%v,\n", fv.Bool())
+			case reflect.String:
+				mustFprintf(w, "\"%s\",\n", fv.String())
+			case reflect.Float32, reflect.Float64:
+				mustFprintf(w, "%v,\n", fv.Float())
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				mustFprintf(w, "%d,\n", fv.Int())
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				mustFprintf(w, "%d,\n", fv.Uint())
+			default:
+				if fv.IsNil() {
+					mustFprint(w, "<nil>,\n")
+				} else if fv.CanInterface() {
+					mustFprintf(w, "%#v,\n", fv.Interface())
+				} else {
+					mustFprintf(w, "%#v,\n", fv.String())
+				}
 			}
 		}
 		mustFprint(w, "}\n")
@@ -183,7 +203,7 @@ func printOne(w io.Writer, v interface{}) {
 		mustFprint(w, rType.String(), " {\n")
 
 		for _, key := range rVal.MapKeys() {
-			mustFprintf(w, "  %v: %#v,\n", key.Interface(), rVal.MapIndex(key).Interface())
+			mustFprintf(w, "%s%v: %#v,\n", indentStr, key.Interface(), rVal.MapIndex(key).Interface())
 		}
 
 		mustFprint(w, "}\n")
