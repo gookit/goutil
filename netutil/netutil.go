@@ -1,7 +1,6 @@
 package netutil
 
 import (
-	"log"
 	"net"
 )
 
@@ -9,7 +8,7 @@ import (
 func InternalIP() (ip string) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		log.Fatal("Oops: " + err.Error())
+		panic("Oops: " + err.Error())
 	}
 
 	for _, a := range addrs {
