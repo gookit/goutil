@@ -45,7 +45,14 @@ func otherFunc1() {
 
 You will see:
 
-![](_examples/demo1-preview.png)
+![](_examples/preview-demo1.png)
+
+## More preview
+
+- nested struct
+
+![](_examples/preview-nested-struct.png)
+
 
 ## Functions
 

@@ -25,7 +25,12 @@ const (
 )
 
 type dumpConfig struct {
-	NoColor  bool
+	NoColor bool
+	// Indent space. default is 2
+	Indent int
+	// MaxDepth for nested print
+	MaxDepth int
+	// ShowFlag for display caller position
 	ShowFlag int
 	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
 	MoreLenNL int
@@ -46,6 +51,8 @@ func ResetConfig() {
 
 func newDefaultConfig() dumpConfig {
 	return dumpConfig{
+		Indent:    2,
+		MaxDepth:  3,
 		ShowFlag:  Ffunc | Ffname | Fline,
 		MoreLenNL: 8,
 	}
@@ -84,7 +91,7 @@ func Fprint(skip int, w io.Writer, vs ...interface{}) {
 
 	// print data
 	for _, v := range vs {
-		printOne(w, v, 2)
+		printOne(w, v)
 	}
 }
 
@@ -120,7 +127,7 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 	// fallback. eg: "PRINT AT goutil/dump/dump_test.go:23"
 	if len(nodes) == 1 {
 		nodes = append(nodes, file, ":", lineS)
-	} else if Config.ShowFlag & Ffunc != 0 { // has func, add ")"
+	} else if Config.ShowFlag&Ffunc != 0 { // has func, add ")"
 		nodes = append(nodes, ")")
 	}
 
@@ -134,7 +141,7 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 	color.Fprint(w, "<mga>", text, "</>\n")
 }
 
-func printOne(w io.Writer, v interface{}, indent int) {
+func printOne(w io.Writer, v interface{}) {
 	if v == nil {
 		mustFprintf(w, "<nil>\n")
 		return
@@ -143,6 +150,10 @@ func printOne(w io.Writer, v interface{}, indent int) {
 	rVal := reflect.ValueOf(v)
 	rType := rVal.Type()
 
+	printReflectedValue(w, rType, rVal, 1)
+}
+
+func printReflectedValue(w io.Writer, rType reflect.Type, rVal reflect.Value, depth int) {
 	// if is an ptr, get real type and value
 	if rType.Kind() == reflect.Ptr {
 		rVal = rVal.Elem()
@@ -151,12 +162,13 @@ func printOne(w io.Writer, v interface{}, indent int) {
 		mustFprintf(w, "*")
 	}
 
-	indentStr := strutil.Repeat(" ", indent)
+	indentStr := strutil.Repeat(" ", Config.Indent*depth)
+	indentPrev := strutil.Repeat(" ", Config.Indent*(depth-1))
 	switch rType.Kind() {
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
 		if eleNum < Config.MoreLenNL {
-			mustFprintf(w, "%#v\n", v)
+			mustFprintf(w, "%#v\n", rVal.Interface())
 			return
 		}
 
@@ -175,19 +187,22 @@ func printOne(w io.Writer, v interface{}, indent int) {
 			// print field name
 			mustFprintf(w, "%s%s: ", indentStr, fName)
 
-			// TODO format print sub-struct
+			fTypeName := fv.Type().String()
+
 			// print field value
 			switch fv.Kind() {
 			case reflect.Bool:
 				mustFprintf(w, "%v,\n", fv.Bool())
 			case reflect.String:
-				mustFprintf(w, "\"%s\",\n", fv.String())
+				mustFprintf(w, "%s(\"%s\"),\n", fTypeName, fv.String())
 			case reflect.Float32, reflect.Float64:
-				mustFprintf(w, "%v,\n", fv.Float())
+				mustFprintf(w, "%s(%v),\n", fTypeName, fv.Float())
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				mustFprintf(w, "%d,\n", fv.Int())
+				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Int())
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				mustFprintf(w, "%d,\n", fv.Uint())
+				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Uint())
+			case reflect.Struct:
+				printReflectedValue(w, fv.Type(), fv, depth+1)
 			default:
 				if fv.IsNil() {
 					mustFprint(w, "<nil>,\n")
@@ -198,7 +213,12 @@ func printOne(w io.Writer, v interface{}, indent int) {
 				}
 			}
 		}
-		mustFprint(w, "}\n")
+
+		if depth-1 > 0 {
+			mustFprint(w, indentPrev, "},\n")
+		} else {
+			mustFprint(w, "}\n")
+		}
 	case reflect.Map:
 		mustFprint(w, rType.String(), " {\n")
 
@@ -208,7 +228,11 @@ func printOne(w io.Writer, v interface{}, indent int) {
 
 		mustFprint(w, "}\n")
 	default:
-		mustFprintf(w, "%s(%v)\n", rType.String(), v)
+		if rVal.CanInterface() {
+			mustFprintf(w, "%s(%v)\n", rType.String(), rVal.Interface())
+		} else {
+			mustFprintf(w, "%s(%v)\n", rType.String(), rVal.String())
+		}
 	}
 }
 

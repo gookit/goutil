@@ -67,7 +67,7 @@ func Print(vs ...interface{})
 
 使用请查看 [dump/README.md](dump/README.md)
 
-![](dump/_examples/demo1-preview.png)
+![](dump/_examples/preview-demo1.png)
 
 ### ENV Util
 
