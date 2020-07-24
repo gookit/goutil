@@ -83,14 +83,16 @@ func TestConfig(t *testing.T) {
 func TestPrint(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
-	// disable position for test
-	Config.ShowFlag = Fnopos
 
+	// print position
 	Fprint(1, buf, 123)
 	// "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:65)"
 	str := buf.String()
 	is.Contains(str, "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:")
 	is.Contains(str, "int(123)")
+
+	// disable position for test
+	Config.ShowFlag = Fnopos
 
 	buf.Reset()
 	Fprint(1, buf, "abc")
@@ -126,8 +128,8 @@ func TestPrint(t *testing.T) {
 		"ab", 23,
 	})
 	is.Equal(`struct { ab string; Cd int } {
-  ab: "ab",
-  Cd: 23,
+  ab: string("ab"),
+  Cd: int(23),
 }
 `, buf.String())
 
