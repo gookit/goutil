@@ -103,11 +103,12 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, "abc")
-	is.Equal("string(abc)\n", buf.String())
+	is.Equal(`string("abc"),
+`, buf.String())
 
 	buf.Reset()
 	Fprint(buf, []string{"ab", "cd"})
-	is.Equal(`[]string{"ab", "cd"}
+	is.Equal(`[]string{"ab", "cd"},
 `, buf.String())
 
 	buf.Reset()
@@ -137,7 +138,7 @@ func TestPrint(t *testing.T) {
 	is.Equal(`struct { ab string; Cd int } {
   ab: string("ab"),
   Cd: int(23),
-}
+},
 `, buf.String())
 
 	buf.Reset()
@@ -145,7 +146,11 @@ func TestPrint(t *testing.T) {
 		"key": "val",
 		"sub": map[string]string{"k": "v"},
 	})
-	is.Contains(buf.String(), `sub: map[string]string{"k":"v"},`)
+	is.Contains(buf.String(), `
+  "sub": map[string]string {
+    "k": string("v"),
+  },
+`)
 
 	buf.Reset()
 }
@@ -154,20 +159,23 @@ func TestPrintNil(t *testing.T) {
 	is := assert.New(t)
 
 	buf := newBuffer()
+	Config(func(d *Dumper) {
+		d.ShowFlag = Fnopos
+	})
 	defer Reset()
 
 	Print(nil)
-	is.Equal("<nil>\n", buf.String())
+	is.Equal("<nil>,\n", buf.String())
 	buf.Reset()
 
 	var i int
 	Println(i)
-	is.Equal("int(0)\n", buf.String())
+	is.Equal("int(0),\n", buf.String())
 	buf.Reset()
 
 	var f interface{}
 	V(f)
-	is.Equal("<nil>\n", buf.String())
+	is.Equal("<nil>,\n", buf.String())
 	buf.Reset()
 }
 
@@ -217,6 +225,7 @@ func TestStruct_InterfaceField(t *testing.T) {
 	}
 
 	Println(s2)
+	fmt.Println("\nUse fmt.Println:")
 	fmt.Println(s2)
 }
 

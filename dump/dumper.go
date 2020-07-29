@@ -212,11 +212,11 @@ func (d *Dumper) printOne(v interface{}) {
 	default: // must in switch, use asserted 'val' for continue handle
 		rTyp := reflect.TypeOf(val)
 		rVal := reflect.ValueOf(val)
-		d.printReflectValue(rTyp, rVal, d.curDepth)
+		d.printReflectValue(rTyp, rVal)
 	}
 }
 
-func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value, depth int) {
+func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 	// if is an ptr, get real type and value
 	if rTyp.Kind() == reflect.Ptr {
 		rVal = rVal.Elem()
@@ -236,7 +236,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value, depth 
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
 		if eleNum < d.MoreLenNL {
-			mustFprintf(w, "%#v\n", rVal.Interface())
+			mustFprintf(w, "%#v,\n", rVal.Interface())
 			return
 		}
 
@@ -279,7 +279,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value, depth 
 					}
 				} else {
 					d.advance(1)
-					d.printReflectValue(fv.Type(), fv, d.curDepth)
+					d.printReflectValue(fv.Type(), fv)
 					d.advance(-1)
 				}
 			case reflect.Interface:
@@ -341,7 +341,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value, depth 
 					}
 				} else {
 					d.advance(1)
-					d.printReflectValue(mv.Type(), mv, d.curDepth)
+					d.printReflectValue(mv.Type(), mv)
 					d.advance(-1)
 				}
 			case reflect.Interface:
@@ -377,9 +377,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value, depth 
 }
 
 func (d *Dumper) printMap(v interface{}) {
-
 }
 
 func (d *Dumper) printStruct(v interface{}) {
-
 }
