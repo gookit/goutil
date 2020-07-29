@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gookit/color"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -207,17 +208,35 @@ func TestStruct_CannotExportField(t *testing.T) {
 
 func TestStruct_InterfaceField(t *testing.T) {
 	s1 := st1{st0{2}, 23, "inhere"}
+
+	Println(struct {
+		cannotExport interface{}
+	}{
+		cannotExport: s1,
+	})
+
+	Println(struct {
+		cannotExport map[string]interface{}
+	}{
+		cannotExport: map[string]interface{}{
+			"key1": 12,
+			"key2": "abc",
+		},
+	})
+
 	type st2 struct {
 		st1
 		Github string
-		face   interface{}
+		Face1   interface{}
+		face2   interface{}
 		faces  map[string]interface{}
 	}
 
 	s2 := st2{
 		st1:    s1,
 		Github: "https://github.com/inhere",
-		face:   s1,
+		Face1: s1,
+		face2: s1,
 		faces: map[string]interface{}{
 			"key1": 12,
 			"key2": "abc",
@@ -225,7 +244,7 @@ func TestStruct_InterfaceField(t *testing.T) {
 	}
 
 	Println(s2)
-	fmt.Println("\nUse fmt.Println:")
+	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(s2)
 }
 

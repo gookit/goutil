@@ -283,8 +283,10 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 					d.advance(-1)
 				}
 			case reflect.Interface:
+				// field is `interface{}` type and cannot exported field in struct.
 				if !fv.CanInterface() {
-					mustFprintf(w, "%#v,\n", fv.String())
+					// mustFprintf(w, "%s%#v,\n", fv.Elem().Type().String(), fv.Elem().String())
+					mustFprintf(w, "%v,\n", fv.String())
 					continue
 				}
 
