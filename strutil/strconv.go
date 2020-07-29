@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	errConvertFail  = errors.New("convert data type is failure")
-	errInvalidParam = errors.New("invalid input parameter")
+	ErrConvertFail  = errors.New("convert data type is failure")
+	ErrInvalidParam = errors.New("invalid input parameter")
 
 	// some regex for convert string.
 	toSnakeReg  = regexp.MustCompile("[A-Z][a-z]")
@@ -41,37 +41,49 @@ func MustString(in interface{}) string {
 
 // ToString convert value to string
 func ToString(val interface{}) (str string, err error) {
-	switch tVal := val.(type) {
+	if val == nil {
+		return
+	}
+
+	switch value := val.(type) {
 	case int:
-		str = strconv.Itoa(tVal)
+		str = strconv.Itoa(value)
 	case int8:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.Itoa(int(value))
 	case int16:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.Itoa(int(value))
 	case int32:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.Itoa(int(value))
 	case int64:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.Itoa(int(value))
 	case uint:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.FormatUint(uint64(value), 10)
 	case uint8:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.FormatUint(uint64(value), 10)
 	case uint16:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.FormatUint(uint64(value), 10)
 	case uint32:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.FormatUint(uint64(value), 10)
 	case uint64:
-		str = strconv.Itoa(int(tVal))
+		str = strconv.FormatUint(value, 10)
 	case float32:
-		str = fmt.Sprint(tVal)
+		str = strconv.FormatFloat(float64(value), 'f', -1, 32)
 	case float64:
-		str = fmt.Sprint(tVal)
+		str = strconv.FormatFloat(value, 'f', -1, 64)
+	case bool:
+		str = strconv.FormatBool(value)
 	case string:
-		str = tVal
-	case nil:
-		str = ""
+		str = value
+	case []byte:
+		str = string(value)
 	default:
-		err = errConvertFail
+		err = ErrConvertFail
+		// string conversion using JSON by default
+		// jsonContent, err := json.Marshal(value)
+		// if err != nil {
+		// 	return "", err
+		// }
+		// str = string(jsonContent)
 	}
 	return
 }
@@ -184,16 +196,16 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 	}
 
 	if layout == "" {
-		err = errInvalidParam
+		err = ErrInvalidParam
 		return
 	}
 
-	// has 'T' eg.2006-01-02T15:04:05
+	// has 'T' eg: "2006-01-02T15:04:05"
 	if strings.ContainsRune(s, 'T') {
 		layout = strings.Replace(layout, " ", "T", -1)
 	}
 
-	// eg: 2006/01/02 15:04:05
+	// eg: "2006/01/02 15:04:05"
 	if strings.ContainsRune(s, '/') {
 		layout = strings.Replace(layout, "-", "/", -1)
 	}

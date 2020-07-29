@@ -2,6 +2,7 @@ package dump
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"runtime"
@@ -69,7 +70,7 @@ func TestConfig(t *testing.T) {
 	Config.NoColor = true
 
 	// show file
-	Config.ShowFlag = Ffile|Fline
+	Config.ShowFlag = Ffile | Fline
 
 	P("hi")
 	// PRINT AT /Users/inhere/Workspace/godev/gookit/goutil/dump/dump_test.go:171
@@ -199,7 +200,7 @@ func TestStruct_CannotExportField(t *testing.T) {
 		opt2 int
 		opt3 float64
 		opt4 string
-	}{ nil,true, 22, 34.45, "abc"}
+	}{nil, true, 22, 34.45, "abc"}
 
 	Print(myOpts)
 
@@ -226,18 +227,18 @@ func TestStruct_CannotExportField(t *testing.T) {
 	assert.Contains(t, str, "opt4: string(\"abc\"),")
 }
 
-func TestStruct_WithNested(t *testing.T)  {
-	type st0 struct {
-		Sex int
-	}
+type st0 struct {
+	Sex int
+}
 
-	type st1 struct {
-		st0
-		Age int
-		Name string
-	}
+type st1 struct {
+	st0
+	Age  int
+	Name string
+}
 
-	s1 := st1{ st0{2},23, "inhere"}
+func TestStruct_WithNested(t *testing.T) {
+	s1 := st1{st0{2}, 23, "inhere"}
 
 	Println(s1)
 	// OUT:
@@ -258,7 +259,7 @@ func TestStruct_WithNested(t *testing.T)  {
 	s2 := st2{st1: s1, Github: "https://github.com/inhere"}
 	Println(s2)
 
-	// Out
+	// Out:
 	// PRINT AT github.com/gookit/goutil/dump.TestStruct_WithNested(dump_test.go:257)
 	// dump.st2 {
 	//  st1: dump.st1 {
@@ -274,8 +275,148 @@ func TestStruct_WithNested(t *testing.T)  {
 	s3 := struct {
 		st1
 		Github string
-	} {st1: s1, Github: "https://github.com/inhere"}
+	}{st1: s1, Github: "https://github.com/inhere"}
 	Println(s3)
+
+	// Out:
+	// PRINT AT github.com/gookit/goutil/dump.TestStruct_WithNested(dump_test.go:278)
+	// struct { dump.st1; Github string } {
+	//  st1: dump.st1 {
+	//    st0: dump.st0 {
+	//      Sex: int(2),
+	//    },
+	//    Age: int(23),
+	//    Name: string("inhere"),
+	//  },
+	//  Github: string("https://github.com/inhere"),
+	// }
+}
+
+func TestStruct_InterfaceField(t *testing.T) {
+	s1 := st1{st0{2}, 23, "inhere"}
+	type st2 struct {
+		st1
+		Github string
+		face interface{}
+		faces map[string]interface{}
+	}
+
+	s2 := st2{
+		st1: s1,
+		Github: "https://github.com/inhere",
+		face: s1,
+		faces: map[string]interface{} {
+			"key1": 12,
+			"key2": "abc",
+		},
+	}
+
+	Println(s2)
+	fmt.Println(s2)
+}
+
+func TestMap_Simpled(t *testing.T) {
+	m1 := map[int]int{
+		23: 12,
+		24: 13,
+	}
+
+	m2 := map[string]int{
+		"key1": 12,
+		"key2": 13,
+	}
+
+	m3 := map[string]string{
+		"key1": "val1",
+		"key2": "val2",
+	}
+	P(m1, m2, m3)
+	/*
+		Out:
+		PRINT AT github.com/gookit/goutil/dump.TestMap_Simpled(dump_test.go:309)
+		map[int]int {
+		  24: int(13),
+		  23: int(12),
+		}
+		map[string]int {
+		  key1: int(12),
+		  key2: int(13),
+		}
+		map[string]string {
+		  key1: string("val1"),
+		  key2: string("val2"),
+		}
+
+	*/
+
+	m4 := map[string]interface{}{
+		"key1": 12,
+		"key2": "val1",
+		"key3": 34,
+		"key4": 3.14,
+		"key5": -34,
+		"key6": nil,
+	}
+	Print(m4)
+	/*
+		PRINT AT github.com/gookit/goutil/dump.TestMap_Simpled(dump_test.go:335)
+		map[string]interface {} {
+		  key4: float64(3.14),
+		  key5: int(-34),
+		  key6: <nil>,
+		  key1: int(12),
+		  key2: string("val1"),
+		  key3: int(34),
+		}
+	*/
+}
+
+func TestMap_InterfaceNested(t *testing.T) {
+	user := &struct {
+		id   string
+		Name string
+		Age  int
+	}{"ab1234", "inhere", 22}
+
+	s1 := st1{st0{2}, 23, "inhere"}
+	m1 := map[string]interface{}{
+		"key1": 112,
+		"key2": uint(112),
+		"key3": int64(112),
+		"key4": 112.23,
+		"key5": nil,
+		"key6": 'b', // rune
+		"key7": byte('a'),
+		"st1": s1,
+		"user": user,
+		"submap1": map[string]int{
+			"key1": 12,
+			"key2": 13,
+		},
+		"submap2": map[string]interface{}{
+			"key1": 12,
+			"key2": "abc",
+			"submap21": map[string]string{
+				"key1": "val1",
+				"key2": "val2",
+			},
+		},
+		"submap3": map[string]interface{}{
+			"key1": 12,
+			"key2": "abc",
+			"submap31": map[string]interface{}{
+				"key31": 12,
+				"key32": 13,
+				"user":  user,
+				"submap311": map[string]int{
+					"key1": 12,
+					"key2": 13,
+				},
+			},
+		},
+	}
+
+	Print(m1)
 }
 
 func newBuffer() *bytes.Buffer {
@@ -292,36 +433,4 @@ func newBuffer() *bytes.Buffer {
 func resetDump() {
 	Output = os.Stdout
 	ResetConfig()
-}
-
-// Dumper struct
-type Dumper struct {
-	dumpConfig
-	Skip int
-	Out  io.Writer
-}
-
-// NewDumper create
-func NewDumper(out io.Writer) *Dumper {
-	return &Dumper{
-		Out: out,
-		Skip: 3,
-	}
-}
-
-// Dump vars
-func (d *Dumper) Dump(vars ...interface{}) {
-	// show print position
-	if d.ShowFlag != Fnopos {
-		// get the print position
-		pc, file, line, ok := runtime.Caller(d.Skip)
-		if ok {
-			printPosition(d.Out, pc, file, line)
-		}
-	}
-
-	// print data
-	for _, v := range vars {
-		printOne(d.Out, v)
-	}
 }

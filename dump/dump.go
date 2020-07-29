@@ -24,7 +24,8 @@ const (
 	Fline
 )
 
-type dumpConfig struct {
+// Options for dump vars
+type Options struct {
 	NoColor bool
 	// Indent space. default is 2
 	Indent int
@@ -36,23 +37,133 @@ type dumpConfig struct {
 	MoreLenNL int
 }
 
-var flags = []int{Ffunc, Ffile, Ffname, Fline}
+// Dumper struct
+type Dumper struct {
+	Options
+	Skip int
+	Out  io.Writer
+}
 
-// Output set print content to the io.Writer
-var Output io.Writer = os.Stdout
+// NewDumper create
+func NewDumper(out io.Writer) *Dumper {
+	return &Dumper{
+		Out:  out,
+		Skip: 3,
+	}
+}
 
-// Config dump data settings
-var Config = newDefaultConfig()
+// Config options for dumper
+func (d *Dumper) Config(fn func(opts *Options)) *Dumper {
+	fn(&d.Options)
+	return d
+}
+
+// WithOptions for dumper
+func (d *Dumper) WithOptions(opts Options) *Dumper {
+	d.Options = opts
+	return d
+}
+
+// Dump vars
+func (d *Dumper) Dump(vars ...interface{}) {
+	// show print position
+	if d.ShowFlag != Fnopos {
+		// get the print position
+		pc, file, line, ok := runtime.Caller(d.Skip)
+		if ok {
+			d.printCaller(pc, file, line)
+		}
+	}
+
+	// print data
+	for _, v := range vars {
+		printOne(d.Out, v)
+	}
+}
+
+func (d *Dumper) printCaller(pc uintptr, file string, line int) {
+	// eg: github.com/gookit/goutil/dump.ExamplePrint
+	fnName := runtime.FuncForPC(pc).Name()
+
+	lineS := strconv.Itoa(line)
+	nodes := []string{"PRINT AT "}
+
+	// eg:
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(goutil/dump/dump_test.go:23)"
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(dump_test.go:23)"
+	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(:23)"
+	for _, flag := range posFlags {
+		// has flag
+		if d.ShowFlag&flag == 0 {
+			continue
+		}
+		switch flag {
+		case Ffunc: // full func name
+			nodes = append(nodes, fnName, "(")
+		case Ffile: // full file path
+			nodes = append(nodes, file)
+		case Ffname: // only file name
+			fName := path.Base(file) // file name
+			nodes = append(nodes, fName)
+		case Fline:
+			nodes = append(nodes, ":", lineS)
+		}
+	}
+
+	// fallback. eg: "PRINT AT goutil/dump/dump_test.go:23"
+	if len(nodes) == 1 {
+		nodes = append(nodes, file, ":", lineS)
+	} else if d.ShowFlag&Ffunc != 0 { // has func, add ")"
+		nodes = append(nodes, ")")
+	}
+
+	text := strings.Join(nodes, "")
+
+	if d.NoColor {
+		mustFprint(d.Out, text, "\n")
+		return
+	}
+
+	color.Fprint(d.Out, "<mga>", text, "</>\n")
+}
+
+func (d *Dumper) printOne(v interface{}) {
+	if v == nil {
+		mustFprintf(w, "<nil>\n")
+		return
+	}
+
+
+}
+
+func (d *Dumper) printMap(v interface{}) {
+
+}
+
+func (d *Dumper) printStruct(v interface{}) {
+
+}
+
+var (
+	// valid flag for position
+	posFlags = []int{Ffunc, Ffile, Ffname, Fline}
+
+	// Output set print content to the io.Writer
+	Output io.Writer = os.Stdout
+
+	// Config dump data settings
+	Config = newDefaultOptions()
+)
 
 // ResetConfig reset config data
 func ResetConfig() {
-	Config = newDefaultConfig()
+	Config = newDefaultOptions()
 }
 
-func newDefaultConfig() dumpConfig {
-	return dumpConfig{
+func newDefaultOptions() Options {
+	return Options{
 		Indent:    2,
-		MaxDepth:  3,
+		MaxDepth:  5,
 		ShowFlag:  Ffunc | Ffname | Fline,
 		MoreLenNL: 8,
 	}
@@ -106,7 +217,7 @@ func printPosition(w io.Writer, pc uintptr, file string, line int) {
 	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(goutil/dump/dump_test.go:23)"
 	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(dump_test.go:23)"
 	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(:23)"
-	for _, flag := range flags {
+	for _, flag := range posFlags {
 		// has flag
 		if Config.ShowFlag&flag == 0 {
 			continue
@@ -162,8 +273,10 @@ func printReflectedValue(w io.Writer, rType reflect.Type, rVal reflect.Value, de
 		mustFprintf(w, "*")
 	}
 
+	prevDepth := depth - 1
+	nextDepth := depth + 1
 	indentStr := strutil.Repeat(" ", Config.Indent*depth)
-	indentPrev := strutil.Repeat(" ", Config.Indent*(depth-1))
+	indentPrev := strutil.Repeat(" ", Config.Indent*prevDepth)
 	switch rType.Kind() {
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
@@ -201,8 +314,44 @@ func printReflectedValue(w io.Writer, rType reflect.Type, rVal reflect.Value, de
 				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Int())
 			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Uint())
-			case reflect.Struct:
-				printReflectedValue(w, fv.Type(), fv, depth+1)
+			case reflect.Map, reflect.Struct:
+				if depth > Config.MaxDepth {
+					mustFprintf(w, "%s,\n", fv.String())
+				} else {
+					printReflectedValue(w, fv.Type(), fv, nextDepth)
+				}
+			case reflect.Interface:
+				if !fv.CanInterface() {
+					mustFprintf(w, "%#v,\n", fv.String())
+					continue
+				}
+
+				switch typData := fv.Interface().(type) {
+				case int, int8, int16, int32, int64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case uint, uint8, uint16, uint32, uint64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case float32, float64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case string:
+					mustFprintf(w, "%s(\"%v\"),\n", "string", fv.Interface())
+				case map[int]int, map[string]int, map[string]string, map[int]interface{}, map[string]interface{}:
+					if depth > Config.MaxDepth {
+						mustFprintf(w, "%v,\n", typData)
+					} else {
+						typRVal := reflect.ValueOf(typData)
+						printReflectedValue(w, typRVal.Type(), typRVal, nextDepth)
+					}
+				default:
+					if fv.IsNil() {
+						mustFprint(w, "<nil>,\n")
+					} else if fv.CanInterface() {
+						// mustFprintf(w, "%s(%v),\n", vTypeName, fv.Interface())
+						mustFprintf(w, "%#v,\n", fv.Interface())
+					} else {
+						mustFprintf(w, "%#v,\n", fv.String())
+					}
+				}
 			default:
 				if fv.IsNil() {
 					mustFprint(w, "<nil>,\n")
@@ -211,10 +360,10 @@ func printReflectedValue(w io.Writer, rType reflect.Type, rVal reflect.Value, de
 				} else {
 					mustFprintf(w, "%#v,\n", fv.String())
 				}
-			}
-		}
+			} // end switch
+		} // end for
 
-		if depth-1 > 0 {
+		if prevDepth > 0 {
 			mustFprint(w, indentPrev, "},\n")
 		} else {
 			mustFprint(w, "}\n")
@@ -223,10 +372,84 @@ func printReflectedValue(w io.Writer, rType reflect.Type, rVal reflect.Value, de
 		mustFprint(w, rType.String(), " {\n")
 
 		for _, key := range rVal.MapKeys() {
-			mustFprintf(w, "%s%v: %#v,\n", indentStr, key.Interface(), rVal.MapIndex(key).Interface())
+			// old: direct print value
+			// mustFprintf(w, "%s%v: %#v,\n", indentStr, key.Interface(), rVal.MapIndex(key).Interface())
+
+			// print key name
+			if !key.CanInterface() {
+				mustFprintf(w, "%s%v: ", indentStr, key.String())
+			} else {
+				mustFprintf(w, "%s%v: ", indentStr, key.Interface())
+			}
+
+			mv := rVal.MapIndex(key)
+			vTypeName := mv.Type().String()
+
+			// print field value
+			switch mv.Kind() {
+			case reflect.Bool:
+				mustFprintf(w, "%v,\n", mv.Bool())
+			case reflect.String:
+				mustFprintf(w, "%s(\"%s\"),\n", vTypeName, mv.String())
+			case reflect.Float32, reflect.Float64:
+				mustFprintf(w, "%s(%v),\n", vTypeName, mv.Float())
+			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+				mustFprintf(w, "%s(%d),\n", vTypeName, mv.Int())
+			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+				mustFprintf(w, "%s(%d),\n", vTypeName, mv.Uint())
+			case reflect.Map, reflect.Struct:
+				if depth > Config.MaxDepth {
+					mustFprintf(w, "%s,\n", mv.String())
+				} else {
+					printReflectedValue(w, mv.Type(), mv, nextDepth)
+				}
+			case reflect.Interface:
+				if !mv.CanInterface() {
+					mustFprintf(w, "%#v,\n", mv.String())
+					continue
+				}
+				switch typData := mv.Interface().(type) {
+				case int, int8, int16, int32, int64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case uint, uint8, uint16, uint32, uint64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case float32, float64:
+					mustFprintf(w, "%s(%v),\n", reflect.TypeOf(typData).String(), typData)
+				case string:
+					mustFprintf(w, "%s(\"%v\"),\n", "string", mv.Interface())
+				case map[int]int, map[string]int, map[string]string, map[int]interface{}, map[string]interface{}:
+					if depth > Config.MaxDepth {
+						mustFprintf(w, "%v,\n", typData)
+					} else {
+						typRVal := reflect.ValueOf(typData)
+						printReflectedValue(w, typRVal.Type(), typRVal, nextDepth)
+					}
+				default:
+					if mv.IsNil() {
+						mustFprint(w, "<nil>,\n")
+					} else if mv.CanInterface() {
+						// mustFprintf(w, "%s(%v),\n", vTypeName, mv.Interface())
+						mustFprintf(w, "%#v,\n", mv.Interface())
+					} else {
+						mustFprintf(w, "%#v,\n", mv.String())
+					}
+				}
+			default:
+				if mv.IsNil() {
+					mustFprint(w, "<nil>,\n")
+				} else if mv.CanInterface() {
+					mustFprintf(w, "%s(%#v),\n", vTypeName, mv.Interface())
+				} else {
+					mustFprintf(w, "%#v,\n", mv.String())
+				}
+			}
 		}
 
-		mustFprint(w, "}\n")
+		if prevDepth > 0 {
+			mustFprint(w, indentPrev, "},\n")
+		} else {
+			mustFprint(w, "}\n")
+		}
 	default:
 		if rVal.CanInterface() {
 			mustFprintf(w, "%s(%v)\n", rType.String(), rVal.Interface())

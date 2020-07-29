@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	errConvertFail = errors.New("convert data type is failure")
+	ErrConvertFail = errors.New("convert data type is failure")
 )
 
 /*************************************************************
@@ -28,6 +28,8 @@ func MustInt(in interface{}) int {
 // ToInt convert string to int
 func ToInt(in interface{}) (iVal int, err error) {
 	switch tVal := in.(type) {
+	case nil:
+		iVal = 0
 	case int:
 		iVal = tVal
 	case int8:
@@ -54,10 +56,8 @@ func ToInt(in interface{}) (iVal int, err error) {
 		iVal = int(tVal)
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
-	case nil:
-		iVal = 0
 	default:
-		err = errConvertFail
+		err = ErrConvertFail
 	}
 	return
 }
@@ -80,6 +80,8 @@ func MustUint(in interface{}) uint64 {
 // ToUint convert string to uint
 func ToUint(in interface{}) (u64 uint64, err error) {
 	switch tVal := in.(type) {
+	case nil:
+		u64 = 0
 	case int:
 		u64 = uint64(tVal)
 	case int8:
@@ -106,10 +108,8 @@ func ToUint(in interface{}) (u64 uint64, err error) {
 		u64 = uint64(tVal)
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
-	case nil:
-		u64 = 0
 	default:
-		err = errConvertFail
+		err = ErrConvertFail
 	}
 	return
 }
@@ -132,6 +132,8 @@ func MustInt64(in interface{}) int64 {
 // ToInt64 convert string to int64
 func ToInt64(in interface{}) (i64 int64, err error) {
 	switch tVal := in.(type) {
+	case nil:
+		i64 = 0
 	case string:
 		i64, err = strconv.ParseInt(strings.TrimSpace(tVal), 10, 0)
 	case int:
@@ -158,10 +160,8 @@ func ToInt64(in interface{}) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case float64:
 		i64 = int64(tVal)
-	case nil:
-		i64 = 0
 	default:
-		err = errConvertFail
+		err = ErrConvertFail
 	}
 	return
 }
@@ -178,6 +178,8 @@ func Float(in interface{}) (float64, error) {
 // ToFloat convert value to float64
 func ToFloat(in interface{}) (f64 float64, err error) {
 	switch tVal := in.(type) {
+	case nil:
+		f64 = 0
 	case string:
 		f64, err = strconv.ParseFloat(strings.TrimSpace(tVal), 0)
 	case int:
@@ -204,10 +206,8 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 		f64 = float64(tVal)
 	case float64:
 		f64 = tVal
-	case nil:
-		f64 = 0
 	default:
-		err = errConvertFail
+		err = ErrConvertFail
 	}
 	return
 }
