@@ -2,7 +2,9 @@ name: Unit-Tests
 on:
   push:
     paths:
+      - 'go.mod'
       - '**.go'
+      - '**.yml'
 
 jobs:
 
