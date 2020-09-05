@@ -1,10 +1,10 @@
 // Package httpctype list some common http content-type
 package httpctype
 
-var Key = "Content-Type"
+const Key = "Content-Type"
 
 // HTTP Content-Type with charset of the most common data formats.
-var (
+const (
 	CSS  = "text/css; charset=utf-8"
 	HTML = "text/html; charset=utf-8"
 
