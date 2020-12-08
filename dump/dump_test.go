@@ -207,36 +207,47 @@ func TestStruct_CannotExportField(t *testing.T) {
 }
 
 func TestStruct_InterfaceField(t *testing.T) {
-	s1 := st1{st0{2}, 23, "inhere"}
-
-	Println(struct {
-		cannotExport interface{}
+	myS1 := struct {
+		// cannotExport interface{} // ok
+		cannotExport st1 // ok
+		// CanExport interface{} ok
+		CanExport st1 // ok
 	}{
 		cannotExport: s1,
-	})
+		CanExport:    s1,
+	}
 
-	Println(struct {
+	Println(myS1)
+	color.Infoln("\nUse fmt.Println:")
+	fmt.Println(myS1)
+}
+
+func TestStruct_MapInterfacedValue(t *testing.T) {
+	myS2 := struct {
 		cannotExport map[string]interface{}
 	}{
 		cannotExport: map[string]interface{}{
 			"key1": 12,
 			"key2": "abc",
 		},
-	})
+	}
+	Println(myS2)
+	color.Infoln("\nUse fmt.Println:")
+	fmt.Println(myS2)
 
 	type st2 struct {
 		st1
 		Github string
-		Face1   interface{}
-		face2   interface{}
+		Face1  interface{}
+		face2  interface{}
 		faces  map[string]interface{}
 	}
 
 	s2 := st2{
 		st1:    s1,
 		Github: "https://github.com/inhere",
-		Face1: s1,
-		face2: s1,
+		Face1:  s1,
+		face2:  s1,
 		faces: map[string]interface{}{
 			"key1": 12,
 			"key2": "abc",

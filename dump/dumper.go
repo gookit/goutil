@@ -7,6 +7,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"unsafe"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
@@ -214,11 +215,17 @@ func (d *Dumper) printOne(v interface{}) {
 		rVal := reflect.ValueOf(val)
 		d.printReflectValue(rTyp, rVal)
 	}
+
+	// rTyp := reflect.TypeOf(v)
+	// rVal := reflect.ValueOf(v)
+	// d.printReflectValue(rTyp, rVal)
 }
 
 func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
+	var isPtr bool
 	// if is an ptr, get real type and value
 	if rTyp.Kind() == reflect.Ptr {
+		isPtr = true
 		rVal = rVal.Elem()
 		rTyp = rTyp.Elem()
 		// add "*" prefix
@@ -227,11 +234,6 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 
 	w := d.Output
 
-	// prevDepth := depth - 1
-	// nextDepth := depth + 1
-	// strings.Repeat()
-	// indentStr := strutil.Repeat(" ", d.IndentLen*depth)
-	// indentPrev := strutil.Repeat(" ", d.IndentLen*prevDepth)
 	switch rTyp.Kind() {
 	case reflect.Slice, reflect.Array:
 		eleNum := rVal.Len()
@@ -246,15 +248,27 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 		}
 		mustFprint(w, "]\n")
 	case reflect.Struct:
-		fldNum := rVal.NumField()
+		// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
+		// NOTICE: only re-reflect.New on curDepth=1
+		if !isPtr && d.curDepth == 1{
+			// fmt.Println("re reflect.New")
+			oldRv := rVal
+			rVal = reflect.New(rTyp).Elem()
+			rVal.Set(oldRv)
+
+			// ele := reflect.NewAt(rVal.Field(0).Type(), unsafe.Pointer(rVal.Field(0).UnsafeAddr())).Elem()
+			// fmt.Println("aaa", ele.CanInterface())
+		}
 
 		mustFprint(w, rTyp.String(), " {\n")
+
+		fldNum := rVal.NumField()
 		for i := 0; i < fldNum; i++ {
 			fv := rVal.Field(i)
-			fName := rTyp.Field(i).Name
+			fieldName := rTyp.Field(i).Name
 			// print field name
-			// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, fName)
-			mustFprintf(w, "%s%s: ", d.indentStr, fName)
+			// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, fieldName)
+			mustFprintf(w, "%s%s: ", d.indentStr, fieldName)
 
 			fTypeName := fv.Type().String()
 
@@ -285,9 +299,12 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 			case reflect.Interface:
 				// field is `interface{}` type and cannot exported field in struct.
 				if !fv.CanInterface() {
-					// mustFprintf(w, "%s%#v,\n", fv.Elem().Type().String(), fv.Elem().String())
-					mustFprintf(w, "%v,\n", fv.String())
-					continue
+					// Now fv can be read.  Setting will succeed but only affects the temporary copy
+					fv = reflect.NewAt(fv.Type(), unsafe.Pointer(fv.UnsafeAddr())).Elem()
+					// fmt.Println("bbb", fv.CanInterface())
+
+					// mustFprintf(w, "%v,\n", fv.String())
+					// continue
 				}
 
 				// goon handle field value
@@ -348,8 +365,13 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 				}
 			case reflect.Interface:
 				if !mv.CanInterface() {
-					mustFprintf(w, "%s,\n", mv.String())
-					continue
+					// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
+					// Now fv can be read.  Setting will succeed but only affects the temporary copy
+					mv = reflect.NewAt(mv.Type(), unsafe.Pointer(mv.UnsafeAddr())).Elem()
+					// fmt.Println("bbb", fv.CanInterface())
+
+					// mustFprintf(w, "%s,\n", mv.String())
+					// continue
 				}
 
 				// goon handle field value
