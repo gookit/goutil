@@ -7,7 +7,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"unsafe"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
@@ -299,12 +298,12 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 			case reflect.Interface:
 				// field is `interface{}` type and cannot exported field in struct.
 				if !fv.CanInterface() {
-					// Now fv can be read.  Setting will succeed but only affects the temporary copy
-					fv = reflect.NewAt(fv.Type(), unsafe.Pointer(fv.UnsafeAddr())).Elem()
+					// TODO Now fv can be read.  Setting will succeed but only affects the temporary copy
+					// fv = reflect.NewAt(fv.Type(), unsafe.Pointer(fv.UnsafeAddr())).Elem()
 					// fmt.Println("bbb", fv.CanInterface())
 
-					// mustFprintf(w, "%v,\n", fv.String())
-					// continue
+					mustFprintf(w, "%v,\n", fv.String())
+					continue
 				}
 
 				// goon handle field value
@@ -366,7 +365,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 			case reflect.Interface:
 				if !mv.CanInterface() {
 					// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
-					// Now fv can be read.  Setting will succeed but only affects the temporary copy
+					// TODO Now fv can be read.  Setting will succeed but only affects the temporary copy
 					// mv = reflect.NewAt(mv.Type(), unsafe.Pointer(mv.UnsafeAddr())).Elem()
 					// fmt.Println("bbb", fv.CanInterface())
 
