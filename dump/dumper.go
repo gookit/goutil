@@ -252,9 +252,9 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 		// NOTICE: only re-reflect.New on curDepth=1
 		if !isPtr && d.curDepth == 1{
 			// fmt.Println("re reflect.New")
-			oldRv := rVal
-			rVal = reflect.New(rTyp).Elem()
-			rVal.Set(oldRv)
+			// oldRv := rVal
+			// rVal = reflect.New(rTyp).Elem()
+			// rVal.Set(oldRv)
 
 			// ele := reflect.NewAt(rVal.Field(0).Type(), unsafe.Pointer(rVal.Field(0).UnsafeAddr())).Elem()
 			// fmt.Println("aaa", ele.CanInterface())
@@ -367,11 +367,11 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 				if !mv.CanInterface() {
 					// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
 					// Now fv can be read.  Setting will succeed but only affects the temporary copy
-					mv = reflect.NewAt(mv.Type(), unsafe.Pointer(mv.UnsafeAddr())).Elem()
+					// mv = reflect.NewAt(mv.Type(), unsafe.Pointer(mv.UnsafeAddr())).Elem()
 					// fmt.Println("bbb", fv.CanInterface())
 
-					// mustFprintf(w, "%s,\n", mv.String())
-					// continue
+					mustFprintf(w, "%s,\n", mv.String())
+					continue
 				}
 
 				// goon handle field value

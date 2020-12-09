@@ -22,7 +22,7 @@ var (
 		id   string
 		Name string
 		Age  int
-	}{"ab1234", "inhere", 22}
+	}{"ab12345", "inhere", 22}
 )
 
 func newStd() *Dumper {
@@ -36,7 +36,7 @@ func TestDumper_Fprint(t *testing.T) {
 	dumper.Fprint(buffer, user)
 	str := buffer.String()
 	assert.Contains(t, str, "{ id string; Name string; Age int }")
-	assert.Contains(t, str, `id: string("ab1234"),`)
+	assert.Contains(t, str, `id: string("ab12345"),`)
 	assert.Contains(t, str, `Name: string("inhere"),`)
 
 	dumper.Print(user)
@@ -67,7 +67,7 @@ func TestDump_Basic(t *testing.T) {
 		float32(3.1415926),
 		3.1415926, // float64
 		// string
-		"abc123",
+		"abc1234",
 		'a', // rune
 		byte('a'),
 	)
@@ -75,7 +75,7 @@ func TestDump_Basic(t *testing.T) {
 	str := buffer.String()
 	assert.Contains(t, str, "github.com/gookit/goutil/dump.TestDump_Basic(dumper_test.go")
 	assert.Contains(t, str, "float64(3.1415926)")
-	assert.Contains(t, str, `string("abc123")`)
+	assert.Contains(t, str, `string("abc1234")`)
 
 	fmt.Println(str)
 }
@@ -112,7 +112,7 @@ func TestDump_Ptr(t *testing.T) {
 	dumper.Print(&s)
 	dumper.Print(s)
 
-	s = "abc"
+	s = "abc23dddd"
 	dumper.Print(&s)
 	dumper.Print(s)
 
@@ -122,13 +122,13 @@ func TestDump_Ptr(t *testing.T) {
 	str := buffer.String()
 	assert.Contains(t, str, "*struct")
 	assert.Contains(t, str, "Age: int(22),")
-	assert.Contains(t, str, "id: string(\"ab1234\"),")
+	assert.Contains(t, str, "id: string(\"ab12345\"),")
 	assert.Contains(t, str, "Name: string(\"inhere\"),")
 
 	fmt.Println(str)
 	// Output:
 	// *struct { id string; Name string; Age int } {
-	//  id: string("ab1234"),
+	//  id: string("ab12345"),
 	//  Name: string("inhere"),
 	//  Age: int(22),
 	// }
@@ -142,7 +142,7 @@ func TestDumper_AccessCantExportedField(t *testing.T) {
 	}
 
 	myStruct := MyStruct{
-		id: "abc",
+		id: "abc111222",
 	}
 
 	// - 下面的方式适用于： 结构体指针

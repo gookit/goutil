@@ -228,7 +228,7 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 	}{
 		cannotExport: map[string]interface{}{
 			"key1": 12,
-			"key2": "abc",
+			"key2": "abcd123",
 		},
 	}
 	Println(myS2)
@@ -250,7 +250,7 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 		face2:  s1,
 		faces: map[string]interface{}{
 			"key1": 12,
-			"key2": "abc",
+			"key2": "abc2344",
 		},
 	}
 
