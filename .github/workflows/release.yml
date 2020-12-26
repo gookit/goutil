@@ -1,0 +1,38 @@
+name: Tag-release
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  release:
+    name: Release new version
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        go: [1.14]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup ENV
+        # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+        run: |
+          echo "RELEASE_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
+          echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
+
+      - name: Display Env
+        run: env
+
+      # https://github.com/actions/create-release
+      - uses: meeDamian/github-release@2.0
+        with:
+          gzip: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: ${{ env.RELEASE_TAG }}
+          name: ${{ env.RELEASE_TAG }}
+#          files: kite-${{ env.RELEASE_TAG }}.phar

@@ -2,7 +2,9 @@ name: Unit-Tests
 on:
   push:
     paths:
+      - 'go.mod'
       - '**.go'
+      - '**.yml'
 
 jobs:
 
@@ -11,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go_version: [1.11, 1.12, 1.13, 1.14]
+        go_version: [1.12, 1.13, 1.14, 1.15]
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:

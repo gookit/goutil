@@ -13,3 +13,7 @@ func TestProcessExists(t *testing.T) {
 
 	assert.True(t, process.Exists(pid))
 }
+
+func TestPID(t *testing.T) {
+	assert.True(t, process.PID() > 0)
+}

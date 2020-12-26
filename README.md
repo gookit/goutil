@@ -39,6 +39,11 @@ func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 func StringsToInts(ss []string) (ints []int, err error)
 func TrimStrings(ss []string, cutSet ...string) (ns []string)
+func IntsHas(ints []int, val int) bool
+func Int64sHas(ints []int64, val int64) bool
+func StringsHas(ss []string, val string) bool
+func Contains(arr, val interface{}) bool
+func NotContains(arr, val interface{}) bool
 ```
 
 ### CLI Util
@@ -159,6 +164,7 @@ func ToInt(in interface{}) (iVal int, err error)
 func ToInt64(in interface{}) (i64 int64, err error)
 func ToUint(in interface{}) (u64 uint64, err error)
 func Uint(in interface{}) (uint64, error)
+func RandomInt(min, max int) int    like php random_int() function
 ```
 
 ### String Util
@@ -208,6 +214,11 @@ func URLEncode(s string) string
 func UpperFirst(s string) string
 func UpperWord(s string) string
 func Uppercase(s string) string
+func RandomChars(ln int) string
+func RandomCharsV2(ln int) string
+func RandomCharsV3(ln int) string
+func MicroTimeID() string
+func MicroTimeHexID() string
 ```
 
 ### System Util

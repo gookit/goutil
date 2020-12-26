@@ -1,12 +1,13 @@
 language: go
 dist: bionic
 env:
-  GO111MODULE: on
+  - GO111MODULE=on
 
 go:
   - '1.12'
   - '1.13'
   - '1.14'
+  - '1.15'
 
 before_install:
   - go get github.com/mattn/goveralls

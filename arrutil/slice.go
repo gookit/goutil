@@ -2,8 +2,11 @@
 package arrutil
 
 import (
+	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gookit/goutil/mathutil"
 )
 
 // Reverse string slice [site user info 0] -> [0 info user site]
@@ -39,7 +42,6 @@ func StringsToInts(ss []string) (ints []int, err error) {
 
 		ints = append(ints, iVal)
 	}
-
 	return
 }
 
@@ -54,5 +56,85 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 			ns = append(ns, strings.TrimSpace(str))
 		}
 	}
+	return
+}
+
+// IntsHas check the []int contains the given value
+func IntsHas(ints []int, val int) bool {
+	for _, ele := range ints {
+		if ele == val {
+			return true
+		}
+	}
+	return false
+}
+
+// Int64sHas check the []int64 contains the given value
+func Int64sHas(ints []int64, val int64) bool {
+	for _, ele := range ints {
+		if ele == val {
+			return true
+		}
+	}
+	return false
+}
+
+// StringsHas check the []string contains the given element
+func StringsHas(ss []string, val string) bool {
+	for _, ele := range ss {
+		if ele == val {
+			return true
+		}
+	}
+	return false
+}
+
+// Contains array(strings, ints, uints) should be contains the given value(int(X),string).
+func Contains(arr, val interface{}) bool {
+	if val == nil || arr == nil {
+		return false
+	}
+
+	// if is string value
+	if strVal, ok := val.(string); ok {
+		if ss, ok := arr.([]string); ok {
+			return StringsHas(ss, strVal)
+		}
+		return false
+	}
+
+	// as int value
+	intVal, err := mathutil.Int64(val)
+	if err != nil {
+		return false
+	}
+
+	if int64s, ok := toInt64Slice(arr); ok {
+		return Int64sHas(int64s, intVal)
+	}
+	return false
+}
+
+// NotContains array(strings, ints, uints) should be not contains the given value.
+func NotContains(arr, val interface{}) bool {
+	return false == Contains(arr, val)
+}
+
+func toInt64Slice(arr interface{}) (ret []int64, ok bool) {
+	rv := reflect.ValueOf(arr)
+	if rv.Kind() != reflect.Slice {
+		return
+	}
+
+	for i := 0; i < rv.Len(); i++ {
+		i64, err := mathutil.Int64(rv.Index(i).Interface())
+		if err != nil {
+			return []int64{}, false
+		}
+
+		ret = append(ret, i64)
+	}
+
+	ok = true
 	return
 }
