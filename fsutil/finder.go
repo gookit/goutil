@@ -1,3 +1,6 @@
 package fsutil
 
-// type FileFinder struct {}
+// FileFinder
+type FileFinder struct {
+
+}

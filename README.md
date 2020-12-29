@@ -34,7 +34,7 @@ Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, t
 
 > package `github.com/gookit/goutil/arrutil`
 
-```text
+```go
 func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 func StringsToInts(ss []string) (ints []int, err error)
@@ -50,7 +50,7 @@ func NotContains(arr, val interface{}) bool
 
 > package `github.com/gookit/goutil/cliutil`
 
-```text
+```go
 func CurrentShell(onlyName bool) (path string)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ExecCommand(binName string, args []string, workDir ...string) (string, error)
@@ -65,7 +65,7 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 
 Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 
-```text
+```go
 func P(vs ...interface{})
 func V(vs ...interface{})
 func Print(vs ...interface{})
@@ -79,7 +79,7 @@ Usage please see [dump/README.md](dump/README.md)
 
 > package `github.com/gookit/goutil/envutil`
 
-```text
+```go
 func Getenv(name string, def ...string) string
 func HasShellEnv(shell string) bool
 func IsConsole(out io.Writer) bool
@@ -96,7 +96,7 @@ func ParseEnvValue(val string) (newVal string)
 
 > package `github.com/gookit/goutil/fmtutil`
 
-```text
+```go
 func DataSize(bytes uint64) string
 func HowLongAgo(sec int64) string
 func PrettyJSON(v interface{}) (string, error)
@@ -107,7 +107,7 @@ func StringsToInts(ss []string) (ints []int, err error)
 
 > package `github.com/gookit/goutil/fsutil`
 
-```text
+```go
 func FileExists(path string) bool
 func IsAbsPath(filepath string) bool
 func IsDir(path string) bool
@@ -122,7 +122,7 @@ func Unzip(archive, targetDir string) (err error)
 
 > package `github.com/gookit/goutil/jsonutil`
 
-```text
+```go
 func Decode(json []byte, v interface{}) error
 func Encode(v interface{}) ([]byte, error)
 func Pretty(v interface{}) (string, error)
@@ -135,7 +135,7 @@ func StripComments(src string) string
 
 - package `github.com/gookit/goutil/maputil`
 
-```text
+```go
 func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 func KeyToLower(src map[string]string) map[string]string
 func Keys(mp interface{}) (keys []string)
@@ -147,7 +147,7 @@ func Values(mp interface{}) (values []interface{})
 
 > package `github.com/gookit/goutil/mathutil`
 
-```text
+```go
 func DataSize(size uint64) string
 func ElapsedTime(startTime time.Time) string
 func Float(s string) (float64, error)
@@ -171,7 +171,7 @@ func RandomInt(min, max int) int    like php random_int() function
 
 > package `github.com/gookit/goutil/strutil`
 
-```text
+```go
 func B64Encode(str string) string
 func Bool(s string) (bool, error)
 func Camel(s string, sep ...string) string
@@ -225,7 +225,7 @@ func MicroTimeHexID() string
 
 > package `github.com/gookit/goutil/sysutil`
 
-```text
+```go
 func CurrentShell(onlyName bool) (path string)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func HasShellEnv(shell string) bool
@@ -244,7 +244,7 @@ func ShellExec(cmdStr string, shells ...string) (string, error)
 
 > package `github.com/gookit/goutil/testutil`
 
-```text
+```go
 func DiscardStdout() error
 func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
