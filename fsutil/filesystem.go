@@ -31,6 +31,10 @@ var (
 	}
 )
 
+// var (
+// 	ReadFile = ioutil.ReadFile
+// )
+
 // FileExists reports whether the named file or directory exists.
 // Deprecated
 //  please use PathExists() or IsFile() instead it
@@ -84,6 +88,23 @@ func IsAbsPath(filepath string) bool {
 // Mkdir alias of os.MkdirAll()
 func Mkdir(dirPath string, perm os.FileMode) error {
 	return os.MkdirAll(dirPath, perm)
+}
+
+// OpenFile like os.OpenFile, but will auto create dir.
+func OpenFile(filepath string, flag int, mode int) (*os.File, error) {
+	fileDir := path.Dir(filepath)
+
+	// if err := os.Mkdir(dir, 0777); err != nil {
+	if err := os.MkdirAll(fileDir, 0777); err != nil {
+		return nil, err
+	}
+
+	file, err := os.OpenFile(filepath, flag, os.FileMode(mode))
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
 // CreateFile if not exists

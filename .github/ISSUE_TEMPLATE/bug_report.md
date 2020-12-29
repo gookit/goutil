@@ -7,7 +7,14 @@ assignees: inhere
 
 ---
 
+**System (please complete the following information):**
+
+ - OS: `linux` [e.g. linux, macOS]
+ - GO Version: `1.13` [e.g. `1.13`]
+ - Pkg Version: `1.1.1` [e.g. `1.1.1`]
+
 **Describe the bug**
+
 A clear and concise description of what the bug is.
 
 **To Reproduce**
@@ -17,15 +24,13 @@ A clear and concise description of what the bug is.
 ```
 
 **Expected behavior**
+
 A clear and concise description of what you expected to happen.
 
 **Screenshots**
+
 If applicable, add screenshots to help explain your problem.
 
-**System (please complete the following information):**
- - OS: [e.g. Linux]
- - GO version [e.g. 1.13]
- - Pkg Version [e.g. 1.1.1]
-
 **Additional context**
+
 Add any other context about the problem here.
