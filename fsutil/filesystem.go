@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -31,16 +32,13 @@ var (
 	}
 )
 
-// var (
-// 	ReadFile = ioutil.ReadFile
-// )
+var (
+	// perm and flags for create log file
+	DefaultDirPerm os.FileMode = 0665
+	DefaultFilePerm os.FileMode = 0665
 
-// FileExists reports whether the named file or directory exists.
-// Deprecated
-//  please use PathExists() or IsFile() instead it
-func FileExists(path string) bool {
-	return PathExists(path)
-}
+	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+)
 
 // PathExists reports whether the named file or directory exists.
 func PathExists(path string) bool {
@@ -68,6 +66,11 @@ func IsDir(path string) bool {
 	return false
 }
 
+// FileExists reports whether the named file or directory exists.
+func FileExists(path string) bool {
+	return IsFile(path)
+}
+
 // IsFile reports whether the named file or directory exists.
 func IsFile(path string) bool {
 	if path == "" {
@@ -90,16 +93,26 @@ func Mkdir(dirPath string, perm os.FileMode) error {
 	return os.MkdirAll(dirPath, perm)
 }
 
+// MustReadFile read file contents, will panic on error
+func MustReadFile(filePath string) []byte {
+	bs, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		panic(err)
+	}
+
+	return bs
+}
+
 // OpenFile like os.OpenFile, but will auto create dir.
-func OpenFile(filepath string, flag int, mode int) (*os.File, error) {
+func OpenFile(filepath string, flag int, perm int) (*os.File, error) {
 	fileDir := path.Dir(filepath)
 
-	// if err := os.Mkdir(dir, 0777); err != nil {
-	if err := os.MkdirAll(fileDir, 0777); err != nil {
+	// if err := os.Mkdir(dir, 0775); err != nil {
+	if err := os.MkdirAll(fileDir, 0775); err != nil {
 		return nil, err
 	}
 
-	file, err := os.OpenFile(filepath, flag, os.FileMode(mode))
+	file, err := os.OpenFile(filepath, flag, os.FileMode(perm))
 	if err != nil {
 		return nil, err
 	}

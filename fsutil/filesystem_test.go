@@ -11,15 +11,16 @@ import (
 )
 
 func TestPathExists(t *testing.T) {
-	assert.False(t, fsutil.FileExists(""))
 	assert.False(t, fsutil.PathExists(""))
 	assert.False(t, fsutil.PathExists("/not-exist"))
 	assert.True(t, fsutil.PathExists("testdata/test.jpg"))
 }
 
 func TestIsFile(t *testing.T) {
+	assert.False(t, fsutil.FileExists(""))
 	assert.False(t, fsutil.IsFile(""))
 	assert.False(t, fsutil.IsFile("/not-exist"))
+	assert.False(t, fsutil.FileExists("/not-exist"))
 	assert.True(t, fsutil.IsFile("testdata/test.jpg"))
 }
 

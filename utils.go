@@ -45,3 +45,10 @@ func PkgName() string {
 
 	return string(pkgName)
 }
+
+// PanicIfErr if error is not empty
+func PanicIfErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}

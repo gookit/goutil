@@ -16,3 +16,7 @@ func TestPkgName(t *testing.T) {
 	name := goutil.PkgName()
 	assert.Equal(t, "goutil", name)
 }
+
+func TestPanicIfErr(t *testing.T) {
+	goutil.PanicIfErr(nil)
+}
