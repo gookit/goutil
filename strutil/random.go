@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	AlphaBet = "abcdefghijklmnopqrstuvwxyz"
-	AlphaNum = "abcdefghijklmnopqrstuvwxyz0123456789"
+	AlphaBet  = "abcdefghijklmnopqrstuvwxyz"
+	AlphaNum  = "abcdefghijklmnopqrstuvwxyz0123456789"
 	AlphaNum2 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 

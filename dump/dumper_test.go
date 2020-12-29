@@ -175,12 +175,12 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 	s1 := st1{st0{2}, 23, "inhere"}
 	myS1 := struct {
 		// cannotExport interface{} // ok
-		cannotExport st1  // ok
+		cannotExport st1 // ok
 		// CanExport interface{} ok
-		CanExport st1  // ok
+		CanExport st1 // ok
 	}{
 		cannotExport: s1,
-		CanExport: s1,
+		CanExport:    s1,
 	}
 
 	Println(myS1)

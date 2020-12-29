@@ -83,7 +83,7 @@ func main() {
 			pkgFuncs[pkgPath] = append(ss, "xxx")
 		} else {
 			if len(pkgFuncs) > 0 {
-				_,_ = fmt.Fprintln(out,"```")
+				_, _ = fmt.Fprintln(out, "```")
 			}
 
 			name = dir
@@ -99,21 +99,21 @@ func main() {
 			_, _ = fmt.Fprintf(out, "\n> Package `%s`\n\n", pkgPath)
 			pkgFuncs[pkgPath] = []string{"xx"}
 
-			_,_ = fmt.Fprintln(out,"```go")
+			_, _ = fmt.Fprintln(out, "```go")
 		}
 
 		// read contents
 		text := fsutil.MustReadFile(filename)
 		lines := reg.FindAllString(string(text), -1)
 
-		_,_ = fmt.Fprintln(out,"// source at", filename)
+		_, _ = fmt.Fprintln(out, "// source at", filename)
 		for _, line := range lines {
 			_, _ = fmt.Fprintln(out, strings.TrimRight(line, "{ "))
 		}
 	}
 
 	if len(pkgFuncs) > 0 {
-		_,_ = fmt.Fprintln(out,"```")
+		_, _ = fmt.Fprintln(out, "```")
 	}
 
 	if toFile {

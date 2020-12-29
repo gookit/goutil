@@ -34,7 +34,7 @@ var (
 
 var (
 	// perm and flags for create log file
-	DefaultDirPerm os.FileMode = 0665
+	DefaultDirPerm  os.FileMode = 0665
 	DefaultFilePerm os.FileMode = 0665
 
 	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND

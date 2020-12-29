@@ -8,22 +8,22 @@
 [![Build Status](https://travis-ci.org/gookit/goutil.svg?branch=master)](https://travis-ci.org/gookit/goutil)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
+💪 Useful utils for the Go: string, array/slice, map, format, cli, env, filesystem, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 
-- `arrutil` array/slice util
+- `arrutil` array/slice util functions
 - `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
-- `cliutil` CLI util
+- `cliutil` CLI util functions
 - `envutil` ENV util for check current runtime env information
-- `fmtutil` format data tool
-- `fsutil` filesystem util
-- `jsonutil` JSON util
-- `maputil` map util
-- `mathutil` math util
-- `netutil` network util
-- `strutil` string util
-- `testutil` test help util
+- `fmtutil` format data util functions
+- `fsutil` filesystem util functions
+- `jsonutil` JSON util functions
+- `maputil` map util functions
+- `mathutil` math util functions
+- `netutil` network util functions
+- `strutil` string util functions
+- `testutil` test help util functions
 
 ## GoDoc
 

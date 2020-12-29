@@ -41,7 +41,7 @@ type (
 // 		BodyString: "data string",
 // 		Headers: M{"x-head": "val"}
 // 	})
-func NewHttpRequest(method, path string, data *MD) *http.Request  {
+func NewHttpRequest(method, path string, data *MD) *http.Request {
 	var body io.Reader
 	if data != nil {
 		if data.Body != nil {

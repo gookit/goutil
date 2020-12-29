@@ -249,7 +249,7 @@ func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
 	case reflect.Struct:
 		// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
 		// NOTICE: only re-reflect.New on curDepth=1
-		if !isPtr && d.curDepth == 1{
+		if !isPtr && d.curDepth == 1 {
 			// fmt.Println("re reflect.New")
 			// oldRv := rVal
 			// rVal = reflect.New(rTyp).Elem()
