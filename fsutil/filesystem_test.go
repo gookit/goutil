@@ -10,6 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCommon(t *testing.T)  {
+	assert.Equal(t, "", fsutil.FileExt("testdata/testjpg"))
+	assert.Equal(t, ".jpg", fsutil.FileExt("testdata/test.jpg"))
+}
+
 func TestPathExists(t *testing.T) {
 	assert.False(t, fsutil.PathExists(""))
 	assert.False(t, fsutil.PathExists("/not-exist"))

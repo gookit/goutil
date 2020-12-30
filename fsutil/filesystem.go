@@ -3,6 +3,7 @@ package fsutil
 import (
 	"archive/zip"
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -120,7 +121,9 @@ func OpenFile(filepath string, flag int, perm int) (*os.File, error) {
 	return file, nil
 }
 
-// CreateFile if not exists
+/* TODO MustOpenFile() */
+
+// CreateFile create file if not exists
 // Usage:
 // 	CreateFile("path/to/file.txt", 0664, 0666)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
@@ -133,6 +136,26 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
 	}
 
 	return os.OpenFile(fpath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, filePerm)
+}
+
+// MustCreateFile create file, will panic on error
+func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
+	file, err := CreateFile(filePath, filePerm, dirPerm)
+	if err != nil {
+		panic(err)
+	}
+
+	return file
+}
+
+// CopyFile copy file to another path.
+func CopyFile(src string, dst string) error {
+	return errors.New("TODO")
+}
+
+// MustCopyFile copy file to another path.
+func MustCopyFile(src string, dst string) {
+	panic("TODO")
 }
 
 // MimeType get File Mime Type name. eg "image/png"
@@ -253,4 +276,14 @@ func DeleteIfFileExist(fpath string) error {
 	}
 
 	return os.Remove(fpath)
+}
+
+// FileExt get filename ext. alias of path.Ext()
+func FileExt(fpath string) string {
+	return path.Ext(fpath)
+}
+
+// Suffix get filename ext. alias of path.Ext()
+func Suffix(fpath string) string {
+	return path.Ext(fpath)
 }
