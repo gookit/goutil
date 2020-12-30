@@ -66,8 +66,13 @@ func main() {
 
 	fmt.Println("find and collect exported functions...")
 	for _, filename := range ms {
-		// "jsonutil/jsonutil.go"
+		// "jsonutil/jsonutil_test.go"
 		if strings.HasSuffix(filename, "_test.go") {
+			continue
+		}
+
+		// "sysutil/sysutil_windows.go"
+		if strings.HasSuffix(filename, "_windows.go") {
 			continue
 		}
 

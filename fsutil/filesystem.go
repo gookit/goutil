@@ -34,7 +34,7 @@ var (
 
 var (
 	// perm and flags for create log file
-	DefaultDirPerm  os.FileMode = 0665
+	DefaultDirPerm  os.FileMode = 0775
 	DefaultFilePerm os.FileMode = 0665
 
 	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
@@ -84,8 +84,8 @@ func IsFile(path string) bool {
 }
 
 // IsAbsPath is abs path.
-func IsAbsPath(filepath string) bool {
-	return path.IsAbs(filepath)
+func IsAbsPath(aPath string) bool {
+	return path.IsAbs(aPath)
 }
 
 // Mkdir alias of os.MkdirAll()
@@ -108,7 +108,7 @@ func OpenFile(filepath string, flag int, perm int) (*os.File, error) {
 	fileDir := path.Dir(filepath)
 
 	// if err := os.Mkdir(dir, 0775); err != nil {
-	if err := os.MkdirAll(fileDir, 0775); err != nil {
+	if err := os.MkdirAll(fileDir, DefaultDirPerm); err != nil {
 		return nil, err
 	}
 
@@ -206,7 +206,7 @@ func Unzip(archive, targetDir string) (err error) {
 		return
 	}
 
-	if err = os.MkdirAll(targetDir, 0755); err != nil {
+	if err = os.MkdirAll(targetDir, DefaultDirPerm); err != nil {
 		return
 	}
 

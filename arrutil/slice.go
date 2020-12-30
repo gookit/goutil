@@ -89,7 +89,7 @@ func StringsHas(ss []string, val string) bool {
 	return false
 }
 
-// Contains array(strings, ints, uints) should be contains the given value(int(X),string).
+// Contains assert array(strings, intXs, uintXs) should be contains the given value(int(X),string).
 func Contains(arr, val interface{}) bool {
 	if val == nil || arr == nil {
 		return false

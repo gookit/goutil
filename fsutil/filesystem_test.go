@@ -32,6 +32,8 @@ func TestIsDir(t *testing.T) {
 
 func TestIsAbsPath(t *testing.T) {
 	assert.True(t, fsutil.IsAbsPath("/data/some.txt"))
+
+	assert.NoError(t, fsutil.DeleteIfFileExist("/not-exist"))
 }
 
 func TestMkdir(t *testing.T) {
