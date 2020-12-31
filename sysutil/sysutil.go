@@ -3,6 +3,7 @@ package sysutil
 import (
 	"io"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -11,7 +12,9 @@ import (
 
 var curShell string
 
-// CurrentShell get current used shell env file. eg "/bin/zsh" "/bin/bash"
+// CurrentShell get current used shell env file.
+// eg "/bin/zsh" "/bin/bash".
+// if onlyName=true, will return "zsh", "bash"
 func CurrentShell(onlyName bool) (path string) {
 	var err error
 	if curShell == "" {
@@ -34,6 +37,7 @@ func CurrentShell(onlyName bool) (path string) {
 }
 
 // HasShellEnv has shell env check.
+//
 // Usage:
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")
@@ -45,6 +49,23 @@ func HasShellEnv(shell string) bool {
 	}
 
 	return strings.TrimSpace(out) == "OK"
+}
+
+// FindExecutable in the system
+//
+// Usage:
+// 	FindExecutable("bash")
+func FindExecutable(binName string) (string, error) {
+	return exec.LookPath(binName)
+}
+
+// HasExecutable in the system
+//
+// Usage:
+// 	HasExecutable("bash")
+func HasExecutable(binName string) bool {
+	_, err := exec.LookPath(binName)
+	return err == nil
 }
 
 // IsWin system. linux windows darwin
