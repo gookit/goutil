@@ -19,7 +19,7 @@ const (
 
 var (
 	// refer net/http package
-	imageMimeTypes = map[string]string{
+	ImageMimeTypes = map[string]string{
 		"bmp": "image/bmp",
 		"gif": "image/gif",
 		"ief": "image/ief",
@@ -105,7 +105,7 @@ func MustReadFile(filePath string) []byte {
 }
 
 // OpenFile like os.OpenFile, but will auto create dir.
-func OpenFile(filepath string, flag int, perm int) (*os.File, error) {
+func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	fileDir := path.Dir(filepath)
 
 	// if err := os.Mkdir(dir, 0775); err != nil {
@@ -113,12 +113,17 @@ func OpenFile(filepath string, flag int, perm int) (*os.File, error) {
 		return nil, err
 	}
 
-	file, err := os.OpenFile(filepath, flag, os.FileMode(perm))
+	file, err := os.OpenFile(filepath, flag, perm)
 	if err != nil {
 		return nil, err
 	}
 
 	return file, nil
+}
+
+// QuickOpenFile like os.OpenFile
+func QuickOpenFile(filepath string) (*os.File, error) {
+	return OpenFile(filepath, DefaultFileFlags, DefaultFilePerm)
 }
 
 /* TODO MustOpenFile() */
@@ -196,7 +201,7 @@ func IsImageFile(path string) bool {
 		return false
 	}
 
-	for _, imgMime := range imageMimeTypes {
+	for _, imgMime := range ImageMimeTypes {
 		if imgMime == mime {
 			return true
 		}
