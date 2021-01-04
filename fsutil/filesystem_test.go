@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCommon(t *testing.T)  {
+func TestCommon(t *testing.T) {
 	assert.Equal(t, "", fsutil.FileExt("testdata/testjpg"))
 	assert.Equal(t, ".jpg", fsutil.Suffix("testdata/test.jpg"))
 
