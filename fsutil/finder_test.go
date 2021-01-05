@@ -22,14 +22,12 @@ func TestEmptyFinder(t *testing.T) {
 			fmt.Println(filePath)
 		})
 
-	fsutil.EmptyFinder().
-		AddDir("./testdata").
+	fsutil.NewFinder([]string{"./testdata"}).
 		AddFile("finder.go").
 		NoDotDir().
 		EachStat(func(fi os.FileInfo, filePath string) {
 			fmt.Println(filePath, "=>", fi.ModTime())
 		})
-
 }
 
 func TestDotFileFilterFunc(t *testing.T) {

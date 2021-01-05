@@ -63,38 +63,39 @@ func TestMkdir(t *testing.T) {
 
 func TestCreateFile(t *testing.T) {
 	// TODO windows will error
-	if envutil.IsWin() {
-		return
-	}
+	// if envutil.IsWin() {
+	// 	return
+	// }
 
 	file, err := fsutil.CreateFile("./testdata/test.txt", 0664, 0666)
 	if assert.NoError(t, err) {
 		assert.Equal(t, "./testdata/test.txt", file.Name())
-		assert.NoError(t, os.Remove(file.Name()))
 		assert.NoError(t, file.Close())
+		assert.NoError(t, os.Remove(file.Name()))
 	}
 
 	file, err = fsutil.CreateFile("./testdata/sub/test.txt", 0664, 0777)
 	if assert.NoError(t, err) {
 		assert.Equal(t, "./testdata/sub/test.txt", file.Name())
-		assert.NoError(t, os.RemoveAll("./testdata/sub"))
 		assert.NoError(t, file.Close())
+		assert.NoError(t, os.RemoveAll("./testdata/sub"))
 	}
 
 	file, err = fsutil.CreateFile("./testdata/sub/sub2/test.txt", 0664, 0777)
 	if assert.NoError(t, err) {
 		assert.Equal(t, "./testdata/sub/sub2/test.txt", file.Name())
-		assert.NoError(t, os.RemoveAll("./testdata/sub"))
 		assert.NoError(t, file.Close())
+		assert.NoError(t, os.RemoveAll("./testdata/sub"))
 	}
 }
 
 func TestQuickOpenFile(t *testing.T) {
-	file, err := fsutil.QuickOpenFile("./testdata/quick-open-file.txt")
+	fname := "./testdata/quick-open-file.txt"
+	file, err := fsutil.QuickOpenFile(fname)
 	if assert.NoError(t, err) {
-		assert.Equal(t, "./testdata/quick-open-file.txt", file.Name())
-		assert.NoError(t, os.Remove(file.Name()))
+		assert.Equal(t, fname, file.Name())
 		assert.NoError(t, file.Close())
+		assert.NoError(t, os.Remove(file.Name()))
 	}
 }
 

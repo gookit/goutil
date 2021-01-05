@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 )
 
 // FileFilter for filter file path.
@@ -341,8 +342,8 @@ func (f *FileFinder) findInDir(dirPath string) {
 
 			var ok bool
 			if hasDirFilter {
-				for _, dFilter := range f.dirFilters {
-					ok = dFilter.FilterDir(fullPath, name)
+				for _, df := range f.dirFilters {
+					ok = df.FilterDir(fullPath, name)
 					if false == ok {
 						break
 					}
@@ -368,8 +369,8 @@ func (f *FileFinder) findInDir(dirPath string) {
 		// use custom filter functions
 		var ok bool
 		if hasFileFilter {
-			for _, pfFunc := range f.fileFilters {
-				ok = pfFunc.FilterFile(fullPath, name)
+			for _, ff := range f.fileFilters {
+				ok = ff.FilterFile(fullPath, name)
 				if false == ok {
 					break
 				}
@@ -512,6 +513,32 @@ func DotFileFilterFunc(include bool) FileFilterFunc {
 	return func(filePath, filename string) bool {
 		// filename := path.Base(filePath)
 		if filename[0] == '.' {
+			return include
+		}
+
+		return !include
+	}
+}
+
+// ModTimeFilterFunc filter file by modify time.
+func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
+	return func(filePath, filename string) bool {
+		fi, err := os.Stat(filePath)
+		if err != nil {
+			return !include
+		}
+
+		now := time.Now().Second()
+		if op == '>' {
+			if now - fi.ModTime().Second() > limitSec {
+				return include
+			}
+
+			return !include
+		}
+
+		// '<'
+		if now - fi.ModTime().Second() < limitSec {
 			return include
 		}
 
