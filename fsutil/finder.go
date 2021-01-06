@@ -93,6 +93,13 @@ func (r *FindResults) Result() []string {
 	return r.paths
 }
 
+// TODO use excludeDotFlag 1 file 2 dir 1|2 both
+type exDotFlag uint8
+const (
+	ExDotFile exDotFlag = 1
+	ExDotDir exDotFlag  = 2
+)
+
 // FileFinder struct
 type FileFinder struct {
 	// mark has been run find()
@@ -109,10 +116,13 @@ type FileFinder struct {
 	excludeExts  []string // exclude ext names. eg: {".go", ".md"}
 	excludeNames []string // exclude file names. eg: {"go.mod"}
 
+	// builtin dot filters.
+	// TODO use excludeDotFlag 1 file 2 dir 1|2 both
+	// excludeDotFlag exDotFlag
 	excludeDotDir  bool
 	excludeDotFile bool
 
-	fileFlags int
+	// fileFlags int
 
 	dirFilters  []DirFilter  // filters for filter dir paths
 	fileFilters []FileFilter // filters for filter file paths
