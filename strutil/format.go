@@ -3,6 +3,7 @@ package strutil
 import (
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Some alias methods.
@@ -36,54 +37,37 @@ func UpperWord(s string) string {
 		return strings.ToUpper(s)
 	}
 
-	var inWord bool
-	var buf []byte
+	inWord := true
+	buf := make([]byte, 0, len(s))
 
-	for i:=0;; {
-		if isLowerChar(s[i]) {
-			buf = append(buf, []byte(strings.ToUpper(string(s[i])))...)
-		} else {
-			buf = append(buf, []byte(string(s[i]))...)
-		}
-		inWord = true
-		for j:=i+1; j<len(s); j++{
-			if !isWord(s[i]) && isWord(s[j]) {
-				inWord = false
-			}
-
-			if isLowerChar(s[j]) && !inWord {
-				buf = append(buf, []byte(strings.ToUpper(string(s[j])))...)
-				inWord = true
-			} else {
-				buf = append(buf, []byte(string(s[j]))...)
-				if isWord(s[j]) {
-					inWord = true
-				}
-			}
-			i++
-		}
-		break
+	i := 0
+	rs := []rune(s)
+	if runeIsLowerChar(rs[i]) {
+		buf = append(buf, []byte(string(unicode.ToUpper(rs[i])))...)
+	} else {
+		buf = append(buf, []byte(string(rs[i]))...)
 	}
 
-	//ss := strings.Split(s, " ")
-	//ns := make([]string, len(ss))
-	//for i, word := range ss {
-	//	ns[i] = UpperFirst(word)
-	//}
+	for j := i + 1; j < len(rs); j++ {
+		if !runeIsWord(rs[i]) && runeIsWord(rs[j]) {
+			inWord = false
+		}
+
+		if runeIsLowerChar(rs[j]) && !inWord {
+			buf = append(buf, []byte(string(unicode.ToUpper(rs[j])))...)
+			inWord = true
+		} else {
+			buf = append(buf, []byte(string(rs[j]))...)
+		}
+
+		if runeIsWord(rs[j]) {
+			inWord = true
+		}
+
+		i++
+	}
 
 	return string(buf)
-}
-
-func isWord(c uint8) bool {
-	return isLowerChar(c) || isUpperChar(c)
-}
-
-func isLowerChar(c uint8) bool {
-	return 'a' <= c && c <= 'z'
-}
-
-func isUpperChar(c uint8) bool {
-	return 'A' <= c && c <= 'Z'
 }
 
 // LowerFirst lower first char
@@ -92,10 +76,12 @@ func LowerFirst(s string) string {
 		return s
 	}
 
-	f := s[0]
-	if f >= 'A' && f <= 'Z' {
-		return strings.ToLower(string(f)) + s[1:]
+	rs := []rune(s)
+	f := rs[0]
+	if 'A' <= f && f <= 'Z' {
+		return string(unicode.ToLower(f)) + string(rs[1:])
 	}
+
 	return s
 }
 
@@ -104,11 +90,12 @@ func UpperFirst(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-
-	f := s[0]
-	if f >= 'a' && f <= 'z' {
-		return strings.ToUpper(string(f)) + s[1:]
+	rs := []rune(s)
+	f := rs[0]
+	if 'a' <= f && f <= 'z' {
+		return string(unicode.ToUpper(f)) + string(rs[1:])
 	}
+
 	return s
 }
 
@@ -162,4 +149,16 @@ func CamelCase(s string, sep ...string) string {
 		s = strings.TrimLeft(s, sepChar)
 		return UpperFirst(s)
 	})
+}
+
+func runeIsWord(c rune) bool {
+	return runeIsLowerChar(c) || runeIsUpperChar(c)
+}
+
+func runeIsLowerChar(c rune) bool {
+	return 'a' <= c && c <= 'z'
+}
+
+func runeIsUpperChar(c rune) bool {
+	return 'A' <= c && c <= 'Z'
 }
