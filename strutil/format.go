@@ -32,12 +32,58 @@ func UpperWord(s string) string {
 		return s
 	}
 
-	ss := strings.Split(s, " ")
-	ns := make([]string, len(ss))
-	for i, word := range ss {
-		ns[i] = UpperFirst(word)
+	if len(s) == 1 {
+		return strings.ToUpper(s)
 	}
-	return strings.Join(ns, " ")
+
+	var inWord bool
+	var buf []byte
+
+	for i:=0;; {
+		if isLowerChar(s[i]) {
+			buf = append(buf, []byte(strings.ToUpper(string(s[i])))...)
+		} else {
+			buf = append(buf, []byte(string(s[i]))...)
+		}
+		inWord = true
+		for j:=i+1; j<len(s); j++{
+			if !isWord(s[i]) && isWord(s[j]) {
+				inWord = false
+			}
+
+			if isLowerChar(s[j]) && !inWord {
+				buf = append(buf, []byte(strings.ToUpper(string(s[j])))...)
+				inWord = true
+			} else {
+				buf = append(buf, []byte(string(s[j]))...)
+				if isWord(s[j]) {
+					inWord = true
+				}
+			}
+			i++
+		}
+		break
+	}
+
+	//ss := strings.Split(s, " ")
+	//ns := make([]string, len(ss))
+	//for i, word := range ss {
+	//	ns[i] = UpperFirst(word)
+	//}
+
+	return string(buf)
+}
+
+func isWord(c uint8) bool {
+	return isLowerChar(c) || isUpperChar(c)
+}
+
+func isLowerChar(c uint8) bool {
+	return 'a' <= c && c <= 'z'
+}
+
+func isUpperChar(c uint8) bool {
+	return 'A' <= c && c <= 'Z'
 }
 
 // LowerFirst lower first char

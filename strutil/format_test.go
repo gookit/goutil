@@ -56,6 +56,10 @@ func TestUpperWord(t *testing.T) {
 		{"Ab", "Ab"},
 		{"hi lo", "Hi Lo"},
 		{"hi lo wr", "Hi Lo Wr"},
+		{"!Test it!", "!Test It!"},
+		{"This is a Test.", "This Is A Test."},
+		{"TTtest TThis...good at This", "TTtest TThis...Good At This"},
+		{"test...test...this...is..WOrk", "Test...Test...This...Is..WOrk"},
 	}
 	for _, tt := range tests {
 		assert.Equal(t, tt.want, strutil.UpperWord(tt.give))
