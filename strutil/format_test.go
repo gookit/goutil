@@ -81,7 +81,7 @@ func TestSnakeCase(t *testing.T) {
 		"RangePrice":  "range_price",
 		"rangePrice":  "range_price",
 		"range_price": "range_price",
-		"中文Snake": "中文_snake",
+		"中文Snake":     "中文_snake",
 	}
 
 	for sample, want := range tests {
@@ -98,10 +98,10 @@ func TestCamelCase(t *testing.T) {
 		"rangePrice":   "rangePrice",
 		"range_price":  "rangePrice",
 		"_range_price": "RangePrice",
-		"try中文": "try中文",
-		"_try中文": "Try中文",
-		"中文try": "中文try",
-		"中文_try": "中文Try",
+		"try中文":        "try中文",
+		"_try中文":       "Try中文",
+		"中文try":        "中文try",
+		"中文_try":       "中文Try",
 	}
 
 	for sample, want := range tests {

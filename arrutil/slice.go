@@ -109,7 +109,7 @@ func Contains(arr, val interface{}) bool {
 				}
 			}
 		}
-		
+
 		return false
 	}
 

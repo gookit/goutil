@@ -134,6 +134,17 @@ func IsZipFile(filepath string) bool
 func Unzip(archive, targetDir string) (err error)
 func DeleteIfFileExist(fpath string) error
 // source at fsutil/finder.go
+func EmptyFinder() *FileFinder
+func NewFinder(dirPaths []string, filePaths ...string) *FileFinder
+func ExtFilterFunc(exts []string, include bool) FileFilterFunc
+func SuffixFilterFunc(suffixes []string, include bool) FileFilterFunc
+func PathNameFilterFunc(names []string, include bool) FileFilterFunc
+func DotFileFilterFunc(include bool) FileFilterFunc
+func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc
+func GlobFilterFunc(patterns []string, include bool) FileFilterFunc
+func RegexFilterFunc(pattern string, include bool) FileFilterFunc
+func DotDirFilterFunc(include bool) DirFilterFunc
+func DirNameFilterFunc(names []string, include bool) DirFilterFunc
 ```
 
 ### JSON

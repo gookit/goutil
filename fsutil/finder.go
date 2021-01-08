@@ -66,11 +66,19 @@ type FileMeta struct {
 
 // FindResults struct
 type FindResults struct {
-	paths []string
+	f *FileFilter
+
+	// founded file paths.
+	filePaths []string
+
+	// filters
+	dirFilters  []DirFilter  // filters for filter dir paths
+	fileFilters []FileFilter // filters for filter file paths
+	// bodyFilters []BodyFilter // filters for filter file contents
 }
 
 func (r *FindResults) append(filePath ...string) {
-	r.paths = append(r.paths, filePath...)
+	r.filePaths = append(r.filePaths, filePath...)
 }
 
 // Result get find paths
@@ -90,22 +98,27 @@ func (r *FindResults) Each() *FindResults {
 
 // Result get find paths
 func (r *FindResults) Result() []string {
-	return r.paths
+	return r.filePaths
 }
 
 // TODO use excludeDotFlag 1 file 2 dir 1|2 both
 type exDotFlag uint8
+
 const (
 	ExDotFile exDotFlag = 1
-	ExDotDir exDotFlag  = 2
+	ExDotDir  exDotFlag = 2
 )
 
 // FileFinder struct
 type FileFinder struct {
+	// r *FindResults
+
 	// mark has been run find()
 	founded bool
 	// dir paths for find file.
 	dirPaths []string
+	// file paths for filter.
+	srcFiles []string
 
 	// builtin include filters
 	includeDirs []string // include dir names. eg: {"model"}
@@ -126,7 +139,6 @@ type FileFinder struct {
 
 	dirFilters  []DirFilter  // filters for filter dir paths
 	fileFilters []FileFilter // filters for filter file paths
-	// bodyFilters []BodyFilter // filters for filter file contents
 
 	// founded file paths.
 	filePaths []string
@@ -354,7 +366,7 @@ func (f *FileFinder) findInDir(dirPath string) {
 			if hasDirFilter {
 				for _, df := range f.dirFilters {
 					ok = df.FilterDir(fullPath, name)
-					if false == ok {
+					if true == ok { // 有一个满足即可
 						break
 					}
 				}
@@ -381,7 +393,7 @@ func (f *FileFinder) findInDir(dirPath string) {
 		if hasFileFilter {
 			for _, ff := range f.fileFilters {
 				ok = ff.FilterFile(fullPath, name)
-				if false == ok {
+				if true == ok { // 有一个满足即可
 					break
 				}
 			}
@@ -540,7 +552,7 @@ func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
 
 		now := time.Now().Second()
 		if op == '>' {
-			if now - fi.ModTime().Second() > limitSec {
+			if now-fi.ModTime().Second() > limitSec {
 				return include
 			}
 
@@ -548,7 +560,7 @@ func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
 		}
 
 		// '<'
-		if now - fi.ModTime().Second() < limitSec {
+		if now-fi.ModTime().Second() < limitSec {
 			return include
 		}
 

@@ -102,4 +102,5 @@ func TestExtFilterFunc(t *testing.T) {
 	fn = fsutil.ExtFilterFunc([]string{".log"}, false)
 	assert.False(t, fn("info.log", ""))
 	assert.True(t, fn("info.tmp", ""))
+
 }
