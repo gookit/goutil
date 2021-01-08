@@ -3,6 +3,7 @@ package strutil
 import (
 	"regexp"
 	"strings"
+	"unicode"
 )
 
 // Some alias methods.
@@ -32,12 +33,41 @@ func UpperWord(s string) string {
 		return s
 	}
 
-	ss := strings.Split(s, " ")
-	ns := make([]string, len(ss))
-	for i, word := range ss {
-		ns[i] = UpperFirst(word)
+	if len(s) == 1 {
+		return strings.ToUpper(s)
 	}
-	return strings.Join(ns, " ")
+
+	inWord := true
+	buf := make([]byte, 0, len(s))
+
+	i := 0
+	rs := []rune(s)
+	if runeIsLowerChar(rs[i]) {
+		buf = append(buf, []byte(string(unicode.ToUpper(rs[i])))...)
+	} else {
+		buf = append(buf, []byte(string(rs[i]))...)
+	}
+
+	for j := i + 1; j < len(rs); j++ {
+		if !runeIsWord(rs[i]) && runeIsWord(rs[j]) {
+			inWord = false
+		}
+
+		if runeIsLowerChar(rs[j]) && !inWord {
+			buf = append(buf, []byte(string(unicode.ToUpper(rs[j])))...)
+			inWord = true
+		} else {
+			buf = append(buf, []byte(string(rs[j]))...)
+		}
+
+		if runeIsWord(rs[j]) {
+			inWord = true
+		}
+
+		i++
+	}
+
+	return string(buf)
 }
 
 // LowerFirst lower first char
@@ -46,10 +76,12 @@ func LowerFirst(s string) string {
 		return s
 	}
 
-	f := s[0]
-	if f >= 'A' && f <= 'Z' {
-		return strings.ToLower(string(f)) + s[1:]
+	rs := []rune(s)
+	f := rs[0]
+	if 'A' <= f && f <= 'Z' {
+		return string(unicode.ToLower(f)) + string(rs[1:])
 	}
+
 	return s
 }
 
@@ -58,11 +90,12 @@ func UpperFirst(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-
-	f := s[0]
-	if f >= 'a' && f <= 'z' {
-		return strings.ToUpper(string(f)) + s[1:]
+	rs := []rune(s)
+	f := rs[0]
+	if 'a' <= f && f <= 'z' {
+		return string(unicode.ToUpper(f)) + string(rs[1:])
 	}
+
 	return s
 }
 
@@ -116,4 +149,16 @@ func CamelCase(s string, sep ...string) string {
 		s = strings.TrimLeft(s, sepChar)
 		return UpperFirst(s)
 	})
+}
+
+func runeIsWord(c rune) bool {
+	return runeIsLowerChar(c) || runeIsUpperChar(c)
+}
+
+func runeIsLowerChar(c rune) bool {
+	return 'a' <= c && c <= 'z'
+}
+
+func runeIsUpperChar(c rune) bool {
+	return 'A' <= c && c <= 'Z'
 }
