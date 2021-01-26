@@ -49,7 +49,7 @@ var genOpts = struct {
 	template string
 }{}
 
-func init() {
+func bindingFlags() {
 	flag.StringVar(&genOpts.lang, "l", "en", "package desc message language. allow: en, zh-CN")
 	flag.StringVar(&genOpts.output,
 		"o",
@@ -74,13 +74,14 @@ func init() {
   go run ./internal/gendoc -o stdout
   go run ./internal/gendoc -o stdout -t ./internal/template/README.md.tpl
   go run ./internal/gendoc -o README.md -t ./internal/template/README.md.tpl
-  go run ./internal/gendoc -o README.zh-CN.md -t ./internal/template/README.zh-CN.md.tpl -l zh-CN
-`)
+  go run ./internal/gendoc -o README.zh-CN.md -t ./internal/template/README.zh-CN.md.tpl -l zh-CN`)
 	}
 }
 
 // go run ./internal/gendoc
 func main() {
+	bindingFlags()
+
 	flag.Parse()
 
 	ms, err := filepath.Glob("./*/*.go")
