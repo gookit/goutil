@@ -108,9 +108,9 @@ func (p *LineParser) Parse() []string {
 	return p.args
 }
 
-func (p *LineParser) appendWithPrefix(node, prefix string)  {
+func (p *LineParser) appendWithPrefix(node, prefix string) {
 	if prefix != "" {
-		p.args = append(p.args, prefix + " " + node)
+		p.args = append(p.args, prefix+" "+node)
 	} else {
 		p.args = append(p.args, node)
 	}
