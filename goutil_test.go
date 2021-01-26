@@ -11,11 +11,14 @@ import (
 func TestFuncName(t *testing.T) {
 	name := goutil.FuncName(goutil.PkgName)
 	assert.Equal(t, "github.com/gookit/goutil.PkgName", name)
+
+	name = goutil.FuncName(goutil.PanicIfErr)
+	assert.Equal(t, "github.com/gookit/goutil.PanicIfErr", name)
 }
 
 func TestPkgName(t *testing.T) {
-	name := goutil.PkgName()
-	assert.Equal(t, "goutil", name)
+	name := goutil.PkgName(goutil.FuncName(goutil.PanicIfErr))
+	assert.Equal(t, "github.com/gookit/goutil", name)
 }
 
 func TestPanicIfErr(t *testing.T) {

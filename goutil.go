@@ -2,11 +2,9 @@
 package goutil
 
 import (
-	"bufio"
-	"bytes"
-	"os"
 	"reflect"
 	"runtime"
+	"strings"
 )
 
 // FuncName get func name
@@ -15,14 +13,21 @@ func FuncName(f interface{}) string {
 }
 
 // PkgName get current package name
-func PkgName() string {
-	_, filePath, _, _ := runtime.Caller(0)
-	file, _ := os.Open(filePath)
-	r := bufio.NewReader(file)
-	line, _, _ := r.ReadLine()
-	pkgName := bytes.TrimPrefix(line, []byte("package "))
+// Usage:
+//	funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
+//	pgkName := goutil.PkgName(funcName)
+func PkgName(funcName string) string {
+	for {
+		lastPeriod := strings.LastIndex(funcName, ".")
+		lastSlash := strings.LastIndex(funcName, "/")
+		if lastPeriod > lastSlash {
+			funcName = funcName[:lastPeriod]
+		} else {
+			break
+		}
+	}
 
-	return string(pkgName)
+	return funcName
 }
 
 // GetCallStacks stacks is a wrapper for runtime.

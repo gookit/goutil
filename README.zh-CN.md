@@ -10,24 +10,24 @@
 
 Go一些常用的工具函数收集、实现和整理
 
-> **[EN README](README.md)**
-
-- `arrutil` array/slice util
+- `arrutil` array/slice 相关操作的函数工具包
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
-- `cliutil` CLI util
-- `envutil` ENV util
+- `cliutil` CLI 的一些工具函数包
+- `envutil` ENV 信息获取判断工具包
 - `fmtutil` format data tool
-- `fsutil` filesystem util
+- `fsutil` 文件系统操作相关的工具函数包
 - `jsonutil` JSON util
 - `maputil` map util
-- `mathutil` math util
-- `netutil` network util
+- `mathutil` int/number 相关操作的函数工具包
 - `strutil` string util
+- `sysutil` system util
 - `testutil` test help util
+
+> **[EN README](README.md)**
 
 ## GoDoc
 
-- [godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
+- [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
 
 ## Util Packages
 
@@ -36,6 +36,10 @@ Go一些常用的工具函数收集、实现和整理
 > Package `github.com/gookit/goutil/arrutil`
 
 ```go
+// source at arrutil/arrutil.go
+func Contains(arr, val interface{}) bool
+func NotContains(arr, val interface{}) bool
+func GetRandomOne(arr interface{}) interface{}
 // source at arrutil/slice.go
 func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
@@ -44,8 +48,6 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string)
 func IntsHas(ints []int, val int) bool
 func Int64sHas(ints []int64, val int64) bool
 func StringsHas(ss []string, val string) bool
-func Contains(arr, val interface{}) bool
-func NotContains(arr, val interface{}) bool
 ```
 
 ### CLI
@@ -60,6 +62,15 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
+// source at cliutil/line_parser.go
+func StringToOSArgs(line string) []string
+func ParseLine(line string) []string
+// source at cliutil/read.go
+func ReadInput(question string) (string, error)
+func ReadLine(question string) (string, error)
+func ReadFirst(question string) (string, error)
+// source at cliutil/read_nonwin.go
+func ReadPassword(question ...string) string
 ```
 
 ### Dump
@@ -108,6 +119,7 @@ func IsSupportTrueColor() bool
 func DataSize(bytes uint64) string
 func PrettyJSON(v interface{}) (string, error)
 func StringsToInts(ss []string) (ints []int, err error)
+func ArgsWithSpaces(args []interface{}) (message string)
 // source at fmtutil/time.go
 func HowLongAgo(sec int64) string
 ```
@@ -122,17 +134,23 @@ func PathExists(path string) bool
 func IsDir(path string) bool
 func FileExists(path string) bool
 func IsFile(path string) bool
-func IsAbsPath(filepath string) bool
+func IsAbsPath(aPath string) bool
 func Mkdir(dirPath string, perm os.FileMode) error
 func MustReadFile(filePath string) []byte
-func OpenFile(filepath string, flag int, perm int) (*os.File, error)
+func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
+func QuickOpenFile(filepath string) (*os.File, error)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
+func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
+func CopyFile(src string, dst string) error
+func MustCopyFile(src string, dst string)
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 func IsImageFile(path string) bool
 func IsZipFile(filepath string) bool
 func Unzip(archive, targetDir string) (err error)
 func DeleteIfFileExist(fpath string) error
+func FileExt(fpath string) string
+func Suffix(fpath string) string
 // source at fsutil/finder.go
 func EmptyFinder() *FileFinder
 func NewFinder(dirPaths []string, filePaths ...string) *FileFinder
@@ -249,6 +267,7 @@ func ToInts(s string, sep ...string) ([]int, error)
 func ToIntSlice(s string, sep ...string) (ints []int, err error)
 func ToArray(s string, sep ...string) []string
 func ToSlice(s string, sep ...string) []string
+func ToOSArgs(s string) []string
 func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/strutil.go
 func IsAlphabet(char uint8) bool
@@ -281,6 +300,8 @@ func ShellExec(cmdStr string, shells ...string) (string, error)
 // source at sysutil/sysutil.go
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
+func FindExecutable(binName string) (string, error)
+func HasExecutable(binName string) bool
 func IsWin() bool
 func IsWindows() bool
 func IsMac() bool
@@ -288,9 +309,6 @@ func IsLinux() bool
 func IsMSys() bool
 func IsConsole(out io.Writer) bool
 // source at sysutil/sysutil_nonwin.go
-func Kill(pid int, signal syscall.Signal) error
-func ProcessExists(pid int) bool
-// source at sysutil/sysutil_windows.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool
 ```
@@ -314,10 +332,18 @@ func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
 ```
 
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+go test ./...
+```
+
 ## Gookit packages
 
   - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
-  - [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP 
+  - [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
   - [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
   - [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
   - [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support

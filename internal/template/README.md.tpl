@@ -10,8 +10,6 @@
 
 💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
 
-> **[中文说明](README.zh-CN.md)**
-
 - `arrutil` array/slice util functions
 - `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` CLI util functions
@@ -25,12 +23,14 @@
 - `strutil` string util functions
 - `testutil` test help util functions
 
+> **[中文说明](README.zh-CN.md)**
+
 ## GoDoc
 
-- [godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
+- [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
 
 ## Packages
-
+{{pgkFuncs}}
 ## Code Check & Testing
 
 ```bash
