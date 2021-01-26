@@ -8,7 +8,7 @@
 [![Build Status](https://travis-ci.org/gookit/goutil.svg?branch=master)](https://travis-ci.org/gookit/goutil)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-💪 Useful utils for the Go: string, array/slice, map, format, cli, env, filesystem, testing and more.
+💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 

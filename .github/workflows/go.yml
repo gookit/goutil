@@ -33,4 +33,24 @@ jobs:
         go get golang.org/x/tools/cmd/cover
 
     - name: Run unit tests
-      run: go test -v -cover ./...
+      #      run: go test -v -cover ./...
+      #      must add " for profile.cov on windows OS
+      run: go test -v -coverprofile="profile.cov" ./...
+
+    - name: Send coverage
+      uses: shogo82148/actions-goveralls@v1
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        path-to-profile: profile.cov
+        flag-name: Go-${{ matrix.go_version }}
+        parallel: true
+
+  # notifies that all test jobs are finished.
+  # https://github.com/shogo82148/actions-goveralls
+  finish:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          parallel-finished: true

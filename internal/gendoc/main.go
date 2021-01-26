@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	hidden = []string{"netutil", "internal"}
 	nameMap = map[string]string{
 		"arr":  "array/Slice",
 		"str":  "string",
@@ -30,14 +31,23 @@ var (
 		"env":  "ENV",
 	}
 
-	hidden = []string{"netutil", "internal"}
+	pkgDesc = map[string]map[string]string{
+		"en": {
+			"arr": "Package arrutil provides some util functions for array, slice",
+		},
+		"zh-CN": {
+			"arr": "`arrutil` 包提供一些辅助函数，用于数组、切片处理",
+		},
+	}
 )
 
 var genOpts = struct {
+	lang string
 	output string
 }{}
 
 func init() {
+	flag.StringVar(&genOpts.lang, "l", "en", "package desc message language. allow: en, zh-CN")
 	flag.StringVar(&genOpts.output, "o", "./metadata.log", "the result output file. if is 'stdout', will direct print it.")
 }
 
@@ -62,6 +72,8 @@ func main() {
 	var pkgFuncs = make(map[string][]string)
 
 	basePkg := "github.com/gookit/goutil"
+
+	// match func
 	reg := regexp.MustCompile(`func [A-Z]\w+\(.*\).*`)
 
 	fmt.Println("find and collect exported functions...")

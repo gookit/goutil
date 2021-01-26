@@ -1,12 +1,6 @@
 package goutil
 
 import (
-	"bufio"
-	"bytes"
-	"os"
-	"reflect"
-	"runtime"
-
 	"github.com/gookit/goutil/jsonutil"
 )
 
@@ -28,27 +22,4 @@ func Go(f func() error) error {
 func Filling(form interface{}, model interface{}) error {
 	jsonBytes, _ := jsonutil.Encode(form)
 	return jsonutil.Decode(jsonBytes, model)
-}
-
-// FuncName get func name
-func FuncName(f interface{}) string {
-	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
-}
-
-// PkgName get current package name
-func PkgName() string {
-	_, filePath, _, _ := runtime.Caller(0)
-	file, _ := os.Open(filePath)
-	r := bufio.NewReader(file)
-	line, _, _ := r.ReadLine()
-	pkgName := bytes.TrimPrefix(line, []byte("package "))
-
-	return string(pkgName)
-}
-
-// PanicIfErr if error is not empty
-func PanicIfErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

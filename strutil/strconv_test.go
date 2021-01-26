@@ -152,3 +152,11 @@ func TestToTime(t *testing.T) {
 	is.Error(err)
 	is.True(tm.IsZero())
 }
+
+// func TestToOSArgs(t *testing.T) {
+// 	args := strutil.ToOSArgs(`./app top sub -a ddd --xx "abc
+// def ghi"`)
+//
+// 	assert.Len(t, args, 7)
+// 	assert.Equal(t, "abc\ndef ghi", args[6])
+// }
