@@ -14,7 +14,14 @@ func (as Aliases) AddAlias(real, alias string) {
 }
 
 // AddAliases to the Aliases
-func (as Aliases) AddAliases(alias2real map[string]string) {
+func (as Aliases) AddAliases(real string, aliases []string) {
+	for _, a := range aliases {
+		as.AddAlias(real, a)
+	}
+}
+
+// AddAliasMap to the Aliases
+func (as Aliases) AddAliasMap(alias2real map[string]string) {
 	for a, r := range alias2real {
 		as.AddAlias(r, a)
 	}

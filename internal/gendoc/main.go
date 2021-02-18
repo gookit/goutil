@@ -20,17 +20,18 @@ import (
 var (
 	hidden  = []string{"netutil", "internal"}
 	nameMap = map[string]string{
-		"arr":  "array/Slice",
-		"str":  "string",
-		"sys":  "system",
-		"math": "math/Number",
-		"fs":   "fileSystem",
-		"fmt":  "formatting",
-		"test": "testing",
-		"dump": "dump",
-		"json": "JSON",
-		"cli":  "CLI",
-		"env":  "ENV",
+		"arr":     "array/Slice",
+		"str":     "string",
+		"sys":     "system",
+		"math":    "math/Number",
+		"fs":      "fileSystem",
+		"fmt":     "formatting",
+		"test":    "testing",
+		"dump":    "dump",
+		"structs": "struct",
+		"json":    "JSON",
+		"cli":     "CLI",
+		"env":     "ENV",
 	}
 
 	pkgDesc = map[string]map[string]string{
