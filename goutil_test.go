@@ -25,6 +25,12 @@ func TestPanicIfErr(t *testing.T) {
 	goutil.PanicIfErr(nil)
 }
 
+func TestPanicf(t *testing.T) {
+	assert.Panics(t, func() {
+		goutil.Panicf("hi %s", "inhere")
+	})
+}
+
 func TestGetCallStacks(t *testing.T) {
 	msg := goutil.GetCallStacks(false)
 	fmt.Println(string(msg))

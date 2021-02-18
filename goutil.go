@@ -2,6 +2,7 @@
 package goutil
 
 import (
+	"fmt"
 	"reflect"
 	"runtime"
 	"strings"
@@ -58,4 +59,9 @@ func PanicIfErr(err error) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+// Panicf format panic message use fmt.Sprintf
+func Panicf(format string, v ...interface{})  {
+	panic(fmt.Sprintf(format, v...))
 }
