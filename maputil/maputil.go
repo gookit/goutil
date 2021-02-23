@@ -18,17 +18,6 @@ func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]stri
 	return dst
 }
 
-// KeyToLower convert keys to lower case.
-func KeyToLower(src map[string]string) map[string]string {
-	newMp := make(map[string]string, len(src))
-	for k, v := range src {
-		k = strings.ToLower(k)
-		newMp[k] = v
-	}
-
-	return newMp
-}
-
 // GetByPath get value from a map[string]interface{}. eg "top" "top.sub"
 func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool) {
 	if val, ok := mp[key]; ok {

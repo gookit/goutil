@@ -15,14 +15,6 @@ func TestMergeStringMap(t *testing.T) {
 	assert.Equal(t, map[string]string{"a": "v0"}, ret)
 }
 
-func TestKeyToLower(t *testing.T) {
-	src := map[string]string{"A": "v0"}
-	ret := maputil.KeyToLower(src)
-
-	assert.Contains(t, ret, "a")
-	assert.NotContains(t, ret, "A")
-}
-
 func TestGetByPath(t *testing.T) {
 	mp := map[string]interface{}{
 		"key0": "val0",

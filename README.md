@@ -184,9 +184,12 @@ func StripComments(src string) string
 > Package `github.com/gookit/goutil/maputil`
 
 ```go
-// source at maputil/map.go
-func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
+// source at maputil/convert.go
 func KeyToLower(src map[string]string) map[string]string
+func ToStringMap(src map[string]interface{}) map[string]string
+func HttpQueryString(data map[string]interface{}) string
+// source at maputil/maputil.go
+func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 func Keys(mp interface{}) (keys []string)
 func Values(mp interface{}) (values []interface{})

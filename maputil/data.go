@@ -1,5 +1,10 @@
 package maputil
 
+import (
+	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/strutil"
+)
+
 // Data an map data type
 type Data map[string]interface{}
 
@@ -19,6 +24,36 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
+// Int value get
+func (d Data) Int(key string) int {
+	val, ok := d[key]
+	if !ok {
+		return 0
+	}
+
+	return mathutil.MustInt(val)
+}
+
+// Int64 value get
+func (d Data) Int64(key string) int64 {
+	val, ok := d[key]
+	if !ok {
+		return 0
+	}
+
+	return mathutil.MustInt64(val)
+}
+
+// String value get
+func (d Data) String(key string) string {
+	val, ok := d[key]
+	if !ok {
+		return ""
+	}
+
+	return strutil.MustString(val)
+}
+
 // Default get value from the data map with default value
 func (d Data) Default(key string, def interface{}) interface{} {
 	val, ok := d[key]
@@ -27,4 +62,9 @@ func (d Data) Default(key string, def interface{}) interface{} {
 	}
 
 	return def
+}
+
+// StringMap convert to map[string]string
+func (d Data) StringMap() map[string]string {
+	return ToStringMap(d)
 }
