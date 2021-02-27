@@ -8,6 +8,8 @@ import (
 	"runtime"
 	"strings"
 	"syscall"
+
+	"github.com/mattn/go-isatty"
 )
 
 var curShell string
@@ -99,6 +101,9 @@ func IsMSys() bool {
 }
 
 // IsConsole check out is in stderr/stdout/stdin
+//
+// Usage:
+// sysutil.IsConsole(os.Stdout)
 func IsConsole(out io.Writer) bool {
 	o, ok := out.(*os.File)
 	if !ok {
@@ -109,4 +114,12 @@ func IsConsole(out io.Writer) bool {
 
 	// fix: cannot use 'o == os.Stdout' to compare
 	return fd == uintptr(syscall.Stdout) || fd == uintptr(syscall.Stdin) || fd == uintptr(syscall.Stderr)
+}
+
+// IsTerminal isatty check
+//
+// Usage:
+// sysutil.IsTerminal(os.Stdout.Fd())
+func IsTerminal(fd uintptr) bool {
+	return isatty.IsTerminal(fd)
 }
