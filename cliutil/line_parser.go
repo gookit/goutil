@@ -1,6 +1,10 @@
 package cliutil
 
-import "strings"
+import (
+	"strings"
+
+	"github.com/gookit/goutil/envutil"
+)
 
 // LineParser struct
 // parse input command line to []string, such as cli os.Args
@@ -8,18 +12,22 @@ type LineParser struct {
 	// Line the full input command line text
 	// eg `kite top sub -a "the a message" --foo val1 --bar "val 2"`
 	Line string
+	// ParseEnv parse ENV var on the line.
+	ParseEnv bool
 	// the exploded nodes by space.
 	nodes []string
 	// the parsed args
 	args []string
 }
 
+// NewLineParser create
+func NewLineParser(line string) *LineParser {
+	return &LineParser{Line: line}
+}
+
 // StringToOSArgs parse input command line text to os.Args
 func StringToOSArgs(line string) []string {
-	p := &LineParser{
-		Line: line,
-	}
-
+	p := NewLineParser(line)
 	return p.Parse()
 }
 
@@ -32,11 +40,22 @@ func ParseLine(line string) []string {
 	return p.Parse()
 }
 
+// AlsoEnvParse input command line text to os.Args, will parse ENV var
+func (p *LineParser) AlsoEnvParse() []string {
+	p.ParseEnv = true
+	return p.Parse()
+}
+
 // Parse input command line text to os.Args
 func (p *LineParser) Parse() []string {
 	p.Line = strings.TrimSpace(p.Line)
 	if p.Line == "" {
 		return p.args
+	}
+
+	// enable parse Env var
+	if p.ParseEnv {
+		p.Line = envutil.ParseEnvValue(p.Line)
 	}
 
 	p.nodes = strings.Split(p.Line, " ")

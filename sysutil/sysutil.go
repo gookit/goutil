@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/mattn/go-isatty"
+	"github.com/mitchellh/go-homedir"
 )
 
 var curShell string
@@ -122,4 +123,16 @@ func IsConsole(out io.Writer) bool {
 // sysutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
+}
+
+// HomeDir get user home dir path.
+func HomeDir() string {
+	dir, _ := homedir.Dir()
+	return dir
+}
+
+// ExpandPath will parse `~` as user home dir path.
+func ExpandPath(path string) string {
+	path, _ = homedir.Expand(path)
+	return path
 }
