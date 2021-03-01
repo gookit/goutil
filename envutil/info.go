@@ -7,10 +7,16 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/sysutil"
+	"github.com/mattn/go-isatty"
 )
 
 // IsWin system. linux windows darwin
 func IsWin() bool {
+	return runtime.GOOS == "windows"
+}
+
+// IsWindows system. alias of IsWin
+func IsWindows() bool {
 	return runtime.GOOS == "windows"
 }
 
@@ -24,14 +30,41 @@ func IsLinux() bool {
 	return runtime.GOOS == "linux"
 }
 
-// IsConsole check out is console env. alias of the sysutil.IsConsole()
-func IsConsole(out io.Writer) bool {
-	return sysutil.IsConsole(out)
-}
-
 // IsMSys msys(MINGW64) env. alias of the sysutil.IsMSys()
 func IsMSys() bool {
 	return sysutil.IsMSys()
+}
+
+var detectedWSL bool
+var detectedWSLContents string
+
+// IsWSL system env
+// https://github.com/Microsoft/WSL/issues/423#issuecomment-221627364
+func IsWSL() bool {
+	if !detectedWSL {
+		b := make([]byte, 1024)
+		f, err := os.Open("/proc/version")
+		if err == nil {
+			_,_ = f.Read(b) // ignore error
+			f.Close()
+			detectedWSLContents = string(b)
+		}
+		detectedWSL = true
+	}
+	return strings.Contains(detectedWSLContents, "Microsoft")
+}
+
+// IsTerminal isatty check
+//
+// Usage:
+// sysutil.IsTerminal(os.Stdout.Fd())
+func IsTerminal(fd uintptr) bool {
+	return isatty.IsTerminal(fd)
+}
+
+// IsConsole check out is console env. alias of the sysutil.IsConsole()
+func IsConsole(out io.Writer) bool {
+	return sysutil.IsConsole(out)
 }
 
 // HasShellEnv has shell env check.
@@ -52,10 +85,7 @@ func HasShellEnv(shell string) bool {
 // Don't support color:
 // 	"TERM=cygwin"
 var specialColorTerms = map[string]bool{
-	"alacritty":             true,
-	"screen-256color":       true,
-	"tmux-256color":         true,
-	"rxvt-unicode-256color": true,
+	"alacritty": true,
 }
 
 // IsSupportColor check current console is support color.

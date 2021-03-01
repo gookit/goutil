@@ -104,7 +104,7 @@ func IsMSys() bool {
 // IsConsole check out is in stderr/stdout/stdin
 //
 // Usage:
-// sysutil.IsConsole(os.Stdout)
+// 	sysutil.IsConsole(os.Stdout)
 func IsConsole(out io.Writer) bool {
 	o, ok := out.(*os.File)
 	if !ok {

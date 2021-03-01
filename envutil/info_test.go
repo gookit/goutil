@@ -22,6 +22,7 @@ func TestOS(t *testing.T) {
 		assert.False(t, envutil.IsWin())
 		assert.False(t, envutil.IsLinux())
 		assert.False(t, envutil.IsMSys())
+		assert.False(t, envutil.IsWSL())
 	}
 
 	if isl := envutil.IsLinux(); isl {
@@ -29,6 +30,7 @@ func TestOS(t *testing.T) {
 		assert.False(t, envutil.IsMac())
 		assert.False(t, envutil.IsWin())
 		assert.False(t, envutil.IsMSys())
+		assert.False(t, envutil.IsWSL())
 	}
 }
 
