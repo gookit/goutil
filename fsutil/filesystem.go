@@ -41,6 +41,27 @@ var (
 	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 )
 
+// Dir get dir path, without last name.
+func Dir(fpath string) string {
+	return filepath.Dir(fpath)
+}
+
+// Name get file/dir name
+func Name(fpath string) string {
+	// return path.Base(fpath)
+	return filepath.Base(fpath)
+}
+
+// FileExt get filename ext. alias of path.Ext()
+func FileExt(fpath string) string {
+	return path.Ext(fpath)
+}
+
+// Suffix get filename ext. alias of path.Ext()
+func Suffix(fpath string) string {
+	return path.Ext(fpath)
+}
+
 // PathExists reports whether the named file or directory exists.
 func PathExists(path string) bool {
 	if path == "" {
@@ -281,14 +302,4 @@ func DeleteIfFileExist(fpath string) error {
 	}
 
 	return os.Remove(fpath)
-}
-
-// FileExt get filename ext. alias of path.Ext()
-func FileExt(fpath string) string {
-	return path.Ext(fpath)
-}
-
-// Suffix get filename ext. alias of path.Ext()
-func Suffix(fpath string) string {
-	return path.Ext(fpath)
 }

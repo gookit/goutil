@@ -16,6 +16,9 @@ func TestCommon(t *testing.T) {
 
 	// IsZipFile
 	assert.False(t, fsutil.IsZipFile("testdata/test.jpg"))
+
+	assert.Equal(t, "test.jpg", fsutil.Name("path/to/test.jpg"))
+	assert.Equal(t, "path/to", fsutil.Dir("path/to/test.jpg"))
 }
 
 func TestPathExists(t *testing.T) {

@@ -29,7 +29,7 @@ type Options struct {
 	// CallerSkip int
 }
 
-// Dumper struct
+// Dumper struct TODO use github.com/kr/pretty refactoring
 type Dumper struct {
 	Options
 	Output io.Writer

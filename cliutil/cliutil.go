@@ -1,7 +1,9 @@
 // Package cliutil provides some util functions for CLI
 package cliutil
 
-import "github.com/gookit/goutil/sysutil"
+import (
+	"github.com/gookit/goutil/sysutil"
+)
 
 // QuickExec quick exec an simple command line
 func QuickExec(cmdLine string, workDir ...string) (string, error) {

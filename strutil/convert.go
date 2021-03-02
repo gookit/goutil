@@ -24,6 +24,13 @@ var (
 	}
 )
 
+// Internal func refers:
+// strconv.Quote()
+// strconv.QuoteRune()
+// strconv.QuoteToASCII()
+// strconv.AppendQuote()
+// strconv.AppendQuoteRune()
+
 /*************************************************************
  * convert value to string
  *************************************************************/
