@@ -37,9 +37,9 @@ func (ss Strings) String() string {
 }
 
 // Has given element
-func (ss Strings) Has(str string) bool {
+func (ss Strings) Has(sub string) bool {
 	for _, s := range ss {
-		if s == str {
+		if s == sub {
 			return true
 		}
 	}

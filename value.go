@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/strutil"
 )
 
 // Value data store
@@ -48,6 +49,10 @@ func (v Value) Bool() bool {
 
 	if bl, ok := v.V.(bool); ok {
 		return bl
+	}
+
+	if str, ok := v.V.(string); ok {
+		return strutil.MustBool(str)
 	}
 	return false
 }

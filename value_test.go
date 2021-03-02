@@ -24,5 +24,9 @@ func TestValue_Val(t *testing.T) {
 
 	v.Reset()
 	assert.Nil(t, v.V)
+	assert.Nil(t, v.Val())
+	assert.True(t, v.IsEmpty())
+	assert.Equal(t, 0, v.Int())
+	assert.Equal(t, 0, v.Int64())
 	assert.True(t, v.IsEmpty())
 }
