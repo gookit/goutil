@@ -172,6 +172,7 @@ func TestDumper_AccessCantExportedField(t *testing.T) {
 
 // code from https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
 func TestDumper_AccessCantExportedField1(t *testing.T) {
+	// init an nested struct
 	s1 := st1{st0{2}, 23, "inhere"}
 	myS1 := struct {
 		// cannotExport interface{} // ok
@@ -287,7 +288,9 @@ func TestMap_InterfaceNested(t *testing.T) {
 		},
 	}
 
-	newStd().Dump(m1)
+	newStd().WithOptions(func(opts *Options) {
+		opts.IndentChar = '-'
+	}).Dump(m1)
 }
 
 var (
@@ -324,7 +327,6 @@ func TestStruct_WithNested(t *testing.T) {
 	// buffer := new(bytes.Buffer)
 	dumper := newStd()
 	dumper.IndentChar = '.'
-
 	dumper.Println(s1)
 	// OUT:
 	// PRINT AT github.com/gookit/goutil/dump.TestStruct_WithNested(dump_test.go:223)

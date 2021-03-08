@@ -104,7 +104,7 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, "abc")
-	is.Equal(`string("abc"),
+	is.Equal(`string("abc"), #len=3
 `, buf.String())
 
 	buf.Reset()
@@ -114,18 +114,18 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
-	is.Equal(`[]int [
-  1,
-  2,
-  3,
-  4,
-  5,
-  6,
-  7,
-  8,
-  9,
-  10,
-  11,
+	is.Equal(`[]int [ #len=11
+  int(1),
+  int(2),
+  int(3),
+  int(4),
+  int(5),
+  int(6),
+  int(7),
+  int(8),
+  int(9),
+  int(10),
+  int(11),
 ]
 `, buf.String())
 
@@ -137,7 +137,7 @@ func TestPrint(t *testing.T) {
 		"ab", 23,
 	})
 	is.Equal(`struct { ab string; Cd int } {
-  ab: string("ab"),
+  ab: string("ab"), #len=2
   Cd: int(23),
 },
 `, buf.String())
@@ -148,8 +148,8 @@ func TestPrint(t *testing.T) {
 		"sub": map[string]string{"k": "v"},
 	})
 	is.Contains(buf.String(), `
-  "sub": map[string]string {
-    "k": string("v"),
+  "sub": map[string]string { #len=1
+    "k": string("v"), #len=1
   },
 `)
 
@@ -200,7 +200,7 @@ func TestStruct_CannotExportField(t *testing.T) {
 
 	str := buf.String()
 	assert.Contains(t, str, "struct {")
-	assert.Contains(t, str, "opt0: <nil>,")
+	assert.Contains(t, str, "opt0: *int<nil>,")
 	assert.Contains(t, str, "opt2: int(22),")
 	assert.Contains(t, str, "opt3: float64(34.45)")
 	assert.Contains(t, str, "opt4: string(\"abc\"),")

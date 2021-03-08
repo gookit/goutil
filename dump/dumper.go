@@ -247,9 +247,15 @@ func (d *Dumper) printOne(v interface{}) {
 }
 
 func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
+
 	var isPtr bool
 	// if is an ptr, get real type and value
 	if t.Kind() == reflect.Ptr {
+		if v.IsNil() {
+			d.printf("%s<nil>,\n", t.String())
+			return
+		}
+
 		isPtr = true
 		v = v.Elem()
 		t = t.Elem()
@@ -267,7 +273,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		d.printf("%s(%d),\n", t.String(), v.Uint())
 	case reflect.String:
-		d.printf("%s(\"%s\"),\n", t.String(), v.String())
+		d.printf("%s(\"%s\"), #len=%d\n", t.String(), v.String(), v.Len())
 	case reflect.Complex64, reflect.Complex128:
 		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
@@ -277,7 +283,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			return
 		}
 
-		d.indentPrint(t.String(), " [#len=", eleNum, "\n")
+		d.indentPrint(t.String(), " [ #len=", eleNum, "\n")
 		for i := 0; i < eleNum; i++ {
 			sv := v.Index(i)
 			d.advance(1)
@@ -309,13 +315,14 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 				addr := v.UnsafeAddr()
 				vis := visit{addr, t}
 				if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
-					d.indentPrint(t.String()+"{(CYCLIC REFERENCE)}", false)
+					d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
 					break // don't print v again
 				}
 				d.visited[vis] = d.curDepth
 			}
 
 			d.indentPrint(t.String(), " {\n")
+			d.msValue = false
 
 			fldNum := v.NumField()
 			for i := 0; i < fldNum; i++ {
@@ -331,7 +338,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 				d.msValue = false
 
 				d.advance(-1)
-			} // end for
+			}
 
 			d.indentPrint("},\n")
 		}
@@ -343,7 +350,8 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 				d.printf("%#v,\n", v.Interface())
 			}
 		} else {
-			d.indentPrint(t.String(), " {\n")
+			d.indentPrint(t.String(), " { #len=", v.Len(), "\n")
+			d.msValue = false
 			for _, key := range v.MapKeys() {
 				mv := v.MapIndex(key)
 				d.advance(1)
@@ -369,13 +377,22 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Interface:
 		switch e := v.Elem(); {
 		case e.Kind() == reflect.Invalid:
-			d.print("nil")
+			d.indentPrint("nil,\n")
 		case e.IsValid():
 			// d.advance(1)
 			d.printRValue(e.Type(), e)
 		default:
-			d.print(t.String(), "(nil)")
+			d.indentPrint(t.String(), "(nil),\n")
 		}
+	// case reflect.Ptr:
+	case reflect.Chan:
+		d.printf( "(%s)(%#v),\n", t.String(), v.Pointer())
+	case reflect.Func:
+		d.printf( "(%s) {...},\n", t.String())
+	case reflect.UnsafePointer:
+		d.printf("(%#v),\n", v.Pointer())
+	case reflect.Invalid:
+		d.indentPrint(t.String(), "(nil),\n")
 	default:
 		// intX, uintX, string
 		if v.CanInterface() {
