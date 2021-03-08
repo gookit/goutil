@@ -1,8 +1,7 @@
-// Package dump like fmt.Println but more clear and beautiful print data.
+// Package dump like fmt.Println but more pretty and beautiful print Go values.
 package dump
 
 import (
-	"fmt"
 	"io"
 	"os"
 )
@@ -22,6 +21,12 @@ var (
 
 	// std dumper
 	std = NewDumper(os.Stdout, 3)
+
+	defaultTheme = map[string]string{
+		"caller": "magenta",
+		"key":    "green", // key name color of the map, struct.
+		"value":  "normal",
+	}
 )
 
 // Std dumper
@@ -37,6 +42,11 @@ func Reset() {
 // Config std dumper
 func Config(fn func(*Dumper)) {
 	fn(std)
+}
+
+// Spew print
+func Spew(vs ...interface{}) {
+	std.Spew(vs...)
 }
 
 // V like fmt.Println, but the output is clearer and more beautiful
@@ -62,14 +72,4 @@ func Println(vs ...interface{}) {
 // Fprint like fmt.Println, but the output is clearer and more beautiful
 func Fprint(w io.Writer, vs ...interface{}) {
 	std.Fprint(w, vs...)
-}
-
-func mustFprint(w io.Writer, v ...interface{}) {
-	_, _ = fmt.Fprint(w, v...)
-	// color.Fprint(w, v...)
-}
-
-func mustFprintf(w io.Writer, f string, v ...interface{}) {
-	_, _ = fmt.Fprintf(w, f, v...)
-	// color.Fprintf(w, f, v...)
 }

@@ -1,7 +1,9 @@
 package dump
 
 import (
+	"fmt"
 	"io"
+	"os"
 	"path"
 	"reflect"
 	"runtime"
@@ -10,10 +12,16 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
+	"github.com/kortschak/utter"
 )
 
 // Options for dump vars
 type Options struct {
+	// Output output writer
+	Output io.Writer
+	// dont show type
+	NoType bool
+	// dont with color
 	NoColor bool
 	// IndentLen width. default is 2
 	IndentLen int
@@ -26,38 +34,57 @@ type Options struct {
 	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
 	MoreLenNL int
 	// CallerSkip skip for call runtime.Caller()
-	// CallerSkip int
+	CallerSkip int
+	// ColorTheme for print result.
+	ColorTheme map[string]string
 }
 
-// Dumper struct TODO use github.com/kr/pretty refactoring
+// printValue must keep track of already-printed pointer values to avoid
+// infinite recursion. refer the pkg: github.com/kr/pretty
+type visit struct {
+	v   uintptr
+	typ reflect.Type
+}
+
+// Dumper struct definition
 type Dumper struct {
-	Options
-	Output io.Writer
-	// Skip for call runtime.Caller()
-	Skip int
+	*Options
+	// visited struct records
+	visited map[visit]int
+	// is value of the map, struct
+	msValue bool
 	// context information
 	prevDepth, curDepth, nextDepth int
 	indentStr, indentPrev, lineEnd string
+	//
+	indentBytes []byte
 }
 
 // NewDumper create
 func NewDumper(out io.Writer, skip int) *Dumper {
 	return &Dumper{
-		Output:  out,
-		Options: newDefaultOptions(),
-		// other
-		Skip: skip,
+		Options: NewDefaultOptions(out, skip),
+		// init map
+		visited: make(map[visit]int),
 	}
 }
 
-func newDefaultOptions() Options {
-	return Options{
+func NewDefaultOptions(out io.Writer, skip int) *Options {
+	if out == nil {
+		out = os.Stdout
+	}
+
+	return &Options{
+		Output: out,
+		// ---
 		MaxDepth:  5,
 		ShowFlag:  Ffunc | Ffname | Fline,
 		MoreLenNL: 8,
-		// indent
+		// ---
 		IndentLen:  2,
 		IndentChar: ' ',
+		CallerSkip: skip,
+		ColorTheme: defaultTheme,
 	}
 }
 
@@ -69,83 +96,78 @@ func (d *Dumper) Config(fn func(d *Dumper)) *Dumper {
 
 // WithSkip for dumper
 func (d *Dumper) WithSkip(skip int) *Dumper {
-	d.Skip = skip
+	d.CallerSkip = skip
 	return d
 }
 
 // WithOptions for dumper
-func (d *Dumper) WithOptions(opts Options) *Dumper {
-	d.Options = opts
+func (d *Dumper) WithOptions(fn func(opts *Options)) *Dumper {
+	fn(d.Options)
 	return d
 }
 
 // ResetOptions for dumper
 func (d *Dumper) ResetOptions() {
-	d.Options = newDefaultOptions()
+	d.Options = NewDefaultOptions(os.Stdout, 2)
 }
 
 // Dump vars
-func (d *Dumper) Dump(vars ...interface{}) {
-	d.dump(vars...)
+func (d *Dumper) Dump(vs ...interface{}) {
+	d.dump(vs...)
 }
 
 // Print vars. alias of Dump()
-func (d *Dumper) Print(vars ...interface{}) {
-	d.dump(vars...)
+func (d *Dumper) Print(vs ...interface{}) {
+	d.dump(vs...)
 }
 
 // Println vars. alias of Dump()
-func (d *Dumper) Println(vars ...interface{}) {
-	d.dump(vars...)
+func (d *Dumper) Println(vs ...interface{}) {
+	d.dump(vs...)
 }
 
-// Fprint print vars to io.Writer
-func (d *Dumper) Fprint(w io.Writer, vars ...interface{}) {
-	// backup
-	out := d.Output
-
-	d.Output = w
-	d.dump(vars...)
-
-	// restore
-	d.Output = out
-}
-
-// dump vars
-func (d *Dumper) dump(vars ...interface{}) {
+// Spew print vars.
+func (d *Dumper) Spew(vs ...interface{}) {
 	// show print position
 	if d.ShowFlag != Fnopos {
 		// get the print position
-		pc, file, line, ok := runtime.Caller(d.Skip)
+		pc, file, line, ok := runtime.Caller(d.CallerSkip - 1)
 		if ok {
 			d.printCaller(pc, file, line)
 		}
 	}
 
 	// print var data
-	for _, v := range vars {
-		d.advance(1)
-		d.printOne(v)
-		d.advance(-1)
+	for _, v := range vs {
+		utter.Dump(v)
 	}
 }
 
-func (d *Dumper) advance(step int) {
-	d.curDepth += step
-	d.nextDepth = d.curDepth + step
+// Fprint print vars to io.Writer
+func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
+	out := d.Output // backup
 
-	// strings.Repeat()
-	d.indentStr = strings.Repeat(string(d.IndentChar), d.IndentLen*d.curDepth)
+	d.Output = w
+	d.dump(vs...)
+	d.Output = out // restore
+}
 
-	// current depth > 1
-	if d.curDepth > 1 {
-		d.prevDepth += step
-		// d.lineEnd = ",\n"
-		d.indentPrev = strutil.Repeat(string(d.IndentChar), d.IndentLen*d.prevDepth)
-	} else {
-		// d.lineEnd = "\n"
-		d.prevDepth = 0
-		d.indentPrev = ""
+// dump vars
+func (d *Dumper) dump(vs ...interface{}) {
+	// show print position
+	if d.ShowFlag != Fnopos {
+		// get the print position
+		pc, file, line, ok := runtime.Caller(d.CallerSkip)
+		if ok {
+			d.printCaller(pc, file, line)
+		}
+	}
+
+	// print var data
+	for _, v := range vs {
+		// d.advance(1)
+		d.printOne(v)
+		// d.advance(-1)
 	}
 }
 
@@ -187,220 +209,200 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 
 	text := strings.Join(nodes, "")
 	if d.NoColor {
-		mustFprint(d.Output, text, "\n")
+		d.indentPrint(text, "\n")
 		return
 	}
 
 	color.Fprint(d.Output, "<mga>", text, "</>\n")
 }
 
+func (d *Dumper) advance(step int) {
+	d.curDepth += step
+	d.nextDepth = d.curDepth + step
+
+	// strings.Repeat()
+	d.indentStr = strings.Repeat(string(d.IndentChar), d.IndentLen*d.curDepth)
+	d.indentBytes = strutil.RepeatBytes(d.IndentChar, d.IndentLen*d.curDepth)
+
+	// current depth > 1
+	if d.curDepth > 1 {
+		d.prevDepth += step
+		// d.lineEnd = ",\n"
+		d.indentPrev = strutil.Repeat(string(d.IndentChar), d.IndentLen*d.prevDepth)
+	} else {
+		// d.lineEnd = "\n"
+		d.prevDepth = 0
+		d.indentPrev = ""
+	}
+}
+
 func (d *Dumper) printOne(v interface{}) {
 	if v == nil {
-		mustFprintf(d.Output, "<nil>,\n")
+		d.indentPrint("<nil>,\n")
 		return
 	}
 
-	switch val := v.(type) {
-	case int, int8, int16, int32, int64:
-		mustFprintf(d.Output, "%s(%v),\n", reflect.TypeOf(val).String(), val)
-	case uint, uint8, uint16, uint32, uint64:
-		mustFprintf(d.Output, "%s(%v),\n", reflect.TypeOf(val).String(), val)
-	case float32, float64:
-		mustFprintf(d.Output, "%s(%v),\n", reflect.TypeOf(val).String(), val)
-	case string:
-		mustFprintf(d.Output, "string(\"%s\"),\n", val)
-	default: // must in switch, use asserted 'val' for continue handle
-		rTyp := reflect.TypeOf(val)
-		rVal := reflect.ValueOf(val)
-		d.printReflectValue(rTyp, rVal)
-	}
-
-	// rTyp := reflect.TypeOf(v)
-	// rVal := reflect.ValueOf(v)
-	// d.printReflectValue(rTyp, rVal)
+	rv := reflect.ValueOf(v)
+	d.printRValue(rv.Type(), rv)
 }
 
-func (d *Dumper) printReflectValue(rTyp reflect.Type, rVal reflect.Value) {
+func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	var isPtr bool
 	// if is an ptr, get real type and value
-	if rTyp.Kind() == reflect.Ptr {
+	if t.Kind() == reflect.Ptr {
 		isPtr = true
-		rVal = rVal.Elem()
-		rTyp = rTyp.Elem()
+		v = v.Elem()
+		t = t.Elem()
 		// add "*" prefix
-		mustFprintf(d.Output, "*")
+		d.indentPrint("&")
 	}
 
-	w := d.Output
-
-	switch rTyp.Kind() {
+	switch t.Kind() {
+	case reflect.Bool:
+		d.printf("%s(%v),\n", t.String(), v.Bool())
+	case reflect.Float32, reflect.Float64:
+		d.printf("%s(%v),\n", t.String(), v.Float())
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		d.printf("%s(%d),\n", t.String(), v.Int())
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		d.printf("%s(%d),\n", t.String(), v.Uint())
+	case reflect.String:
+		d.printf("%s(\"%s\"),\n", t.String(), v.String())
+	case reflect.Complex64, reflect.Complex128:
+		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
-		eleNum := rVal.Len()
+		eleNum := v.Len()
 		if eleNum < d.MoreLenNL {
-			mustFprintf(w, "%#v,\n", rVal.Interface())
+			d.printf("%#v,\n", v.Interface())
 			return
 		}
 
-		mustFprint(w, rTyp.String(), " [\n")
+		d.indentPrint(t.String(), " [#len=", eleNum, "\n")
 		for i := 0; i < eleNum; i++ {
-			mustFprintf(w, "%s%v,\n", d.indentStr, rVal.Index(i).Interface())
+			sv := v.Index(i)
+			d.advance(1)
+			d.printRValue(sv.Type(), sv)
+			// d.printf("%v,\n", v.Index(i).Interface())
+			d.advance(-1)
 		}
-		mustFprint(w, "]\n")
+		d.indentPrint("]\n")
 	case reflect.Struct:
 		// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
 		// NOTICE: only re-reflect.New on curDepth=1
 		if !isPtr && d.curDepth == 1 {
 			// fmt.Println("re reflect.New")
-			// oldRv := rVal
-			// rVal = reflect.New(rTyp).Elem()
-			// rVal.Set(oldRv)
+			// oldRv := v
+			// v = reflect.New(t).Elem()
+			// v.Set(oldRv)
 
-			// ele := reflect.NewAt(rVal.Field(0).Type(), unsafe.Pointer(rVal.Field(0).UnsafeAddr())).Elem()
+			// ele := reflect.NewAt(v.Field(0).Type(), unsafe.Pointer(v.Field(0).UnsafeAddr())).Elem()
 			// fmt.Println("aaa", ele.CanInterface())
 		}
-
-		mustFprint(w, rTyp.String(), " {\n")
-
-		fldNum := rVal.NumField()
-		for i := 0; i < fldNum; i++ {
-			fv := rVal.Field(i)
-			fieldName := rTyp.Field(i).Name
-			// print field name
-			// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, fieldName)
-			mustFprintf(w, "%s%s: ", d.indentStr, fieldName)
-
-			fTypeName := fv.Type().String()
-
-			// print field value
-			switch fv.Kind() {
-			case reflect.Bool:
-				mustFprintf(w, "%v,\n", fv.Bool())
-			case reflect.String:
-				mustFprintf(w, "%s(\"%s\"),\n", fTypeName, fv.String())
-			case reflect.Float32, reflect.Float64:
-				mustFprintf(w, "%s(%v),\n", fTypeName, fv.Float())
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Int())
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				mustFprintf(w, "%s(%d),\n", fTypeName, fv.Uint())
-			case reflect.Map, reflect.Struct:
-				if d.curDepth > d.MaxDepth {
-					if !fv.CanInterface() {
-						mustFprintf(w, "%s,\n", fv.String())
-					} else {
-						mustFprintf(w, "%#v,\n", fv.Interface())
-					}
-				} else {
-					d.advance(1)
-					d.printReflectValue(fv.Type(), fv)
-					d.advance(-1)
-				}
-			case reflect.Interface:
-				// field is `interface{}` type and cannot exported field in struct.
-				if !fv.CanInterface() {
-					// TODO Now fv can be read.  Setting will succeed but only affects the temporary copy
-					// fv = reflect.NewAt(fv.Type(), unsafe.Pointer(fv.UnsafeAddr())).Elem()
-					// fmt.Println("bbb", fv.CanInterface())
-
-					mustFprintf(w, "%v,\n", fv.String())
-					continue
-				}
-
-				// goon handle field value
-				d.advance(1)
-				d.printOne(fv.Interface())
-				d.advance(-1)
-			default:
-				if fv.IsNil() {
-					mustFprint(w, "<nil>,\n")
-				} else if fv.CanInterface() {
-					mustFprintf(w, "%#v,\n", fv.Interface())
-				} else {
-					mustFprintf(w, "%#v,\n", fv.String())
-				}
-			} // end switch
-		} // end for
-
-		mustFprint(w, d.indentPrev, "},\n")
-	case reflect.Map:
-		mustFprint(w, rTyp.String(), " {\n")
-
-		for _, key := range rVal.MapKeys() {
-			// print key name
-			if !key.CanInterface() {
-				// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, key.String())
-				mustFprintf(w, "%s%s: ", d.indentStr, key.String())
+		if d.curDepth > d.MaxDepth {
+			if !v.CanInterface() {
+				d.printf("%s,\n", v.String())
 			} else {
-				// mustFprintf(w, "%s<cyan>%#v</>: ", indentStr, key.Interface())
-				mustFprintf(w, "%s%#v: ", d.indentStr, key.Interface())
+				d.printf("%#v,\n", v.Interface())
+			}
+		} else {
+			if v.CanAddr() {
+				addr := v.UnsafeAddr()
+				vis := visit{addr, t}
+				if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
+					d.indentPrint(t.String()+"{(CYCLIC REFERENCE)}", false)
+					break // don't print v again
+				}
+				d.visited[vis] = d.curDepth
 			}
 
-			mv := rVal.MapIndex(key)
-			vTypeName := mv.Type().String()
+			d.indentPrint(t.String(), " {\n")
 
-			// print field value
-			switch mv.Kind() {
-			case reflect.Bool:
-				mustFprintf(w, "%v,\n", mv.Bool())
-			case reflect.String:
-				mustFprintf(w, "%s(\"%s\"),\n", vTypeName, mv.String())
-			case reflect.Float32, reflect.Float64:
-				mustFprintf(w, "%s(%v),\n", vTypeName, mv.Float())
-			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-				mustFprintf(w, "%s(%d),\n", vTypeName, mv.Int())
-			case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-				mustFprintf(w, "%s(%d),\n", vTypeName, mv.Uint())
-			case reflect.Map, reflect.Struct:
-				if d.curDepth > d.MaxDepth {
-					if !mv.CanInterface() {
-						mustFprintf(w, "%s,\n", mv.String())
-					} else {
-						mustFprintf(w, "%#v,\n", mv.Interface())
-					}
-				} else {
-					d.advance(1)
-					d.printReflectValue(mv.Type(), mv)
-					d.advance(-1)
-				}
-			case reflect.Interface:
-				if !mv.CanInterface() {
-					// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
-					// TODO Now fv can be read.  Setting will succeed but only affects the temporary copy
-					// mv = reflect.NewAt(mv.Type(), unsafe.Pointer(mv.UnsafeAddr())).Elem()
-					// fmt.Println("bbb", fv.CanInterface())
-
-					mustFprintf(w, "%s,\n", mv.String())
-					continue
-				}
-
-				// goon handle field value
+			fldNum := v.NumField()
+			for i := 0; i < fldNum; i++ {
+				fv := v.Field(i)
 				d.advance(1)
-				d.printOne(mv.Interface())
-				d.advance(-1)
-			default:
-				if mv.IsNil() {
-					mustFprint(w, "<nil>,\n")
-				} else if mv.CanInterface() {
-					mustFprintf(w, "%s(%#v),\n", vTypeName, mv.Interface())
-				} else {
-					mustFprintf(w, "%#v,\n", mv.String())
-				}
-			}
-		}
 
-		mustFprint(w, d.indentPrev, "},\n")
+				fieldName := t.Field(i).Name
+				// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, fieldName)
+				d.indentPrint(fieldName, ": ")
+
+				d.msValue = true
+				d.printRValue(fv.Type(), fv)
+				d.msValue = false
+
+				d.advance(-1)
+			} // end for
+
+			d.indentPrint("},\n")
+		}
+	case reflect.Map:
+		if d.curDepth > d.MaxDepth {
+			if !v.CanInterface() {
+				d.printf("%s,\n", v.String())
+			} else {
+				d.printf("%#v,\n", v.Interface())
+			}
+		} else {
+			d.indentPrint(t.String(), " {\n")
+			for _, key := range v.MapKeys() {
+				mv := v.MapIndex(key)
+				d.advance(1)
+
+				// print key name
+				if !key.CanInterface() {
+					// d.printf("<cyan>%s</>: ", key.String())
+					d.printf("%s: ", key.String())
+				} else {
+					d.printf("%#v: ", key.Interface())
+				}
+
+				// print field value
+				d.msValue = true
+				d.printRValue(mv.Type(), mv)
+				d.msValue = false
+
+				d.advance(-1)
+			}
+
+			d.indentPrint("},\n")
+		}
+	case reflect.Interface:
+		switch e := v.Elem(); {
+		case e.Kind() == reflect.Invalid:
+			d.print("nil")
+		case e.IsValid():
+			// d.advance(1)
+			d.printRValue(e.Type(), e)
+		default:
+			d.print(t.String(), "(nil)")
+		}
 	default:
 		// intX, uintX, string
-		if rVal.CanInterface() {
-			mustFprintf(w, "%s(%#v),\n", rTyp.String(), rVal.Interface())
+		if v.CanInterface() {
+			d.printf("%s(%#v),\n", t.String(), v.Interface())
 		} else {
-			mustFprintf(w, "%s(%v),\n", rTyp.String(), rVal.String())
+			d.printf("%s(%v),\n", t.String(), v.String())
 		}
 	}
 }
 
-func (d *Dumper) printMap(v interface{}) {
+func (d *Dumper) print(v ...interface{}) {
+	_, _ = fmt.Fprint(d.Output, v...)
+	// color.Fprint(w, v...)
 }
 
-func (d *Dumper) printStruct(v interface{}) {
+func (d *Dumper) printf(f string, v ...interface{}) {
+	if !d.msValue {
+		_, _ = d.Output.Write(d.indentBytes)
+	}
+	_, _ = fmt.Fprintf(d.Output, f, v...)
+	// color.Fprintf(w, f, v...)
+}
+
+func (d *Dumper) indentPrint(v ...interface{}) {
+	if !d.msValue {
+		_, _ = d.Output.Write(d.indentBytes)
+	}
+	_, _ = fmt.Fprint(d.Output, v...)
+	// color.Fprint(w, v...)
 }

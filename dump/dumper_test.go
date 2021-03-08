@@ -118,12 +118,11 @@ func TestDump_Ptr(t *testing.T) {
 
 	// refer struct
 	dumper.Println(user)
-
 	str := buffer.String()
-	assert.Contains(t, str, "*struct")
+	assert.Contains(t, str, "&struct")
 	assert.Contains(t, str, "Age: int(22),")
-	assert.Contains(t, str, "id: string(\"ab12345\"),")
-	assert.Contains(t, str, "Name: string(\"inhere\"),")
+	assert.Contains(t, str, `id: string("ab12345"),`)
+	assert.Contains(t, str, `Name: string("inhere"),`)
 
 	fmt.Println(str)
 	// Output:
@@ -150,6 +149,7 @@ func TestDumper_AccessCantExportedField(t *testing.T) {
 	rf := rs.Field(0)
 
 	fmt.Println(rf.CanInterface(), rf.String())
+	P(myStruct)
 
 	// rf can't be read or set.
 	rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
@@ -184,30 +184,6 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 	}
 
 	Println(myS1)
-
-	// - 下面的方式适用于： 结构体指针
-	rs := reflect.ValueOf(&myS1).Elem()
-	rf := rs.Field(0)
-
-	fmt.Println("- struct ptr:\n", rs.Type().Field(0).Name, rf.CanInterface(), rf.String())
-
-	// rf can't be read or set.
-	rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
-
-	// Now rf can be read and set.
-	fmt.Println("", rs.Type().Field(0).Name, rf.CanInterface(), rf.Interface())
-
-	// - 下面的方式适用于： 结构体值
-	rs = reflect.ValueOf(myS1)
-	rs2 := reflect.New(rs.Type()).Elem()
-	rs2.Set(rs)
-	rf = rs2.Field(0)
-
-	fmt.Println("- struct val:\n", rs.Type().Field(0).Name, rf.CanInterface(), rf.String())
-
-	rf = reflect.NewAt(rf.Type(), unsafe.Pointer(rf.UnsafeAddr())).Elem()
-	// Now rf can be read.  Setting will succeed but only affects the temporary copy
-	fmt.Println("", rs.Type().Field(0).Name, rf.CanInterface(), rf.Interface())
 }
 
 // ------------------------- map -------------------------

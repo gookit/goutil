@@ -14,7 +14,6 @@ func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]stri
 
 		dst[k] = v
 	}
-
 	return dst
 }
 

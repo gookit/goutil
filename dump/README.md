@@ -61,3 +61,9 @@ func P(vs ...interface{})
 func V(vs ...interface{})
 func Print(vs ...interface{})
 ```
+
+## Related
+
+- https://github.com/kr/pretty
+- https://github.com/davecgh/go-spew More detail for kr/pretty
+  - https://github.com/kortschak/utter It's forks

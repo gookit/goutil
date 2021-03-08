@@ -48,6 +48,11 @@ func MustString(in interface{}) string {
 
 // ToString convert value to string
 func ToString(val interface{}) (str string, err error) {
+	return AnyToString(val, true)
+}
+
+// AnyToString convert value to string
+func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 	if val == nil {
 		return
 	}
@@ -59,7 +64,7 @@ func ToString(val interface{}) (str string, err error) {
 		str = strconv.Itoa(int(value))
 	case int16:
 		str = strconv.Itoa(int(value))
-	case int32:
+	case int32: // same as `rune`
 		str = strconv.Itoa(int(value))
 	case int64:
 		str = strconv.Itoa(int(value))
@@ -84,13 +89,11 @@ func ToString(val interface{}) (str string, err error) {
 	case []byte:
 		str = string(value)
 	default:
-		err = ErrConvertFail
-		// string conversion using JSON by default
-		// jsonContent, err := json.Marshal(value)
-		// if err != nil {
-		// 	return "", err
-		// }
-		// str = string(jsonContent)
+		if defaultAsErr {
+			err = ErrConvertFail
+		} else {
+			str = fmt.Sprint(val)
+		}
 	}
 	return
 }

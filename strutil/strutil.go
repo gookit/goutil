@@ -165,6 +165,14 @@ func RepeatRune(char rune, times int) (chars []rune) {
 	return
 }
 
+// RepeatBytes repeat a byte char.
+func RepeatBytes(char byte, times int) (chars []byte) {
+	for i := 0; i < times; i++ {
+		chars = append(chars, char)
+	}
+	return
+}
+
 // Replaces replace multi strings
 //
 // 	pairs: {old1: new1, old2: new2, ...}

@@ -223,7 +223,7 @@ func TestStruct_InterfaceField(t *testing.T) {
 }
 
 func TestStruct_MapInterfacedValue(t *testing.T) {
-	myS2 := struct {
+	myS2 := &struct {
 		cannotExport map[string]interface{}
 	}{
 		cannotExport: map[string]interface{}{
@@ -231,9 +231,13 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 			"key2": "abcd123",
 		},
 	}
+
 	Println(myS2)
+	color.Infoln("\nUse Spew:")
+	Spew(myS2)
 	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(myS2)
+	fmt.Println("---------------------------------------------------------------")
 
 	type st2 struct {
 		st1
@@ -257,6 +261,29 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 	Println(s2)
 	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(s2)
+}
+
+func TestStruct_ptrField(t *testing.T) {
+	type userOpts struct {
+		Int *int
+		// use ptr
+		Str *string
+	}
+
+	aint := 2
+	astr := "xyz"
+	opt := &userOpts{
+		Int: &aint,
+		Str: &astr,
+	}
+
+	Println(opt)
+	color.Infoln("\nUse Pretty:")
+	color.Infoln("\nUse Spew:")
+	Spew(opt)
+	color.Infoln("\nUse fmt.Println:")
+	fmt.Println(opt)
+	fmt.Println("---------------------------------------------------------------")
 }
 
 func newBuffer() *bytes.Buffer {

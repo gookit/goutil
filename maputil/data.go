@@ -1,6 +1,8 @@
 package maputil
 
 import (
+	"fmt"
+
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -44,8 +46,8 @@ func (d Data) Int64(key string) int64 {
 	return mathutil.MustInt64(val)
 }
 
-// String value get
-func (d Data) String(key string) string {
+// Str value get by key
+func (d Data) Str(key string) string {
 	val, ok := d[key]
 	if !ok {
 		return ""
@@ -67,4 +69,14 @@ func (d Data) Default(key string, def interface{}) interface{} {
 // StringMap convert to map[string]string
 func (d Data) StringMap() map[string]string {
 	return ToStringMap(d)
+}
+
+// String data to string
+func (d Data) String() string {
+	// var buf []byte TODO
+	// for k, v := range d {
+	//
+	// }
+
+	return fmt.Sprint(d)
 }
