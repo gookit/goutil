@@ -1,8 +1,6 @@
 package maputil
 
 import (
-	"fmt"
-
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -78,5 +76,5 @@ func (d Data) String() string {
 	//
 	// }
 
-	return fmt.Sprint(d)
+	return ""
 }
