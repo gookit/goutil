@@ -8,6 +8,7 @@ import (
 	"testing"
 	"unsafe"
 
+	"github.com/gookit/color"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,6 +33,7 @@ func newStd() *Dumper {
 func TestDumper_Fprint(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	dumper := newStd()
+	dumper.WithoutColor()
 
 	dumper.Fprint(buffer, user)
 	str := buffer.String()
@@ -39,6 +41,7 @@ func TestDumper_Fprint(t *testing.T) {
 	assert.Contains(t, str, `id: string("ab12345"),`)
 	assert.Contains(t, str, `Name: string("inhere"),`)
 
+	dumper.ResetOptions()
 	dumper.Print(user)
 }
 
@@ -73,33 +76,39 @@ func TestDump_Basic(t *testing.T) {
 	)
 
 	str := buffer.String()
+	str = color.ClearCode(str) // clear color codes.
 	assert.Contains(t, str, "github.com/gookit/goutil/dump.TestDump_Basic(dumper_test.go")
 	assert.Contains(t, str, "float64(3.1415926)")
 	assert.Contains(t, str, `string("abc1234")`)
 
-	fmt.Println(str)
+	// fmt.Println(str)
+	fmt.Println(buffer.String())
 }
 
 func TestDump_Ints(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	dumper := NewDumper(buffer, 2)
+	dumper.WithoutColor()
 
-	assert.Equal(t, 8, dumper.MoreLenNL)
+	// assert.Equal(t, 8, dumper.MoreLenNL)
 
 	dumper.Println(ints1)
 	str := buffer.String()
 	buffer.Reset()
-	assert.Contains(t, str, "1, 2, 3, 4")
-	assert.Contains(t, str, "[]int{1, 2, 3, 4}")
-	fmt.Println(str)
+	assert.Contains(t, str, "[]int [ #len=4")
+	assert.Contains(t, str, "int(1),\n")
 
-	// elements > 5
 	dumper.Print(ints2)
 	str = buffer.String()
 	buffer.Reset()
+	assert.Contains(t, str, "[]int [ #len=11")
+	assert.Contains(t, str, "int(1),\n")
 	assert.NotContains(t, str, "1, 2, 3, 4")
 	assert.NotContains(t, str, "[]int{1, 2, 3, 4}")
-	fmt.Println(str)
+
+	dumper.ResetOptions()
+	dumper.Dump(ints1)
+	dumper.Println(ints2)
 }
 
 func TestDump_Ptr(t *testing.T) {
@@ -119,12 +128,13 @@ func TestDump_Ptr(t *testing.T) {
 	// refer struct
 	dumper.Println(user)
 	str := buffer.String()
+	str = color.ClearCode(str)
 	assert.Contains(t, str, "&struct")
 	assert.Contains(t, str, "Age: int(22),")
 	assert.Contains(t, str, `id: string("ab12345"),`)
 	assert.Contains(t, str, `Name: string("inhere"),`)
 
-	fmt.Println(str)
+	fmt.Println(buffer.String())
 	// Output:
 	// *struct { id string; Name string; Age int } {
 	//  id: string("ab12345"),

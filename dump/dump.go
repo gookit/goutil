@@ -4,6 +4,8 @@ package dump
 import (
 	"io"
 	"os"
+
+	"github.com/gookit/color"
 )
 
 // These flags define which print caller information
@@ -18,16 +20,40 @@ const (
 var (
 	// valid flag for print caller info
 	callerFlags = []int{Ffunc, Ffile, Ffname, Fline}
+	// default theme
+	defaultTheme = Theme{
+		"caller": "magenta",
+		"field":  "green", // field name color of the map, struct.
+		"value":  "normal",
+		// special type
+		"msType":  "green", // for keywords map, struct type
+		"lenTip":  "gray",  // tips comments for string, slice, map len
+		"string":  "green",
+		"integer": "lightBlueEx",
+	}
 
 	// std dumper
 	std = NewDumper(os.Stdout, 3)
-
-	defaultTheme = map[string]string{
-		"caller": "magenta",
-		"key":    "green", // key name color of the map, struct.
-		"value":  "normal",
-	}
 )
+
+// Theme color code/tag map for dump
+type Theme map[string]string
+
+func (ct Theme) caller(s string) string { return ct.wrap("caller", s) }
+func (ct Theme) field(s string) string  { return ct.wrap("field", s) }
+func (ct Theme) value(s string) string  { return ct.wrap("value", s) }
+func (ct Theme) msType(s string) string { return ct.wrap("msType", s) }
+func (ct Theme) lenTip(s string) string { return ct.wrap("lenTip", s) }
+func (ct Theme) string(s string) string { return ct.wrap("string", s) }
+func (ct Theme) integer(s string) string { return ct.wrap("integer", s) }
+
+// wrap color tag.
+func (ct Theme) wrap(key string, s string) string {
+	if tag := ct[key]; tag != "" {
+		return color.WrapTag(s, tag)
+	}
+	return s
+}
 
 // Std dumper
 func Std() *Dumper {
@@ -40,13 +66,8 @@ func Reset() {
 }
 
 // Config std dumper
-func Config(fn func(*Dumper)) {
-	fn(std)
-}
-
-// Spew print
-func Spew(vs ...interface{}) {
-	std.Spew(vs...)
+func Config(fn func(opts *Options)) {
+	std.WithOptions(fn)
 }
 
 // V like fmt.Println, but the output is clearer and more beautiful

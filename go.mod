@@ -5,7 +5,6 @@ go 1.11
 require (
 	github.com/gookit/color v1.3.7
 	github.com/json-iterator/go v1.1.10
-	github.com/kortschak/utter v1.0.1
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

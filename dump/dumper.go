@@ -12,14 +12,13 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
-	"github.com/kortschak/utter"
 )
 
 // Options for dump vars
 type Options struct {
 	// Output output writer
 	Output io.Writer
-	// dont show type
+	// dont show type TODO
 	NoType bool
 	// dont with color
 	NoColor bool
@@ -32,11 +31,11 @@ type Options struct {
 	// ShowFlag for display caller position
 	ShowFlag int
 	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
-	MoreLenNL int
+	// MoreLenNL int
 	// CallerSkip skip for call runtime.Caller()
 	CallerSkip int
 	// ColorTheme for print result.
-	ColorTheme map[string]string
+	ColorTheme Theme
 }
 
 // printValue must keep track of already-printed pointer values to avoid
@@ -51,13 +50,14 @@ type Dumper struct {
 	*Options
 	// visited struct records
 	visited map[visit]int
-	// is value of the map, struct
+	// is value of the map, struct. will not apply indent.
 	msValue bool
-	// context information
-	prevDepth, curDepth, nextDepth int
-	indentStr, indentPrev, lineEnd string
-	//
+	// current depth
+	curDepth int
+	// current indent string bytes
 	indentBytes []byte
+	// prevDepth, nextDepth int
+	// indentStr, indentPrev, lineEnd string
 }
 
 // NewDumper create
@@ -69,6 +69,7 @@ func NewDumper(out io.Writer, skip int) *Dumper {
 	}
 }
 
+// NewDefaultOptions create.
 func NewDefaultOptions(out io.Writer, skip int) *Options {
 	if out == nil {
 		out = os.Stdout
@@ -79,7 +80,7 @@ func NewDefaultOptions(out io.Writer, skip int) *Options {
 		// ---
 		MaxDepth:  5,
 		ShowFlag:  Ffunc | Ffname | Fline,
-		MoreLenNL: 8,
+		// MoreLenNL: 8,
 		// ---
 		IndentLen:  2,
 		IndentChar: ' ',
@@ -88,15 +89,15 @@ func NewDefaultOptions(out io.Writer, skip int) *Options {
 	}
 }
 
-// Config for dumper
-func (d *Dumper) Config(fn func(d *Dumper)) *Dumper {
-	fn(d)
-	return d
-}
-
 // WithSkip for dumper
 func (d *Dumper) WithSkip(skip int) *Dumper {
 	d.CallerSkip = skip
+	return d
+}
+
+// WithoutColor for dumper
+func (d *Dumper) WithoutColor() *Dumper {
+	d.NoColor = true
 	return d
 }
 
@@ -108,6 +109,8 @@ func (d *Dumper) WithOptions(fn func(opts *Options)) *Dumper {
 
 // ResetOptions for dumper
 func (d *Dumper) ResetOptions() {
+	d.curDepth = 0
+	d.visited = make(map[visit]int)
 	d.Options = NewDefaultOptions(os.Stdout, 2)
 }
 
@@ -126,23 +129,6 @@ func (d *Dumper) Println(vs ...interface{}) {
 	d.dump(vs...)
 }
 
-// Spew print vars.
-func (d *Dumper) Spew(vs ...interface{}) {
-	// show print position
-	if d.ShowFlag != Fnopos {
-		// get the print position
-		pc, file, line, ok := runtime.Caller(d.CallerSkip - 1)
-		if ok {
-			d.printCaller(pc, file, line)
-		}
-	}
-
-	// print var data
-	for _, v := range vs {
-		utter.Dump(v)
-	}
-}
-
 // Fprint print vars to io.Writer
 func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
 	out := d.Output // backup
@@ -152,8 +138,15 @@ func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
 	d.Output = out // restore
 }
 
-// dump vars
+// dump go vars
 func (d *Dumper) dump(vs ...interface{}) {
+	// reset some settings.
+	d.curDepth = 0
+	d.visited = make(map[visit]int)
+	if d.NoColor { // clear all theme settings.
+		d.ColorTheme = make(Theme)
+	}
+
 	// show print position
 	if d.ShowFlag != Fnopos {
 		// get the print position
@@ -208,32 +201,14 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 	}
 
 	text := strings.Join(nodes, "")
-	if d.NoColor {
-		d.indentPrint(text, "\n")
-		return
-	}
 
-	color.Fprint(d.Output, "<mga>", text, "</>\n")
+	d.print(d.ColorTheme.caller(text), "\n")
 }
 
 func (d *Dumper) advance(step int) {
 	d.curDepth += step
-	d.nextDepth = d.curDepth + step
-
-	// strings.Repeat()
-	d.indentStr = strings.Repeat(string(d.IndentChar), d.IndentLen*d.curDepth)
+	// d.nextDepth = d.curDepth + step
 	d.indentBytes = strutil.RepeatBytes(d.IndentChar, d.IndentLen*d.curDepth)
-
-	// current depth > 1
-	if d.curDepth > 1 {
-		d.prevDepth += step
-		// d.lineEnd = ",\n"
-		d.indentPrev = strutil.Repeat(string(d.IndentChar), d.IndentLen*d.prevDepth)
-	} else {
-		// d.lineEnd = "\n"
-		d.prevDepth = 0
-		d.indentPrev = ""
-	}
 }
 
 func (d *Dumper) printOne(v interface{}) {
@@ -247,8 +222,7 @@ func (d *Dumper) printOne(v interface{}) {
 }
 
 func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
-
-	var isPtr bool
+	// var isPtr bool
 	// if is an ptr, get real type and value
 	if t.Kind() == reflect.Ptr {
 		if v.IsNil() {
@@ -256,11 +230,19 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			return
 		}
 
-		isPtr = true
 		v = v.Elem()
 		t = t.Elem()
 		// add "*" prefix
 		d.indentPrint("&")
+	}
+
+	if d.curDepth > d.MaxDepth {
+		if !v.CanInterface() {
+			d.printf("%s,\n", v.String())
+		} else {
+			d.printf("%#v,\n", v.Interface())
+		}
+		return
 	}
 
 	switch t.Kind() {
@@ -269,21 +251,27 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Float32, reflect.Float64:
 		d.printf("%s(%v),\n", t.String(), v.Float())
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		d.printf("%s(%d),\n", t.String(), v.Int())
+		intStr := strconv.FormatInt(v.Int(), 10)
+		intStr = d.ColorTheme.integer(intStr)
+		d.printf("%s(%s),\n", t.String(), intStr)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		d.printf("%s(%d),\n", t.String(), v.Uint())
+		intStr := strconv.FormatUint(v.Uint(), 10)
+		intStr = d.ColorTheme.integer(intStr)
+		d.printf("%s(%s),\n", t.String(), intStr)
 	case reflect.String:
-		d.printf("%s(\"%s\"), #len=%d\n", t.String(), v.String(), v.Len())
+		strVal := d.ColorTheme.string(v.String())
+		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(v.Len()))
+		d.printf("%s(\"%s\"), %s\n", t.String(), strVal, lenTip)
 	case reflect.Complex64, reflect.Complex128:
 		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
 		eleNum := v.Len()
-		if eleNum < d.MoreLenNL {
-			d.printf("%#v,\n", v.Interface())
-			return
-		}
+		// if eleNum < d.MoreLenNL {
+		// 	d.msValue = true // print inline.
+		// }
 
-		d.indentPrint(t.String(), " [ #len=", eleNum, "\n")
+		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum))
+		d.indentPrint(t.String(), " [ ", lenTip, "\n")
 		for i := 0; i < eleNum; i++ {
 			sv := v.Index(i)
 			d.advance(1)
@@ -291,89 +279,64 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			// d.printf("%v,\n", v.Index(i).Interface())
 			d.advance(-1)
 		}
+
 		d.indentPrint("]\n")
 	case reflect.Struct:
-		// refer https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
-		// NOTICE: only re-reflect.New on curDepth=1
-		if !isPtr && d.curDepth == 1 {
-			// fmt.Println("re reflect.New")
-			// oldRv := v
-			// v = reflect.New(t).Elem()
-			// v.Set(oldRv)
-
-			// ele := reflect.NewAt(v.Field(0).Type(), unsafe.Pointer(v.Field(0).UnsafeAddr())).Elem()
-			// fmt.Println("aaa", ele.CanInterface())
+		if v.CanAddr() {
+			addr := v.UnsafeAddr()
+			vis := visit{addr, t}
+			if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
+				d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
+				break // don't print v again
+			}
+			d.visited[vis] = d.curDepth
 		}
-		if d.curDepth > d.MaxDepth {
-			if !v.CanInterface() {
-				d.printf("%s,\n", v.String())
-			} else {
-				d.printf("%#v,\n", v.Interface())
-			}
-		} else {
-			if v.CanAddr() {
-				addr := v.UnsafeAddr()
-				vis := visit{addr, t}
-				if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
-					d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
-					break // don't print v again
-				}
-				d.visited[vis] = d.curDepth
-			}
 
-			d.indentPrint(t.String(), " {\n")
+		d.indentPrint(d.ColorTheme.msType(t.String()), " {\n")
+		d.msValue = false
+
+		fldNum := v.NumField()
+		for i := 0; i < fldNum; i++ {
+			fv := v.Field(i)
+			d.advance(1)
+
+			fName := t.Field(i).Name
+			d.indentPrint(d.ColorTheme.field(fName), ": ")
+
+			d.msValue = true
+			d.printRValue(fv.Type(), fv)
 			d.msValue = false
 
-			fldNum := v.NumField()
-			for i := 0; i < fldNum; i++ {
-				fv := v.Field(i)
-				d.advance(1)
-
-				fieldName := t.Field(i).Name
-				// mustFprintf(w, "%s<cyan>%s</>: ", indentStr, fieldName)
-				d.indentPrint(fieldName, ": ")
-
-				d.msValue = true
-				d.printRValue(fv.Type(), fv)
-				d.msValue = false
-
-				d.advance(-1)
-			}
-
-			d.indentPrint("},\n")
+			d.advance(-1)
 		}
+
+		d.indentPrint("},\n")
 	case reflect.Map:
-		if d.curDepth > d.MaxDepth {
-			if !v.CanInterface() {
-				d.printf("%s,\n", v.String())
+		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(v.Len()))
+		d.indentPrint(d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
+		d.msValue = false
+
+		for _, key := range v.MapKeys() {
+			mv := v.MapIndex(key)
+			d.advance(1)
+
+			// print key name
+			if !key.CanInterface() {
+				// d.printf("<cyan>%s</>: ", key.String())
+				d.printf("%s: ", key.String())
 			} else {
-				d.printf("%#v,\n", v.Interface())
+				d.printf("%#v: ", key.Interface())
 			}
-		} else {
-			d.indentPrint(t.String(), " { #len=", v.Len(), "\n")
+
+			// print field value
+			d.msValue = true
+			d.printRValue(mv.Type(), mv)
 			d.msValue = false
-			for _, key := range v.MapKeys() {
-				mv := v.MapIndex(key)
-				d.advance(1)
 
-				// print key name
-				if !key.CanInterface() {
-					// d.printf("<cyan>%s</>: ", key.String())
-					d.printf("%s: ", key.String())
-				} else {
-					d.printf("%#v: ", key.Interface())
-				}
-
-				// print field value
-				d.msValue = true
-				d.printRValue(mv.Type(), mv)
-				d.msValue = false
-
-				d.advance(-1)
-			}
-
-			d.indentPrint("},\n")
+			d.advance(-1)
 		}
+
+		d.indentPrint("},\n")
 	case reflect.Interface:
 		switch e := v.Elem(); {
 		case e.Kind() == reflect.Invalid:
@@ -386,15 +349,14 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		}
 	// case reflect.Ptr:
 	case reflect.Chan:
-		d.printf( "(%s)(%#v),\n", t.String(), v.Pointer())
+		d.printf("(%s)(%#v),\n", t.String(), v.Pointer())
 	case reflect.Func:
-		d.printf( "(%s) {...},\n", t.String())
+		d.printf("(%s) {...},\n", t.String())
 	case reflect.UnsafePointer:
 		d.printf("(%#v),\n", v.Pointer())
 	case reflect.Invalid:
 		d.indentPrint(t.String(), "(nil),\n")
 	default:
-		// intX, uintX, string
 		if v.CanInterface() {
 			d.printf("%s(%#v),\n", t.String(), v.Interface())
 		} else {
@@ -404,22 +366,33 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 }
 
 func (d *Dumper) print(v ...interface{}) {
-	_, _ = fmt.Fprint(d.Output, v...)
-	// color.Fprint(w, v...)
+	if d.NoColor {
+		_, _ = fmt.Fprint(d.Output, v...)
+	} else {
+		color.Fprint(d.Output, v...)
+	}
 }
 
 func (d *Dumper) printf(f string, v ...interface{}) {
 	if !d.msValue {
 		_, _ = d.Output.Write(d.indentBytes)
 	}
-	_, _ = fmt.Fprintf(d.Output, f, v...)
-	// color.Fprintf(w, f, v...)
+
+	if d.NoColor {
+		_, _ = fmt.Fprintf(d.Output, f, v...)
+	} else {
+		color.Fprintf(d.Output, f, v...)
+	}
 }
 
 func (d *Dumper) indentPrint(v ...interface{}) {
 	if !d.msValue {
 		_, _ = d.Output.Write(d.indentBytes)
 	}
-	_, _ = fmt.Fprint(d.Output, v...)
-	// color.Fprint(w, v...)
+
+	if d.NoColor {
+		_, _ = fmt.Fprint(d.Output, v...)
+	} else {
+		color.Fprint(d.Output, v...)
+	}
 }

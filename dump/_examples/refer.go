@@ -6,10 +6,23 @@ import (
 )
 
 func main() {
-	vs := []interface{}{123}
+	vs := []interface{}{
+		23,
+		[]string{"ab", "cd"},
+		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, // len > 10
+		map[string]interface{}{
+			"key": "val", "sub": map[string]string{"k": "v"},
+		},
+		struct {
+			ab string
+			Cd int
+		}{
+			"ab", 23,
+		},
+	}
 
 	// print var data
-	_, err := pretty.Println(vs)
+	_, err := pretty.Println(vs...)
 	if err != nil {
 		panic(err)
 	}

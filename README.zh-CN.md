@@ -90,6 +90,14 @@ func Fprint(w io.Writer, vs ...interface{})
 func NewDumper(out io.Writer, skip int) *Dumper
 ```
 
+Preview:
+
+![](dump/_examples/preview-demo1.png)
+
+- nested struct
+
+![](dump/_examples/preview-nested-struct.png)
+
 ### ENV
 
 > Package `github.com/gookit/goutil/envutil`

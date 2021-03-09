@@ -10,7 +10,7 @@ import (
 )
 
 func ExamplePrint() {
-	Config(func(d *Dumper) {
+	Config(func(d *Options) {
 		d.NoColor = true
 	})
 	defer Reset()
@@ -70,7 +70,7 @@ func TestConfig(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
 
-	Config(func(d *Dumper) {
+	Config(func(d *Options) {
 		d.Output = buf
 		// no color on tests
 		d.NoColor = true
@@ -89,6 +89,12 @@ func TestPrint(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)
 
+	// disable caller position for test
+	Config(func(d *Options) {
+		d.NoColor = true
+	})
+	defer Reset()
+
 	// print position
 	Fprint(buf, 123)
 	// "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:65)"
@@ -96,11 +102,8 @@ func TestPrint(t *testing.T) {
 	is.Contains(str, "PRINT AT github.com/gookit/goutil/dump.TestPrint(dump_test.go:")
 	is.Contains(str, "int(123)")
 
-	// disable caller position for test
-	Config(func(d *Dumper) {
-		d.ShowFlag = Fnopos
-	})
-	defer Reset()
+	// dont print position
+	Std().ShowFlag = Fnopos
 
 	buf.Reset()
 	Fprint(buf, "abc")
@@ -109,8 +112,7 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, []string{"ab", "cd"})
-	is.Equal(`[]string{"ab", "cd"},
-`, buf.String())
+	is.Contains(buf.String(), `[]string [ #len=2`)
 
 	buf.Reset()
 	Fprint(buf, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
@@ -160,7 +162,7 @@ func TestPrintNil(t *testing.T) {
 	is := assert.New(t)
 
 	buf := newBuffer()
-	Config(func(d *Dumper) {
+	Config(func(d *Options) {
 		d.ShowFlag = Fnopos
 	})
 	defer Reset()
@@ -233,8 +235,6 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 	}
 
 	Println(myS2)
-	color.Infoln("\nUse Spew:")
-	Spew(myS2)
 	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(myS2)
 	fmt.Println("---------------------------------------------------------------")
@@ -278,9 +278,6 @@ func TestStruct_ptrField(t *testing.T) {
 	}
 
 	Println(opt)
-	color.Infoln("\nUse Pretty:")
-	color.Infoln("\nUse Spew:")
-	Spew(opt)
 	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(opt)
 	fmt.Println("---------------------------------------------------------------")
@@ -289,7 +286,7 @@ func TestStruct_ptrField(t *testing.T) {
 func newBuffer() *bytes.Buffer {
 	buf := new(bytes.Buffer)
 
-	Config(func(d *Dumper) {
+	Config(func(d *Options) {
 		d.Output = buf
 		d.NoColor = true
 	})
