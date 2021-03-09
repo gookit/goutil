@@ -3,6 +3,7 @@ package fsutil_test
 import (
 	"bytes"
 	"os"
+	"runtime"
 	"testing"
 
 	"github.com/gookit/goutil/envutil"
@@ -18,7 +19,12 @@ func TestCommon(t *testing.T) {
 	assert.False(t, fsutil.IsZipFile("testdata/test.jpg"))
 
 	assert.Equal(t, "test.jpg", fsutil.Name("path/to/test.jpg"))
-	assert.Equal(t, "path/to", fsutil.Dir("path/to/test.jpg"))
+
+	if runtime.GOOS == "windows" {
+		assert.Equal(t, "path\\to", fsutil.Dir("path/to/test.jpg"))
+	} else {
+		assert.Equal(t, "path/to", fsutil.Dir("path/to/test.jpg"))
+	}
 }
 
 func TestPathExists(t *testing.T) {
