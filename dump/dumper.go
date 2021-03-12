@@ -236,6 +236,10 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.indentPrint("&")
 	}
 
+	if !v.IsValid() {
+		d.indentPrint(t.String(), "<nil>, #invalid\n")
+	}
+
 	if d.curDepth > d.MaxDepth {
 		if !v.CanInterface() {
 			d.printf("%s,\n", v.String())
