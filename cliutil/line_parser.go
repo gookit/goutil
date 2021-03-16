@@ -9,6 +9,7 @@ import (
 // LineParser struct
 // parse input command line to []string, such as cli os.Args
 type LineParser struct {
+	parsed bool
 	// Line the full input command line text
 	// eg `kite top sub -a "the a message" --foo val1 --bar "val 2"`
 	Line string
@@ -48,6 +49,11 @@ func (p *LineParser) AlsoEnvParse() []string {
 
 // Parse input command line text to os.Args
 func (p *LineParser) Parse() []string {
+	if p.parsed {
+		return p.args
+	}
+
+	p.parsed = true
 	p.Line = strings.TrimSpace(p.Line)
 	if p.Line == "" {
 		return p.args
@@ -125,6 +131,22 @@ func (p *LineParser) Parse() []string {
 	}
 
 	return p.args
+}
+
+// BinAndArgs get binName and args
+func (p *LineParser) BinAndArgs() (bin string, args []string) {
+	p.Parse() // ensure parsed.
+
+	ln := len(p.args)
+	if ln == 0 {
+		return
+	}
+
+	bin = p.args[0]
+	if ln > 1 {
+		args = p.args[1:]
+	}
+	return
 }
 
 func (p *LineParser) appendWithPrefix(node, prefix string) {

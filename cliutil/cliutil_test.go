@@ -33,6 +33,10 @@ func TestExecCmd(t *testing.T) {
 	ret, err = cliutil.QuickExec("echo OK2")
 	assert.NoError(t, err)
 	assert.Equal(t, "OK2", strings.TrimSpace(ret))
+
+	ret, err = cliutil.ExecLine("echo OK3")
+	assert.NoError(t, err)
+	assert.Equal(t, "OK3", strings.TrimSpace(ret))
 }
 
 func TestShellExec(t *testing.T) {

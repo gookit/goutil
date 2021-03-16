@@ -2,12 +2,30 @@
 package cliutil
 
 import (
+	"os/exec"
+
 	"github.com/gookit/goutil/sysutil"
 )
 
 // QuickExec quick exec an simple command line
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
 	return sysutil.QuickExec(cmdLine, workDir...)
+}
+
+// ExecLine quick exec an command line string
+func ExecLine(cmdLine string, workDir ...string) (string, error) {
+	p := NewLineParser(cmdLine)
+	// parse get bin and args
+	binName, args := p.BinAndArgs()
+
+	// create a new Cmd instance
+	cmd := exec.Command(binName, args...)
+	if len(workDir) > 0 {
+		cmd.Dir = workDir[0]
+	}
+
+	bs, err := cmd.Output()
+	return string(bs), err
 }
 
 // ExecCmd a CLI bin file and return output.

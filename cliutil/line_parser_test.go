@@ -1,6 +1,7 @@
 package cliutil_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/cliutil"
@@ -88,4 +89,16 @@ func TestParseLine_errLine(t *testing.T) {
 	dump.P(args)
 	assert.Len(t, args, 7)
 	assert.Equal(t, "msg text", args[6])
+}
+
+func TestLineParser_BinAndArgs(t *testing.T) {
+	p := cliutil.NewLineParser("git status")
+	b,a := p.BinAndArgs()
+	assert.Equal(t, "git", b)
+	assert.Equal(t, "status", strings.Join(a, " "))
+
+	p = cliutil.NewLineParser("git")
+	b,a = p.BinAndArgs()
+	assert.Equal(t, "git", b)
+	assert.Empty(t, a)
 }
