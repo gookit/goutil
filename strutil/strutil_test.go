@@ -19,9 +19,9 @@ func TestIsAlphabet(t *testing.T) {
 }
 
 func TestIsAlphaNum(t *testing.T) {
-	assert.False(t, strutil.IsAlphaNum('9'))
 	assert.False(t, strutil.IsAlphaNum('+'))
 
+	assert.True(t, strutil.IsAlphaNum('9'))
 	assert.True(t, strutil.IsAlphaNum('A'))
 	assert.True(t, strutil.IsAlphaNum('a'))
 	assert.True(t, strutil.IsAlphaNum('Z'))
