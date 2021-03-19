@@ -18,6 +18,21 @@ func TestIsAlphabet(t *testing.T) {
 	assert.True(t, strutil.IsAlphabet('z'))
 }
 
+func TestIsAlphaNum(t *testing.T) {
+	assert.False(t, strutil.IsAlphaNum('9'))
+	assert.False(t, strutil.IsAlphaNum('+'))
+
+	assert.True(t, strutil.IsAlphaNum('A'))
+	assert.True(t, strutil.IsAlphaNum('a'))
+	assert.True(t, strutil.IsAlphaNum('Z'))
+	assert.True(t, strutil.IsAlphaNum('z'))
+}
+
+func TestEquals(t *testing.T) {
+	assert.True(t, strutil.Equals("a", "a"))
+	assert.False(t, strutil.Equals("a", "b"))
+}
+
 func TestTrim(t *testing.T) {
 	is := assert.New(t)
 

@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+// VarReplace replaces ${var} or $var in the string according to the values
+var VarReplace = os.ExpandEnv
+
+// ValueGetter Env value provider func.
+// TIPS: you can custom provide data.
+var ValueGetter = os.Getenv
+
 // parse env value, allow:
 // 	only key 	 - "${SHELL}"
 // 	with default - "${NotExist|defValue}"
@@ -15,20 +22,18 @@ import (
 //  var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
 var envRegex = regexp.MustCompile(`\${.+?}`)
 
-// EnvValueGetter Env value provider.
-// TIPS: you can custom provide data.
-var EnvValueGetter = func(name string) string {
-	return os.Getenv(name)
+// VarParse alias of the ParseEnvValue
+func VarParse(str string) string {
+	return ParseEnvValue(str)
 }
 
-// ParseEnvValue parse ENV var value from input string
+// ParseEnvValue parse ENV var value from input string, support default value.
 func ParseEnvValue(val string) (newVal string) {
 	if strings.Index(val, "${") == -1 {
 		return val
 	}
 
 	var name, def string
-
 	return envRegex.ReplaceAllStringFunc(val, func(eVar string) string {
 		// eVar like "${NotExist|defValue}", first remove "${" and "}", then split it
 		ss := strings.SplitN(eVar[2:len(eVar)-1], "|", 2)
@@ -41,9 +46,8 @@ func ParseEnvValue(val string) (newVal string) {
 			name = strings.TrimSpace(ss[0])
 		}
 
-		// get value from ENV
-		// eVal := os.Getenv(name)
-		eVal := EnvValueGetter(name)
+		// get ENV value by name
+		eVal := ValueGetter(name)
 		if eVal == "" {
 			eVal = def
 		}

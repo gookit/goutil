@@ -42,6 +42,7 @@ func TestParseEnvValue(t *testing.T) {
 	ris.Equal("", Getenv("FirstEnv"))
 	ris.Equal("", Getenv("SecondEnv"))
 	ris.Equal(rVal, ParseEnvValue(rVal))
+	ris.Equal(rVal, VarParse(rVal))
 
 	testutil.MockEnvValues(map[string]string{
 		"FirstEnv":  "abc",
@@ -50,6 +51,7 @@ func TestParseEnvValue(t *testing.T) {
 		ris.Equal("abc", Getenv("FirstEnv"))
 		ris.Equal("def", Getenv("SecondEnv"))
 		ris.Equal("abc/def", ParseEnvValue(rVal))
+		ris.Equal("abc string", VarReplace("${FirstEnv} string"))
 	})
 
 	testutil.MockEnvValues(map[string]string{

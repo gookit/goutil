@@ -1,3 +1,4 @@
+// Package strutil provide some string,char,byte util functions
 package strutil
 
 import (
@@ -14,6 +15,10 @@ const (
 	PosRight
 )
 
+var (
+	Equals = strings.EqualFold
+)
+
 // IsAlphabet char
 func IsAlphabet(char uint8) bool {
 	// A 65 -> Z 90
@@ -27,6 +32,11 @@ func IsAlphabet(char uint8) bool {
 	}
 
 	return false
+}
+
+// IsAlphaNum reports whether the byte is an ASCII letter, number, or underscore
+func IsAlphaNum(c uint8) bool {
+	return c == '_' || '0' <= c && c <= '9' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z'
 }
 
 /*************************************************************
