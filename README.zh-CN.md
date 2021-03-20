@@ -77,7 +77,7 @@ func ReadFirst(question string) (string, error)
 func ReadPassword(question ...string) string
 ```
 
-### Examples
+#### Examples
 
 **cmdline parse:**
 
@@ -111,7 +111,7 @@ func NewDumper(out io.Writer, skip int) *Dumper
 func NewDefaultOptions(out io.Writer, skip int) *Options
 ```
 
-### Examples
+#### Examples
 
 example code:
 
