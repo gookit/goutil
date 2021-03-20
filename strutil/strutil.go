@@ -16,28 +16,9 @@ const (
 )
 
 var (
-	Equals = strings.EqualFold
+	Ltrim = TrimLeft
+	Rtrim = TrimRight
 )
-
-// IsAlphabet char
-func IsAlphabet(char uint8) bool {
-	// A 65 -> Z 90
-	if char >= 'A' && char <= 'Z' {
-		return true
-	}
-
-	// a 97 -> z 122
-	if char >= 'a' && char <= 'z' {
-		return true
-	}
-
-	return false
-}
-
-// IsAlphaNum reports whether the byte is an ASCII letter, number, or underscore
-func IsAlphaNum(c uint8) bool {
-	return c == '_' || '0' <= c && c <= '9' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z'
-}
 
 /*************************************************************
  * String filtering

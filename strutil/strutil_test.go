@@ -8,31 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsAlphabet(t *testing.T) {
-	assert.False(t, strutil.IsAlphabet('9'))
-	assert.False(t, strutil.IsAlphabet('+'))
-
-	assert.True(t, strutil.IsAlphabet('A'))
-	assert.True(t, strutil.IsAlphabet('a'))
-	assert.True(t, strutil.IsAlphabet('Z'))
-	assert.True(t, strutil.IsAlphabet('z'))
-}
-
-func TestIsAlphaNum(t *testing.T) {
-	assert.False(t, strutil.IsAlphaNum('+'))
-
-	assert.True(t, strutil.IsAlphaNum('9'))
-	assert.True(t, strutil.IsAlphaNum('A'))
-	assert.True(t, strutil.IsAlphaNum('a'))
-	assert.True(t, strutil.IsAlphaNum('Z'))
-	assert.True(t, strutil.IsAlphaNum('z'))
-}
-
-func TestEquals(t *testing.T) {
-	assert.True(t, strutil.Equals("a", "a"))
-	assert.False(t, strutil.Equals("a", "b"))
-}
-
 func TestTrim(t *testing.T) {
 	is := assert.New(t)
 
@@ -52,12 +27,12 @@ func TestTrim(t *testing.T) {
 	// is.Equal("", Trim(nil))
 
 	// TrimLeft
-	is.Equal("abc ", strutil.TrimLeft(" abc "))
+	is.Equal("abc ", strutil.Ltrim(" abc "))
 	is.Equal("abc ,", strutil.TrimLeft(", abc ,", " ,"))
 	is.Equal("abc ,", strutil.TrimLeft(", abc ,", ", "))
 
 	// TrimRight
-	is.Equal(" abc", strutil.TrimRight(" abc "))
+	is.Equal(" abc", strutil.Rtrim(" abc "))
 	is.Equal(", abc", strutil.TrimRight(", abc ,", ", "))
 }
 
