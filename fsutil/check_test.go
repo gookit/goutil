@@ -26,7 +26,9 @@ func TestCommon(t *testing.T) {
 
 func TestPathExists(t *testing.T) {
 	assert.False(t, fsutil.PathExists(""))
+	assert.False(t, fsutil.PathExist("/not-exist"))
 	assert.False(t, fsutil.PathExists("/not-exist"))
+	assert.True(t, fsutil.PathExist("testdata/test.jpg"))
 	assert.True(t, fsutil.PathExists("testdata/test.jpg"))
 }
 
@@ -36,12 +38,15 @@ func TestIsFile(t *testing.T) {
 	assert.False(t, fsutil.IsFile("/not-exist"))
 	assert.False(t, fsutil.FileExists("/not-exist"))
 	assert.True(t, fsutil.IsFile("testdata/test.jpg"))
+	assert.True(t, fsutil.FileExist("testdata/test.jpg"))
 }
 
 func TestIsDir(t *testing.T) {
 	assert.False(t, fsutil.IsDir(""))
+	assert.False(t, fsutil.DirExist(""))
 	assert.False(t, fsutil.IsDir("/not-exist"))
 	assert.True(t, fsutil.IsDir("testdata"))
+	assert.True(t, fsutil.DirExist("testdata"))
 }
 
 func TestIsAbsPath(t *testing.T) {

@@ -119,7 +119,7 @@ func MustCopyFile(src string, dst string) {
 
 // alias methods
 var (
-	MustRm = MustRemove
+	MustRm  = MustRemove
 	QuietRm = QuietRemove
 )
 

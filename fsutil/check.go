@@ -17,7 +17,7 @@ var (
 
 // alias methods
 var (
-	DirExist = IsDir
+	DirExist  = IsDir
 	FileExist = IsFile
 	PathExist = PathExists
 )
@@ -89,6 +89,20 @@ func IsFile(path string) bool {
 // IsAbsPath is abs path.
 func IsAbsPath(aPath string) bool {
 	return path.IsAbs(aPath)
+}
+
+// ImageMimeTypes refer net/http package
+var ImageMimeTypes = map[string]string{
+	"bmp": "image/bmp",
+	"gif": "image/gif",
+	"ief": "image/ief",
+	"jpg": "image/jpeg",
+	// "jpe":  "image/jpeg",
+	"jpeg": "image/jpeg",
+	"png":  "image/png",
+	"svg":  "image/svg+xml",
+	"ico":  "image/x-icon",
+	"webp": "image/webp",
 }
 
 // IsImageFile check file is image file.

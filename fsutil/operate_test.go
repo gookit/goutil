@@ -63,4 +63,3 @@ func TestQuickOpenFile(t *testing.T) {
 		assert.NoError(t, os.Remove(file.Name()))
 	}
 }
-
