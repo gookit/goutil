@@ -24,6 +24,7 @@ func ReadInput(question string) (string, error) {
 }
 
 // ReadLine read one line from user input.
+//
 // Usage:
 // 	in := ReadLine("")
 // 	ans, _ := ReadLine("your name?")
@@ -39,10 +40,31 @@ func ReadLine(question string) (string, error) {
 
 // ReadFirst read first char
 func ReadFirst(question string) (string, error) {
-	answer, err := ReadLine(question)
-	if len(answer) == 0 {
-		return "", err
+	answer, err := ReadFirstByte(question)
+
+	return string(answer), err
+}
+
+// ReadFirstByte read first byte char
+//
+// Usage:
+// 	ans, _ := ReadFirstByte("your name?")
+func ReadFirstByte(question string) (byte, error) {
+	if len(question) > 0 {
+		color.Print(question)
 	}
 
-	return string(answer[0]), err
+	reader := bufio.NewReader(os.Stdin)
+	return reader.ReadByte()
+}
+
+// ReadFirstRune read first rune char
+func ReadFirstRune(question string) (rune, error) {
+	if len(question) > 0 {
+		color.Print(question)
+	}
+
+	reader := bufio.NewReader(os.Stdin)
+	answer, _, err := reader.ReadRune()
+	return answer, err
 }

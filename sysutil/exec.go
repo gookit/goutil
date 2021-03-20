@@ -32,7 +32,7 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 
 // ShellExec exec command by shell
 // cmdStr eg. "ls -al"
-func ShellExec(cmdStr string, shells ...string) (string, error) {
+func ShellExec(cmdLine string, shells ...string) (string, error) {
 	// shell := "/bin/sh"
 	shell := "sh"
 	if len(shells) > 0 {
@@ -41,7 +41,7 @@ func ShellExec(cmdStr string, shells ...string) (string, error) {
 
 	var out bytes.Buffer
 
-	cmd := exec.Command(shell, "-c", cmdStr)
+	cmd := exec.Command(shell, "-c", cmdLine)
 	cmd.Stdout = &out
 
 	if err := cmd.Run(); err != nil {
@@ -49,4 +49,29 @@ func ShellExec(cmdStr string, shells ...string) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+// FindExecutable in the system
+//
+// Usage:
+// 	FindExecutable("bash")
+func FindExecutable(binName string) (string, error) {
+	return exec.LookPath(binName)
+}
+
+// Executable find in the system
+//
+// Usage:
+// 	Executable("bash")
+func Executable(binName string) (string, error) {
+	return exec.LookPath(binName)
+}
+
+// HasExecutable in the system
+//
+// Usage:
+// 	HasExecutable("bash")
+func HasExecutable(binName string) bool {
+	_, err := exec.LookPath(binName)
+	return err == nil
 }

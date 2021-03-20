@@ -45,7 +45,7 @@ func IsWSL() bool {
 		b := make([]byte, 1024)
 		f, err := os.Open("/proc/version")
 		if err == nil {
-			_,_ = f.Read(b) // ignore error
+			_, _ = f.Read(b) // ignore error
 			f.Close()
 			detectedWSLContents = string(b)
 		}

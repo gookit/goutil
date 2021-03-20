@@ -54,3 +54,13 @@ func CurrentShell(onlyName bool) (path string) {
 func HasShellEnv(shell string) bool {
 	return sysutil.HasShellEnv(shell)
 }
+
+// IsShellSpecialVar reports whether the character identifies a special
+// shell variable such as $*.
+func IsShellSpecialVar(c uint8) bool {
+	switch c {
+	case '*', '#', '$', '@', '!', '?', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		return true
+	}
+	return false
+}

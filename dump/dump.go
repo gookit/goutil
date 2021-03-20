@@ -39,12 +39,12 @@ var (
 // Theme color code/tag map for dump
 type Theme map[string]string
 
-func (ct Theme) caller(s string) string { return ct.wrap("caller", s) }
-func (ct Theme) field(s string) string  { return ct.wrap("field", s) }
-func (ct Theme) value(s string) string  { return ct.wrap("value", s) }
-func (ct Theme) msType(s string) string { return ct.wrap("msType", s) }
-func (ct Theme) lenTip(s string) string { return ct.wrap("lenTip", s) }
-func (ct Theme) string(s string) string { return ct.wrap("string", s) }
+func (ct Theme) caller(s string) string  { return ct.wrap("caller", s) }
+func (ct Theme) field(s string) string   { return ct.wrap("field", s) }
+func (ct Theme) value(s string) string   { return ct.wrap("value", s) }
+func (ct Theme) msType(s string) string  { return ct.wrap("msType", s) }
+func (ct Theme) lenTip(s string) string  { return ct.wrap("lenTip", s) }
+func (ct Theme) string(s string) string  { return ct.wrap("string", s) }
 func (ct Theme) integer(s string) string { return ct.wrap("integer", s) }
 
 // wrap color tag.

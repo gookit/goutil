@@ -31,7 +31,7 @@ func ToStringMap(src map[string]interface{}) map[string]string {
 func HttpQueryString(data map[string]interface{}) string {
 	ss := make([]string, len(data))
 	for k, v := range data {
-		ss = append(ss, k + "=" + strutil.MustString(v))
+		ss = append(ss, k+"="+strutil.MustString(v))
 	}
 
 	return strings.Join(ss, "&")

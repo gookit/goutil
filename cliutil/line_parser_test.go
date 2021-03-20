@@ -93,12 +93,12 @@ func TestParseLine_errLine(t *testing.T) {
 
 func TestLineParser_BinAndArgs(t *testing.T) {
 	p := cliutil.NewLineParser("git status")
-	b,a := p.BinAndArgs()
+	b, a := p.BinAndArgs()
 	assert.Equal(t, "git", b)
 	assert.Equal(t, "status", strings.Join(a, " "))
 
 	p = cliutil.NewLineParser("git")
-	b,a = p.BinAndArgs()
+	b, a = p.BinAndArgs()
 	assert.Equal(t, "git", b)
 	assert.Empty(t, a)
 }

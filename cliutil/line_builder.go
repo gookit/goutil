@@ -25,7 +25,7 @@ func LineBuild(binFile string, args []string) string {
 
 // AddArg to builder
 func (b *LineBuilder) AddArg(arg string) {
-	_,_= b.WriteString(arg)
+	_, _ = b.WriteString(arg)
 }
 
 // AddArgs to builder
@@ -36,7 +36,7 @@ func (b *LineBuilder) AddArgs(args ...string) {
 // AddArray to builder
 func (b *LineBuilder) AddArray(args []string) {
 	for _, arg := range args {
-		_,_= b.WriteString(arg)
+		_, _ = b.WriteString(arg)
 	}
 }
 
@@ -58,13 +58,13 @@ func (b *LineBuilder) WriteString(a string) (int, error) {
 	// no quote char
 	if quote == 0 {
 		b.buf = append(b.buf, a...)
-		return len(a)+1, nil
+		return len(a) + 1, nil
 	}
 
 	b.buf = append(b.buf, quote) // add start quote
 	b.buf = append(b.buf, a...)
 	b.buf = append(b.buf, quote) // add end quote
-	return len(a)+3, nil
+	return len(a) + 3, nil
 }
 
 // String to command line string

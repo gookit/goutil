@@ -7,6 +7,11 @@ import (
 	"github.com/gookit/goutil/fmtutil"
 )
 
+// IsNumeric returns true if the given character is a numeric, otherwise false.
+func IsNumeric(c byte) bool {
+	return c >= '0' && c <= '9'
+}
+
 // Percent returns a values percent of the total
 func Percent(val, total int) float64 {
 	if total == 0 {

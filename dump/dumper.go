@@ -78,8 +78,8 @@ func NewDefaultOptions(out io.Writer, skip int) *Options {
 	return &Options{
 		Output: out,
 		// ---
-		MaxDepth:  5,
-		ShowFlag:  Ffunc | Ffname | Fline,
+		MaxDepth: 5,
+		ShowFlag: Ffunc | Ffname | Fline,
 		// MoreLenNL: 8,
 		// ---
 		IndentLen:  2,

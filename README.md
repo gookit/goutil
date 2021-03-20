@@ -62,6 +62,7 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
+func IsShellSpecialVar(c uint8) bool
 // source at cliutil/line_builder.go
 func NewLineBuilder(binFile string, args ...string) *LineBuilder
 func LineBuild(binFile string, args []string) string
@@ -73,6 +74,8 @@ func ParseLine(line string) []string
 func ReadInput(question string) (string, error)
 func ReadLine(question string) (string, error)
 func ReadFirst(question string) (string, error)
+func ReadFirstByte(question string) (byte, error)
+func ReadFirstRune(question string) (rune, error)
 // source at cliutil/read_nonwin.go
 func ReadPassword(question ...string) string
 ```
@@ -84,13 +87,28 @@ func ReadPassword(question ...string) string
 ```go
 package main
 
-import "github.com/gookit/goutil/cliutil"
-import "github.com/gookit/goutil/dump"
+import (
+	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/dump"
+)
 
 func main() {
 	args := cliutil.ParseLine(`./app top sub --msg "has multi words"`)
 	dump.P(args)
 }
+```
+
+output:
+
+```text
+PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)
+[]string [ #len=5
+  string("./app"), #len=5
+  string("top"), #len=3
+  string("sub"), #len=3
+  string("--msg"), #len=5
+  string("has multi words"), #len=15
+]
 ```
 
 
@@ -225,6 +243,10 @@ func RegexFilterFunc(pattern string, include bool) FileFilterFunc
 func DotDirFilterFunc(include bool) DirFilterFunc
 func DirNameFilterFunc(names []string, include bool) DirFilterFunc
 // source at fsutil/fsutil.go
+func OSTempFile(pattern string) (*os.File, error)
+func TempFile(dir, pattern string) (*os.File, error)
+func OSTempDir(pattern string) (string, error)
+func TempDir(dir, pattern string) (string, error)
 func ExpandPath(path string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
@@ -245,6 +267,43 @@ func DeleteIfExist(fpath string) error
 func DeleteIfFileExist(fpath string) error
 func Unzip(archive, targetDir string) (err error)
 ```
+
+#### Examples
+
+**files finder:**
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/gookit/goutil/fsutil"
+)
+
+func main() {
+	f := fsutil.EmptyFinder()
+
+	f.
+		AddDir("./testdata").
+		AddFile("finder.go").
+		NoDotFile().
+		// NoDotDir().
+		Find().
+		Each(func(filePath string) {
+			fmt.Println(filePath)
+		})
+
+	fsutil.NewFinder([]string{"./testdata"}).
+		AddFile("finder.go").
+		NoDotDir().
+		EachStat(func(fi os.FileInfo, filePath string) {
+			fmt.Println(filePath, "=>", fi.ModTime())
+		})
+}
+```
+
 
 ### JSON
 
@@ -320,6 +379,14 @@ func ParseReflectTags(v reflect.Value) error
 > Package `github.com/gookit/goutil/strutil`
 
 ```go
+// source at strutil/check.go
+func IsAlphabet(char uint8) bool
+func IsAlphaNum(c uint8) bool
+func StrPos(s, sub string) int
+func BytePos(s string, bt byte) int
+func RunePos(s string, ru rune) int
+func IsStartOf(s, sub string) bool
+func IsEndOf(s, sub string) bool
 // source at strutil/convert.go
 func String(val interface{}) (string, error)
 func MustString(in interface{}) string
@@ -367,8 +434,6 @@ func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
 // source at strutil/strutil.go
-func IsAlphabet(char uint8) bool
-func IsAlphaNum(c uint8) bool
 func Trim(s string, cutSet ...string) string
 func TrimLeft(s string, cutSet ...string) string
 func TrimRight(s string, cutSet ...string) string
@@ -395,12 +460,15 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 // source at sysutil/exec.go
 func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
-func ShellExec(cmdStr string, shells ...string) (string, error)
-// source at sysutil/sysutil.go
-func CurrentShell(onlyName bool) (path string)
-func HasShellEnv(shell string) bool
+func ShellExec(cmdLine string, shells ...string) (string, error)
 func FindExecutable(binName string) (string, error)
+func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
+// source at sysutil/sysenv.go
+func UserHomeDir() string
+func HomeDir() string
+func ExpandPath(path string) string
+func Hostname() string
 func IsWin() bool
 func IsWindows() bool
 func IsMac() bool
@@ -408,9 +476,10 @@ func IsLinux() bool
 func IsMSys() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
-func HomeDir() string
-func ExpandPath(path string) string
 func StdIsTerminal() bool
+func CurrentShell(onlyName bool) (path string)
+func HasShellEnv(shell string) bool
+func IsShellSpecialVar(c uint8) bool
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool

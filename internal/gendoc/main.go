@@ -45,7 +45,7 @@ var (
 	}
 
 	allowLang = map[string]int{
-		"en": 1,
+		"en":    1,
 		"zh-CN": 1,
 	}
 )
@@ -54,7 +54,7 @@ type genOptsSt struct {
 	lang     string
 	output   string
 	template string
-	tplDir string
+	tplDir   string
 }
 
 func (o genOptsSt) tplFilename() string {
@@ -235,10 +235,10 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	return buf
 }
 
-func bufWritef(buf *bytes.Buffer, f string, a ...interface{})  {
+func bufWritef(buf *bytes.Buffer, f string, a ...interface{}) {
 	_, _ = fmt.Fprintf(buf, f, a...)
 }
 
-func bufWriteln(buf *bytes.Buffer, a ...interface{})  {
+func bufWriteln(buf *bytes.Buffer, a ...interface{}) {
 	_, _ = fmt.Fprintln(buf, a...)
 }
