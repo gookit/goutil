@@ -55,6 +55,11 @@ func StringsHas(ss []string, val string) bool
 
 ```go
 // source at cliutil/cliutil.go
+func LineBuild(binFile string, args []string) string
+func BuildLine(binFile string, args []string) string
+func String2OSArgs(line string) []string
+func StringToOSArgs(line string) []string
+func ParseLine(line string) []string
 func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ExecLine(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
@@ -62,14 +67,6 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
-func IsShellSpecialVar(c uint8) bool
-// source at cliutil/line_builder.go
-func NewLineBuilder(binFile string, args ...string) *LineBuilder
-func LineBuild(binFile string, args []string) string
-// source at cliutil/line_parser.go
-func NewLineParser(line string) *LineParser
-func StringToOSArgs(line string) []string
-func ParseLine(line string) []string
 // source at cliutil/read.go
 func ReadInput(question string) (string, error)
 func ReadLine(question string) (string, error)
@@ -354,6 +351,7 @@ func Float(in interface{}) (float64, error)
 func ToFloat(in interface{}) (f64 float64, err error)
 func MustFloat(in interface{}) float64
 // source at mathutil/number.go
+func IsNumeric(c byte) bool
 func Percent(val, total int) float64
 func ElapsedTime(startTime time.Time) string
 func DataSize(size uint64) string
@@ -380,6 +378,7 @@ func ParseReflectTags(v reflect.Value) error
 
 ```go
 // source at strutil/check.go
+func IsNumeric(c byte) bool
 func IsAlphabet(char uint8) bool
 func IsAlphaNum(c uint8) bool
 func StrPos(s, sub string) int
@@ -387,6 +386,13 @@ func BytePos(s string, bt byte) int
 func RunePos(s string, ru rune) int
 func IsStartOf(s, sub string) bool
 func IsEndOf(s, sub string) bool
+func Len(s string) int
+func Utf8len(s string) int
+func ValidUtf8String(s string) bool
+func IsSpace(c byte) bool
+func IsSpaceRune(r rune) bool
+func IsBlank(bs []byte) bool
+func IsSymbol(r rune) bool
 // source at strutil/convert.go
 func String(val interface{}) (string, error)
 func MustString(in interface{}) string
@@ -459,6 +465,7 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 ```go
 // source at sysutil/exec.go
 func QuickExec(cmdLine string, workDir ...string) (string, error)
+func ExecLine(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func FindExecutable(binName string) (string, error)
