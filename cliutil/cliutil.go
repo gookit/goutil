@@ -2,8 +2,6 @@
 package cliutil
 
 import (
-	"os/exec"
-
 	"github.com/gookit/goutil/sysutil"
 )
 
@@ -15,11 +13,9 @@ func QuickExec(cmdLine string, workDir ...string) (string, error) {
 // ExecLine quick exec an command line string
 func ExecLine(cmdLine string, workDir ...string) (string, error) {
 	p := NewLineParser(cmdLine)
-	// parse get bin and args
-	binName, args := p.BinAndArgs()
 
 	// create a new Cmd instance
-	cmd := exec.Command(binName, args...)
+	cmd := p.NewExecCmd()
 	if len(workDir) > 0 {
 		cmd.Dir = workDir[0]
 	}

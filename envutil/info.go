@@ -62,6 +62,11 @@ func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }
 
+// StdIsTerminal os.Stdout is terminal
+func StdIsTerminal() bool {
+	return IsTerminal(os.Stdout.Fd())
+}
+
 // IsConsole check out is console env. alias of the sysutil.IsConsole()
 func IsConsole(out io.Writer) bool {
 	return sysutil.IsConsole(out)

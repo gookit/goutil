@@ -1,6 +1,7 @@
 package cliutil
 
 import (
+	"os/exec"
 	"strings"
 
 	"github.com/gookit/goutil/envutil"
@@ -147,6 +148,15 @@ func (p *LineParser) BinAndArgs() (bin string, args []string) {
 		args = p.args[1:]
 	}
 	return
+}
+
+// NewExecCmd quick create exec.Cmd by cmdline string
+func (p *LineParser) NewExecCmd() *exec.Cmd {
+	// parse get bin and args
+	binName, args := p.BinAndArgs()
+
+	// create a new Cmd instance
+	return exec.Command(binName, args...)
 }
 
 func (p *LineParser) appendWithPrefix(node, prefix string) {

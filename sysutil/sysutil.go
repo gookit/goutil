@@ -136,3 +136,8 @@ func ExpandPath(path string) string {
 	path, _ = homedir.Expand(path)
 	return path
 }
+
+// StdIsTerminal os.Stdout is terminal
+func StdIsTerminal() bool {
+	return IsTerminal(os.Stdout.Fd())
+}
