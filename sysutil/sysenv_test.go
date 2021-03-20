@@ -77,6 +77,10 @@ func TestExecCmd(t *testing.T) {
 	ret, err = sysutil.QuickExec("echo OK")
 	assert.NoError(t, err)
 	assert.Equal(t, "OK", strings.TrimSpace(ret))
+
+	ret, err = sysutil.ExecLine("echo OK1")
+	assert.NoError(t, err)
+	assert.Equal(t, "OK1", strings.TrimSpace(ret))
 }
 
 func TestShellExec(t *testing.T) {

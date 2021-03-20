@@ -4,16 +4,26 @@ import (
 	"bytes"
 	"os/exec"
 
-	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/cliutil/cmdline"
 )
 
 // QuickExec quick exec an simple command line
-// Usage:
-//	QuickExec("git status")
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
-	ss := strutil.Split(cmdLine, " ")
+	return ExecLine(cmdLine, workDir...)
+}
 
-	return ExecCmd(ss[0], ss[1:], workDir...)
+// ExecLine quick exec an command line string
+func ExecLine(cmdLine string, workDir ...string) (string, error) {
+	p := cmdline.NewParser(cmdLine)
+
+	// create a new Cmd instance
+	cmd := p.NewExecCmd()
+	if len(workDir) > 0 {
+		cmd.Dir = workDir[0]
+	}
+
+	bs, err := cmd.Output()
+	return string(bs), err
 }
 
 // ExecCmd an command and return output.

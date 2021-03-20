@@ -1,10 +1,9 @@
-package cliutil
+package cmdline
 
 import (
+	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/gookit/goutil/envutil"
 )
 
 // LineParser struct
@@ -22,22 +21,14 @@ type LineParser struct {
 	args []string
 }
 
-// NewLineParser create
-func NewLineParser(line string) *LineParser {
+// NewParser create
+func NewParser(line string) *LineParser {
 	return &LineParser{Line: line}
-}
-
-// StringToOSArgs parse input command line text to os.Args
-func StringToOSArgs(line string) []string {
-	p := NewLineParser(line)
-	return p.Parse()
 }
 
 // ParseLine input command line text. alias of the StringToOSArgs()
 func ParseLine(line string) []string {
-	p := &LineParser{
-		Line: line,
-	}
+	p := &LineParser{Line: line}
 
 	return p.Parse()
 }
@@ -62,7 +53,7 @@ func (p *LineParser) Parse() []string {
 
 	// enable parse Env var
 	if p.ParseEnv {
-		p.Line = envutil.ParseEnvValue(p.Line)
+		p.Line = os.ExpandEnv(p.Line)
 	}
 
 	p.nodes = strings.Split(p.Line, " ")

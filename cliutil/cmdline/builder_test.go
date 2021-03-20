@@ -1,19 +1,19 @@
-package cliutil_test
+package cmdline_test
 
 import (
 	"testing"
 
-	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestLineBuild(t *testing.T) {
-	s := cliutil.LineBuild("myapp", []string{"-a", "val0", "arg0"})
+	s := cmdline.LineBuild("myapp", []string{"-a", "val0", "arg0"})
 
 	assert.Equal(t, "myapp -a val0 arg0", s)
 
 	// case: empty string
-	b := cliutil.NewLineBuilder("myapp", "-a", "")
+	b := cmdline.NewBuilder("myapp", "-a", "")
 
 	assert.Equal(t, 11, b.Len())
 	assert.Equal(t, `myapp -a ""`, b.String())

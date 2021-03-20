@@ -1,4 +1,4 @@
-package cliutil
+package cmdline
 
 import (
 	"strings"
@@ -10,8 +10,8 @@ type LineBuilder struct {
 	buf []byte
 }
 
-// NewLineBuilder create
-func NewLineBuilder(binFile string, args ...string) *LineBuilder {
+// NewBuilder create
+func NewBuilder(binFile string, args ...string) *LineBuilder {
 	b := &LineBuilder{}
 	b.AddArg(binFile)
 	b.AddArray(args)
@@ -20,7 +20,7 @@ func NewLineBuilder(binFile string, args ...string) *LineBuilder {
 
 // LineBuild build command line string by given args.
 func LineBuild(binFile string, args []string) string {
-	return NewLineBuilder(binFile, args...).String()
+	return NewBuilder(binFile, args...).String()
 }
 
 // AddArg to builder

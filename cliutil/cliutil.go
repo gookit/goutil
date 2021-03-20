@@ -2,26 +2,43 @@
 package cliutil
 
 import (
+	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/gookit/goutil/sysutil"
 )
 
+// LineBuild build command line string by given args.
+func LineBuild(binFile string, args []string) string {
+	return cmdline.NewBuilder(binFile, args...).String()
+}
+
+// BuildLine build command line string by given args.
+func BuildLine(binFile string, args []string) string {
+	return cmdline.NewBuilder(binFile, args...).String()
+}
+
+// String2OSArgs parse input command line text to os.Args
+func String2OSArgs(line string) []string {
+	return cmdline.NewParser(line).Parse()
+}
+
+// StringToOSArgs parse input command line text to os.Args
+func StringToOSArgs(line string) []string {
+	return cmdline.NewParser(line).Parse()
+}
+
+// ParseLine input command line text. alias of the StringToOSArgs()
+func ParseLine(line string) []string {
+	return cmdline.NewParser(line).Parse()
+}
+
 // QuickExec quick exec an simple command line
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
-	return sysutil.QuickExec(cmdLine, workDir...)
+	return sysutil.ExecLine(cmdLine, workDir...)
 }
 
 // ExecLine quick exec an command line string
 func ExecLine(cmdLine string, workDir ...string) (string, error) {
-	p := NewLineParser(cmdLine)
-
-	// create a new Cmd instance
-	cmd := p.NewExecCmd()
-	if len(workDir) > 0 {
-		cmd.Dir = workDir[0]
-	}
-
-	bs, err := cmd.Output()
-	return string(bs), err
+	return sysutil.ExecLine(cmdLine, workDir...)
 }
 
 // ExecCmd a CLI bin file and return output.
@@ -53,14 +70,4 @@ func CurrentShell(onlyName bool) (path string) {
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	return sysutil.HasShellEnv(shell)
-}
-
-// IsShellSpecialVar reports whether the character identifies a special
-// shell variable such as $*.
-func IsShellSpecialVar(c uint8) bool {
-	switch c {
-	case '*', '#', '$', '@', '!', '?', '-', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
-		return true
-	}
-	return false
 }
