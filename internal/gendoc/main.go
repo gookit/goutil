@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -42,13 +43,36 @@ var (
 			"arr": "`arrutil` 包提供一些辅助函数，用于数组、切片处理",
 		},
 	}
+
+	allowLang = map[string]int{
+		"en": 1,
+		"zh-CN": 1,
+	}
 )
 
-var genOpts = struct {
+type genOptsSt struct {
 	lang     string
 	output   string
 	template string
-}{}
+	tplDir string
+}
+
+func (o genOptsSt) tplFilename() string {
+	if o.lang == "en" {
+		return "README.md.tpl"
+	}
+
+	return fmt.Sprintf("README.%s.md.tpl", o.lang)
+}
+
+func (o genOptsSt) tplFilepath(givePath string) string {
+	if givePath != "" {
+		return path.Join(o.tplDir, givePath)
+	}
+	return path.Join(o.tplDir, o.tplFilename())
+}
+
+var genOpts = genOptsSt{}
 
 func bindingFlags() {
 	flag.StringVar(&genOpts.lang, "l", "en", "package desc message language. allow: en, zh-CN")
@@ -57,15 +81,15 @@ func bindingFlags() {
 		"./metadata.log",
 		"the result output file. if is 'stdout', will direct print it.",
 	)
-	flag.StringVar(&genOpts.template,
+	flag.StringVar(&genOpts.tplDir,
 		"t",
-		"",
-		"use template file for generate, will inject metadata to the template. see ./internal/template/*.tpl",
+		"./internal/template",
+		"the template file dir, use for generate, will inject metadata to the template.\nsee ./internal/template/*.tpl",
 	)
 
 	flag.Usage = func() {
-		color.Info.Println("Collect and dump all exported functions for goutil package")
-		fmt.Println()
+		color.Info.Println("Collect and dump all exported functions for goutil\n")
+		// fmt.Println()
 
 		color.Comment.Println("Options:")
 		flag.PrintDefaults()
@@ -73,16 +97,16 @@ func bindingFlags() {
 		color.Comment.Println("Example:")
 		fmt.Println(`
   go run ./internal/gendoc -o stdout
-  go run ./internal/gendoc -o stdout -t ./internal/template/README.md.tpl
-  go run ./internal/gendoc -o README.md -t ./internal/template/README.md.tpl
-  go run ./internal/gendoc -o README.zh-CN.md -t ./internal/template/README.zh-CN.md.tpl -l zh-CN`)
+  go run ./internal/gendoc -o stdout -l zh-CN
+  go run ./internal/gendoc -o README.md
+  go run ./internal/gendoc -o README.md -l zh-CN`)
 	}
 }
 
+// go run ./internal/gendoc -h
 // go run ./internal/gendoc
 func main() {
 	bindingFlags()
-
 	flag.Parse()
 
 	ms, err := filepath.Glob("./*/*.go")
@@ -105,11 +129,10 @@ func main() {
 	// want output by template file
 	// var tplFile *os.File
 	var tplBody []byte
-	if genOpts.template != "" {
-		color.Info.Println("- read template file contents from", genOpts.template)
-		tplBody = fsutil.MustReadFile(genOpts.template)
-		// tplFile, err = os.OpenFile(genOpts.template, os.O_CREATE|os.O_RDONLY, fsutil.DefaultFilePerm)
-		// goutil.PanicIfErr(err)
+	if genOpts.tplDir != "" {
+		tplFile := genOpts.tplFilepath("")
+		color.Info.Println("- read template file contents from", tplFile)
+		tplBody = fsutil.MustReadFile(tplFile)
 	}
 
 	basePkg := "github.com/gookit/goutil"
@@ -132,7 +155,7 @@ func main() {
 }
 
 func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
-	var name string
+	var name, dirname string
 	var pkgFuncs = make(map[string][]string)
 
 	// match func
@@ -140,7 +163,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	buf := new(bytes.Buffer)
 
 	color.Info.Println("- find and collect exported functions...")
-	for _, filename := range ms {
+	for _, filename := range ms { // for each go file
 		// "jsonutil/jsonutil_test.go"
 		if strings.HasSuffix(filename, "_test.go") {
 			continue
@@ -160,12 +183,22 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 
 		pkgPath := basePkg + "/" + dir
 		if ss, ok := pkgFuncs[pkgPath]; ok {
-			pkgFuncs[pkgPath] = append(ss, "xxx")
+			pkgFuncs[pkgPath] = append(ss, "added")
 		} else {
-			if len(pkgFuncs) > 0 {
-				_, _ = fmt.Fprintln(buf, "```")
+			if len(pkgFuncs) > 0 { // end of prev package.
+				bufWriteln(buf, "```")
+
+				// load example file.
+				partReadme := genOpts.tplDir + "/part-" + dirname + ".md"
+				// color.Infoln("- try read part readme from", partReadme)
+				partBody := fsutil.ReadExistFile(partReadme)
+				if len(partBody) > 0 {
+					color.Infoln("- find and inject part doc for the package:", name)
+					bufWriteln(buf, string(partBody))
+				}
 			}
 
+			dirname = dir
 			name = dir
 			if strings.HasSuffix(dir, "util") {
 				name = dir[:len(dir)-4]
@@ -175,26 +208,37 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 				name = setTitle
 			}
 
-			_, _ = fmt.Fprintln(buf, "\n###", strutil.UpperFirst(name))
-			_, _ = fmt.Fprintf(buf, "\n> Package `%s`\n\n", pkgPath)
+			// now: name is package name.
+			bufWriteln(buf, "\n###", strutil.UpperFirst(name))
+			bufWritef(buf, "\n> Package `%s`\n\n", pkgPath)
 			pkgFuncs[pkgPath] = []string{"xx"}
 
-			_, _ = fmt.Fprintln(buf, "```go")
+			bufWriteln(buf, "```go")
 		}
 
 		// read contents
 		text := fsutil.MustReadFile(filename)
 		lines := reg.FindAllString(string(text), -1)
 
-		_, _ = fmt.Fprintln(buf, "// source at", filename)
-		for _, line := range lines {
-			_, _ = fmt.Fprintln(buf, strings.TrimRight(line, "{ "))
+		if len(lines) > 0 {
+			bufWriteln(buf, "// source at", filename)
+			for _, line := range lines {
+				bufWriteln(buf, strings.TrimRight(line, "{ "))
+			}
 		}
 	}
 
 	if len(pkgFuncs) > 0 {
-		_, _ = fmt.Fprintln(buf, "```")
+		bufWriteln(buf, "```")
 	}
 
 	return buf
+}
+
+func bufWritef(buf *bytes.Buffer, f string, a ...interface{})  {
+	_, _ = fmt.Fprintf(buf, f, a...)
+}
+
+func bufWriteln(buf *bytes.Buffer, a ...interface{})  {
+	_, _ = fmt.Fprintln(buf, a...)
 }

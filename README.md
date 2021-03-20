@@ -5,7 +5,6 @@
 [![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gookit/goutil)](https://goreportcard.com/report/github.com/gookit/goutil)
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
-[![Build Status](https://travis-ci.org/gookit/goutil.svg?branch=master)](https://travis-ci.org/gookit/goutil)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
 💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
@@ -57,12 +56,17 @@ func StringsHas(ss []string, val string) bool
 ```go
 // source at cliutil/cliutil.go
 func QuickExec(cmdLine string, workDir ...string) (string, error)
+func ExecLine(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ExecCommand(binName string, args []string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
+// source at cliutil/line_builder.go
+func NewLineBuilder(binFile string, args ...string) *LineBuilder
+func LineBuild(binFile string, args []string) string
 // source at cliutil/line_parser.go
+func NewLineParser(line string) *LineParser
 func StringToOSArgs(line string) []string
 func ParseLine(line string) []string
 // source at cliutil/read.go
@@ -73,6 +77,23 @@ func ReadFirst(question string) (string, error)
 func ReadPassword(question ...string) string
 ```
 
+### Examples
+
+**cmdline parse:**
+
+```go
+package main
+
+import "github.com/gookit/goutil/cliutil"
+import "github.com/gookit/goutil/dump"
+
+func main() {
+	args := cliutil.ParseLine(`./app top sub --msg "has multi words"`)
+	dump.P(args)
+}
+```
+
+
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -81,12 +102,13 @@ func ReadPassword(question ...string) string
 // source at dump/dump.go
 func Std() *Dumper
 func Reset()
-func Config(fn func(*Dumper))
+func Config(fn func(opts *Options))
 func Print(vs ...interface{})
 func Println(vs ...interface{})
 func Fprint(w io.Writer, vs ...interface{})
 // source at dump/dumper.go
 func NewDumper(out io.Writer, skip int) *Dumper
+func NewDefaultOptions(out io.Writer, skip int) *Options
 ```
 
 ### Examples
@@ -132,21 +154,27 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
+
 ### ENV
 
 > Package `github.com/gookit/goutil/envutil`
 
 ```go
 // source at envutil/envutil.go
+func VarParse(str string) string
 func ParseEnvValue(val string) (newVal string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
 // source at envutil/info.go
 func IsWin() bool
+func IsWindows() bool
 func IsMac() bool
 func IsLinux() bool
-func IsConsole(out io.Writer) bool
 func IsMSys() bool
+func IsWSL() bool
+func IsTerminal(fd uintptr) bool
+func StdIsTerminal() bool
+func IsConsole(out io.Writer) bool
 func HasShellEnv(shell string) bool
 func IsSupportColor() bool
 func IsSupport256Color() bool
@@ -172,28 +200,18 @@ func HowLongAgo(sec int64) string
 > Package `github.com/gookit/goutil/fsutil`
 
 ```go
-// source at fsutil/filesystem.go
+// source at fsutil/check.go
+func Dir(fpath string) string
+func Name(fpath string) string
+func FileExt(fpath string) string
+func Suffix(fpath string) string
 func PathExists(path string) bool
 func IsDir(path string) bool
 func FileExists(path string) bool
 func IsFile(path string) bool
 func IsAbsPath(aPath string) bool
-func Mkdir(dirPath string, perm os.FileMode) error
-func MustReadFile(filePath string) []byte
-func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
-func QuickOpenFile(filepath string) (*os.File, error)
-func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
-func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
-func CopyFile(src string, dst string) error
-func MustCopyFile(src string, dst string)
-func MimeType(path string) (mime string)
-func ReaderMimeType(r io.Reader) (mime string)
 func IsImageFile(path string) bool
 func IsZipFile(filepath string) bool
-func Unzip(archive, targetDir string) (err error)
-func DeleteIfFileExist(fpath string) error
-func FileExt(fpath string) string
-func Suffix(fpath string) string
 // source at fsutil/finder.go
 func EmptyFinder() *FileFinder
 func NewFinder(dirPaths []string, filePaths ...string) *FileFinder
@@ -206,6 +224,26 @@ func GlobFilterFunc(patterns []string, include bool) FileFilterFunc
 func RegexFilterFunc(pattern string, include bool) FileFilterFunc
 func DotDirFilterFunc(include bool) DirFilterFunc
 func DirNameFilterFunc(names []string, include bool) DirFilterFunc
+// source at fsutil/fsutil.go
+func ExpandPath(path string) string
+func MimeType(path string) (mime string)
+func ReaderMimeType(r io.Reader) (mime string)
+// source at fsutil/operate.go
+func Mkdir(dirPath string, perm os.FileMode) error
+func MkParentDir(fpath string) error
+func MustReadFile(filePath string) []byte
+func ReadExistFile(filePath string) []byte
+func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
+func QuickOpenFile(filepath string) (*os.File, error)
+func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
+func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
+func CopyFile(src string, dst string) error
+func MustCopyFile(src string, dst string)
+func MustRemove(fpath string)
+func QuietRemove(fpath string)
+func DeleteIfExist(fpath string) error
+func DeleteIfFileExist(fpath string) error
+func Unzip(archive, targetDir string) (err error)
 ```
 
 ### JSON
@@ -265,11 +303,40 @@ func HowLongAgo(sec int64) string
 func RandomInt(min, max int) int
 ```
 
+### Struct
+
+> Package `github.com/gookit/goutil/structs`
+
+```go
+// source at structs/alias.go
+func NewAliases(checker func(alias string)) *Aliases
+// source at structs/tags.go
+func ParseTags(v interface{}) error
+func ParseReflectTags(v reflect.Value) error
+```
+
 ### String
 
 > Package `github.com/gookit/goutil/strutil`
 
 ```go
+// source at strutil/convert.go
+func String(val interface{}) (string, error)
+func MustString(in interface{}) string
+func ToString(val interface{}) (str string, err error)
+func AnyToString(val interface{}, defaultAsErr bool) (str string, err error)
+func ToBool(s string) (bool, error)
+func MustBool(s string) bool
+func Bool(s string) (bool, error)
+func Int(s string) (int, error)
+func ToInt(s string) (int, error)
+func MustInt(s string) int
+func ToInts(s string, sep ...string) ([]int, error)
+func ToIntSlice(s string, sep ...string) (ints []int, err error)
+func ToArray(s string, sep ...string) []string
+func ToSlice(s string, sep ...string) []string
+func ToOSArgs(s string) []string
+func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/encode.go
 func Base64(str string) string
 func B64Encode(str string) string
@@ -299,24 +366,9 @@ func RandomCharsV2(ln int) string
 func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
-// source at strutil/strconv.go
-func String(val interface{}) (string, error)
-func MustString(in interface{}) string
-func ToString(val interface{}) (str string, err error)
-func ToBool(s string) (bool, error)
-func MustBool(s string) bool
-func Bool(s string) (bool, error)
-func Int(s string) (int, error)
-func ToInt(s string) (int, error)
-func MustInt(s string) int
-func ToInts(s string, sep ...string) ([]int, error)
-func ToIntSlice(s string, sep ...string) (ints []int, err error)
-func ToArray(s string, sep ...string) []string
-func ToSlice(s string, sep ...string) []string
-func ToOSArgs(s string) []string
-func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/strutil.go
 func IsAlphabet(char uint8) bool
+func IsAlphaNum(c uint8) bool
 func Trim(s string, cutSet ...string) string
 func TrimLeft(s string, cutSet ...string) string
 func TrimRight(s string, cutSet ...string) string
@@ -328,6 +380,7 @@ func PadLeft(s, pad string, length int) string
 func PadRight(s, pad string, length int) string
 func Repeat(s string, times int) string
 func RepeatRune(char rune, times int) (chars []rune)
+func RepeatBytes(char byte, times int) (chars []byte)
 func Replaces(str string, pairs map[string]string) string
 func PrettyJSON(v interface{}) (string, error)
 func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
@@ -354,6 +407,10 @@ func IsMac() bool
 func IsLinux() bool
 func IsMSys() bool
 func IsConsole(out io.Writer) bool
+func IsTerminal(fd uintptr) bool
+func HomeDir() string
+func ExpandPath(path string) string
+func StdIsTerminal() bool
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool

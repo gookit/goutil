@@ -23,8 +23,8 @@ help:
 
   genrdm:     ## Generate or update README file by ./internal/gendoc
 genrdm:
-	go run ./internal/gendoc -o README.md -t ./internal/template/README.md.tpl
-	go run ./internal/gendoc -o README.zh-CN.md -t ./internal/template/README.zh-CN.md.tpl
+	go run ./internal/gendoc -o README.md
+	go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
 
   csfix:      ## Fix code style for all files by go fmt
 csfix:

@@ -34,6 +34,18 @@ func MustReadFile(filePath string) []byte {
 	return bs
 }
 
+// ReadExistFile read file contents if exist, will panic on error
+func ReadExistFile(filePath string) []byte {
+	if IsFile(filePath) {
+		bs, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			panic(err)
+		}
+		return bs
+	}
+	return nil
+}
+
 // ************************************************************
 //	open/create files
 // ************************************************************
