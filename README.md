@@ -402,7 +402,8 @@ func Utf8len(s string) int
 func ValidUtf8String(s string) bool
 func IsSpace(c byte) bool
 func IsSpaceRune(r rune) bool
-func IsBlank(bs []byte) bool
+func IsBlank(s string) bool
+func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 // source at strutil/convert.go
 func String(val interface{}) (string, error)

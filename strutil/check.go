@@ -93,7 +93,12 @@ func IsSpaceRune(r rune) bool {
 }
 
 // IsBlank returns true if the given string is all space characters.
-func IsBlank(bs []byte) bool {
+func IsBlank(s string) bool {
+	return IsBlankBytes([]byte(s))
+}
+
+// IsBlankBytes returns true if the given []byte is all space characters.
+func IsBlankBytes(bs []byte) bool {
 	for _, b := range bs {
 		if !IsSpace(b) {
 			return false

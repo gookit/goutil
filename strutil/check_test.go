@@ -97,8 +97,14 @@ func TestIsSpace(t *testing.T) {
 	assert.True(t, strutil.IsSpace('\n'))
 	assert.True(t, strutil.IsSpaceRune('\n'))
 	assert.True(t, strutil.IsSpaceRune('\t'))
-	assert.True(t, strutil.IsBlank([]byte(" ")))
-	assert.True(t, strutil.IsBlank([]byte("   ")))
+
+	assert.False(t, strutil.IsBlank(" a "))
+	assert.True(t, strutil.IsBlank(" "))
+	assert.True(t, strutil.IsBlank("   "))
+
+	assert.False(t, strutil.IsBlankBytes([]byte(" a ")))
+	assert.True(t, strutil.IsBlankBytes([]byte(" ")))
+	assert.True(t, strutil.IsBlankBytes([]byte("   ")))
 }
 
 func TestIsSymbol(t *testing.T) {
