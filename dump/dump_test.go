@@ -128,7 +128,7 @@ func TestPrint(t *testing.T) {
   int(9),
   int(10),
   int(11),
-]
+],
 `, buf.String())
 
 	buf.Reset()
