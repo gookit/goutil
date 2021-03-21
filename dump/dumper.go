@@ -50,7 +50,7 @@ type Dumper struct {
 	*Options
 	// visited struct records
 	visited map[visit]int
-	// is value of the map, struct. will not apply indent.
+	// is value in the slice, map, struct. will not apply indent.
 	msValue bool
 	// current depth
 	curDepth int
@@ -270,21 +270,23 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
 		eleNum := v.Len()
-		// if eleNum < d.MoreLenNL {
-		// 	d.msValue = true // print inline.
-		// }
-
 		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum))
+
 		d.indentPrint(t.String(), " [ ", lenTip, "\n")
+		d.msValue = false
 		for i := 0; i < eleNum; i++ {
 			sv := v.Index(i)
 			d.advance(1)
+
+			// d.msValue = true
 			d.printRValue(sv.Type(), sv)
+			// d.msValue = false
+
 			// d.printf("%v,\n", v.Index(i).Interface())
 			d.advance(-1)
 		}
 
-		d.indentPrint("]\n")
+		d.indentPrint("],\n")
 	case reflect.Struct:
 		if v.CanAddr() {
 			addr := v.UnsafeAddr()

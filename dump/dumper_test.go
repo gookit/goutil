@@ -200,7 +200,23 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 // ------------------------- map -------------------------
 
 func TestDump_Map(t *testing.T) {
-
+	m4 := map[string]interface{}{
+		"key1": 12,
+		"key2": "val1",
+		"key3": [][]int{
+			{23, 34},
+			{230, 340},
+		},
+		"key4": 3.14,
+		"key5": -34,
+		"key6": nil,
+		"key7": []int{23, 34},
+		"key8": map[string]interface{} {
+			"key8sub1": []int{23, 34},
+			"key8sub2": []string{"a", "b"},
+		},
+	}
+	Print(m4)
 }
 
 func TestMap_Simpled(t *testing.T) {
