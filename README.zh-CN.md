@@ -36,17 +36,25 @@ Go一些常用的工具函数收集、实现和整理
 
 ```go
 // source at arrutil/arrutil.go
-func Contains(arr, val interface{}) bool
-func NotContains(arr, val interface{}) bool
-func GetRandomOne(arr interface{}) interface{}
-// source at arrutil/slice.go
 func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
-func StringsToInts(ss []string) (ints []int, err error)
 func TrimStrings(ss []string, cutSet ...string) (ns []string)
+func GetRandomOne(arr interface{}) interface{}
+// source at arrutil/check.go
 func IntsHas(ints []int, val int) bool
 func Int64sHas(ints []int64, val int64) bool
 func StringsHas(ss []string, val string) bool
+func HasValue(arr, val interface{}) bool
+func Contains(arr, val interface{}) bool
+func NotContains(arr, val interface{}) bool
+// source at arrutil/convert.go
+func ToInt64s(arr interface{})(ret []int64, err error)
+func MustToInt64s(arr interface{}) []int64
+func SliceToInt64s(arr []interface{}) []int64
+func ToStrings(arr interface{})(ret []string, err error)
+func MustToStrings(arr interface{}) []string
+func SliceToStrings(arr []interface{}) []string
+func StringsToInts(ss []string) (ints []int, err error)
 ```
 
 ### CLI
