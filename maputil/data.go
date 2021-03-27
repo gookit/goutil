@@ -54,6 +54,20 @@ func (d Data) Str(key string) string {
 	return strutil.MustString(val)
 }
 
+// Bool value get
+func (d Data) Bool(key string) bool {
+	val, ok := d[key]
+	if !ok {
+		return false
+	}
+	if bl, ok := val.(bool); ok {
+		return bl
+	}
+
+	str := strutil.MustString(val)
+	return strutil.MustBool(str)
+}
+
 // Default get value from the data map with default value
 func (d Data) Default(key string, def interface{}) interface{} {
 	val, ok := d[key]
@@ -76,5 +90,64 @@ func (d Data) String() string {
 	//
 	// }
 
+	return ""
+}
+
+// SMap is alias of map[string]string
+type SMap map[string]string
+
+// Int value get
+func (m SMap) Int(key string) int {
+	val, ok := m[key]
+	if !ok {
+		return 0
+	}
+	return mathutil.MustInt(val)
+}
+
+// Int64 value get
+func (m SMap) Int64(key string) int64 {
+	val, ok := m[key]
+	if !ok {
+		return 0
+	}
+	return mathutil.MustInt64(val)
+}
+
+// Str value get
+func (m SMap) Str(key string) string {
+	return m[key]
+}
+
+// Bool value get
+func (m SMap) Bool(key string) bool {
+	val, ok := m[key]
+	if !ok {
+		return false
+	}
+	return strutil.MustBool(val)
+}
+
+// Ints value to []int
+func (m SMap) Ints(key string) []int {
+	val, ok := m[key]
+	if !ok {
+		return nil
+	}
+	return strutil.Ints(val, ",")
+}
+
+// Strings value to []string
+func (m SMap) Strings(key string) (ss []string) {
+	val, ok := m[key]
+	if !ok {
+		return
+	}
+	return strutil.ToSlice(val, ",")
+}
+
+// String data to string
+func (m SMap) String() string {
+	// return fmt.Sprint(m)
 	return ""
 }

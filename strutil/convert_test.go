@@ -89,15 +89,21 @@ func TestStrToInts(t *testing.T) {
 	is.Error(err)
 	is.Len(ints, 0)
 
+	ints = strutil.Ints("a,b,c")
+	is.Len(ints, 0)
+
 	ints, err = strutil.ToIntSlice("1,2,3")
 	is.Nil(err)
+	is.Equal([]int{1, 2, 3}, ints)
+
+	ints = strutil.Ints("1,2,3")
 	is.Equal([]int{1, 2, 3}, ints)
 }
 
 func TestStr2Array(t *testing.T) {
 	is := assert.New(t)
 
-	ss := strutil.ToArray("a,b,c", ",")
+	ss := strutil.Strings("a,b,c", ",")
 	is.Len(ss, 3)
 	is.Equal(`[]string{"a", "b", "c"}`, fmt.Sprintf("%#v", ss))
 
@@ -119,7 +125,7 @@ func TestStr2Array(t *testing.T) {
 	ss = strutil.ToSlice("", ",")
 	is.Len(ss, 0)
 
-	ss = strutil.ToArray(", , ", ",")
+	ss = strutil.ToStrings(", , ", ",")
 	is.Len(ss, 0)
 }
 

@@ -150,6 +150,12 @@ func MustInt(s string) int {
  * convert string value to int/string slice, time.Time
  *************************************************************/
 
+// Ints alias of the ToIntSlice()
+func Ints(s string, sep ...string) []int {
+	ints, _ := ToIntSlice(s, sep...)
+	return ints
+}
+
 // ToInts alias of the ToIntSlice()
 func ToInts(s string, sep ...string) ([]int, error) {
 	return ToIntSlice(s, sep...)
@@ -171,6 +177,16 @@ func ToIntSlice(s string, sep ...string) (ints []int, err error) {
 
 // ToArray alias of the ToSlice()
 func ToArray(s string, sep ...string) []string {
+	return ToSlice(s, sep...)
+}
+
+// Strings alias of the ToSlice()
+func Strings(s string, sep ...string) []string {
+	return ToSlice(s, sep...)
+}
+
+// ToStrings alias of the ToSlice()
+func ToStrings(s string, sep ...string) []string {
 	return ToSlice(s, sep...)
 }
 
