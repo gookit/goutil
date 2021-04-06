@@ -1,6 +1,8 @@
 package envutil
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
@@ -22,5 +24,18 @@ func TestGetenv(t *testing.T) {
 		assert.Equal(t, TestEnvValue, envValue, "env value not equals")
 		envValue = Getenv(TestNoEnvName, DefaultTestEnvValue)
 		assert.Equal(t, DefaultTestEnvValue, envValue, "env value not default")
+	})
+}
+
+func TestEnviron(t *testing.T) {
+	testutil.MockOsEnv(map[string]string{
+		TestEnvName: TestEnvValue,
+	}, func() {
+		envValue := Getenv("not_exist")
+		assert.Equal(t, "", envValue)
+
+		fmt.Println("os.Environ:", os.Environ())
+		fmt.Println("new Environ:", Environ())
+		assert.Contains(t, Environ(), TestEnvName)
 	})
 }

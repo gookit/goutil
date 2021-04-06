@@ -3,6 +3,7 @@ package sysutil
 import (
 	"io"
 	"os"
+	"os/user"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -12,10 +13,30 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+// LoginUser get current user
+func LoginUser() *user.User {
+	// check $HOME/.terminfo
+	u, err := user.Current()
+	if err != nil {
+		return nil
+	}
+	return u
+}
+
 // UserHomeDir is alias of os.UserHomeDir, but ignore error
 func UserHomeDir() string {
 	dir, _ := os.UserHomeDir()
 	return dir
+}
+
+// UHomeDir get user home dir path.
+func UHomeDir() string {
+	// check $HOME/.terminfo
+	u, err := user.Current()
+	if err != nil {
+		return ""
+	}
+	return u.HomeDir
 }
 
 // HomeDir get user home dir path.

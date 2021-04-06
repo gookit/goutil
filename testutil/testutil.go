@@ -3,6 +3,7 @@ package testutil
 import (
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 var oldStdout, oldStderr, newReader *os.File
@@ -142,5 +143,45 @@ func MockEnvValues(kvMap map[string]string, fn func()) {
 		} else {
 			_ = os.Setenv(key, old)
 		}
+	}
+}
+
+// MockOsEnvByText by env text string.
+// clear all old ENV data, use given data map, will recover old ENV after fn run.
+func MockOsEnvByText(envText string, fn func()) {
+	ss := strings.Split(envText, "\n")
+	mp := make(map[string]string, len(ss))
+	for _, line := range ss {
+		if line = strings.TrimSpace(line); line == "" {
+			continue
+		}
+		nodes := strings.SplitN(line, "=", 2)
+
+		if len(nodes) < 2 {
+			mp[nodes[0]] = ""
+		} else {
+			mp[nodes[0]] = nodes[1]
+		}
+	}
+
+	MockOsEnv(mp, fn)
+}
+
+// MockOsEnv by env map data.
+// clear all old ENV data, use given data map, will recover old ENV after fn run.
+func MockOsEnv(mp map[string]string, fn func()) {
+	envBak := os.Environ()
+
+	os.Clearenv()
+	for key, val := range mp {
+		_ = os.Setenv(key, val)
+	}
+
+	fn()
+
+	os.Clearenv()
+	for _, str := range envBak {
+		nodes := strings.SplitN(str, "=", 2)
+		_ = os.Setenv(nodes[0], nodes[1])
 	}
 }
