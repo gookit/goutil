@@ -3,7 +3,7 @@ module github.com/gookit/goutil
 go 1.11
 
 require (
-	github.com/gookit/color v1.3.8
+	github.com/gookit/color v1.4.0
 	github.com/json-iterator/go v1.1.10
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/go-homedir v1.1.0
@@ -11,5 +11,5 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	golang.org/x/sys v0.0.0-20200116001909-b77594299b42
+	golang.org/x/sys v0.0.0-20210330210617-4fbd30eecc44
 )
