@@ -23,12 +23,14 @@ func TestOS(t *testing.T) {
 		assert.False(t, envutil.IsLinux())
 		assert.False(t, envutil.IsMSys())
 		assert.False(t, envutil.IsWSL())
+		assert.False(t, envutil.IsWindows())
 	}
 
 	if isl := envutil.IsLinux(); isl {
 		assert.True(t, isl)
 		assert.False(t, envutil.IsMac())
 		assert.False(t, envutil.IsWin())
+		assert.False(t, envutil.IsWindows())
 		assert.False(t, envutil.IsMSys())
 		assert.False(t, envutil.IsWSL())
 	}
@@ -39,6 +41,9 @@ func TestIsConsole(t *testing.T) {
 
 	is.True(envutil.IsConsole(os.Stdout))
 	is.False(envutil.IsConsole(&bytes.Buffer{}))
+
+	// is.True(envutil.IsTerminal(os.Stdout.Fd()))
+	// is.True(envutil.StdIsTerminal())
 
 	is.True(envutil.HasShellEnv("sh"))
 }

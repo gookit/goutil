@@ -24,6 +24,8 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
+// func (d Data) HasValue(val interface{}) bool {
+
 // Int value get
 func (d Data) Int(key string) int {
 	val, ok := d[key]
@@ -50,7 +52,6 @@ func (d Data) Str(key string) string {
 	if !ok {
 		return ""
 	}
-
 	return strutil.MustString(val)
 }
 
@@ -74,7 +75,6 @@ func (d Data) Default(key string, def interface{}) interface{} {
 	if ok {
 		return val
 	}
-
 	return def
 }
 
@@ -95,6 +95,22 @@ func (d Data) String() string {
 
 // SMap is alias of map[string]string
 type SMap map[string]string
+
+// Has kay on the data map
+func (m SMap) Has(key string) bool {
+	_, ok := m[key]
+	return ok
+}
+
+// HasValue on the data map
+func (m SMap) HasValue(val string) bool {
+	for _, v := range m {
+		if v == val {
+			return true
+		}
+	}
+	return false
+}
 
 // Int value get
 func (m SMap) Int(key string) int {

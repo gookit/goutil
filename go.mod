@@ -3,7 +3,7 @@ module github.com/gookit/goutil
 go 1.11
 
 require (
-	github.com/gookit/color v1.4.0
+	github.com/gookit/color v1.4.2
 	github.com/json-iterator/go v1.1.10
 	github.com/mattn/go-isatty v0.0.12
 	github.com/mitchellh/go-homedir v1.1.0

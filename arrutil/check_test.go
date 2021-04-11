@@ -61,6 +61,7 @@ func TestContains(t *testing.T) {
 	is.False(arrutil.Contains('a', []int{}))
 	//
 	is.False(arrutil.Contains([]int{2, 3}, []int{2}))
+	is.False(arrutil.Contains([]int{2, 3}, "a"))
 	is.False(arrutil.Contains([]string{"a", "b"}, 12))
 	is.False(arrutil.Contains(nil, 12))
 	is.False(arrutil.Contains(map[int]int{2: 3}, 12))

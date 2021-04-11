@@ -46,6 +46,9 @@ func TestToStrings(t *testing.T) {
 
 	_, err = arrutil.ToStrings("b")
 	is.Error(err)
+
+	_, err = arrutil.ToStrings([]interface{}{[]int{1}, nil})
+	is.Error(err)
 }
 
 func TestStringsToInts(t *testing.T) {

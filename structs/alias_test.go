@@ -31,14 +31,12 @@ func TestAliases_AddAliases(t *testing.T) {
 }
 
 func TestAliases_AddAlias(t *testing.T) {
-	as := structs.Aliases{
-		Checker: func(alias string) {
-			rg := regexp.MustCompile(`^[a-zA-Z][\w-]*$`)
-			if !rg.MatchString(alias) {
-				panic("alias must match: ^[a-zA-Z][\\w-]*$")
-			}
-		},
-	}
+	as := structs.NewAliases(func(alias string) {
+		rg := regexp.MustCompile(`^[a-zA-Z][\w-]*$`)
+		if !rg.MatchString(alias) {
+			panic("alias must match: ^[a-zA-Z][\\w-]*$")
+		}
+	})
 
 	assert.PanicsWithValue(t, "alias must match: ^[a-zA-Z][\\w-]*$", func() {
 		as.AddAlias("real3", "a:b")

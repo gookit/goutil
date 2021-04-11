@@ -43,6 +43,7 @@ func TestValToString(t *testing.T) {
 		int8(2), int16(2), int32(2), int64(2),
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
 		"2",
+		[]byte("2"),
 	}
 	for _, in := range tests {
 		is.Equal("2", strutil.MustString(in))
@@ -59,12 +60,20 @@ func TestValToString(t *testing.T) {
 	is.NoError(err)
 	is.Equal("2.3", str)
 
+	str, err = strutil.String(true)
+	is.NoError(err)
+	is.Equal("true", str)
+
 	str, err = strutil.String(nil)
 	is.NoError(err)
 	is.Equal("", str)
 
 	_, err = strutil.String([]string{"a"})
 	is.Error(err)
+
+	str, err = strutil.AnyToString([]string{"a"}, false)
+	is.NoError(err)
+	is.Equal("[a]", str)
 }
 
 func TestStrToInt(t *testing.T) {

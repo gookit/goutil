@@ -11,10 +11,9 @@ type Ints []int
 // String to string
 func (is Ints) String() string {
 	ss := make([]string, len(is))
-	for _, iv := range is {
-		ss = append(ss, strconv.Itoa(iv))
+	for i, iv := range is {
+		ss[i] = strconv.Itoa(iv)
 	}
-
 	return strings.Join(ss, ",")
 }
 

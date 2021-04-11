@@ -114,6 +114,7 @@ func TestDump_Ints(t *testing.T) {
 func TestDump_Ptr(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	dumper := NewDumper(buffer, 2)
+	// dumper.WithoutColor()
 
 	var s string
 

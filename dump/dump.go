@@ -29,7 +29,7 @@ var (
 		"msType":  "green", // for keywords map, struct type
 		"lenTip":  "gray",  // tips comments for string, slice, map len
 		"string":  "green",
-		"integer": "lightBlueEx",
+		"integer": "lightBlue",
 	}
 
 	// std dumper

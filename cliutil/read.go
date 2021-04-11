@@ -48,7 +48,7 @@ func ReadFirst(question string) (string, error) {
 // ReadFirstByte read first byte char
 //
 // Usage:
-// 	ans, _ := ReadFirstByte("your name?")
+// 	ans, _ := ReadFirstByte("continue?[y/n] ")
 func ReadFirstByte(question string) (byte, error) {
 	if len(question) > 0 {
 		color.Print(question)

@@ -92,7 +92,7 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		if defaultAsErr {
 			err = ErrConvertFail
 		} else {
-			str = fmt.Sprint(val)
+			str = fmt.Sprint(value)
 		}
 	}
 	return

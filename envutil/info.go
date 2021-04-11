@@ -66,7 +66,7 @@ func IsWSL() bool {
 // IsTerminal isatty check
 //
 // Usage:
-// sysutil.IsTerminal(os.Stdout.Fd())
+// 	envutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }
