@@ -69,6 +69,14 @@ func NewDumper(out io.Writer, skip int) *Dumper {
 	}
 }
 
+// NewWithOptions create
+func NewWithOptions(fn func(opts *Options)) *Dumper {
+	d := NewDumper(os.Stdout, 3)
+	fn(d.Options)
+
+	return d
+}
+
 // NewDefaultOptions create.
 func NewDefaultOptions(out io.Writer, skip int) *Options {
 	if out == nil {
