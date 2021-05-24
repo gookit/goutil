@@ -64,6 +64,10 @@ func TestValToString(t *testing.T) {
 	is.NoError(err)
 	is.Equal("true", str)
 
+	str, err = strutil.ToString(true)
+	is.NoError(err)
+	is.Equal("true", str)
+
 	str, err = strutil.String(nil)
 	is.NoError(err)
 	is.Equal("", str)
@@ -74,6 +78,18 @@ func TestValToString(t *testing.T) {
 	str, err = strutil.AnyToString([]string{"a"}, false)
 	is.NoError(err)
 	is.Equal("[a]", str)
+}
+
+func TestByte2string(t *testing.T) {
+	is := assert.New(t)
+
+	s := "abc"
+	is.Equal(s, strutil.Byte2str([]byte(s)))
+	is.Equal(s, strutil.Byte2string([]byte(s)))
+	// is.Same(s, strutil.Byte2str([]byte(s)))
+	// is.NotSame(s, string([]byte(s)))
+
+	is.Equal([]byte(s), strutil.ToBytes(s))
 }
 
 func TestStrToInt(t *testing.T) {

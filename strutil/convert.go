@@ -3,10 +3,12 @@ package strutil
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+	"unsafe"
 
 	"github.com/gookit/goutil/mathutil"
 )
@@ -37,17 +39,17 @@ var (
 
 // String convert val to string
 func String(val interface{}) (string, error) {
-	return ToString(val)
+	return AnyToString(val, true)
 }
 
 // MustString convert value to string
 func MustString(in interface{}) string {
-	val, _ := ToString(in)
+	val, _ := AnyToString(in, false)
 	return val
 }
 
 // ToString convert value to string
-func ToString(val interface{}) (str string, err error) {
+func ToString(val interface{}) (string, error) {
 	return AnyToString(val, true)
 }
 
@@ -99,6 +101,32 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 }
 
 /*************************************************************
+ * convert string value to byte
+ * refer from https://github.com/valyala/fastjson/blob/master/util.go
+ *************************************************************/
+
+// Byte2str convert bytes to string
+func Byte2str(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+// Byte2string convert bytes to string
+func Byte2string(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+// ToBytes convert string to bytes
+func ToBytes(s string) (b []byte) {
+	strh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+
+	sh := (*reflect.SliceHeader)(unsafe.Pointer(&b))
+	sh.Data = strh.Data
+	sh.Len = strh.Len
+	sh.Cap = strh.Len
+	return b
+}
+
+/*************************************************************
  * convert string value to bool
  *************************************************************/
 
@@ -141,7 +169,7 @@ func ToInt(s string) (int, error) {
 	return mathutil.Int(s)
 }
 
-// ToInt convert string to int
+// MustInt convert string to int
 func MustInt(s string) int {
 	return mathutil.MustInt(s)
 }
