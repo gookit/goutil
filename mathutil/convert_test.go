@@ -2,6 +2,7 @@ package mathutil
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -15,6 +16,7 @@ func TestToInt(t *testing.T) {
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
 		float32(2.2), 2.3,
 		"2",
+		time.Duration(2),
 	}
 	errTests := []interface{}{
 		nil,
@@ -81,6 +83,7 @@ func TestToFloat(t *testing.T) {
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
 		float32(2), float64(2),
 		"2",
+		time.Duration(2),
 	}
 	for _, in := range tests {
 		is.Equal(float64(2), MustFloat(in))
