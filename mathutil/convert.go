@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -53,6 +54,8 @@ func ToInt(in interface{}) (iVal int, err error) {
 	case float32:
 		iVal = int(tVal)
 	case float64:
+		iVal = int(tVal)
+	case time.Duration:
 		iVal = int(tVal)
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
@@ -105,6 +108,8 @@ func ToUint(in interface{}) (u64 uint64, err error) {
 	case float32:
 		u64 = uint64(tVal)
 	case float64:
+		u64 = uint64(tVal)
+	case time.Duration:
 		u64 = uint64(tVal)
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
@@ -160,6 +165,8 @@ func ToInt64(in interface{}) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case float64:
 		i64 = int64(tVal)
+	case time.Duration:
+		i64 = int64(tVal)
 	default:
 		err = ErrConvertFail
 	}
@@ -206,6 +213,8 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 		f64 = float64(tVal)
 	case float64:
 		f64 = tVal
+	case time.Duration:
+		f64 = float64(tVal)
 	default:
 		err = ErrConvertFail
 	}
