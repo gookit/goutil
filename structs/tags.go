@@ -19,7 +19,7 @@ type TagParser struct {
 	Func func(tagVal string) map[string]string
 }
 
-// TODO for parse struct tags.
+// ParseTags TODO for parse struct tags.
 func ParseTags(v interface{}) error {
 	rv := reflect.ValueOf(v)
 	return ParseReflectTags(rv)
