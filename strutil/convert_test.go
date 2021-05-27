@@ -35,7 +35,29 @@ func TestStringToBool(t *testing.T) {
 	is.False(blVal)
 }
 
-func TestValToString(t *testing.T) {
+func BenchmarkAnyToString_int(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString(3, false)
+	}
+}
+
+func BenchmarkAnyToString_float(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString(3.4, false)
+		// _ = strconv.FormatFloat(3.4, 'f', -1, 64)
+	}
+}
+
+func BenchmarkAnyToString_string(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString("string", false)
+	}
+}
+
+func TestAnyToString(t *testing.T) {
 	is := assert.New(t)
 
 	tests := []interface{}{

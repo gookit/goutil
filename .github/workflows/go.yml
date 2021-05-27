@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        go_version: [1.12, 1.13, 1.14, 1.15, 1.16]
+        go_version: [1.13, 1.14, 1.15, 1.16]
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
     steps:
