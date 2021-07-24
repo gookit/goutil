@@ -2,6 +2,7 @@ package maputil
 
 import (
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -40,8 +41,7 @@ func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 	for _, k := range keys[1:] {
 		switch tData := item.(type) {
 		case map[string]string: // is simple map
-			item, ok = tData[k]
-			if !ok {
+			if item, ok = tData[k]; !ok {
 				return
 			}
 		case map[string]interface{}: // is map(decode from toml/json)
@@ -52,9 +52,21 @@ func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 			if item, ok = tData[k]; !ok {
 				return
 			}
+		case []interface{}: // is an slice
+			if item, ok = getBySlice(k, tData); !ok {
+				return
+			}
+		case []string, []int, []float32, []float64, []bool, []rune:
+			slice := reflect.ValueOf(tData)
+			sData := make([]interface{}, slice.Len())
+			for i := 0; i < slice.Len(); i++ {
+				sData[i] = slice.Index(i).Interface()
+			}
+			if item, ok = getBySlice(k, sData); !ok {
+				return
+			}
 		default: // error
-			ok = false
-			return
+			return nil, false
 		}
 	}
 
@@ -94,4 +106,15 @@ func Values(mp interface{}) (values []interface{}) {
 		values = append(values, rftVal.MapIndex(key).Interface())
 	}
 	return
+}
+
+func getBySlice(k string, slice []interface{}) (val interface{}, ok bool) {
+	i, err := strconv.ParseInt(k, 10, 64)
+	if err != nil {
+		return nil, false
+	}
+	if size := int64(len(slice)); i >= size {
+		return nil, false
+	}
+	return slice[i], true
 }
