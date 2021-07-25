@@ -21,6 +21,8 @@ func TestGetByPath(t *testing.T) {
 		"key1": map[string]string{"sk0": "sv0"},
 		"key2": []string{"sv1", "sv2"},
 		"key3": map[string]interface{}{"sk1": "sv1"},
+		"key4": []int{1, 2},
+		"key5": []interface{}{1, "2", true},
 	}
 
 	v, ok := maputil.GetByPath("key0", mp)
@@ -46,8 +48,41 @@ func TestGetByPath(t *testing.T) {
 	assert.False(t, ok)
 	assert.Nil(t, v)
 
-	// dont support array/slice
+	// Slices behaviour
+	v, ok = maputil.GetByPath("key2", mp)
+	assert.True(t, ok)
+	assert.Equal(t, mp["key2"], v)
+
+	v, ok = maputil.GetByPath("key2.0", mp)
+	assert.True(t, ok)
+	assert.Equal(t, "sv1", v)
+
 	v, ok = maputil.GetByPath("key2.1", mp)
+	assert.True(t, ok)
+	assert.Equal(t, "sv2", v)
+
+	v, ok = maputil.GetByPath("key4.0", mp)
+	assert.True(t, ok)
+	assert.Equal(t, 1, v)
+
+	v, ok = maputil.GetByPath("key4.1", mp)
+	assert.True(t, ok)
+	assert.Equal(t, 2, v)
+
+	v, ok = maputil.GetByPath("key5.0", mp)
+	assert.True(t, ok)
+	assert.Equal(t, 1, v)
+
+	v, ok = maputil.GetByPath("key5.1", mp)
+	assert.True(t, ok)
+	assert.Equal(t, "2", v)
+
+	v, ok = maputil.GetByPath("key5.2", mp)
+	assert.True(t, ok)
+	assert.Equal(t, true, v)
+
+	// Out of bound value
+	v, ok = maputil.GetByPath("key2.2", mp)
 	assert.False(t, ok)
 	assert.Nil(t, v)
 }
