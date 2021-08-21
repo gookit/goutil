@@ -28,3 +28,7 @@ func TestMimeType(t *testing.T) {
 
 	assert.True(t, fsutil.IsImageFile("testdata/test.jpg"))
 }
+
+// func TestDir(t *testing.T) {
+//
+// }

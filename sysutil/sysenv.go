@@ -51,6 +51,27 @@ func ExpandPath(path string) string {
 	return path
 }
 
+// UserDir will prepend user home dir to subPath
+func UserDir(subPath string) string {
+	dir, _ := homedir.Dir()
+
+	return dir + "/" + subPath
+}
+
+// UserCacheDir will prepend user `$HOME/.cache` to subPath
+func UserCacheDir(subPath string) string {
+	dir, _ := homedir.Dir()
+
+	return dir + "/.cache/" + subPath
+}
+
+// UserConfigDir will prepend user `$HOME/.config` to subPath
+func UserConfigDir(subPath string) string {
+	dir, _ := homedir.Dir()
+
+	return dir + "/.config/" + subPath
+}
+
 // Hostname is alias of os.Hostname, but ignore error
 func Hostname() string {
 	name, _ := os.Hostname()

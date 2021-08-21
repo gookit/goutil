@@ -69,6 +69,7 @@ func StripComments(src string) string {
 		return strings.TrimSpace(src)
 	}
 
+	// strip inline comments
 	var s scanner.Scanner
 
 	s.Init(strings.NewReader(src))

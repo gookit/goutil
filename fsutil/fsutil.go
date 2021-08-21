@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	// sniff Length, use for detect file mime type
+	// MimeSniffLen sniff Length, use for detect file mime type
 	MimeSniffLen = 512
 )
 
@@ -45,6 +45,12 @@ func TempDir(dir, pattern string) (string, error) {
 // ExpandPath will parse `~` as user home dir path.
 func ExpandPath(path string) string {
 	path, _ = homedir.Expand(path)
+	return path
+}
+
+// Realpath parse and get
+func Realpath(path string) string  {
+	// TODO
 	return path
 }
 
