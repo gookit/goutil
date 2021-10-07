@@ -142,6 +142,7 @@ func Println(vs ...interface{})
 func Fprint(w io.Writer, vs ...interface{})
 // source at dump/dumper.go
 func NewDumper(out io.Writer, skip int) *Dumper
+func NewWithOptions(fn func(opts *Options)) *Dumper
 func NewDefaultOptions(out io.Writer, skip int) *Options
 ```
 
@@ -199,6 +200,7 @@ func VarParse(str string) string
 func ParseEnvValue(val string) (newVal string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
+func Environ() map[string]string
 // source at envutil/info.go
 func IsWin() bool
 func IsWindows() bool
@@ -264,6 +266,7 @@ func TempFile(dir, pattern string) (*os.File, error)
 func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
 func ExpandPath(path string) string
+func Realpath(path string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 // source at fsutil/operate.go
@@ -386,9 +389,13 @@ func RandomInt(min, max int) int
 ```go
 // source at structs/alias.go
 func NewAliases(checker func(alias string)) *Aliases
+// source at structs/data.go
+func NewMapData() *MapDataStore
 // source at structs/tags.go
 func ParseTags(v interface{}) error
 func ParseReflectTags(v reflect.Value) error
+func ParseTagValue(str string) maputil.SMap
+func ParseTagValueINI(field, str string) (mp maputil.SMap, err error)
 ```
 
 ### String
@@ -396,6 +403,8 @@ func ParseReflectTags(v reflect.Value) error
 > Package `github.com/gookit/goutil/strutil`
 
 ```go
+// source at strutil/bytes.go
+func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool
 // source at strutil/check.go
 func IsNumeric(c byte) bool
 func IsAlphabet(char uint8) bool
@@ -403,6 +412,8 @@ func IsAlphaNum(c uint8) bool
 func StrPos(s, sub string) int
 func BytePos(s string, bt byte) int
 func RunePos(s string, ru rune) int
+func HasOneSub(s string, subs []string) bool
+func HasAllSubs(s string, subs []string) bool
 func IsStartOf(s, sub string) bool
 func IsEndOf(s, sub string) bool
 func Len(s string) int
@@ -416,17 +427,23 @@ func IsSymbol(r rune) bool
 // source at strutil/convert.go
 func String(val interface{}) (string, error)
 func MustString(in interface{}) string
-func ToString(val interface{}) (str string, err error)
+func ToString(val interface{}) (string, error)
 func AnyToString(val interface{}, defaultAsErr bool) (str string, err error)
+func Byte2str(b []byte) string
+func Byte2string(b []byte) string
+func ToBytes(s string) (b []byte)
 func ToBool(s string) (bool, error)
 func MustBool(s string) bool
 func Bool(s string) (bool, error)
 func Int(s string) (int, error)
 func ToInt(s string) (int, error)
 func MustInt(s string) int
+func Ints(s string, sep ...string) []int
 func ToInts(s string, sep ...string) ([]int, error)
 func ToIntSlice(s string, sep ...string) (ints []int, err error)
 func ToArray(s string, sep ...string) []string
+func Strings(s string, sep ...string) []string
+func ToStrings(s string, sep ...string) []string
 func ToSlice(s string, sep ...string) []string
 func ToOSArgs(s string) []string
 func ToTime(s string, layouts ...string) (t time.Time, err error)
@@ -492,9 +509,14 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 // source at sysutil/sysenv.go
+func LoginUser() *user.User
 func UserHomeDir() string
+func UHomeDir() string
 func HomeDir() string
 func ExpandPath(path string) string
+func UserDir(subPath string) string
+func UserCacheDir(subPath string) string
+func UserConfigDir(subPath string) string
 func Hostname() string
 func IsWin() bool
 func IsWindows() bool
@@ -529,6 +551,8 @@ func RewriteStderr()
 func RestoreStderr() (s string)
 func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
+func MockOsEnvByText(envText string, fn func())
+func MockOsEnv(mp map[string]string, fn func())
 ```
 
 ## Code Check & Testing
