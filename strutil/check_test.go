@@ -111,3 +111,14 @@ func TestIsSymbol(t *testing.T) {
 	assert.False(t, strutil.IsSymbol('a'))
 	assert.True(t, strutil.IsSymbol('●'))
 }
+
+func TestHasOneSub(t *testing.T) {
+	assert.False(t, strutil.HasOneSub("h3ab2c", []string{"d"}))
+	assert.True(t, strutil.HasOneSub("h3ab2c", []string{"ab"}))
+}
+
+func TestHasAllSubs(t *testing.T) {
+	assert.False(t, strutil.HasAllSubs("h3ab2c", []string{"a", "d"}))
+	assert.True(t, strutil.HasAllSubs("h3ab2c", []string{"a", "b"}))
+}
+

@@ -55,6 +55,26 @@ func RunePos(s string, ru rune) int {
 	return strings.IndexRune(s, ru)
 }
 
+// HasOneSub substr in the given string.
+func HasOneSub(s string, subs []string) bool {
+	for _, sub := range subs {
+		if strings.Contains(s, sub) {
+			return true
+		}
+	}
+	return false
+}
+
+// HasAllSubs all substr in the given string.
+func HasAllSubs(s string, subs []string) bool {
+	for _, sub := range subs {
+		if !strings.Contains(s, sub) {
+			return false
+		}
+	}
+	return true
+}
+
 // IsStartOf alias of the strings.HasPrefix
 func IsStartOf(s, sub string) bool {
 	return strings.HasPrefix(s, sub)
@@ -70,7 +90,7 @@ func Len(s string) int {
 	return len(s)
 }
 
-// Utf8Len of the string
+// Utf8len of the string
 func Utf8len(s string) int {
 	return utf8.RuneCount([]byte(s))
 }
