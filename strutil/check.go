@@ -75,6 +75,21 @@ func HasAllSubs(s string, subs []string) bool {
 	return true
 }
 
+// IsStartsOf alias of the HasOnePrefix
+func IsStartsOf(s string, subs []string) bool {
+	return HasOnePrefix(s, subs)
+}
+
+// HasOnePrefix the string start withs one of the subs
+func HasOnePrefix(s string, subs []string) bool {
+	for _, sub := range subs {
+		if strings.HasPrefix(s, sub) {
+			return true
+		}
+	}
+	return false
+}
+
 // IsStartOf alias of the strings.HasPrefix
 func IsStartOf(s, sub string) bool {
 	return strings.HasPrefix(s, sub)

@@ -73,6 +73,8 @@ func TestIsStartOf(t *testing.T) {
 		assert.Equal(t, item.want, strutil.HasPrefix(item.give, item.sub))
 		assert.Equal(t, item.want, strutil.IsStartOf(item.give, item.sub))
 	}
+
+	assert.True(t, strutil.IsStartsOf("abc", []string{"a", "b"}))
 }
 
 func TestIsEndOf(t *testing.T) {
