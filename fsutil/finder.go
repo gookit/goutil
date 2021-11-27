@@ -19,7 +19,7 @@ type FileFilter interface {
 // FileFilterFunc for filter file path.
 type FileFilterFunc func(filePath, filename string) bool
 
-// Filter for filter file path.
+// FilterFile Filter for filter file path.
 func (fn FileFilterFunc) FilterFile(filePath, filename string) bool {
 	return fn(filePath, filename)
 }
@@ -32,7 +32,7 @@ type DirFilter interface {
 // DirFilterFunc for filter file path.
 type DirFilterFunc func(dirPath, dirName string) bool
 
-// Filter for filter file path.
+// FilterDir Filter for filter file path.
 func (fn DirFilterFunc) FilterDir(dirPath, dirName string) bool {
 	return fn(dirPath, dirName)
 }
@@ -81,17 +81,17 @@ func (r *FindResults) append(filePath ...string) {
 	r.filePaths = append(r.filePaths, filePath...)
 }
 
-// Result get find paths
+// AddFilters Result get find paths
 func (r *FindResults) AddFilters(filterFuncs ...FileFilter) *FindResults {
 	return r
 }
 
-// Result get find paths
+// Filter Result get find paths
 func (r *FindResults) Filter() *FindResults {
 	return r
 }
 
-// Result get find paths
+// Each Result get find paths
 func (r *FindResults) Each() *FindResults {
 	return r
 }
@@ -409,7 +409,7 @@ func (f *FileFinder) findInDir(dirPath string) {
 		}
 	}
 
-	d.Close()
+	_= d.Close()
 }
 
 // Each each file paths.
@@ -447,7 +447,7 @@ func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
 	}
 }
 
-// EachBody each file contents
+// EachContents each file contents
 func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
 	// ensure find is running
 	f.find()
