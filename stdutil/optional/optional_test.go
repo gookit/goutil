@@ -10,5 +10,5 @@ import (
 func TestOptFactory_of(t *testing.T) {
 	opt := optional.Of(nil)
 
-	dump.P(opt)
+	dump.P(opt.OrElseGet(34))
 }
