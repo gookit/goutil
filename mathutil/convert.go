@@ -15,14 +15,23 @@ var (
  * convert value to int
  *************************************************************/
 
-// Int convert string to int
+// Int convert value to int
 func Int(in interface{}) (int, error) {
 	return ToInt(in)
 }
 
-// MustInt convert string to int
+// MustInt convert value to int
 func MustInt(in interface{}) int {
 	val, _ := ToInt(in)
+	return val
+}
+
+// IntOrPanic convert value to int, will panic on error
+func IntOrPanic(in interface{}) int {
+	val, err := ToInt(in)
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 

@@ -17,7 +17,7 @@ func NewMapData() *MapDataStore {
 	}
 }
 
-// EnableLock for the operate data
+// EnableLock for data
 func (md *MapDataStore) EnableLock() {
 	md.enableLock = true
 }
@@ -59,4 +59,3 @@ func (md *MapDataStore) SetValue(key string, val interface{}) {
 func (md *MapDataStore) ClearData() {
 	md.data = nil
 }
-

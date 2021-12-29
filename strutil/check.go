@@ -127,9 +127,19 @@ func IsSpaceRune(r rune) bool {
 	return r <= 256 && IsSpace(byte(r)) || unicode.IsSpace(r)
 }
 
+// IsEmpty returns true if the given string is empty.
+func IsEmpty(s string) bool {
+	return len(s) == 0
+}
+
 // IsBlank returns true if the given string is all space characters.
 func IsBlank(s string) bool {
 	return IsBlankBytes([]byte(s))
+}
+
+// IsNotBlank returns true if the given string is not blank.
+func IsNotBlank(s string) bool {
+	return !IsBlankBytes([]byte(s))
 }
 
 // IsBlankBytes returns true if the given []byte is all space characters.

@@ -53,7 +53,9 @@ func ToString(val interface{}) (string, error) {
 	return AnyToString(val, true)
 }
 
-// AnyToString convert value to string
+// AnyToString convert value to string.
+//
+// if defaultAsErr is False, will use fmt.Sprint convert complex type
 func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 	if val == nil {
 		return
@@ -159,19 +161,29 @@ func Bool(s string) (bool, error) {
  * convert string value to int, float
  *************************************************************/
 
-// Int convert string to int
+// Int convert string to int, alias of ToInt()
 func Int(s string) (int, error) {
-	return mathutil.Int(s)
+	return strconv.Atoi(strings.TrimSpace(s))
 }
 
 // ToInt convert string to int
 func ToInt(s string) (int, error) {
-	return mathutil.Int(s)
+	return strconv.Atoi(strings.TrimSpace(s))
 }
 
 // MustInt convert string to int
 func MustInt(s string) int {
-	return mathutil.MustInt(s)
+	val, _ := ToInt(s)
+	return val
+}
+
+// IntOrPanic convert value to int, will panic on error
+func IntOrPanic(s string) int {
+	val, err := ToInt(s)
+	if err != nil {
+		panic(err)
+	}
+	return val
 }
 
 /*************************************************************

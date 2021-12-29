@@ -127,6 +127,10 @@ func TestStrToInt(t *testing.T) {
 
 	iVal = strutil.MustInt("-23")
 	is.Equal(-23, iVal)
+
+	is.PanicsWithError("strconv.Atoi: parsing \"abc\": invalid syntax", func() {
+		strutil.IntOrPanic("abc")
+	})
 }
 
 func TestStrToInts(t *testing.T) {
