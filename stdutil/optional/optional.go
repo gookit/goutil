@@ -26,3 +26,27 @@ func (o *optional) Map(fn func(v interface{}) interface{}) *optional {
 
 	return OfNillable(fn(o.v))
 }
+
+func (o *optional) Get() interface{} {
+	if o.v == nil {
+		panic("nil value")
+	}
+
+	return o.v
+}
+
+func (o *optional) OrElse(v interface{}) interface{} {
+	if o.v == nil {
+		return v
+	}
+
+	return o.v
+}
+
+func (o *optional) OrElseGet(v interface{}) interface{} {
+	if o.v == nil {
+		return v
+	}
+
+	return o.v
+}
