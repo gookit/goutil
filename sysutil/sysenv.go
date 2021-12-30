@@ -13,6 +13,12 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
+// Workdir get
+func Workdir() string {
+	dir, _ := os.Getwd()
+	return dir
+}
+
 // LoginUser get current user
 func LoginUser() *user.User {
 	// check $HOME/.terminfo
@@ -127,7 +133,7 @@ func IsConsole(out io.Writer) bool {
 // IsTerminal isatty check
 //
 // Usage:
-// sysutil.IsTerminal(os.Stdout.Fd())
+// 	sysutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }

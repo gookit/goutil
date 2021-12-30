@@ -14,6 +14,7 @@ func FuncName(f interface{}) string {
 }
 
 // PkgName get current package name
+//
 // Usage:
 //	funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 //	pgkName := goutil.PkgName(funcName)
@@ -58,11 +59,13 @@ func GetCallStacks(all bool) []byte {
 // GetCallersInfo returns an array of strings containing the file and line number
 // of each stack frame leading
 func GetCallersInfo(skip, max int) (callers []string) {
-	var pc uintptr
-	var ok bool
-	var line int
-	var file string
-	var name string
+	var (
+		pc   uintptr
+		ok   bool
+		line int
+		file string
+		name string
+	)
 
 	// callers := []string{}
 	for i := skip; i < max; i++ {

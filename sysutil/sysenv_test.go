@@ -112,3 +112,11 @@ func TestUserDir(t *testing.T) {
 	assert.Contains(t, dir, ".config/my-conf")
 	dump.P(dir)
 }
+
+func TestWorkdir(t *testing.T) {
+	assert.NotEmpty(t, sysutil.Workdir())
+}
+
+func TestLoginUser(t *testing.T) {
+	assert.NotEmpty(t, sysutil.LoginUser())
+}
