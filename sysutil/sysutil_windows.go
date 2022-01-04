@@ -1,3 +1,4 @@
+//go:build windows
 // +build windows
 
 package sysutil
@@ -9,7 +10,7 @@ import (
 	"github.com/gookit/goutil/sysutil/process"
 )
 
-// Kill process by pid
+// Kill a process by pid
 func Kill(pid int, signal syscall.Signal) error {
 	return errors.New("not support")
 }
