@@ -1,10 +1,11 @@
+//go:build !windows
 // +build !windows
 
 package sysutil
 
 import "syscall"
 
-// Kill process by pid
+// Kill a process by pid
 func Kill(pid int, signal syscall.Signal) error {
 	return syscall.Kill(pid, signal)
 }
