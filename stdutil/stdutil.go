@@ -34,8 +34,8 @@ func FuncName(f interface{}) string {
 // PkgName get current package name
 //
 // Usage:
-//	funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
-//	pgkName := goutil.PkgName(funcName)
+//	funcName := stdutil.FuncName(fn)
+//	pgkName := stdutil.PkgName(funcName)
 func PkgName(funcName string) string {
 	for {
 		lastPeriod := strings.LastIndex(funcName, ".")

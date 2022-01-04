@@ -48,10 +48,11 @@ func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
 func NotContains(arr, val interface{}) bool
 // source at arrutil/convert.go
-func ToInt64s(arr interface{})(ret []int64, err error)
+func StringsJoin(ss []string, sep string) string
+func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
-func ToStrings(arr interface{})(ret []string, err error)
+func ToStrings(arr interface{}) (ret []string, err error)
 func MustToStrings(arr interface{}) []string
 func SliceToStrings(arr []interface{}) []string
 func StringsToInts(ss []string) (ints []int, err error)
@@ -362,6 +363,7 @@ func Values(mp interface{}) (values []interface{})
 // source at mathutil/convert.go
 func Int(in interface{}) (int, error)
 func MustInt(in interface{}) int
+func IntOrPanic(in interface{}) int
 func ToInt(in interface{}) (iVal int, err error)
 func Uint(in interface{}) (uint64, error)
 func MustUint(in interface{}) uint64
@@ -382,6 +384,26 @@ func HowLongAgo(sec int64) string
 func RandomInt(min, max int) int
 ```
 
+### Std
+
+> Package `github.com/gookit/goutil/stdutil`
+
+```go
+// source at stdutil/convert.go
+func ToString(v interface{}) string
+func MustString(v interface{}) string
+func TryString(v interface{}) (string, error)
+// source at stdutil/go_chan.go
+func WaitCloseSignals(closer io.Closer) error
+func Go(f func() error) error
+// source at stdutil/stdutil.go
+func PanicIfErr(err error)
+func PanicIf(err error)
+func Panicf(format string, v ...interface{})
+func FuncName(f interface{}) string
+func PkgName(funcName string) string
+```
+
 ### Struct
 
 > Package `github.com/gookit/goutil/structs`
@@ -391,6 +413,10 @@ func RandomInt(min, max int) int
 func NewAliases(checker func(alias string)) *Aliases
 // source at structs/data.go
 func NewMapData() *MapDataStore
+// source at structs/structs.go
+func ToMap(st interface{}) map[string]interface{}
+func TryToMap(st interface{}) (map[string]interface{}, error)
+func MustToMap(st interface{}) map[string]interface{}
 // source at structs/tags.go
 func ParseTags(v interface{}) error
 func ParseReflectTags(v reflect.Value) error
@@ -414,6 +440,8 @@ func BytePos(s string, bt byte) int
 func RunePos(s string, ru rune) int
 func HasOneSub(s string, subs []string) bool
 func HasAllSubs(s string, subs []string) bool
+func IsStartsOf(s string, subs []string) bool
+func HasOnePrefix(s string, subs []string) bool
 func IsStartOf(s, sub string) bool
 func IsEndOf(s, sub string) bool
 func Len(s string) int
@@ -421,7 +449,9 @@ func Utf8len(s string) int
 func ValidUtf8String(s string) bool
 func IsSpace(c byte) bool
 func IsSpaceRune(r rune) bool
+func IsEmpty(s string) bool
 func IsBlank(s string) bool
+func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 // source at strutil/convert.go
@@ -438,6 +468,7 @@ func Bool(s string) (bool, error)
 func Int(s string) (int, error)
 func ToInt(s string) (int, error)
 func MustInt(s string) int
+func IntOrPanic(s string) int
 func Ints(s string, sep ...string) []int
 func ToInts(s string, sep ...string) ([]int, error)
 func ToIntSlice(s string, sep ...string) (ints []int, err error)
@@ -481,7 +512,12 @@ func Trim(s string, cutSet ...string) string
 func TrimLeft(s string, cutSet ...string) string
 func TrimRight(s string, cutSet ...string) string
 func FilterEmail(s string) string
+func SplitValid(s, sep string) (ss []string) { return Split(s, sep)}
 func Split(s, sep string) (ss []string)
+func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n)}
+func SplitN(s, sep string, n int) (ss []string)
+func SplitTrimmed(s, sep string) (ss []string)
+func SplitNTrimmed(s, sep string, n int) (ss []string)
 func Substr(s string, pos, length int) string
 func Padding(s, pad string, length int, pos uint8) string
 func PadLeft(s, pad string, length int) string
@@ -509,6 +545,7 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 // source at sysutil/sysenv.go
+func Workdir() string
 func LoginUser() *user.User
 func UserHomeDir() string
 func UHomeDir() string
