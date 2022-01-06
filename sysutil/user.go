@@ -18,6 +18,11 @@ func MustFindUser(uname string) *user.User {
 
 // LoginUser must get current user
 func LoginUser() *user.User {
+	return CurrentUser()
+}
+
+// CurrentUser must get current user
+func CurrentUser() *user.User {
 	// check $HOME/.terminfo
 	u, err := user.Current()
 	if err != nil {

@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// ErrConvertFail convert error
 	ErrConvertFail = errors.New("convert data type is failure")
 )
 
