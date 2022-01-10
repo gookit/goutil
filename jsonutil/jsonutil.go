@@ -3,6 +3,7 @@ package jsonutil
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"os"
 	"regexp"
@@ -29,26 +30,27 @@ func ReadFile(filePath string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
-	content, err := ioutil.ReadAll(file)
-	if err != nil {
-		return err
-	}
-	return Decode(content, v)
+	defer file.Close()
+	return json.NewDecoder(file).Decode(v)
 }
 
-// Encode encode data to json bytes. use it instead of json.Marshal
+// Encode data to json bytes. use it instead of json.Marshal
 func Encode(v interface{}) ([]byte, error) {
 	return parser.Marshal(v)
 }
 
-// Decode decode json bytes to data. use it instead of json.Unmarshal
-func Decode(json []byte, v interface{}) error {
-	return parser.Unmarshal(json, v)
+// Decode json bytes to data. use it instead of json.Unmarshal
+func Decode(json []byte, ptr interface{}) error {
+	return parser.Unmarshal(json, ptr)
 }
 
-// Pretty get pretty JSON string
+// DecodeReader decode JSON from io reader.
+func DecodeReader(r io.Reader, ptr interface{}) error {
+	return json.NewDecoder(r).Decode(ptr)
+}
+
+// Pretty JSON string and return
 func Pretty(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err

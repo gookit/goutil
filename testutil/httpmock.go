@@ -27,17 +27,17 @@ type (
 // NewHttpRequest for http testing
 // Usage:
 //
-// 	req := NewHttpRequest(handler, "GET", "/path", nil)
+// 	req := NewHttpRequest("GET", "/path", nil)
 //
 // 	// with data 1
 // 	body := strings.NewReader("string ...")
-// 	req := NewHttpRequest(handler, "POST", "/path", &MD{
+// 	req := NewHttpRequest("POST", "/path", &MD{
 // 		Body: body,
 // 		Headers: M{"x-head": "val"}
 // 	})
 //
 // 	// with data 2
-// 	req := NewHttpRequest(handler, "POST", "/path", &MD{
+// 	req := NewHttpRequest("POST", "/path", &MD{
 // 		BodyString: "data string",
 // 		Headers: M{"x-head": "val"}
 // 	})

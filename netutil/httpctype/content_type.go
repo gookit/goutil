@@ -27,6 +27,10 @@ const (
 	MSGPACK2 = "application/msgpack; charset=utf-8"
 	PROTOBUF = "application/x-protobuf"
 
+	Form = "application/x-www-form-urlencoded"
+	// FormData for upload file
+	FormData = "multipart/form-data"
+
 	// Binary represents content type application/octet-stream
 	Binary = "application/octet-stream"
 )
