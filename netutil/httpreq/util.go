@@ -1,6 +1,7 @@
 package httpreq
 
 import (
+	"encoding/base64"
 	"net/http"
 	"net/url"
 )
@@ -41,6 +42,13 @@ func IsClientError(statusCode int) bool {
 // IsServerError check response is server error (500 - 600)
 func IsServerError(statusCode int) bool {
 	return statusCode >= http.StatusInternalServerError && statusCode <= 600
+}
+
+// BuildBasicAuth returns the base64 encoded username:password for basic auth.
+// copied from net/http.
+func BuildBasicAuth(username, password string) string {
+	auth := username + ":" + password
+	return "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
 // AddHeadersToRequest adds the key, value pairs from the given http.Header to the

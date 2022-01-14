@@ -34,6 +34,16 @@ func MustReadFile(filePath string) []byte {
 	return bs
 }
 
+// MustReadReader read contents from io.Reader, will panic on error
+func MustReadReader(r io.Reader) []byte {
+	bs, err := io.ReadAll(r)
+	if err != nil {
+		panic(err)
+	}
+
+	return bs
+}
+
 // ReadExistFile read file contents if exist, will panic on error
 func ReadExistFile(filePath string) []byte {
 	if IsFile(filePath) {

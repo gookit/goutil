@@ -9,7 +9,7 @@ import (
 
 // HttpReq an simple http requester.
 type HttpReq struct {
-	client HttpDoer
+	client Doer
 	// some config for request
 	method  string
 	baseURL string
@@ -87,7 +87,7 @@ func (h *HttpReq) StringBody(s string) *HttpReq {
 }
 
 // Client custom http client
-func (h *HttpReq) Client(c HttpDoer) *HttpReq {
+func (h *HttpReq) Client(c Doer) *HttpReq {
 	h.client = c
 	return h
 }
