@@ -34,7 +34,7 @@ func TestHttpReq_Send(t *testing.T) {
 
 func TestHttpReq_MustSend(t *testing.T) {
 	resp := httpreq.New("https://httpbin.org").
-		StringBody("hi").
+		BytesBody([]byte("hi")).
 		Method("POST").
 		MustSend("/post")
 

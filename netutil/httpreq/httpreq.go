@@ -2,6 +2,7 @@
 package httpreq
 
 import (
+	"bytes"
 	"io"
 	"net/http"
 	"strings"
@@ -77,6 +78,12 @@ func (h *HttpReq) BeforeSend(fn func(req *http.Request)) *HttpReq {
 // WithBody with custom body
 func (h *HttpReq) WithBody(r io.Reader) *HttpReq {
 	h.body = r
+	return h
+}
+
+// BytesBody with custom bytes body
+func (h *HttpReq) BytesBody(bs []byte) *HttpReq {
+	h.body = bytes.NewReader(bs)
 	return h
 }
 

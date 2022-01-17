@@ -61,10 +61,6 @@ func AddHeadersToRequest(req *http.Request, header http.Header) {
 	}
 }
 
-func AddQueriesToURL() {
-
-}
-
 // ToQueryValues convert string map to url.Values
 func ToQueryValues(data interface{}) url.Values {
 	// use url.Values directly if we have it
