@@ -79,7 +79,7 @@ func TestQuietRemove(t *testing.T) {
 		fsutil.QuietRm("/path-not-exist")
 	})
 
-	assert.Panics(t, func() {
+	assert.NotPanics(t, func() {
 		fsutil.QuietRemove("/path-not-exist")
 	})
 }
