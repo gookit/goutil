@@ -34,7 +34,7 @@ jobs:
 
     - name: Run unit tests
       #      run: go test -v -cover ./...
-      #      must add " for profile.cov on windows OS
+      #      must add " for profile.cov on Windows OS
       run: go test -v -coverprofile="profile.cov" ./...
 
     - name: Send coverage
