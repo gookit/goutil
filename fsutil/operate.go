@@ -36,7 +36,8 @@ func MustReadFile(filePath string) []byte {
 
 // MustReadReader read contents from io.Reader, will panic on error
 func MustReadReader(r io.Reader) []byte {
-	bs, err := io.ReadAll(r)
+	// TODO go 1.16+ bs, err := io.ReadAll(r)
+	bs, err := ioutil.ReadAll(r)
 	if err != nil {
 		panic(err)
 	}
