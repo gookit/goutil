@@ -63,3 +63,23 @@ func TestQuickOpenFile(t *testing.T) {
 		assert.NoError(t, os.Remove(file.Name()))
 	}
 }
+
+func TestMustRemove(t *testing.T) {
+	assert.Panics(t, func() {
+		fsutil.MustRm("/path-not-exist")
+	})
+
+	assert.Panics(t, func() {
+		fsutil.MustRemove("/path-not-exist")
+	})
+}
+
+func TestQuietRemove(t *testing.T) {
+	assert.NotPanics(t, func() {
+		fsutil.QuietRm("/path-not-exist")
+	})
+
+	assert.Panics(t, func() {
+		fsutil.QuietRemove("/path-not-exist")
+	})
+}

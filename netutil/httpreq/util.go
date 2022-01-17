@@ -65,6 +65,7 @@ func AddQueriesToURL() {
 
 }
 
+// ToQueryValues convert string map to url.Values
 func ToQueryValues(data interface{}) url.Values {
 	// use url.Values directly if we have it
 	if uv, ok := data.(url.Values); ok {

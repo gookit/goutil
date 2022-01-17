@@ -44,7 +44,7 @@ func MustReadReader(r io.Reader) []byte {
 	return bs
 }
 
-// ReadExistFile read file contents if exist, will panic on error
+// ReadExistFile read file contents if existed, will panic on error
 func ReadExistFile(filePath string) []byte {
 	if IsFile(filePath) {
 		bs, err := ioutil.ReadFile(filePath)
@@ -129,7 +129,9 @@ func MustCopyFile(src string, dst string) {
 
 // alias methods
 var (
-	MustRm  = MustRemove
+	// MustRm removes the named file or (empty) directory.
+	MustRm = MustRemove
+	// QuietRm removes the named file or (empty) directory.
 	QuietRm = QuietRemove
 )
 
