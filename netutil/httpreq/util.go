@@ -1,9 +1,11 @@
 package httpreq
 
 import (
+	"bytes"
 	"encoding/base64"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 // IsOK check response status code is 200
@@ -76,4 +78,50 @@ func ToQueryValues(data interface{}) url.Values {
 	}
 
 	return uv
+}
+
+// RequestToString convert http Request to string
+func RequestToString(r *http.Request) string {
+	buf := &bytes.Buffer{}
+	buf.WriteString(r.Method)
+	buf.WriteByte(' ')
+	buf.WriteString(r.URL.String())
+	buf.WriteByte('\n')
+
+	for key, values := range r.Header {
+		buf.WriteString(key)
+		buf.WriteString(": ")
+		buf.WriteString(strings.Join(values, ";"))
+		buf.WriteByte('\n')
+	}
+
+	if r.Body != nil {
+		buf.WriteByte('\n')
+		_, _ = buf.ReadFrom(r.Body)
+	}
+
+	return buf.String()
+}
+
+// ResponseToString convert http Response to string
+func ResponseToString(w *http.Response) string {
+	buf := &bytes.Buffer{}
+	buf.WriteString(w.Proto)
+	buf.WriteByte(' ')
+	buf.WriteString(w.Status)
+	buf.WriteByte('\n')
+
+	for key, values := range w.Header {
+		buf.WriteString(key)
+		buf.WriteString(": ")
+		buf.WriteString(strings.Join(values, ";"))
+		buf.WriteByte('\n')
+	}
+
+	if w.Body != nil {
+		buf.WriteByte('\n')
+		_, _ = buf.ReadFrom(w.Body)
+	}
+
+	return buf.String()
 }

@@ -44,6 +44,9 @@ func TestToStrings(t *testing.T) {
 	ss = arrutil.SliceToStrings([]interface{}{1, 2})
 	is.Equal(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
+	as := arrutil.StringsToSlice([]string{"1", "2"})
+	is.Equal(`[]interface {}{"1", "2"}`, fmt.Sprintf("%#v", as))
+
 	_, err = arrutil.ToStrings("b")
 	is.Error(err)
 
@@ -56,6 +59,12 @@ func TestStringsToString(t *testing.T) {
 
 	is.Equal("a,b", arrutil.JoinStrings([]string{"a", "b"}, ","))
 	is.Equal("a,b", arrutil.StringsJoin([]string{"a", "b"}, ","))
+}
+
+func TestSliceToString(t *testing.T) {
+	is := assert.New(t)
+
+	is.Equal("a,b", arrutil.SliceToString("a", "b"))
 }
 
 func TestStringsToInts(t *testing.T) {

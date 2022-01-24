@@ -81,6 +81,15 @@ func MustToStrings(arr interface{}) []string {
 	return ret
 }
 
+// StringsToSlice convert []string to []interface{}
+func StringsToSlice(strings []string) []interface{} {
+	args := make([]interface{}, len(strings))
+	for i, s := range strings {
+		args[i] = s
+	}
+	return args
+}
+
 // SliceToStrings convert []interface{} to []string
 func SliceToStrings(arr []interface{}) []string {
 	ss := make([]string, len(arr))
@@ -88,6 +97,24 @@ func SliceToStrings(arr []interface{}) []string {
 		ss[i] = strutil.MustString(v)
 	}
 	return ss
+}
+
+// ToString convert []interface{} to string
+func ToString(arr []interface{}) string {
+	var b strings.Builder
+	for i, v := range arr {
+		if i > 0 {
+			b.WriteByte(',')
+		}
+		b.WriteString(strutil.MustString(v))
+	}
+
+	return b.String()
+}
+
+// SliceToString convert []interface{} to string
+func SliceToString(arr ...interface{}) string {
+	return ToString(arr)
 }
 
 // StringsToInts string slice to int slice
