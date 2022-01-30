@@ -5,6 +5,9 @@ import (
 	"github.com/kr/pretty"
 )
 
+// rum demo:
+// 	go run ./refer_kr_pretty.go
+// 	go run ./dump/_examples/refer_kr_pretty.go
 func main() {
 	vs := []interface{}{
 		23,

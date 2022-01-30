@@ -1,6 +1,6 @@
 # Dump
 
-This is an print debug vars util package.
+`goutil/dump` is a golang data printing toolkit that prints beautiful and easy to read go slice, map, struct data
 
 - Github: https://github.com/gookit/goutil/dump
 - GoDoc: https://pkg.go.dev/github.com/gookit/goutil/dump

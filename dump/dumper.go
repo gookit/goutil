@@ -16,11 +16,11 @@ import (
 
 // Options for dump vars
 type Options struct {
-	// Output output writer
+	// Output the output writer
 	Output io.Writer
-	// dont show type TODO
+	// NoType dont show data type TODO
 	NoType bool
-	// dont with color
+	// NoColor don't with color
 	NoColor bool
 	// IndentLen width. default is 2
 	IndentLen int
