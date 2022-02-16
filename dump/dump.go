@@ -2,6 +2,7 @@
 package dump
 
 import (
+	"bytes"
 	"io"
 	"os"
 
@@ -93,4 +94,16 @@ func Println(vs ...interface{}) {
 // Fprint like fmt.Println, but the output is clearer and more beautiful
 func Fprint(w io.Writer, vs ...interface{}) {
 	std.Fprint(w, vs...)
+}
+
+// Format like fmt.Println, but the output is clearer and more beautiful
+func Format(vs ...interface{}) string {
+	w := &bytes.Buffer{}
+
+	NewDumper(w, 3).
+		WithOptions(func(opts *Options) {
+			opts.ShowFlag = Fnopos
+		}).
+		Println(vs...)
+	return w.String()
 }

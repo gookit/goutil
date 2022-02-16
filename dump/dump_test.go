@@ -283,6 +283,16 @@ func TestStruct_ptrField(t *testing.T) {
 	fmt.Println("---------------------------------------------------------------")
 }
 
+func TestFormat(t *testing.T) {
+	s := Format(23, "abc", map[string]interface{}{
+		"key1": 12,
+		"key2": "abc2344",
+	})
+
+	assert.NotEmpty(t, s)
+	fmt.Println(s)
+}
+
 func newBuffer() *bytes.Buffer {
 	buf := new(bytes.Buffer)
 
