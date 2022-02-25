@@ -1,6 +1,7 @@
 package mathutil
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -17,6 +18,7 @@ func TestToInt(t *testing.T) {
 		float32(2.2), 2.3,
 		"2",
 		time.Duration(2),
+		json.Number("2"),
 	}
 	errTests := []interface{}{
 		nil,
@@ -84,6 +86,7 @@ func TestToFloat(t *testing.T) {
 		float32(2), float64(2),
 		"2",
 		time.Duration(2),
+		json.Number("2"),
 	}
 	for _, in := range tests {
 		is.Equal(float64(2), MustFloat(in))

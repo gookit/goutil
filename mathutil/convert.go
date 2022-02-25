@@ -1,6 +1,7 @@
 package mathutil
 
 import (
+	"encoding/json"
 	"errors"
 	"strconv"
 	"strings"
@@ -69,6 +70,10 @@ func ToInt(in interface{}) (iVal int, err error) {
 		iVal = int(tVal)
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
+	case json.Number:
+		var i64 int64
+		i64, err = tVal.Int64()
+		iVal = int(i64)
 	default:
 		err = ErrConvertFail
 	}
@@ -121,6 +126,10 @@ func ToUint(in interface{}) (u64 uint64, err error) {
 		u64 = uint64(tVal)
 	case time.Duration:
 		u64 = uint64(tVal)
+	case json.Number:
+		var i64 int64
+		i64, err = tVal.Int64()
+		u64 = uint64(i64)
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
@@ -177,6 +186,8 @@ func ToInt64(in interface{}) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case time.Duration:
 		i64 = int64(tVal)
+	case json.Number:
+		i64, err = tVal.Int64()
 	default:
 		err = ErrConvertFail
 	}
@@ -225,6 +236,8 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 		f64 = tVal
 	case time.Duration:
 		f64 = float64(tVal)
+	case json.Number:
+		f64, err = tVal.Float64()
 	default:
 		err = ErrConvertFail
 	}
