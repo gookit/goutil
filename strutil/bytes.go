@@ -16,6 +16,7 @@ type ByteChanPool struct {
 	wcap int
 }
 
+// NewByteChanPool instance
 func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool {
 	return &ByteChanPool{
 		c:    make(chan []byte, maxSize),

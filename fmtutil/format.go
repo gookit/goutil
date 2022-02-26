@@ -7,6 +7,7 @@ import (
 )
 
 // DataSize format bytes number friendly.
+//
 // Usage:
 // 	file, err := os.Open(path)
 // 	fl, err := file.Stat()

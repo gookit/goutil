@@ -42,6 +42,7 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 }
 
 // ExecCmd a CLI bin file and return output.
+//
 // Usage:
 // 	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
@@ -54,7 +55,9 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 }
 
 // ShellExec exec command by shell
-// cmdStr eg. "ls -al"
+//
+// Usage:
+// ret, err := cliutil.ShellExec("ls -al")
 func ShellExec(cmdLine string, shells ...string) (string, error) {
 	return sysutil.ShellExec(cmdLine, shells...)
 }
@@ -65,6 +68,7 @@ func CurrentShell(onlyName bool) (path string) {
 }
 
 // HasShellEnv has shell env check.
+//
 // Usage:
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")

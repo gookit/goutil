@@ -19,7 +19,7 @@ func Reverse(ss []string) {
 	}
 }
 
-// StringsRemove an value form an string slice
+// StringsRemove a value form an string slice
 func StringsRemove(ss []string, s string) []string {
 	var ns []string
 	for _, v := range ss {

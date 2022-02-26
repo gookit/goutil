@@ -6,8 +6,11 @@ import (
 	"strings"
 )
 
-// VarReplace replaces ${var} or $var in the string according to the values
-var VarReplace = os.ExpandEnv
+// VarReplace replaces ${var} or $var in the string according to the values.
+// is alias of the os.ExpandEnv()
+func VarReplace(s string) string {
+	return os.ExpandEnv(s)
+}
 
 // ValueGetter Env value provider func.
 // TIPS: you can custom provide data.
@@ -28,6 +31,7 @@ func VarParse(str string) string {
 }
 
 // ParseEnvValue parse ENV var value from input string, support default value.
+// vars like ${var}, ${var| default}
 func ParseEnvValue(val string) (newVal string) {
 	if strings.Index(val, "${") == -1 {
 		return val

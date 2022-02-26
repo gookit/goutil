@@ -14,7 +14,7 @@ var errNotAnStruct = errors.New("must input an struct")
 
 // TagParser struct
 type TagParser struct {
-	TagName string
+	TagNames string
 
 	Func func(tagVal string) map[string]string
 }
@@ -25,6 +25,7 @@ func ParseTags(v interface{}) error {
 	return ParseReflectTags(rv)
 }
 
+// ParseReflectTags value
 func ParseReflectTags(v reflect.Value) error {
 	if v.Kind() == reflect.Ptr && !v.IsNil() {
 		v = v.Elem()

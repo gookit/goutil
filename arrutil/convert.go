@@ -10,12 +10,13 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// ErrInvalidType error
 var ErrInvalidType = errors.New("the input param type is invalid")
 
-var (
-	// JoinStrings alias of strings.Join
-	JoinStrings = strings.Join
-)
+// JoinStrings alias of strings.Join
+func JoinStrings(ss []string, sep string) string {
+	return strings.Join(ss, sep)
+}
 
 // StringsJoin alias of strings.Join
 func StringsJoin(ss []string, sep string) string {
