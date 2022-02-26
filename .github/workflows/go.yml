@@ -1,5 +1,10 @@
 name: Unit-Tests
 on:
+  pull_request:
+    paths:
+      - 'go.mod'
+      - '**.go'
+      - '**.yml'
   push:
     paths:
       - 'go.mod'
