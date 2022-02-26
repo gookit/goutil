@@ -11,16 +11,15 @@ Go一些常用的工具函数收集、实现和整理
 
 - `arrutil` array/slice 相关操作的函数工具包
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
-- `cliutil` CLI 的一些工具函数包
-- `envutil` ENV 信息获取判断工具包
+- `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
+- `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` format data tool
-- `fsutil` 文件系统操作相关的工具函数包
-- `jsonutil` JSON util
-- `maputil` map 相关操作的函数工具包
-- `mathutil` int/number 相关操作的函数工具包
-- `strutil` string 相关操作的函数工具包
-- `sysutil` system 相关操作的函数工具包
-- `testutil` test help 相关操作的函数工具包
+- `fsutil` 文件系统操作相关的工具函数包. eg: file and dir check, operate
+- `maputil` map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
+- `mathutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
+- `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
+- `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
 
 > **[EN README](README.md)**
 

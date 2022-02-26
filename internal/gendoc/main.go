@@ -99,7 +99,7 @@ func bindingFlags() {
   go run ./internal/gendoc -o stdout
   go run ./internal/gendoc -o stdout -l zh-CN
   go run ./internal/gendoc -o README.md
-  go run ./internal/gendoc -o README.md -l zh-CN`)
+  go run ./internal/gendoc -o README.zh-CN.md -l zh-CN`)
 	}
 }
 

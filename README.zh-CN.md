@@ -11,16 +11,15 @@ Go一些常用的工具函数收集、实现和整理
 
 - `arrutil` array/slice 相关操作的函数工具包
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
-- `cliutil` CLI 的一些工具函数包
-- `envutil` ENV 信息获取判断工具包
+- `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
+- `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` format data tool
-- `fsutil` 文件系统操作相关的工具函数包
-- `jsonutil` JSON util
-- `maputil` map 相关操作的函数工具包
-- `mathutil` int/number 相关操作的函数工具包
-- `strutil` string 相关操作的函数工具包
-- `sysutil` system 相关操作的函数工具包
-- `testutil` test help 相关操作的函数工具包
+- `fsutil` 文件系统操作相关的工具函数包. eg: file and dir check, operate
+- `maputil` map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
+- `mathutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
+- `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
+- `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
 
 > **[EN README](README.md)**
 
@@ -48,13 +47,17 @@ func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
 func NotContains(arr, val interface{}) bool
 // source at arrutil/convert.go
+func JoinStrings(ss []string, sep string) string
 func StringsJoin(ss []string, sep string) string
 func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
 func ToStrings(arr interface{}) (ret []string, err error)
 func MustToStrings(arr interface{}) []string
+func StringsToSlice(strings []string) []interface{}
 func SliceToStrings(arr []interface{}) []string
+func ToString(arr []interface{}) string
+func SliceToString(arr ...interface{}) string
 func StringsToInts(ss []string) (ints []int, err error)
 ```
 
@@ -141,6 +144,7 @@ func Config(fn func(opts *Options))
 func Print(vs ...interface{})
 func Println(vs ...interface{})
 func Fprint(w io.Writer, vs ...interface{})
+func Format(vs ...interface{}) string
 // source at dump/dumper.go
 func NewDumper(out io.Writer, skip int) *Dumper
 func NewWithOptions(fn func(opts *Options)) *Dumper
@@ -197,6 +201,7 @@ Preview:
 
 ```go
 // source at envutil/envutil.go
+func VarReplace(s string) string
 func VarParse(str string) string
 func ParseEnvValue(val string) (newVal string)
 // source at envutil/get.go
@@ -274,6 +279,7 @@ func ReaderMimeType(r io.Reader) (mime string)
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
 func MustReadFile(filePath string) []byte
+func MustReadReader(r io.Reader) []byte
 func ReadExistFile(filePath string) []byte
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
 func QuickOpenFile(filepath string) (*os.File, error)
@@ -334,7 +340,8 @@ func main() {
 func WriteFile(filePath string, data interface{}) error
 func ReadFile(filePath string, v interface{}) error
 func Encode(v interface{}) ([]byte, error)
-func Decode(json []byte, v interface{}) error
+func Decode(json []byte, ptr interface{}) error
+func DecodeReader(r io.Reader, ptr interface{}) error
 func Pretty(v interface{}) (string, error)
 func StripComments(src string) string
 ```
@@ -396,6 +403,9 @@ func TryString(v interface{}) (string, error)
 // source at stdutil/go_chan.go
 func WaitCloseSignals(closer io.Closer) error
 func Go(f func() error) error
+// source at stdutil/stacks.go
+func GetCallStacks(all bool) []byte
+func GetCallersInfo(skip, max int) (callers []string)
 // source at stdutil/stdutil.go
 func PanicIfErr(err error)
 func PanicIf(err error)
@@ -545,15 +555,6 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 // source at sysutil/sysenv.go
-func Workdir() string
-func LoginUser() *user.User
-func UserHomeDir() string
-func UHomeDir() string
-func HomeDir() string
-func ExpandPath(path string) string
-func UserDir(subPath string) string
-func UserCacheDir(subPath string) string
-func UserConfigDir(subPath string) string
 func Hostname() string
 func IsWin() bool
 func IsWindows() bool
@@ -566,9 +567,25 @@ func StdIsTerminal() bool
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
 func IsShellSpecialVar(c uint8) bool
+// source at sysutil/sysutil.go
+func Workdir() string
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool
+// source at sysutil/user.go
+func MustFindUser(uname string) *user.User
+func LoginUser() *user.User
+func CurrentUser() *user.User
+func UserHomeDir() string
+func UHomeDir() string
+func HomeDir() string
+func UserDir(subPath string) string
+func UserCacheDir(subPath string) string
+func UserConfigDir(subPath string) string
+func ExpandPath(path string) string
+// source at sysutil/user_nonwin.go
+func ChangeUserByName(newUname string) (err error)
+func ChangeUserUidGid(newUid int, newGid int) (err error)
 ```
 
 ### Testing

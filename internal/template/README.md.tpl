@@ -9,18 +9,19 @@
 
 💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
 
-- `arrutil` array/slice util functions
+- `arrutil` Array/Slice util functions. eg: check, convert
 - `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
-- `cliutil` CLI util functions
-- `envutil` ENV util for check current runtime env information
-- `fmtutil` format data util functions
-- `fsutil` filesystem util functions
-- `jsonutil` JSON util functions
-- `maputil` map util functions
-- `mathutil` math util functions
+- `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
+- `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
+- `fmtutil` Format data util functions
+- `fsutil` filesystem util functions. eg: file and dir check, operate
+- `jsonutil` JSON util functions.
+- `maputil` map util functions. eg: convert, sub-value get, simple merge
+- `mathutil` math util functions. eg: convert, math calc, random
 - `netutil` network util functions
-- `strutil` string util functions
-- `testutil` test help util functions
+- `strutil` string util functions. eg: bytes, check, convert, encode, format and more
+- `sysutil` system util functions. eg: sysenv, exec, user, process
+- `testutil` test help util functions. eg: http test, mock ENV value
 
 > **[中文说明](README.zh-CN.md)**
 
