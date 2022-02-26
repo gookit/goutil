@@ -68,7 +68,7 @@ func FilterEmail(s string) string {
  *************************************************************/
 
 // SplitValid string to slice. will filter empty string node.
-func SplitValid(s, sep string) (ss []string) { return Split(s, sep)}
+func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 
 // Split string to slice. will filter empty string node.
 func Split(s, sep string) (ss []string) {
@@ -85,7 +85,7 @@ func Split(s, sep string) (ss []string) {
 }
 
 // SplitNValid string to slice. will filter empty string node.
-func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n)}
+func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
 
 // SplitN string to slice. will filter empty string node.
 func SplitN(s, sep string, n int) (ss []string) {
@@ -120,7 +120,6 @@ func SplitTrimmed(s, sep string) (ss []string) {
 	return
 }
 
-
 // SplitNTrimmed split string to slice.
 // will trim space for each node, but not filter empty
 func SplitNTrimmed(s, sep string, n int) (ss []string) {
@@ -135,21 +134,24 @@ func SplitNTrimmed(s, sep string, n int) (ss []string) {
 }
 
 // Substr for a string.
+// if length <= 0, return pos to end.
 func Substr(s string, pos, length int) string {
 	runes := []rune(s)
-	strLen := len(runes)
+	strLn := len(runes)
 
-	// pos is to large
-	if pos >= strLen {
+	// pos is too large
+	if pos >= strLn {
 		return ""
 	}
 
-	l := pos + length
-	if l > strLen {
-		l = strLen
+	stopIdx := pos + length
+	if length == 0 || stopIdx > strLn {
+		stopIdx = strLn
+	} else if length < 0 {
+		stopIdx = strLn + length
 	}
 
-	return string(runes[pos:l])
+	return string(runes[pos:stopIdx])
 }
 
 // Padding a string.
@@ -187,7 +189,7 @@ func PadRight(s, pad string, length int) string {
 	return Padding(s, pad, length, PosRight)
 }
 
-// Repeat repeat a string
+// Repeat a string
 func Repeat(s string, times int) string {
 	if times < 2 {
 		return s
@@ -233,8 +235,7 @@ func Replaces(str string, pairs map[string]string) string {
 }
 
 // PrettyJSON get pretty Json string
-// Deprecated
-//  please use fmtutil.PrettyJSON() or jsonutil.Pretty() instead it
+// Deprecated: please use fmtutil.PrettyJSON() or jsonutil.Pretty() instead it
 func PrettyJSON(v interface{}) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
@@ -254,7 +255,7 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 			return s
 		},
 		"trim": func(s string) string {
-			return strings.TrimSpace(string(s))
+			return strings.TrimSpace(s)
 		},
 		// join strings
 		"join": func(ss []string, sep string) string {

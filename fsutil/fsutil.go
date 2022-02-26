@@ -14,14 +14,16 @@ const (
 	MimeSniffLen = 512
 )
 
-// OSTempFile create an temp file on os.TempDir()
+// OSTempFile create a temp file on os.TempDir()
+//
 // Usage:
 // 	fsutil.OSTempFile("example.*.txt")
 func OSTempFile(pattern string) (*os.File, error) {
 	return ioutil.TempFile(os.TempDir(), pattern)
 }
 
-// TempFile is alias of ioutil.TempFile
+// TempFile is like ioutil.TempFile, but can custom temp dir.
+//
 // Usage:
 // 	fsutil.TempFile("", "example.*.txt")
 func TempFile(dir, pattern string) (*os.File, error) {
@@ -29,15 +31,17 @@ func TempFile(dir, pattern string) (*os.File, error) {
 }
 
 // OSTempDir creates a new temp dir on os.TempDir and return the temp dir path
+//
 // Usage:
-// 	fsutil.OSTempDir("example.*.txt")
+// 	fsutil.OSTempDir("example.*")
 func OSTempDir(pattern string) (string, error) {
 	return ioutil.TempDir(os.TempDir(), pattern)
 }
 
 // TempDir creates a new temp dir and return the temp dir path
+//
 // Usage:
-// 	fsutil.TempDir("", "example.*.txt")
+// 	fsutil.TempDir("", "example.*")
 func TempDir(dir, pattern string) (string, error) {
 	return ioutil.TempDir(dir, pattern)
 }
@@ -49,7 +53,7 @@ func ExpandPath(path string) string {
 }
 
 // Realpath parse and get
-func Realpath(path string) string  {
+func Realpath(path string) string {
 	// TODO
 	return path
 }
@@ -69,6 +73,7 @@ func MimeType(path string) (mime string) {
 }
 
 // ReaderMimeType get the io.Reader mimeType
+//
 // Usage:
 // 	file, err := os.Open(filepath)
 // 	if err != nil {

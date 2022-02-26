@@ -1,6 +1,6 @@
 module github.com/gookit/goutil
 
-go 1.13
+go 1.14
 
 require (
 	github.com/gookit/color v1.5.0
