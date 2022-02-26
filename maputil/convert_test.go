@@ -22,3 +22,11 @@ func TestToStringMap(t *testing.T) {
 	assert.Equal(t, ret["a"], "v0")
 	assert.Equal(t, ret["b"], "23")
 }
+
+func TestToString(t *testing.T) {
+	src := map[string]interface{}{"a": "v0", "b": 23}
+
+	s := maputil.ToString(src)
+	// dump.P(s)
+	assert.Equal(t, "{a:v0,b:23,}", s)
+}

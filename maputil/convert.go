@@ -36,3 +36,21 @@ func HttpQueryString(data map[string]interface{}) string {
 
 	return strings.Join(ss, "&")
 }
+
+// ToString simple and fastly convert map[string]interface{} to string.
+func ToString(mp map[string]interface{}) string {
+	buf := make([]byte, 0, len(mp)*16)
+	buf = append(buf, '{')
+
+	for k, val := range mp {
+		buf = append(buf, k...)
+		buf = append(buf, ':')
+
+		str, _ := strutil.AnyToString(val, false)
+		buf = append(buf, str...)
+		buf = append(buf, ',')
+	}
+
+	buf = append(buf, '}')
+	return strutil.Byte2str(buf)
+}
