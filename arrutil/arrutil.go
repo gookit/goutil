@@ -37,7 +37,12 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 
 	for _, str := range ss {
 		if hasCutSet {
-			ns = append(ns, strings.Trim(str, cutSet[0]))
+			for i := 0; i < len(cutSet); i++ {
+				if str == cutSet[i] {
+					str = strings.Trim(str, cutSet[i])
+				}
+			}
+			ns = append(ns, str)
 		} else {
 			ns = append(ns, strings.TrimSpace(str))
 		}
