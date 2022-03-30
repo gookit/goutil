@@ -6,6 +6,8 @@ import (
 	"io"
 	"net/http"
 	"strings"
+
+	"github.com/gookit/goutil/netutil/httpctype"
 )
 
 // HttpReq an simple http requester.
@@ -84,6 +86,13 @@ func (h *HttpReq) WithBody(r io.Reader) *HttpReq {
 // BytesBody with custom bytes body
 func (h *HttpReq) BytesBody(bs []byte) *HttpReq {
 	h.body = bytes.NewReader(bs)
+	return h
+}
+
+// JSONBytesBody with custom bytes body, and set JSON content type
+func (h *HttpReq) JSONBytesBody(bs []byte) *HttpReq {
+	h.body = bytes.NewReader(bs)
+	h.ContentType(httpctype.JSON)
 	return h
 }
 

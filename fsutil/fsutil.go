@@ -14,6 +14,11 @@ const (
 	MimeSniffLen = 512
 )
 
+// DiscardReader anything from the reader
+func DiscardReader(src io.Reader) {
+	_, _ = io.Copy(io.Discard, src)
+}
+
 // OSTempFile create an temp file on os.TempDir()
 // Usage:
 // 	fsutil.OSTempFile("example.*.txt")
@@ -49,7 +54,7 @@ func ExpandPath(path string) string {
 }
 
 // Realpath parse and get
-func Realpath(path string) string  {
+func Realpath(path string) string {
 	// TODO
 	return path
 }

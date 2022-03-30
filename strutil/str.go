@@ -20,7 +20,17 @@ func (s Str) Bytes() []byte {
 	return []byte(s)
 }
 
+// Get string
+func (s Str) Get() string {
+	return string(s)
+}
+
 // String string
 func (s Str) String() string {
 	return string(s)
+}
+
+// TrimSpace string
+func (s Str) TrimSpace() Str {
+	return Str(strings.TrimSpace(string(s)))
 }
