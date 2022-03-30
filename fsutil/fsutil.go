@@ -14,17 +14,13 @@ const (
 	MimeSniffLen = 512
 )
 
-<<<<<<< HEAD
 // DiscardReader anything from the reader
 func DiscardReader(src io.Reader) {
 	_, _ = io.Copy(io.Discard, src)
 }
 
-// OSTempFile create an temp file on os.TempDir()
-=======
 // OSTempFile create a temp file on os.TempDir()
 //
->>>>>>> fef1127a01f275f11dc10724f33a54c521cc4482
 // Usage:
 // 	fsutil.OSTempFile("example.*.txt")
 func OSTempFile(pattern string) (*os.File, error) {
