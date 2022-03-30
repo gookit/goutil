@@ -231,7 +231,7 @@ func (d *Dumper) printOne(v interface{}) {
 
 func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	// var isPtr bool
-	// if is an ptr, get real type and value
+	// if is a ptr, get real type and value
 	if t.Kind() == reflect.Ptr {
 		if v.IsNil() {
 			d.printf("%s<nil>,\n", t.String())
@@ -248,12 +248,18 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.indentPrint(t.String(), "<nil>, #invalid\n")
 	}
 
+	// if v.CanAddr() && !d.checkCyclicRef(t, v) {
+	// 	return // don't print v again
+	// }
+
 	if d.curDepth > d.MaxDepth {
-		if !v.CanInterface() {
-			d.printf("%s,\n", v.String())
-		} else {
-			d.printf("%#v,\n", v.Interface())
-		}
+		// if !v.CanInterface() {
+		// 	d.printf("%s,\n", v.String())
+		// } else {
+		// 	// v.Interface() will stack overflow on cyclic refer
+		// 	d.printf("%#v,\n", v.Interface())
+		// }
+		d.printf("%s(!OVER MAX DEPTH!),\n", v.String())
 		return
 	}
 
@@ -277,6 +283,10 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Complex64, reflect.Complex128:
 		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
+		if v.CanAddr() && !d.checkCyclicRef(t, v) {
+			break // don't print v again
+		}
+
 		eleNum := v.Len()
 		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum))
 
@@ -296,14 +306,8 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		d.indentPrint("],\n")
 	case reflect.Struct:
-		if v.CanAddr() {
-			addr := v.UnsafeAddr()
-			vis := visit{addr, t}
-			if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
-				d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
-				break // don't print v again
-			}
-			d.visited[vis] = d.curDepth
+		if v.CanAddr() && !d.checkCyclicRef(t, v) {
+			break // don't print v again
 		}
 
 		d.indentPrint(d.ColorTheme.msType(t.String()), " {\n")
@@ -342,6 +346,11 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 				d.printf("%#v: ", key.Interface())
 			}
 
+			if mv.CanAddr() && !d.checkCyclicRef(mv.Type(), mv) {
+				d.advance(-1)
+				continue // don't print mv again
+			}
+
 			// print field value
 			d.msValue = true
 			d.printRValue(mv.Type(), mv)
@@ -352,6 +361,10 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		d.indentPrint("},\n")
 	case reflect.Interface:
+		if v.CanAddr() && !d.checkCyclicRef(t, v) {
+			break // don't print v again
+		}
+
 		switch e := v.Elem(); {
 		case e.Kind() == reflect.Invalid:
 			d.indentPrint("nil,\n")
@@ -371,12 +384,30 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Invalid:
 		d.indentPrint(t.String(), "(nil),\n")
 	default:
+		if v.CanAddr() && !d.checkCyclicRef(t, v) {
+			break // don't print v again
+		}
+
 		if v.CanInterface() {
 			d.printf("%s(%#v),\n", t.String(), v.Interface())
 		} else {
 			d.printf("%s(%v),\n", t.String(), v.String())
 		}
 	}
+}
+
+func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
+	addr := v.UnsafeAddr()
+	vis := visit{addr, t}
+
+	if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
+		d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
+		return false // don't print v again
+	}
+
+	// record
+	d.visited[vis] = d.curDepth
+	return true
 }
 
 func (d *Dumper) print(v ...interface{}) {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gookit/color"
 	"github.com/stretchr/testify/assert"
@@ -291,6 +292,44 @@ func TestFormat(t *testing.T) {
 
 	assert.NotEmpty(t, s)
 	fmt.Println(s)
+}
+
+func TestPrint_over_max_depth(t *testing.T) {
+	a := map[string]interface{}{}
+	a["circular"] = map[string]interface{}{
+		"a": a,
+	}
+
+	// TIP: will stack overflow
+	// fmt.Println(a)
+
+	P(a)
+	s := Format(a)
+	assert.NotEmpty(t, s)
+	assert.Contains(t, s, "!OVER MAX DEPTH!")
+}
+
+func TestPrint_cyclic_slice(t *testing.T) {
+	a := map[string]interface{}{
+		"bool":   true,
+		"number": 1 + 1i,
+		"bytes":  []byte{97, 98, 99},
+		"lines":  "first line\nsecond line",
+		"slice":  []interface{}{1, 2},
+		"time":   time.Now(),
+		"struct": struct{ test int32 }{
+			test: 13,
+		},
+	}
+	a["slice"].([]interface{})[1] = a["slice"]
+
+	// TIP: will stack overflow
+	// fmt.Println(a)
+
+	P(a)
+	s := Format(a)
+	assert.NotEmpty(t, s)
+	assert.Contains(t, s, "!CYCLIC REFERENCE!")
 }
 
 func newBuffer() *bytes.Buffer {
