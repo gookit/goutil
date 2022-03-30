@@ -9,11 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"text/scanner"
-
-	"github.com/json-iterator/go"
 )
-
-var parser = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // WriteFile write data to JSON file
 func WriteFile(filePath string, data interface{}) error {
@@ -37,12 +33,12 @@ func ReadFile(filePath string, v interface{}) error {
 
 // Encode data to json bytes. use it instead of json.Marshal
 func Encode(v interface{}) ([]byte, error) {
-	return parser.Marshal(v)
+	return json.Marshal(v)
 }
 
 // Decode json bytes to data. use it instead of json.Unmarshal
-func Decode(json []byte, ptr interface{}) error {
-	return parser.Unmarshal(json, ptr)
+func Decode(bts []byte, ptr interface{}) error {
+	return json.Unmarshal(bts, ptr)
 }
 
 // DecodeReader decode JSON from io reader.
