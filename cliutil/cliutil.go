@@ -2,6 +2,9 @@
 package cliutil
 
 import (
+	"os"
+	"path"
+
 	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/gookit/goutil/sysutil"
 )
@@ -74,4 +77,21 @@ func CurrentShell(onlyName bool) (path string) {
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	return sysutil.HasShellEnv(shell)
+}
+
+// Workdir get
+func Workdir() string {
+	dir, _ := os.Getwd()
+	return dir
+}
+
+// BinDir get
+func BinDir() string {
+	binFile := os.Args[0]
+	return path.Dir(binFile)
+}
+
+// BinFile get
+func BinFile() string {
+	return os.Args[0]
 }

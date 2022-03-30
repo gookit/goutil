@@ -86,6 +86,7 @@ func QuickOpenFile(filepath string) (*os.File, error) {
 /* TODO MustOpenFile() */
 
 // CreateFile create file if not exists
+//
 // Usage:
 // 	CreateFile("path/to/file.txt", 0664, 0666)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {

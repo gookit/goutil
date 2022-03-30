@@ -40,3 +40,7 @@ func TestDiscardReader(t *testing.T) {
 // func TestDir(t *testing.T) {
 //
 // }
+
+func TestTempDir(t *testing.T) {
+
+}
