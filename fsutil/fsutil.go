@@ -16,7 +16,7 @@ const (
 
 // DiscardReader anything from the reader
 func DiscardReader(src io.Reader) {
-	_, _ = io.Copy(io.Discard, src)
+	_, _ = io.Copy(ioutil.Discard, src)
 }
 
 // OSTempFile create a temp file on os.TempDir()
