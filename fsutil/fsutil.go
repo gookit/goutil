@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path"
 
 	"github.com/mitchellh/go-homedir"
 )
@@ -57,10 +58,9 @@ func ExpandPath(path string) string {
 	return path
 }
 
-// Realpath parse and get
-func Realpath(path string) string {
-	// TODO
-	return path
+// Realpath returns the shortest path name equivalent to path by purely lexical processing.
+func Realpath(pathStr string) string {
+	return path.Clean(pathStr)
 }
 
 // MimeType get File Mime Type name. eg "image/png"

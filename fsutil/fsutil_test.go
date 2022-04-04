@@ -44,3 +44,7 @@ func TestDiscardReader(t *testing.T) {
 func TestTempDir(t *testing.T) {
 
 }
+
+func TestRealpath(t *testing.T) {
+	assert.Equal(t, "/path/to/dir", fsutil.Realpath("/path/to/some/../dir"))
+}
