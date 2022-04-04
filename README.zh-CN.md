@@ -79,6 +79,9 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
+func Workdir() string
+func BinDir() string
+func BinFile() string
 // source at cliutil/read.go
 func ReadInput(question string) (string, error)
 func ReadLine(question string) (string, error)
@@ -223,6 +226,15 @@ func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
 
+### Errox
+
+> Package `github.com/gookit/goutil/errox`
+
+```go
+// source at errox/errox.go
+func New()
+```
+
 ### Formatting
 
 > Package `github.com/gookit/goutil/fmtutil`
@@ -267,12 +279,13 @@ func RegexFilterFunc(pattern string, include bool) FileFilterFunc
 func DotDirFilterFunc(include bool) DirFilterFunc
 func DirNameFilterFunc(names []string, include bool) DirFilterFunc
 // source at fsutil/fsutil.go
+func DiscardReader(src io.Reader)
 func OSTempFile(pattern string) (*os.File, error)
 func TempFile(dir, pattern string) (*os.File, error)
 func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
 func ExpandPath(path string) string
-func Realpath(path string) string
+func Realpath(pathStr string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 // source at fsutil/operate.go
@@ -340,7 +353,7 @@ func main() {
 func WriteFile(filePath string, data interface{}) error
 func ReadFile(filePath string, v interface{}) error
 func Encode(v interface{}) ([]byte, error)
-func Decode(json []byte, ptr interface{}) error
+func Decode(bts []byte, ptr interface{}) error
 func DecodeReader(r io.Reader, ptr interface{}) error
 func Pretty(v interface{}) (string, error)
 func StripComments(src string) string
@@ -355,6 +368,7 @@ func StripComments(src string) string
 func KeyToLower(src map[string]string) map[string]string
 func ToStringMap(src map[string]interface{}) map[string]string
 func HttpQueryString(data map[string]interface{}) string
+func ToString(mp map[string]interface{}) string
 // source at maputil/maputil.go
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
@@ -380,7 +394,13 @@ func MustInt64(in interface{}) int64
 func ToInt64(in interface{}) (i64 int64, err error)
 func Float(in interface{}) (float64, error)
 func ToFloat(in interface{}) (f64 float64, err error)
+func FloatOrPanic(in interface{}) float64
 func MustFloat(in interface{}) float64
+func TryToString(val interface{}, defaultAsErr bool) (str string, err error)
+func StringOrPanic(val interface{}) string
+func MustString(val interface{}) string
+func ToString(val interface{}) (string, error)
+func String(val interface{}) string
 // source at mathutil/number.go
 func IsNumeric(c byte) bool
 func Percent(val, total int) float64
@@ -389,6 +409,13 @@ func DataSize(size uint64) string
 func HowLongAgo(sec int64) string
 // source at mathutil/random.go
 func RandomInt(min, max int) int
+```
+
+### Num
+
+> Package `github.com/gookit/goutil/numutil`
+
+```go
 ```
 
 ### Std
@@ -493,12 +520,23 @@ func Base64(str string) string
 func B64Encode(str string) string
 func URLEncode(s string) string
 func URLDecode(s string) string
+// source at strutil/filter.go
+func Trim(s string, cutSet ...string) string
+func Ltrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
+func LTrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
+func TrimLeft(s string, cutSet ...string) string
+func Rtrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
+func RTrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
+func TrimRight(s string, cutSet ...string) string
+func FilterEmail(s string) string
 // source at strutil/find_similar.go
 func NewComparator(src, dst string) *SimilarComparator
 func Similarity(s, t string, rate float32) (float32, bool)
 // source at strutil/format.go
-func Lowercase(s string) string
-func Uppercase(s string) string
+func Lower(s string) string { return strings.ToLower(s) }
+func Lowercase(s string) string { return strings.ToLower(s) }
+func Upper(s string) string { return strings.ToUpper(s) }
+func Uppercase(s string) string { return strings.ToUpper(s) }
 func UpperWord(s string) string
 func LowerFirst(s string) string
 func UpperFirst(s string) string
@@ -518,13 +556,9 @@ func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
 // source at strutil/strutil.go
-func Trim(s string, cutSet ...string) string
-func TrimLeft(s string, cutSet ...string) string
-func TrimRight(s string, cutSet ...string) string
-func FilterEmail(s string) string
-func SplitValid(s, sep string) (ss []string) { return Split(s, sep)}
+func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 func Split(s, sep string) (ss []string)
-func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n)}
+func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
 func SplitN(s, sep string, n int) (ss []string)
 func SplitTrimmed(s, sep string) (ss []string)
 func SplitNTrimmed(s, sep string, n int) (ss []string)
@@ -569,6 +603,8 @@ func HasShellEnv(shell string) bool
 func IsShellSpecialVar(c uint8) bool
 // source at sysutil/sysutil.go
 func Workdir() string
+func BinDir() string
+func BinFile() string
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool
