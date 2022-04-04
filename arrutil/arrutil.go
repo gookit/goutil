@@ -19,9 +19,9 @@ func Reverse(ss []string) {
 	}
 }
 
-// StringsRemove a value form an string slice
+// StringsRemove a value form a string slice
 func StringsRemove(ss []string, s string) []string {
-	var ns []string
+	ns := make([]string, 0, len(ss))
 	for _, v := range ss {
 		if v != s {
 			ns = append(ns, v)
@@ -32,12 +32,25 @@ func StringsRemove(ss []string, s string) []string {
 }
 
 // TrimStrings trim string slice item.
+//
+// Usage:
+//	// output: [a, b, c]
+// 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
 func TrimStrings(ss []string, cutSet ...string) (ns []string) {
-	hasCutSet := len(cutSet) > 0 && cutSet[0] != ""
+	cutSetLn := len(cutSet)
+	hasCutSet := cutSetLn > 0 && cutSet[0] != ""
+
+	var trimSet string
+	if hasCutSet {
+		trimSet = cutSet[0]
+	}
+	if cutSetLn > 1 {
+		trimSet = strings.Join(cutSet, "")
+	}
 
 	for _, str := range ss {
 		if hasCutSet {
-			ns = append(ns, strings.Trim(str, cutSet[0]))
+			ns = append(ns, strings.Trim(str, trimSet))
 		} else {
 			ns = append(ns, strings.TrimSpace(str))
 		}
@@ -54,6 +67,5 @@ func GetRandomOne(arr interface{}) interface{} {
 
 	i := mathutil.RandomInt(0, rv.Len())
 	r := rv.Index(i).Interface()
-
 	return r
 }

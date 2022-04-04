@@ -12,16 +12,16 @@ func TestReverse(t *testing.T) {
 	ss := []string{"a", "b", "c"}
 
 	arrutil.Reverse(ss)
-
 	assert.Equal(t, []string{"c", "b", "a"}, ss)
 }
 
 func TestStringsRemove(t *testing.T) {
 	ss := []string{"a", "b", "c"}
-
 	ns := arrutil.StringsRemove(ss, "b")
+
 	assert.Contains(t, ns, "a")
 	assert.NotContains(t, ns, "b")
+	assert.Len(t, ns, 2)
 }
 
 func TestTrimStrings(t *testing.T) {
@@ -31,6 +31,8 @@ func TestTrimStrings(t *testing.T) {
 	ss := arrutil.TrimStrings([]string{" a", "b ", " c "})
 	is.Equal("[a b c]", fmt.Sprint(ss))
 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
+	is.Equal("[a b c]", fmt.Sprint(ss))
+	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",", ".")
 	is.Equal("[a b c]", fmt.Sprint(ss))
 }
 
