@@ -6,10 +6,8 @@ import (
 	"unicode"
 )
 
-// Some alias methods.
+// Title Some alias methods.
 var (
-	Lower = strings.ToLower
-	Upper = strings.ToUpper
 	Title = strings.ToTitle
 )
 
@@ -17,15 +15,17 @@ var (
  * change string case
  *************************************************************/
 
+// Lower alias of the strings.ToLower()
+func Lower(s string) string { return strings.ToLower(s) }
+
 // Lowercase alias of the strings.ToLower()
-func Lowercase(s string) string {
-	return strings.ToLower(s)
-}
+func Lowercase(s string) string { return strings.ToLower(s) }
+
+// Upper alias of the strings.ToUpper()
+func Upper(s string) string { return strings.ToUpper(s) }
 
 // Uppercase alias of the strings.ToUpper()
-func Uppercase(s string) string {
-	return strings.ToUpper(s)
-}
+func Uppercase(s string) string { return strings.ToUpper(s) }
 
 // UpperWord Change the first character of each word to uppercase
 func UpperWord(s string) string {
@@ -90,6 +90,7 @@ func UpperFirst(s string) string {
 	if len(s) == 0 {
 		return s
 	}
+
 	rs := []rune(s)
 	f := rs[0]
 	if 'a' <= f && f <= 'z' {

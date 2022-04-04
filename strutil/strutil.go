@@ -15,37 +15,65 @@ const (
 	PosRight
 )
 
-var (
-	Ltrim = TrimLeft
-	Rtrim = TrimRight
-)
-
 /*************************************************************
  * String filtering
  *************************************************************/
 
-// Trim string
+// Trim string. if cutSet is empty, will trim SPACE.
 func Trim(s string, cutSet ...string) string {
-	if len(cutSet) > 0 && cutSet[0] != "" {
-		return strings.Trim(s, cutSet[0])
+	if ln := len(cutSet); ln > 0 {
+		if ln == 1 {
+			return strings.Trim(s, cutSet[0])
+		}
+
+		for _, subSet := range cutSet {
+			s = strings.Trim(s, subSet)
+		}
+		return s
 	}
 
 	return strings.TrimSpace(s)
 }
 
-// TrimLeft char in the string.
+// Ltrim alias of TrimLeft
+func Ltrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
+
+// LTrim alias of TrimLeft
+func LTrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
+
+// TrimLeft char in the string. if cutSet is empty, will trim SPACE.
 func TrimLeft(s string, cutSet ...string) string {
-	if len(cutSet) > 0 {
-		return strings.TrimLeft(s, cutSet[0])
+	if ln := len(cutSet); ln > 0 {
+		if ln == 1 {
+			return strings.TrimLeft(s, cutSet[0])
+		}
+
+		for _, subSet := range cutSet {
+			s = strings.TrimLeft(s, subSet)
+		}
+		return s
 	}
 
 	return strings.TrimLeft(s, " ")
 }
 
-// TrimRight char in the string.
+// Rtrim alias of TrimRight
+func Rtrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
+
+// RTrim alias of TrimRight
+func RTrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
+
+// TrimRight char in the string. if cutSet is empty, will trim SPACE.
 func TrimRight(s string, cutSet ...string) string {
-	if len(cutSet) > 0 {
-		return strings.TrimRight(s, cutSet[0])
+	if ln := len(cutSet); ln > 0 {
+		if ln == 1 {
+			return strings.TrimRight(s, cutSet[0])
+		}
+
+		for _, subSet := range cutSet {
+			s = strings.TrimRight(s, subSet)
+		}
+		return s
 	}
 
 	return strings.TrimRight(s, " ")

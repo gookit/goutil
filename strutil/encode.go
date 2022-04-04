@@ -14,7 +14,7 @@ var (
 	EscapeHTML = template.HTMLEscapeString
 )
 
-// Base64 base64 encode
+// Base64 encode
 func Base64(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
 }

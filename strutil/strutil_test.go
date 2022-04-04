@@ -28,12 +28,16 @@ func TestTrim(t *testing.T) {
 
 	// TrimLeft
 	is.Equal("abc ", strutil.Ltrim(" abc "))
+	is.Equal("abc ", strutil.LTrim(" abc "))
 	is.Equal("abc ,", strutil.TrimLeft(", abc ,", " ,"))
 	is.Equal("abc ,", strutil.TrimLeft(", abc ,", ", "))
+	is.Equal(" abc ,", strutil.TrimLeft(", abc ,", ","))
 
 	// TrimRight
 	is.Equal(" abc", strutil.Rtrim(" abc "))
+	is.Equal(" abc", strutil.RTrim(" abc "))
 	is.Equal(", abc", strutil.TrimRight(", abc ,", ", "))
+	is.Equal(", abc ", strutil.TrimRight(", abc ,", ","))
 }
 
 func TestURLEnDecode(t *testing.T) {
