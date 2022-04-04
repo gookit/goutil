@@ -1,6 +1,7 @@
 package strutil
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -92,6 +93,10 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		str = value
 	case []byte:
 		str = string(value)
+	case time.Duration:
+		str = value.String()
+	case json.Number:
+		str = value.String()
 	default:
 		if defaultAsErr {
 			err = ErrConvertFail

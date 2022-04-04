@@ -8,53 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTrim(t *testing.T) {
-	is := assert.New(t)
-
-	// Trim
-	tests := map[string]string{
-		"abc ":  "",
-		" abc":  "",
-		" abc ": "",
-		"abc,,": ",",
-		"abc,.": ",.",
-	}
-	for sample, cutSet := range tests {
-		is.Equal("abc", strutil.Trim(sample, cutSet))
-	}
-
-	is.Equal("abc", strutil.Trim("abc,.", ".,"))
-	// is.Equal("", Trim(nil))
-
-	// TrimLeft
-	is.Equal("abc ", strutil.Ltrim(" abc "))
-	is.Equal("abc ", strutil.LTrim(" abc "))
-	is.Equal("abc ,", strutil.TrimLeft(", abc ,", " ,"))
-	is.Equal("abc ,", strutil.TrimLeft(", abc ,", ", "))
-	is.Equal(" abc ,", strutil.TrimLeft(", abc ,", ","))
-
-	// TrimRight
-	is.Equal(" abc", strutil.Rtrim(" abc "))
-	is.Equal(" abc", strutil.RTrim(" abc "))
-	is.Equal(", abc", strutil.TrimRight(", abc ,", ", "))
-	is.Equal(", abc ", strutil.TrimRight(", abc ,", ","))
-}
-
-func TestURLEnDecode(t *testing.T) {
-	is := assert.New(t)
-
-	is.Equal("a.com/?name%3D%E4%BD%A0%E5%A5%BD", strutil.URLEncode("a.com/?name=你好"))
-	is.Equal("a.com/?name=你好", strutil.URLDecode("a.com/?name%3D%E4%BD%A0%E5%A5%BD"))
-	is.Equal("a.com", strutil.URLEncode("a.com"))
-	is.Equal("a.com", strutil.URLDecode("a.com"))
-}
-
-func TestFilterEmail(t *testing.T) {
-	is := assert.New(t)
-	is.Equal("THE@inhere.com", strutil.FilterEmail("   THE@INHere.com  "))
-	is.Equal("inhere.xyz", strutil.FilterEmail("   inhere.xyz  "))
-}
-
 func TestSimilarity(t *testing.T) {
 	is := assert.New(t)
 	_, ok := strutil.Similarity("hello", "he", 0.3)
