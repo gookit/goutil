@@ -3,6 +3,7 @@ package mathutil
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -11,6 +12,7 @@ import (
 var (
 	// ErrConvertFail convert error
 	ErrConvertFail = errors.New("convert data type is failure")
+	// ErrConvertFail = errors.New("convert data type is failure")
 )
 
 /*************************************************************
@@ -244,8 +246,93 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 	return
 }
 
-// MustFloat convert value to float64
+// FloatOrPanic convert value to float64, will panic on error
+func FloatOrPanic(in interface{}) float64 {
+	val, err := ToFloat(in)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+// MustFloat convert value to float64 TODO will panic on error
 func MustFloat(in interface{}) float64 {
 	val, _ := ToFloat(in)
 	return val
+}
+
+/*************************************************************
+ * convert intX/floatX to string
+ *************************************************************/
+
+// TryToString try convert intX/floatX value to string
+//
+// if defaultAsErr is False, will use fmt.Sprint convert other type
+func TryToString(val interface{}, defaultAsErr bool) (str string, err error) {
+	if val == nil {
+		return
+	}
+
+	switch value := val.(type) {
+	case int:
+		str = strconv.Itoa(value)
+	case int8:
+		str = strconv.Itoa(int(value))
+	case int16:
+		str = strconv.Itoa(int(value))
+	case int32: // same as `rune`
+		str = strconv.Itoa(int(value))
+	case int64:
+		str = strconv.Itoa(int(value))
+	case uint:
+		str = strconv.FormatUint(uint64(value), 10)
+	case uint8:
+		str = strconv.FormatUint(uint64(value), 10)
+	case uint16:
+		str = strconv.FormatUint(uint64(value), 10)
+	case uint32:
+		str = strconv.FormatUint(uint64(value), 10)
+	case uint64:
+		str = strconv.FormatUint(value, 10)
+	case float32:
+		str = strconv.FormatFloat(float64(value), 'f', -1, 32)
+	case float64:
+		str = strconv.FormatFloat(value, 'f', -1, 64)
+	case time.Duration:
+		str = strconv.FormatUint(uint64(value.Nanoseconds()), 10)
+	case json.Number:
+		str = value.String()
+	default:
+		if defaultAsErr {
+			err = ErrConvertFail
+		} else {
+			str = fmt.Sprint(value)
+		}
+	}
+	return
+}
+
+// StringOrPanic convert intX/floatX value to string, will panic on error
+func StringOrPanic(val interface{}) string {
+	str, err := TryToString(val, true)
+	if err != nil {
+		panic(err)
+	}
+	return str
+}
+
+// MustString convert intX/floatX value to string, will panic on error
+func MustString(val interface{}) string {
+	return StringOrPanic(val)
+}
+
+// ToString convert intX/floatX value to string
+func ToString(val interface{}) (string, error) {
+	return TryToString(val, true)
+}
+
+// String convert intX/floatX value to string, other type convert by fmt.Sprint
+func String(val interface{}) string {
+	str, _ := TryToString(val, false)
+	return str
 }
