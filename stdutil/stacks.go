@@ -1,20 +1,27 @@
 package stdutil
 
 import (
-	"fmt"
 	"runtime"
 	"strings"
+
+	"github.com/gookit/goutil/strutil"
+)
+
+var (
+	DefStackLen = 10000
+	MaxStackLen = 100000
 )
 
 // GetCallStacks stacks is a wrapper for runtime.
-// Stack that attempts to recover the data for all goroutines.
+// If all is true, Stack that attempts to recover the data for all goroutines.
+//
 // from glog package
 func GetCallStacks(all bool) []byte {
 	// We don't know how big the traces are, so grow a few times if they don't fit.
 	// Start large, though.
-	n := 10000
+	n := DefStackLen
 	if all {
-		n = 100000
+		n = MaxStackLen
 	}
 
 	// 4<<10 // 4 KB should be enough
@@ -30,8 +37,8 @@ func GetCallStacks(all bool) []byte {
 	return trace
 }
 
-// GetCallersInfo returns an array of strings containing the file and line number
-// of each stack frame leading
+// GetCallersInfo returns an array of strings containing
+// the file and line number of each stack frame leading
 func GetCallersInfo(skip, max int) (callers []string) {
 	var (
 		pc   uintptr
@@ -59,13 +66,13 @@ func GetCallersInfo(skip, max int) (callers []string) {
 		if f == nil {
 			break
 		}
-		name = f.Name()
 
+		name = f.Name()
 		parts := strings.Split(file, "/")
 		file = parts[len(parts)-1]
 		if len(parts) > 1 {
 			// dir := parts[len(parts)-2]
-			callers = append(callers, fmt.Sprintf("%s %s:%d", name, file, line))
+			callers = append(callers, name+" "+file+":"+strutil.MustString(line))
 		}
 
 		// Drop the package
