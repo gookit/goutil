@@ -57,8 +57,9 @@ func TestToStrings(t *testing.T) {
 func TestStringsToString(t *testing.T) {
 	is := assert.New(t)
 
-	is.Equal("a,b", arrutil.JoinStrings([]string{"a", "b"}, ","))
-	is.Equal("a,b", arrutil.StringsJoin([]string{"a", "b"}, ","))
+	is.Equal("a,b", arrutil.JoinStrings(",", []string{"a", "b"}...))
+	is.Equal("a,b", arrutil.StringsJoin(",", []string{"a", "b"}...))
+	is.Equal("a,b", arrutil.StringsJoin(",", "a", "b"))
 }
 
 func TestSliceToString(t *testing.T) {

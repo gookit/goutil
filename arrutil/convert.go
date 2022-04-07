@@ -14,12 +14,12 @@ import (
 var ErrInvalidType = errors.New("the input param type is invalid")
 
 // JoinStrings alias of strings.Join
-func JoinStrings(ss []string, sep string) string {
+func JoinStrings(sep string, ss ...string) string {
 	return strings.Join(ss, sep)
 }
 
 // StringsJoin alias of strings.Join
-func StringsJoin(ss []string, sep string) string {
+func StringsJoin(sep string, ss ...string) string {
 	return strings.Join(ss, sep)
 }
 
@@ -102,15 +102,16 @@ func SliceToStrings(arr []interface{}) []string {
 
 // ToString convert []interface{} to string
 func ToString(arr []interface{}) string {
-	var b strings.Builder
+	var sb strings.Builder
 	for i, v := range arr {
 		if i > 0 {
-			b.WriteByte(',')
+			sb.WriteByte(',')
 		}
-		b.WriteString(strutil.MustString(v))
+
+		sb.WriteString(strutil.MustString(v))
 	}
 
-	return b.String()
+	return sb.String()
 }
 
 // SliceToString convert []interface{} to string
