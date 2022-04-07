@@ -65,7 +65,8 @@ func TestStringsToString(t *testing.T) {
 func TestSliceToString(t *testing.T) {
 	is := assert.New(t)
 
-	is.Equal("a,b", arrutil.SliceToString("a", "b"))
+	is.Equal("[]", arrutil.SliceToString(nil))
+	is.Equal("[a,b]", arrutil.SliceToString("a", "b"))
 }
 
 func TestStringsToInts(t *testing.T) {
@@ -77,4 +78,10 @@ func TestStringsToInts(t *testing.T) {
 
 	_, err = arrutil.StringsToInts([]string{"a", "b"})
 	is.Error(err)
+}
+
+func TestJoinSlice(t *testing.T) {
+	assert.Equal(t, "", arrutil.JoinSlice(","))
+	assert.Equal(t, "", arrutil.JoinSlice(",", nil))
+	assert.Equal(t, "a,23,b", arrutil.JoinSlice(",", "a", 23, "b"))
 }
