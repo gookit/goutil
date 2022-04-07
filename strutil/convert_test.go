@@ -8,6 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestStringJoin(t *testing.T) {
+	assert.Equal(t, "a:b", strutil.Join(":", "a", "b"))
+	assert.Equal(t, "a:b", strutil.Implode(":", "a", "b"))
+}
+
 func TestStringToBool(t *testing.T) {
 	is := assert.New(t)
 

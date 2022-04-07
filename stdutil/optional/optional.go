@@ -7,10 +7,12 @@ type optional struct {
 	v interface{}
 }
 
+// Of data
 func Of(data interface{}) *optional {
 	return &optional{v: data}
 }
 
+// OfNillable data
 func OfNillable(data interface{}) *optional {
 	if data == nil {
 		return empty
@@ -27,6 +29,7 @@ func (o *optional) Map(fn func(v interface{}) interface{}) *optional {
 	return OfNillable(fn(o.v))
 }
 
+// Get value, will panic on value is nil
 func (o *optional) Get() interface{} {
 	if o.v == nil {
 		panic("nil value")
@@ -35,6 +38,7 @@ func (o *optional) Get() interface{} {
 	return o.v
 }
 
+// OrElse get value.
 func (o *optional) OrElse(v interface{}) interface{} {
 	if o.v == nil {
 		return v
@@ -43,6 +47,7 @@ func (o *optional) OrElse(v interface{}) interface{} {
 	return o.v
 }
 
+// OrElseGet value.
 func (o *optional) OrElseGet(v interface{}) interface{} {
 	if o.v == nil {
 		return v
