@@ -12,11 +12,13 @@ Go一些常用的工具函数收集、实现和整理
 - `arrutil` array/slice 相关操作的函数工具包
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
+- `errorx` 为 go 提供增强的错误实现，允许使用堆栈跟踪和包装另一个错误。
 - `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` format data tool
 - `fsutil` 文件系统操作相关的工具函数包. eg: file and dir check, operate
 - `maputil` map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
-- `mathutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `mathutil`, `numutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
 - `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
 - `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
@@ -47,18 +49,19 @@ func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
 func NotContains(arr, val interface{}) bool
 // source at arrutil/convert.go
-func JoinStrings(ss []string, sep string) string
-func StringsJoin(ss []string, sep string) string
+func JoinStrings(sep string, ss ...string) string
+func StringsJoin(sep string, ss ...string) string
+func StringsToInts(ss []string) (ints []int, err error)
+func MustToStrings(arr interface{}) []string
+func StringsToSlice(strings []string) []interface{}
 func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
 func ToStrings(arr interface{}) (ret []string, err error)
-func MustToStrings(arr interface{}) []string
-func StringsToSlice(strings []string) []interface{}
 func SliceToStrings(arr []interface{}) []string
+func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
-func SliceToString(arr ...interface{}) string
-func StringsToInts(ss []string) (ints []int, err error)
+func JoinSlice(sep string, arr ...interface{}) string
 ```
 
 ### CLI
@@ -226,14 +229,40 @@ func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
 
-### Errox
+### Errorx
 
-> Package `github.com/gookit/goutil/errox`
+> Package `github.com/gookit/goutil/errorx`
 
 ```go
-// source at errox/errox.go
-func New()
+// source at errorx/errorh.go
+func NewH(code int, msg string) ErrorH
+func OkH(msg string) ErrorH
+// source at errorx/usage.go
+func New(msg string) error
+func Newf(tpl string, vars ...interface{}) error
+func Errorf(tpl string, vars ...interface{}) error
+func With(err error, msg string) error
+func WithPrev(err error, msg string) error
+func WithPrevf(err error, tpl string, vars ...interface{}) error
+func WithStack(err error) error
+func Stacked(err error) error
+func WithOptions(msg string, fns ...func(opt *ErrOpt)) error
+func Wrap(err error, msg string) error
+func Wrapf(err error, tpl string, vars ...interface{}) error
+func Cause(err error) error
+func Unwrap(err error) error
+func Previous(err error) error { return Unwrap(err) }
+func Has(err, target error) bool
+func Is(err, target error) bool
+func To(err error, target interface{}) bool
+func As(err error, target interface{}) bool
+func Config(fns ...func(opt *ErrOpt))
+func SkipDepth(skipDepth int) func(opt *ErrOpt)
+func TraceDepth(traceDepth int) func(opt *ErrOpt)
 ```
+
+
+Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
 
 ### Formatting
 
@@ -492,6 +521,8 @@ func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 // source at strutil/convert.go
+func Join(sep string, ss ...string) string
+func Implode(sep string, ss ...string) string
 func String(val interface{}) (string, error)
 func MustString(in interface{}) string
 func ToString(val interface{}) (string, error)

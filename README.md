@@ -12,12 +12,14 @@
 - `arrutil` Array/Slice util functions. eg: check, convert
 - `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
+- `errorx` provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
 - `fsutil` filesystem util functions. eg: file and dir check, operate
 - `jsonutil` JSON util functions.
 - `maputil` map util functions. eg: convert, sub-value get, simple merge
-- `mathutil` math util functions. eg: convert, math calc, random
+- `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
+- `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
 - `netutil` network util functions
 - `strutil` string util functions. eg: bytes, check, convert, encode, format and more
 - `sysutil` system util functions. eg: sysenv, exec, user, process
@@ -49,18 +51,19 @@ func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
 func NotContains(arr, val interface{}) bool
 // source at arrutil/convert.go
-func JoinStrings(ss []string, sep string) string
-func StringsJoin(ss []string, sep string) string
+func JoinStrings(sep string, ss ...string) string
+func StringsJoin(sep string, ss ...string) string
+func StringsToInts(ss []string) (ints []int, err error)
+func MustToStrings(arr interface{}) []string
+func StringsToSlice(strings []string) []interface{}
 func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
 func ToStrings(arr interface{}) (ret []string, err error)
-func MustToStrings(arr interface{}) []string
-func StringsToSlice(strings []string) []interface{}
 func SliceToStrings(arr []interface{}) []string
+func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
-func SliceToString(arr ...interface{}) string
-func StringsToInts(ss []string) (ints []int, err error)
+func JoinSlice(sep string, arr ...interface{}) string
 ```
 
 ### CLI
@@ -228,14 +231,40 @@ func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
 
-### Errox
+### Errorx
 
-> Package `github.com/gookit/goutil/errox`
+> Package `github.com/gookit/goutil/errorx`
 
 ```go
-// source at errox/errox.go
-func New()
+// source at errorx/errorh.go
+func NewH(code int, msg string) ErrorH
+func OkH(msg string) ErrorH
+// source at errorx/usage.go
+func New(msg string) error
+func Newf(tpl string, vars ...interface{}) error
+func Errorf(tpl string, vars ...interface{}) error
+func With(err error, msg string) error
+func WithPrev(err error, msg string) error
+func WithPrevf(err error, tpl string, vars ...interface{}) error
+func WithStack(err error) error
+func Stacked(err error) error
+func WithOptions(msg string, fns ...func(opt *ErrOpt)) error
+func Wrap(err error, msg string) error
+func Wrapf(err error, tpl string, vars ...interface{}) error
+func Cause(err error) error
+func Unwrap(err error) error
+func Previous(err error) error { return Unwrap(err) }
+func Has(err, target error) bool
+func Is(err, target error) bool
+func To(err error, target interface{}) bool
+func As(err error, target interface{}) bool
+func Config(fns ...func(opt *ErrOpt))
+func SkipDepth(skipDepth int) func(opt *ErrOpt)
+func TraceDepth(traceDepth int) func(opt *ErrOpt)
 ```
+
+
+Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
 
 ### Formatting
 
@@ -494,6 +523,8 @@ func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 // source at strutil/convert.go
+func Join(sep string, ss ...string) string
+func Implode(sep string, ss ...string) string
 func String(val interface{}) (string, error)
 func MustString(in interface{}) string
 func ToString(val interface{}) (string, error)

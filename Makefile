@@ -21,8 +21,8 @@ help:
 
 ##Available Commands:
 
-  genrdm:     ## Generate or update README file by ./internal/gendoc
-genrdm:
+  readme:     ## Generate or update README file by ./internal/gendoc
+readme:
 	go run ./internal/gendoc -o README.md
 	go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
 

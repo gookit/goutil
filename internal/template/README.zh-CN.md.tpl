@@ -12,11 +12,13 @@ Go一些常用的工具函数收集、实现和整理
 - `arrutil` array/slice 相关操作的函数工具包
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
+- `errorx` 为 go 提供增强的错误实现，允许使用堆栈跟踪和包装另一个错误。
 - `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` format data tool
 - `fsutil` 文件系统操作相关的工具函数包. eg: file and dir check, operate
 - `maputil` map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
-- `mathutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `mathutil`, `numutil` int/number 相关操作的函数工具包. eg: convert, math calc, random
+- `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
 - `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
 - `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
