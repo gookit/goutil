@@ -1,3 +1,4 @@
+// Package stdutil provide some standard util functions for go.
 package stdutil
 
 import (

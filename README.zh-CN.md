@@ -29,7 +29,7 @@ Go一些常用的工具函数收集、实现和整理
 
 - [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
 
-## Util Packages
+## Packages
 
 ### Array/Slice
 
@@ -137,7 +137,6 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
-
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -151,6 +150,8 @@ func Print(vs ...interface{})
 func Println(vs ...interface{})
 func Fprint(w io.Writer, vs ...interface{})
 func Format(vs ...interface{}) string
+func NoLoc(vs ...interface{})
+func Clear(vs ...interface{})
 // source at dump/dumper.go
 func NewDumper(out io.Writer, skip int) *Dumper
 func NewWithOptions(fn func(opts *Options)) *Dumper
@@ -199,7 +200,6 @@ Preview:
 > source code at `dump/dumper_test.TestStruct_WithNested`
 
 ![](dump/_examples/preview-nested-struct.png)
-
 
 ### ENV
 
@@ -372,7 +372,6 @@ func main() {
 }
 ```
 
-
 ### JSON
 
 > Package `github.com/gookit/goutil/jsonutil`
@@ -440,14 +439,7 @@ func HowLongAgo(sec int64) string
 func RandomInt(min, max int) int
 ```
 
-### Num
-
-> Package `github.com/gookit/goutil/numutil`
-
-```go
-```
-
-### Std
+### Standard
 
 > Package `github.com/gookit/goutil/stdutil`
 
@@ -702,3 +694,5 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
+SE)
+E)

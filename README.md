@@ -12,18 +12,18 @@
 - `arrutil` Array/Slice util functions. eg: check, convert
 - `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
-- `errorx` provide an enhanced error implements for go, allow with stacktraces and wrap another error.
+- `errorx` Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
-- `fsutil` filesystem util functions. eg: file and dir check, operate
+- `fsutil` Filesystem util functions. eg: file and dir check, operate
 - `jsonutil` JSON util functions.
-- `maputil` map util functions. eg: convert, sub-value get, simple merge
+- `maputil` Map data util functions. eg: convert, sub-value get, simple merge
 - `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
-- `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
-- `netutil` network util functions
-- `strutil` string util functions. eg: bytes, check, convert, encode, format and more
-- `sysutil` system util functions. eg: sysenv, exec, user, process
-- `testutil` test help util functions. eg: http test, mock ENV value
+- `netutil` Network util functions
+  - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
+- `strutil` String util functions. eg: bytes, check, convert, encode, format and more
+- `sysutil` System util functions. eg: sysenv, exec, user, process
+- `testutil` Test help util functions. eg: http test, mock ENV value
 
 > **[中文说明](README.zh-CN.md)**
 
@@ -139,7 +139,6 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
-
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -153,6 +152,8 @@ func Print(vs ...interface{})
 func Println(vs ...interface{})
 func Fprint(w io.Writer, vs ...interface{})
 func Format(vs ...interface{}) string
+func NoLoc(vs ...interface{})
+func Clear(vs ...interface{})
 // source at dump/dumper.go
 func NewDumper(out io.Writer, skip int) *Dumper
 func NewWithOptions(fn func(opts *Options)) *Dumper
@@ -201,7 +202,6 @@ Preview:
 > source code at `dump/dumper_test.TestStruct_WithNested`
 
 ![](dump/_examples/preview-nested-struct.png)
-
 
 ### ENV
 
@@ -374,7 +374,6 @@ func main() {
 }
 ```
 
-
 ### JSON
 
 > Package `github.com/gookit/goutil/jsonutil`
@@ -442,14 +441,7 @@ func HowLongAgo(sec int64) string
 func RandomInt(min, max int) int
 ```
 
-### Num
-
-> Package `github.com/gookit/goutil/numutil`
-
-```go
-```
-
-### Std
+### Standard
 
 > Package `github.com/gookit/goutil/stdutil`
 
@@ -704,3 +696,4 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
+SE)

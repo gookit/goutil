@@ -29,7 +29,7 @@ Go一些常用的工具函数收集、实现和整理
 
 - [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
 
-## Util Packages
+## Packages
 {{pgkFuncs}}
 ## Code Check & Testing
 

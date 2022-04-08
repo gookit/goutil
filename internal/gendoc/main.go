@@ -14,12 +14,17 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/strutil"
 )
 
 var (
-	hidden  = []string{"netutil", "internal"}
+	hidden = []string{
+		"netutil",
+		"numutil",
+		"internal",
+	}
 	nameMap = map[string]string{
 		"arr":     "array/Slice",
 		"str":     "string",
@@ -33,6 +38,7 @@ var (
 		"json":    "JSON",
 		"cli":     "CLI",
 		"env":     "ENV",
+		"std":     "standard",
 	}
 
 	pkgDesc = map[string]map[string]string{
@@ -72,7 +78,12 @@ func (o genOptsSt) tplFilepath(givePath string) string {
 	return path.Join(o.tplDir, o.tplFilename())
 }
 
-var genOpts = genOptsSt{}
+var (
+	genOpts = genOptsSt{}
+	// collected sub package names.
+	// short name => full name.
+	pkgNames = make(map[string]string, 16)
+)
 
 func bindingFlags() {
 	flag.StringVar(&genOpts.lang, "l", "en", "package desc message language. allow: en, zh-CN")
@@ -89,14 +100,12 @@ func bindingFlags() {
 
 	flag.Usage = func() {
 		color.Info.Println("Collect and dump all exported functions for goutil\n")
-		// fmt.Println()
 
 		color.Comment.Println("Options:")
 		flag.PrintDefaults()
 
 		color.Comment.Println("Example:")
-		fmt.Println(`
-  go run ./internal/gendoc -o stdout
+		fmt.Println(`  go run ./internal/gendoc -o stdout
   go run ./internal/gendoc -o stdout -l zh-CN
   go run ./internal/gendoc -o README.md
   go run ./internal/gendoc -o README.zh-CN.md -l zh-CN`)
@@ -149,6 +158,9 @@ func main() {
 
 	goutil.PanicIfErr(err)
 
+	color.Cyanln("Collected packages:")
+	dump.Clear(pkgNames)
+
 	if toFile {
 		color.Info.Println("OK. write result to the", genOpts.output)
 	}
@@ -175,13 +187,15 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		}
 
 		idx := strings.IndexRune(filename, '/')
-		dir := filename[:idx]
+		dir := filename[:idx] // sub pkg name.
 
 		if arrutil.StringsHas(hidden, dir) {
 			continue
 		}
 
 		pkgPath := basePkg + "/" + dir
+		pkgNames[dir] = pkgPath
+
 		if ss, ok := pkgFuncs[pkgPath]; ok {
 			pkgFuncs[pkgPath] = append(ss, "added")
 		} else {
@@ -193,8 +207,8 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 				// color.Infoln("- try read part readme from", partReadme)
 				partBody := fsutil.ReadExistFile(partReadme)
 				if len(partBody) > 0 {
-					color.Infoln("- find and inject part doc for the package:", name)
-					bufWriteln(buf, string(partBody))
+					color.Infoln("- find and inject doc for the package:", name)
+					buf.Write(partBody)
 				}
 			}
 
