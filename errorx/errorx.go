@@ -1,7 +1,5 @@
-// Package errorx provide an enhanced error implements,
-// allow with call stack and wrap another error.
-//
-// refer there are packages: errgo.v2, pkg/errors, joomcode/errorx
+// Package errorx provide an enhanced error implements for go,
+// allow with stacktraces and wrap another error.
 package errorx
 
 import (
@@ -10,22 +8,53 @@ import (
 	"strings"
 )
 
-// Causer interface
+// Causer interface for get first cause error
 type Causer interface {
+	// Cause returns the first cause error by call err.Cause().
+	// Otherwise, will returns current error.
 	Cause() error
 }
 
+// Unwrapper interface for get previous error
+type Unwrapper interface {
+	// Unwrap returns previous error by call err.Unwrap().
+	// Otherwise, will returns nil.
+	Unwrap() error
+}
+
+// ErrorX interface
+type ErrorX interface {
+	error
+	Causer
+	Unwrapper
+}
+
+/*************************************************************
+ * implements ErrorX interface
+ *************************************************************/
+
 // errorX struct
 type errorX struct {
-	prev error
-	msg  string
-
 	// trace stack
 	*stack
+	prev error
+	msg  string
 }
 
 // Cause implements Causer.
 func (e *errorX) Cause() error {
+	if e.prev == nil {
+		return e
+	}
+
+	if ex, ok := e.prev.(*errorX); ok {
+		return ex.Cause()
+	}
+	return e.prev
+}
+
+// Unwrap implements Unwrapper.
+func (e *errorX) Unwrap() error {
 	return e.prev
 }
 
@@ -62,7 +91,7 @@ func (e *errorX) String() string {
 func (e *errorX) Error() string {
 	msg := e.msg
 	if e.stack != nil {
-		msg = msg + "\nTRACE:\n" + e.stack.TraceString()
+		msg = msg + e.stack.String()
 	}
 
 	return msg

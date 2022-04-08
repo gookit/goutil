@@ -17,11 +17,6 @@ func (s *stack) Format(fs fmt.State, verb rune) {
 	switch verb {
 	case 'v', 's':
 		_, _ = s.WriteTo(fs)
-		// case 'v':
-		// 	switch {
-		// 	case fs.Flag('+'):
-		// 		_, _ = s.WriteTo(fs)
-		// 	}
 	}
 }
 
@@ -32,6 +27,10 @@ func (s *stack) StackLen() int {
 
 // WriteTo for error
 func (s *stack) WriteTo(w io.Writer) (int64, error) {
+	if len(*s) == 0 {
+		return 0, nil
+	}
+
 	nn, _ := w.Write([]byte("\nSTACK:\n"))
 	for _, pc := range *s {
 		// For historical reasons if pc is interpreted as a uintptr
@@ -51,8 +50,8 @@ func (s *stack) WriteTo(w io.Writer) (int64, error) {
 	return int64(nn), nil
 }
 
-// TraceString string format
-func (s *stack) TraceString() string {
+// String format to string
+func (s *stack) String() string {
 	var sb *strings.Builder
 	_, _ = s.WriteTo(sb)
 	return sb.String()
@@ -66,6 +65,8 @@ func (s *stack) StackTrace() *runtime.Frames {
 // Location for error report
 func (s *stack) Location() (file string, line int) {
 	if len(*s) > 0 {
+		// For historical reasons if pc is interpreted as a uintptr
+		// its value represents the program counter + 1.
 		pc := (*s)[0] - 1
 		f := runtime.FuncForPC(pc)
 
