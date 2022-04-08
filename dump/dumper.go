@@ -73,7 +73,6 @@ func NewDumper(out io.Writer, skip int) *Dumper {
 func NewWithOptions(fn func(opts *Options)) *Dumper {
 	d := NewDumper(os.Stdout, 3)
 	fn(d.Options)
-
 	return d
 }
 
@@ -139,11 +138,11 @@ func (d *Dumper) Println(vs ...interface{}) {
 
 // Fprint print vars to io.Writer
 func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
-	out := d.Output // backup
+	backup := d.Output // backup
 
 	d.Output = w
 	d.dump(vs...)
-	d.Output = out // restore
+	d.Output = backup // restore
 }
 
 // dump go vars
@@ -151,7 +150,9 @@ func (d *Dumper) dump(vs ...interface{}) {
 	// reset some settings.
 	d.curDepth = 0
 	d.visited = make(map[visit]int)
-	if d.NoColor { // clear all theme settings.
+
+	// clear all theme settings.
+	if d.NoColor {
 		d.ColorTheme = make(Theme)
 	}
 
@@ -209,7 +210,6 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 	}
 
 	text := strings.Join(nodes, "")
-
 	d.print(d.ColorTheme.caller(text), "\n")
 }
 

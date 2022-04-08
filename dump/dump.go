@@ -35,6 +35,11 @@ var (
 
 	// std dumper
 	std = NewDumper(os.Stdout, 3)
+	// no location dumper.
+	std2 = NewWithOptions(func(opts *Options) {
+		opts.Output = os.Stdout
+		opts.ShowFlag = Fnopos
+	})
 )
 
 // Theme color code/tag map for dump
@@ -100,10 +105,20 @@ func Fprint(w io.Writer, vs ...interface{}) {
 func Format(vs ...interface{}) string {
 	w := &bytes.Buffer{}
 
-	NewDumper(w, 3).
-		WithOptions(func(opts *Options) {
-			opts.ShowFlag = Fnopos
-		}).
-		Println(vs...)
+	NewWithOptions(func(opts *Options) {
+		opts.Output = w
+		opts.ShowFlag = Fnopos
+	}).Println(vs...)
+
 	return w.String()
+}
+
+// NoLoc dump vars data, without location.
+func NoLoc(vs ...interface{}) {
+	std2.Println(vs...)
+}
+
+// Clear dump clear data, without location.
+func Clear(vs ...interface{}) {
+	std2.Println(vs...)
 }
