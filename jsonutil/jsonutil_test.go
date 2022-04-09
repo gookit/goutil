@@ -1,11 +1,19 @@
 package jsonutil_test
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/gookit/goutil/jsonutil"
 	"github.com/stretchr/testify/assert"
 )
+
+type user struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+var testUser = user{"inhere", 200}
 
 func TestPretty(t *testing.T) {
 	tests := []interface{}{
@@ -22,6 +30,51 @@ func TestPretty(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, want, got)
 	}
+}
+
+func TestEncode(t *testing.T) {
+	bts, err := jsonutil.Encode(testUser)
+	assert.NoError(t, err)
+	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+
+	bts, err = jsonutil.Encode(&testUser)
+	assert.NoError(t, err)
+	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+}
+
+func TestEncodeUnescapeHTML(t *testing.T) {
+	bts, err := jsonutil.Encode(&testUser)
+	assert.NoError(t, err)
+	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+}
+
+func TestEncodeToWriter(t *testing.T) {
+	buf := &bytes.Buffer{}
+
+	err := jsonutil.EncodeToWriter(testUser, buf)
+	assert.NoError(t, err)
+	assert.Equal(t, `{"name":"inhere","age":200}
+`, buf.String())
+}
+
+func TestDecode(t *testing.T) {
+	str := `{"name":"inhere","age":200}`
+	usr := &user{}
+	err := jsonutil.Decode([]byte(str), usr)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "inhere", usr.Name)
+	assert.Equal(t, 200, usr.Age)
+}
+
+func TestDecodeString(t *testing.T) {
+	str := `{"name":"inhere","age":200}`
+	usr := &user{}
+	err := jsonutil.DecodeString(str, usr)
+
+	assert.NoError(t, err)
+	assert.Equal(t, "inhere", usr.Name)
+	assert.Equal(t, 200, usr.Age)
 }
 
 func TestWriteReadFile(t *testing.T) {

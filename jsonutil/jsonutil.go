@@ -31,14 +31,38 @@ func ReadFile(filePath string, v interface{}) error {
 	return json.NewDecoder(file).Decode(v)
 }
 
-// Encode data to json bytes. use it instead of json.Marshal
+// Encode data to json bytes.
 func Encode(v interface{}) ([]byte, error) {
 	return json.Marshal(v)
 }
 
-// Decode json bytes to data. use it instead of json.Unmarshal
+// EncodeToWriter encode data to writer.
+func EncodeToWriter(v interface{}, w io.Writer) error {
+	return json.NewEncoder(w).Encode(v)
+}
+
+// EncodeUnescapeHTML data to json bytes. will close escape HTML
+func EncodeUnescapeHTML(v interface{}) ([]byte, error) {
+	buf := &bytes.Buffer{}
+	enc := json.NewEncoder(buf)
+	enc.SetEscapeHTML(false)
+
+	err := enc.Encode(v)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
+}
+
+// Decode json bytes to data ptr.
 func Decode(bts []byte, ptr interface{}) error {
 	return json.Unmarshal(bts, ptr)
+}
+
+// DecodeString json string to data ptr.
+func DecodeString(str string, ptr interface{}) error {
+	return json.Unmarshal([]byte(str), ptr)
 }
 
 // DecodeReader decode JSON from io reader.
