@@ -83,6 +83,7 @@ func (r *FindResults) append(filePath ...string) {
 
 // AddFilters Result get find paths
 func (r *FindResults) AddFilters(filterFuncs ...FileFilter) *FindResults {
+	// TODO
 	return r
 }
 
@@ -291,11 +292,10 @@ func (f *FileFinder) AddFile(filePaths ...string) *FileFinder {
 // FindAll find and return founded file paths.
 func (f *FileFinder) FindAll() []string {
 	f.find()
-
 	return f.filePaths
 }
 
-// Find find file paths.
+// Find files in given dir paths.
 func (f *FileFinder) Find() *FileFinder {
 	f.find()
 	return f
@@ -409,7 +409,7 @@ func (f *FileFinder) findInDir(dirPath string) {
 		}
 	}
 
-	_= d.Close()
+	_ = d.Close()
 }
 
 // Each each file paths.
@@ -465,7 +465,6 @@ func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
 // Reset data setting.
 func (f *FileFinder) Reset() {
 	f.founded = false
-
 	f.filePaths = make([]string, 0)
 
 	f.excludeNames = make([]string, 0)
@@ -491,7 +490,6 @@ func (f *FileFinder) String() string {
 func ExtFilterFunc(exts []string, include bool) FileFilterFunc {
 	return func(filePath, _ string) bool {
 		fExt := path.Ext(filePath)
-
 		for _, ext := range exts {
 			if fExt == ext {
 				return include
@@ -537,7 +535,6 @@ func DotFileFilterFunc(include bool) FileFilterFunc {
 		if filename[0] == '.' {
 			return include
 		}
-
 		return !include
 	}
 }
@@ -607,7 +604,6 @@ func DotDirFilterFunc(include bool) DirFilterFunc {
 		if dirname[0] == '.' {
 			return include
 		}
-
 		return !include
 	}
 }

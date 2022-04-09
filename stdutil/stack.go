@@ -37,18 +37,22 @@ func GetCallStacks(all bool) []byte {
 	return trace
 }
 
+// SimpleCallersInfo list
+func SimpleCallersInfo(skip, num int) []string {
+	skip += 1 // ignore current func
+	return GetCallersInfo(skip, skip+num)
+}
+
 // GetCallersInfo returns an array of strings containing
 // the file and line number of each stack frame leading
 func GetCallersInfo(skip, max int) (callers []string) {
 	var (
-		pc   uintptr
-		ok   bool
-		line int
-		file string
-		name string
+		pc         uintptr
+		ok         bool
+		line       int
+		file, name string
 	)
 
-	// callers := []string{}
 	for i := skip; i < max; i++ {
 		pc, file, line, ok = runtime.Caller(i)
 		if !ok {
@@ -71,13 +75,13 @@ func GetCallersInfo(skip, max int) (callers []string) {
 		parts := strings.Split(file, "/")
 		file = parts[len(parts)-1]
 		if len(parts) > 1 {
-			// dir := parts[len(parts)-2]
-			callers = append(callers, name+" "+file+":"+strutil.MustString(line))
+			// eg: github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
+			callers = append(callers, name+"(),"+file+":"+strutil.MustString(line))
 		}
 
 		// Drop the package
-		segments := strings.Split(name, ".")
-		name = segments[len(segments)-1]
+		// segments := strings.Split(name, ".")
+		// name = segments[len(segments)-1]
 	}
 
 	return callers
