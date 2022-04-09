@@ -27,7 +27,7 @@ jobs:
     # https://github.com/actions/setup-go
     - name: Use Go ${{ matrix.go_version }}
       timeout-minutes: 3
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go_version }}
 
