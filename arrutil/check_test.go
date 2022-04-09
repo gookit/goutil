@@ -25,7 +25,10 @@ func TestStringsHas(t *testing.T) {
 	ss := []string{"a", "b"}
 	assert.True(t, arrutil.StringsHas(ss, "a"))
 	assert.True(t, arrutil.StringsHas(ss, "b"))
+	assert.True(t, arrutil.InStrings("b", ss))
+
 	assert.False(t, arrutil.StringsHas(ss, "c"))
+	assert.False(t, arrutil.InStrings("c", ss))
 }
 
 func TestContains(t *testing.T) {

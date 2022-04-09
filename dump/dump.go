@@ -105,11 +105,7 @@ func Fprint(w io.Writer, vs ...interface{}) {
 func Format(vs ...interface{}) string {
 	w := &bytes.Buffer{}
 
-	NewWithOptions(func(opts *Options) {
-		opts.Output = w
-		opts.ShowFlag = Fnopos
-	}).Println(vs...)
-
+	std2.Fprint(w, vs...)
 	return w.String()
 }
 

@@ -27,6 +27,9 @@ func Int64sHas(ints []int64, val int64) bool {
 	return false
 }
 
+// InStrings alias of StringsHas()
+func InStrings(elem string, ss []string) bool { return StringsHas(ss, elem) }
+
 // StringsHas check the []string contains the given element
 func StringsHas(ss []string, val string) bool {
 	for _, ele := range ss {
@@ -37,12 +40,12 @@ func StringsHas(ss []string, val string) bool {
 	return false
 }
 
-// HasValue check array(strings, intXs, uintXs) should be contains the given value(int(X),string).
+// HasValue check array(strings, intXs, uintXs) should be contained the given value(int(X),string).
 func HasValue(arr, val interface{}) bool {
 	return Contains(arr, val)
 }
 
-// Contains check array(strings, intXs, uintXs) should be contains the given value(int(X),string).
+// Contains check array(strings, intXs, uintXs) should be contained the given value(int(X),string).
 func Contains(arr, val interface{}) bool {
 	if val == nil || arr == nil {
 		return false
