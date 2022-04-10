@@ -77,3 +77,52 @@ func (s *stack) Location() (file string, line int) {
 
 	return "", 0
 }
+
+/*************************************************************
+ * helper func for callers stacks
+ *************************************************************/
+
+// ErrStackOpt struct
+type ErrStackOpt struct {
+	SkipDepth  int
+	TraceDepth int
+}
+
+// default option
+var stdOpt = newErrOpt()
+
+func newErrOpt() *ErrStackOpt {
+	return &ErrStackOpt{
+		SkipDepth:  3,
+		TraceDepth: 20,
+	}
+}
+
+// Config the stdOpt setting
+func Config(fns ...func(opt *ErrStackOpt)) {
+	for _, fn := range fns {
+		fn(stdOpt)
+	}
+}
+
+// SkipDepth setting
+func SkipDepth(skipDepth int) func(opt *ErrStackOpt) {
+	return func(opt *ErrStackOpt) {
+		opt.SkipDepth = skipDepth
+	}
+}
+
+// TraceDepth setting
+func TraceDepth(traceDepth int) func(opt *ErrStackOpt) {
+	return func(opt *ErrStackOpt) {
+		opt.TraceDepth = traceDepth
+	}
+}
+
+func callersStack(skip, depth int) *stack {
+	pcs := make([]uintptr, depth)
+	num := runtime.Callers(skip, pcs[:])
+
+	var st stack = pcs[0:num]
+	return &st
+}

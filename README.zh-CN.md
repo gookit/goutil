@@ -235,11 +235,7 @@ func IsSupportTrueColor() bool
 > Package `github.com/gookit/goutil/errorx`
 
 ```go
-// source at errorx/reply.go
-func NewR(code int, msg string) ErrorR
-func Fail(code int, msg string) ErrorR
-func Suc(msg string) ErrorR
-// source at errorx/usage.go
+// source at errorx/errorx.go
 func New(msg string) error
 func Newf(tpl string, vars ...interface{}) error
 func Errorf(tpl string, vars ...interface{}) error
@@ -249,9 +245,18 @@ func WithPrev(err error, msg string) error
 func WithPrevf(err error, tpl string, vars ...interface{}) error
 func WithStack(err error) error
 func Stacked(err error) error
-func WithOptions(msg string, fns ...func(opt *ErrOpt)) error
+func WithOptions(msg string, fns ...func(opt *ErrStackOpt)) error
 func Wrap(err error, msg string) error
 func Wrapf(err error, tpl string, vars ...interface{}) error
+// source at errorx/reply.go
+func NewR(code int, msg string) ErrorR
+func Fail(code int, msg string) ErrorR
+func Suc(msg string) ErrorR
+// source at errorx/stack.go
+func Config(fns ...func(opt *ErrStackOpt))
+func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
+func TraceDepth(traceDepth int) func(opt *ErrStackOpt)
+// source at errorx/util.go
 func Cause(err error) error
 func Unwrap(err error) error
 func Previous(err error) error { return Unwrap(err) }
@@ -259,9 +264,6 @@ func Has(err, target error) bool
 func Is(err, target error) bool
 func To(err error, target interface{}) bool
 func As(err error, target interface{}) bool
-func Config(fns ...func(opt *ErrOpt))
-func SkipDepth(skipDepth int) func(opt *ErrOpt)
-func TraceDepth(traceDepth int) func(opt *ErrOpt)
 ```
 
 
