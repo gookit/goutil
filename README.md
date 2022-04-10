@@ -46,6 +46,7 @@ func GetRandomOne(arr interface{}) interface{}
 // source at arrutil/check.go
 func IntsHas(ints []int, val int) bool
 func Int64sHas(ints []int64, val int64) bool
+func InStrings(elem string, ss []string) bool { return StringsHas(ss, elem) }
 func StringsHas(ss []string, val string) bool
 func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
@@ -236,14 +237,16 @@ func IsSupportTrueColor() bool
 > Package `github.com/gookit/goutil/errorx`
 
 ```go
-// source at errorx/errorh.go
-func NewH(code int, msg string) ErrorH
-func OkH(msg string) ErrorH
+// source at errorx/reply.go
+func NewR(code int, msg string) ErrorR
+func Fail(code int, msg string) ErrorR
+func Suc(msg string) ErrorR
 // source at errorx/usage.go
 func New(msg string) error
 func Newf(tpl string, vars ...interface{}) error
 func Errorf(tpl string, vars ...interface{}) error
 func With(err error, msg string) error
+func Withf(err error, tpl string, vars ...interface{}) error
 func WithPrev(err error, msg string) error
 func WithPrevf(err error, tpl string, vars ...interface{}) error
 func WithStack(err error) error
@@ -383,7 +386,10 @@ func main() {
 func WriteFile(filePath string, data interface{}) error
 func ReadFile(filePath string, v interface{}) error
 func Encode(v interface{}) ([]byte, error)
+func EncodeToWriter(v interface{}, w io.Writer) error
+func EncodeUnescapeHTML(v interface{}) ([]byte, error)
 func Decode(bts []byte, ptr interface{}) error
+func DecodeString(str string, ptr interface{}) error
 func DecodeReader(r io.Reader, ptr interface{}) error
 func Pretty(v interface{}) (string, error)
 func StripComments(src string) string
@@ -439,6 +445,9 @@ func DataSize(size uint64) string
 func HowLongAgo(sec int64) string
 // source at mathutil/random.go
 func RandomInt(min, max int) int
+func RandInt(min, max int) int { return RandomInt(min, max) }
+func RandIntWithSeed(min, max int, seed int64) int
+func RandomIntWithSeed(min, max int, seed int64) int
 ```
 
 ### Standard
@@ -453,8 +462,9 @@ func TryString(v interface{}) (string, error)
 // source at stdutil/go_chan.go
 func WaitCloseSignals(closer io.Closer) error
 func Go(f func() error) error
-// source at stdutil/stacks.go
+// source at stdutil/stack.go
 func GetCallStacks(all bool) []byte
+func SimpleCallersInfo(skip, num int) []string
 func GetCallersInfo(skip, max int) (callers []string)
 // source at stdutil/stdutil.go
 func PanicIfErr(err error)
@@ -554,9 +564,6 @@ func Rtrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
 func RTrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
 func TrimRight(s string, cutSet ...string) string
 func FilterEmail(s string) string
-// source at strutil/find_similar.go
-func NewComparator(src, dst string) *SimilarComparator
-func Similarity(s, t string, rate float32) (float32, bool)
 // source at strutil/format.go
 func Lower(s string) string { return strings.ToLower(s) }
 func Lowercase(s string) string { return strings.ToLower(s) }
@@ -580,7 +587,12 @@ func RandomCharsV2(ln int) string
 func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
-// source at strutil/strutil.go
+// source at strutil/similar_find.go
+func NewComparator(src, dst string) *SimilarComparator
+func Similarity(s, t string, rate float32) (float32, bool)
+// source at strutil/split.go
+func Cut(s, sep string) (before string, after string, found bool)
+func MustCut(s, sep string) (before string, after string)
 func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 func Split(s, sep string) (ss []string)
 func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
@@ -588,6 +600,7 @@ func SplitN(s, sep string, n int) (ss []string)
 func SplitTrimmed(s, sep string) (ss []string)
 func SplitNTrimmed(s, sep string, n int) (ss []string)
 func Substr(s string, pos, length int) string
+// source at strutil/strutil.go
 func Padding(s, pad string, length int, pos uint8) string
 func PadLeft(s, pad string, length int) string
 func PadRight(s, pad string, length int) string
@@ -696,4 +709,3 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
-SE)
