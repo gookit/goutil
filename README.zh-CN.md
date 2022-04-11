@@ -138,6 +138,7 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
+
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -202,6 +203,7 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
+
 ### ENV
 
 > Package `github.com/gookit/goutil/envutil`
@@ -234,6 +236,11 @@ func IsSupportTrueColor() bool
 
 > Package `github.com/gookit/goutil/errorx`
 
+
+`errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
+
+> 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
+
 ```go
 // source at errorx/errorx.go
 func New(msg string) error
@@ -252,6 +259,7 @@ func Wrapf(err error, tpl string, vars ...interface{}) error
 func NewR(code int, msg string) ErrorR
 func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
+func Raw(msg string) error
 // source at errorx/stack.go
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
@@ -266,8 +274,50 @@ func To(err error, target interface{}) bool
 func As(err error, target interface{}) bool
 ```
 
+#### Usage
 
-Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
+**创建错误带有调用栈信息**
+
+- 使用 `errorx.New` 替代 `errors.New`
+
+```go
+func doSomething() error {
+    if false {
+	    // return errors.New("a error happen")
+	    return errorx.New("a error happen")
+	}
+}
+```
+
+- 使用 `errorx.Newf` 或者 `errorx.Errorf` 替代 `fmt.Errorf`
+
+```go
+func doSomething() error {
+    if false {
+	    // return fmt.Errorf("a error %s", "happen")
+	    return errorx.Newf("a error %s", "happen")
+	}
+}
+```
+
+**包装上一级错误**
+
+之前这样使用:
+
+```go
+    if err := SomeFunc(); err != nil {
+	    return err
+	}
+```
+
+可以替换成:
+
+```go
+    if err := SomeFunc(); err != nil {
+	    return errors.Stacked(err)
+	}
+```
+
 
 ### Formatting
 
@@ -289,10 +339,6 @@ func HowLongAgo(sec int64) string
 
 ```go
 // source at fsutil/check.go
-func Dir(fpath string) string
-func Name(fpath string) string
-func FileExt(fpath string) string
-func Suffix(fpath string) string
 func PathExists(path string) bool
 func IsDir(path string) bool
 func FileExists(path string) bool
@@ -322,6 +368,12 @@ func ExpandPath(path string) string
 func Realpath(pathStr string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
+// source at fsutil/info.go
+func Dir(fpath string) string
+func PathName(fpath string) string
+func Name(fpath string) string
+func FileExt(fpath string) string
+func Suffix(fpath string) string
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -376,6 +428,7 @@ func main() {
 		})
 }
 ```
+
 
 ### JSON
 
@@ -455,17 +508,18 @@ func RandomIntWithSeed(min, max int, seed int64) int
 > Package `github.com/gookit/goutil/stdutil`
 
 ```go
+// source at stdutil/chan.go
+func WaitCloseSignals(closer io.Closer) error
+func Go(f func() error) error
 // source at stdutil/convert.go
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
-// source at stdutil/go_chan.go
-func WaitCloseSignals(closer io.Closer) error
-func Go(f func() error) error
 // source at stdutil/stack.go
 func GetCallStacks(all bool) []byte
+func GetCallerInfo(skip int) string
 func SimpleCallersInfo(skip, num int) []string
-func GetCallersInfo(skip, max int) (callers []string)
+func GetCallersInfo(skip, max int) []string
 // source at stdutil/stdutil.go
 func PanicIfErr(err error)
 func PanicIf(err error)

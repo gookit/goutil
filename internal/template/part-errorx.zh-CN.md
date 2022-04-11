@@ -1,9 +1,9 @@
 
 #### Usage
 
-**Create error with call stack info**
+**创建错误带有调用栈信息**
 
-- use the `errorx.New` instead `errors.New`
+- 使用 `errorx.New` 替代 `errors.New`
 
 ```go
 func doSomething() error {
@@ -14,7 +14,7 @@ func doSomething() error {
 }
 ```
 
-- use the `errorx.Newf` or `errorx.Errorf` instead `fmt.Errorf`
+- 使用 `errorx.Newf` 或者 `errorx.Errorf` 替代 `fmt.Errorf`
 
 ```go
 func doSomething() error {
@@ -25,9 +25,9 @@ func doSomething() error {
 }
 ```
 
-**Wrap the previous error**
+**包装上一级错误**
 
-used like this before:
+之前这样使用:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -35,7 +35,7 @@ used like this before:
 	}
 ```
 
-can be replaced with:
+可以替换成:
 
 ```go
     if err := SomeFunc(); err != nil {

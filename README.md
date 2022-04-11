@@ -140,6 +140,7 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
+
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -204,6 +205,7 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
+
 ### ENV
 
 > Package `github.com/gookit/goutil/envutil`
@@ -236,6 +238,9 @@ func IsSupportTrueColor() bool
 
 > Package `github.com/gookit/goutil/errorx`
 
+
+Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
+
 ```go
 // source at errorx/errorx.go
 func New(msg string) error
@@ -254,6 +259,7 @@ func Wrapf(err error, tpl string, vars ...interface{}) error
 func NewR(code int, msg string) ErrorR
 func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
+func Raw(msg string) error
 // source at errorx/stack.go
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
@@ -268,8 +274,49 @@ func To(err error, target interface{}) bool
 func As(err error, target interface{}) bool
 ```
 
+#### Usage
 
-Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
+**Create error with call stack info**
+
+- use the `errorx.New` instead `errors.New`
+
+```go
+func doSomething() error {
+    if false {
+	    // return errors.New("a error happen")
+	    return errorx.New("a error happen")
+	}
+}
+```
+
+- use the `errorx.Newf` or `errorx.Errorf` instead `fmt.Errorf`
+
+```go
+func doSomething() error {
+    if false {
+	    // return fmt.Errorf("a error %s", "happen")
+	    return errorx.Newf("a error %s", "happen")
+	}
+}
+```
+
+**Wrap the previous error**
+
+used like this before:
+
+```go
+    if err := SomeFunc(); err != nil {
+	    return err
+	}
+```
+
+can be replaced with:
+
+```go
+    if err := SomeFunc(); err != nil {
+	    return errors.Stacked(err)
+	}
+```
 
 ### Formatting
 
@@ -291,10 +338,6 @@ func HowLongAgo(sec int64) string
 
 ```go
 // source at fsutil/check.go
-func Dir(fpath string) string
-func Name(fpath string) string
-func FileExt(fpath string) string
-func Suffix(fpath string) string
 func PathExists(path string) bool
 func IsDir(path string) bool
 func FileExists(path string) bool
@@ -324,6 +367,12 @@ func ExpandPath(path string) string
 func Realpath(pathStr string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
+// source at fsutil/info.go
+func Dir(fpath string) string
+func PathName(fpath string) string
+func Name(fpath string) string
+func FileExt(fpath string) string
+func Suffix(fpath string) string
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -378,6 +427,7 @@ func main() {
 		})
 }
 ```
+
 
 ### JSON
 
@@ -457,17 +507,18 @@ func RandomIntWithSeed(min, max int, seed int64) int
 > Package `github.com/gookit/goutil/stdutil`
 
 ```go
+// source at stdutil/chan.go
+func WaitCloseSignals(closer io.Closer) error
+func Go(f func() error) error
 // source at stdutil/convert.go
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
-// source at stdutil/go_chan.go
-func WaitCloseSignals(closer io.Closer) error
-func Go(f func() error) error
 // source at stdutil/stack.go
 func GetCallStacks(all bool) []byte
+func GetCallerInfo(skip int) string
 func SimpleCallersInfo(skip, num int) []string
-func GetCallersInfo(skip, max int) (callers []string)
+func GetCallersInfo(skip, max int) []string
 // source at stdutil/stdutil.go
 func PanicIfErr(err error)
 func PanicIf(err error)
@@ -576,6 +627,142 @@ func LowerFirst(s string) string
 func UpperFirst(s string) string
 func Snake(s string, sep ...string) string
 func SnakeCase(s string, sep ...string) string
+func Camel(s string, sep ...string) string
+func CamelCase(s string, sep ...string) string
+// source at strutil/id.go
+func MicroTimeID() string
+func MicroTimeHexID() string
+// source at strutil/random.go
+func Md5(src interface{}) string
+func GenMd5(src interface{}) string
+func RandomChars(ln int) string
+func RandomCharsV2(ln int) string
+func RandomCharsV3(ln int) string
+func RandomBytes(length int) ([]byte, error)
+func RandomString(length int) (string, error)
+// source at strutil/similar_find.go
+func NewComparator(src, dst string) *SimilarComparator
+func Similarity(s, t string, rate float32) (float32, bool)
+// source at strutil/split.go
+func Cut(s, sep string) (before string, after string, found bool)
+func MustCut(s, sep string) (before string, after string)
+func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
+func Split(s, sep string) (ss []string)
+func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
+func SplitN(s, sep string, n int) (ss []string)
+func SplitTrimmed(s, sep string) (ss []string)
+func SplitNTrimmed(s, sep string, n int) (ss []string)
+func Substr(s string, pos, length int) string
+// source at strutil/strutil.go
+func Padding(s, pad string, length int, pos uint8) string
+func PadLeft(s, pad string, length int) string
+func PadRight(s, pad string, length int) string
+func Repeat(s string, times int) string
+func RepeatRune(char rune, times int) (chars []rune)
+func RepeatBytes(char byte, times int) (chars []byte)
+func Replaces(str string, pairs map[string]string) string
+func PrettyJSON(v interface{}) (string, error)
+func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
+func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
+```
+
+### System
+
+> Package `github.com/gookit/goutil/sysutil`
+
+```go
+// source at sysutil/exec.go
+func QuickExec(cmdLine string, workDir ...string) (string, error)
+func ExecLine(cmdLine string, workDir ...string) (string, error)
+func ExecCmd(binName string, args []string, workDir ...string) (string, error)
+func ShellExec(cmdLine string, shells ...string) (string, error)
+func FindExecutable(binName string) (string, error)
+func Executable(binName string) (string, error)
+func HasExecutable(binName string) bool
+// source at sysutil/sysenv.go
+func Hostname() string
+func IsWin() bool
+func IsWindows() bool
+func IsMac() bool
+func IsLinux() bool
+func IsMSys() bool
+func IsConsole(out io.Writer) bool
+func IsTerminal(fd uintptr) bool
+func StdIsTerminal() bool
+func CurrentShell(onlyName bool) (path string)
+func HasShellEnv(shell string) bool
+func IsShellSpecialVar(c uint8) bool
+// source at sysutil/sysutil.go
+func Workdir() string
+func BinDir() string
+func BinFile() string
+// source at sysutil/sysutil_nonwin.go
+func Kill(pid int, signal syscall.Signal) error
+func ProcessExists(pid int) bool
+// source at sysutil/user.go
+func MustFindUser(uname string) *user.User
+func LoginUser() *user.User
+func CurrentUser() *user.User
+func UserHomeDir() string
+func UHomeDir() string
+func HomeDir() string
+func UserDir(subPath string) string
+func UserCacheDir(subPath string) string
+func UserConfigDir(subPath string) string
+func ExpandPath(path string) string
+// source at sysutil/user_nonwin.go
+func ChangeUserByName(newUname string) (err error)
+func ChangeUserUidGid(newUid int, newGid int) (err error)
+```
+
+### Testing
+
+> Package `github.com/gookit/goutil/testutil`
+
+```go
+// source at testutil/httpmock.go
+func NewHttpRequest(method, path string, data *MD) *http.Request
+func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
+// source at testutil/testutil.go
+func DiscardStdout() error
+func ReadOutput() (s string)
+func RewriteStdout()
+func RestoreStdout() (s string)
+func RewriteStderr()
+func RestoreStderr() (s string)
+func MockEnvValue(key, val string, fn func(nv string))
+func MockEnvValues(kvMap map[string]string, fn func())
+func MockOsEnvByText(envText string, fn func())
+func MockOsEnv(mp map[string]string, fn func())
+```
+
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+go test ./...
+```
+
+## Gookit packages
+
+  - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
+  - [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
+  - [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
+  - [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
+  - [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support
+  - [gookit/event](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
+  - [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
+  - [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
+  - [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
+  - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
+  - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
+  - More, please see https://github.com/gookit
+
+## License
+
+[MIT](LICENSE)
+ing, sep ...string) string
 func Camel(s string, sep ...string) string
 func CamelCase(s string, sep ...string) string
 // source at strutil/id.go

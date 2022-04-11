@@ -83,6 +83,9 @@ var (
 	// collected sub package names.
 	// short name => full name.
 	pkgNames = make(map[string]string, 16)
+
+	partDocTplS = "/part-%s-s%s.md"
+	partDocTplE = "/part-%s%s.md"
 )
 
 func bindingFlags() {
@@ -202,14 +205,8 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			if len(pkgFuncs) > 0 { // end of prev package.
 				bufWriteln(buf, "```")
 
-				// load example file.
-				partReadme := genOpts.tplDir + "/part-" + dirname + ".md"
-				// color.Infoln("- try read part readme from", partReadme)
-				partBody := fsutil.ReadExistFile(partReadme)
-				if len(partBody) > 0 {
-					color.Infoln("- find and inject doc for the package:", name)
-					buf.Write(partBody)
-				}
+				// load prev sub-pkg doc file.
+				bufWriteDoc(buf, partDocTplE, dirname)
 			}
 
 			dirname = dir
@@ -226,6 +223,9 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			bufWriteln(buf, "\n###", strutil.UpperFirst(name))
 			bufWritef(buf, "\n> Package `%s`\n\n", pkgPath)
 			pkgFuncs[pkgPath] = []string{"xx"}
+
+			// load sub-pkg start doc file.
+			bufWriteDoc(buf, partDocTplS, name)
 
 			bufWriteln(buf, "```go")
 		}
@@ -255,4 +255,33 @@ func bufWritef(buf *bytes.Buffer, f string, a ...interface{}) {
 
 func bufWriteln(buf *bytes.Buffer, a ...interface{}) {
 	_, _ = fmt.Fprintln(buf, a...)
+}
+
+func bufWriteDoc(buf *bytes.Buffer, partNameTpl, pkgName string) {
+	var lang string
+	if genOpts.lang != "en" {
+		lang = "." + genOpts.lang
+	}
+
+	partName := fmt.Sprintf(partNameTpl, pkgName, lang)
+
+	if !doWriteDoc2buf(buf, partName) {
+		// fallback use en docs
+		partName = fmt.Sprintf(partNameTpl, pkgName, "")
+		doWriteDoc2buf(buf, partName)
+	}
+}
+
+func doWriteDoc2buf(buf *bytes.Buffer, partName string) bool {
+	partFile := genOpts.tplDir + partName
+	// color.Infoln("- try read part readme from", partFile)
+	partBody := fsutil.ReadExistFile(partFile)
+
+	if len(partBody) > 0 {
+		color.Infoln("- find and inject sub-package doc:", partName)
+		_, _ = fmt.Fprintln(buf, string(partBody))
+		return true
+	}
+
+	return false
 }
