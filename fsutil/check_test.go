@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//goland:noinspection GoBoolExpressions
 func TestCommon(t *testing.T) {
 	assert.Equal(t, "", fsutil.FileExt("testdata/testjpg"))
 	assert.Equal(t, ".jpg", fsutil.Suffix("testdata/test.jpg"))

@@ -4,11 +4,10 @@ import (
 	"bytes"
 	"os"
 	"path"
-	"path/filepath"
 )
 
 var (
-	// perm and flags for create log file
+	// DefaultDirPerm perm and flags for create log file
 	DefaultDirPerm  os.FileMode = 0775
 	DefaultFilePerm os.FileMode = 0665
 
@@ -21,27 +20,6 @@ var (
 	FileExist = IsFile
 	PathExist = PathExists
 )
-
-// Dir get dir path, without last name.
-func Dir(fpath string) string {
-	return filepath.Dir(fpath)
-}
-
-// Name get file/dir name
-func Name(fpath string) string {
-	// return path.Base(fpath)
-	return filepath.Base(fpath)
-}
-
-// FileExt get filename ext. alias of path.Ext()
-func FileExt(fpath string) string {
-	return path.Ext(fpath)
-}
-
-// Suffix get filename ext. alias of path.Ext()
-func Suffix(fpath string) string {
-	return path.Ext(fpath)
-}
 
 // PathExists reports whether the named file or directory exists.
 func PathExists(path string) bool {
