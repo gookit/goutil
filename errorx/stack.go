@@ -1,12 +1,11 @@
 package errorx
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"runtime"
-	"strings"
-
-	"github.com/gookit/goutil/mathutil"
+	"strconv"
 )
 
 // stack represents a stack of program counters.
@@ -35,15 +34,17 @@ func (s *stack) WriteTo(w io.Writer) (int64, error) {
 	for _, pc := range *s {
 		// For historical reasons if pc is interpreted as a uintptr
 		// its value represents the program counter + 1.
-		f := runtime.FuncForPC(pc - 1)
-		if f == nil {
+		fc := runtime.FuncForPC(pc - 1)
+		if fc == nil {
 			continue
 		}
 
-		file, line := f.FileLine(pc - 1)
-		pos := f.Name() + "()\n  " + file + ":" + mathutil.String(line) + "\n"
+		// file eg: workspace/godev/gookit/goutil/errorx/errorx_test.go
+		file, line := fc.FileLine(pc - 1)
+		// f.Name() eg: github.com/gookit/goutil/errorx_test.TestWithPrev()
+		location := fc.Name() + "()\n  " + file + ":" + strconv.Itoa(line) + "\n"
 
-		n, _ := w.Write([]byte(pos))
+		n, _ := w.Write([]byte(location))
 		nn += n
 	}
 
@@ -52,13 +53,13 @@ func (s *stack) WriteTo(w io.Writer) (int64, error) {
 
 // String format to string
 func (s *stack) String() string {
-	var sb *strings.Builder
-	_, _ = s.WriteTo(sb)
-	return sb.String()
+	var buf bytes.Buffer
+	_, _ = s.WriteTo(&buf)
+	return buf.String()
 }
 
-// StackTrace frame list
-func (s *stack) StackTrace() *runtime.Frames {
+// StackFrames stack frame list
+func (s *stack) StackFrames() *runtime.Frames {
 	return runtime.CallersFrames(*s)
 }
 
@@ -68,14 +69,29 @@ func (s *stack) Location() (file string, line int) {
 		// For historical reasons if pc is interpreted as a uintptr
 		// its value represents the program counter + 1.
 		pc := (*s)[0] - 1
-		f := runtime.FuncForPC(pc)
-
-		if f != nil {
-			return f.FileLine(pc)
+		fc := runtime.FuncForPC(pc)
+		if fc != nil {
+			return fc.FileLine(pc)
 		}
 	}
+	return
+}
 
-	return "", 0
+// CallerName for error report.
+//
+// Returns eg:
+// 	github.com/gookit/goutil/errorx_test.TestWithPrev()
+func (s *stack) CallerName() (fcName string) {
+	if len(*s) > 0 {
+		// For historical reasons if pc is interpreted as a uintptr
+		// its value represents the program counter + 1.
+		pc := (*s)[0] - 1
+		fc := runtime.FuncForPC(pc)
+		if fc != nil {
+			return fc.Name()
+		}
+	}
+	return
 }
 
 /*************************************************************
@@ -94,7 +110,7 @@ var stdOpt = newErrOpt()
 func newErrOpt() *ErrStackOpt {
 	return &ErrStackOpt{
 		SkipDepth:  3,
-		TraceDepth: 20,
+		TraceDepth: 15,
 	}
 }
 

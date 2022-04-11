@@ -3,10 +3,10 @@
 package errorx
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
-	"strings"
 )
 
 // Causer interface for get first cause error
@@ -23,22 +23,30 @@ type Unwrapper interface {
 	Unwrap() error
 }
 
-// ErrorX interface
-type ErrorX interface {
+// XErrorFace interface
+type XErrorFace interface {
 	error
 	Causer
 	Unwrapper
 }
 
+// Exception interface
+// type Exception interface {
+// 	XErrorFace
+// 	Code() string
+// 	Message() string
+// 	StackString() string
+// }
+
 /*************************************************************
- * implements ErrorX interface
+ * implements XErrorFace interface
  *************************************************************/
 
-// errorX struct
+// ErrorX struct
 //
 // TIPS:
 //  fmt pkg call order: Format > GoString > Error > String
-type errorX struct {
+type ErrorX struct {
 	// trace stack
 	*stack
 	prev error
@@ -46,41 +54,81 @@ type errorX struct {
 }
 
 // Cause implements Causer.
-func (e *errorX) Cause() error {
+func (e *ErrorX) Cause() error {
 	if e.prev == nil {
 		return e
 	}
 
-	if ex, ok := e.prev.(*errorX); ok {
+	if ex, ok := e.prev.(*ErrorX); ok {
 		return ex.Cause()
 	}
 	return e.prev
 }
 
 // Unwrap implements Unwrapper.
-func (e *errorX) Unwrap() error {
+func (e *ErrorX) Unwrap() error {
 	return e.prev
 }
 
-// Each previous errors
-// func (e *errorX) Each(fn func(err error)) {
-// 	return e.prev
-// }
+// Format error
+func (e *ErrorX) Format(s fmt.State, verb rune) {
+	// format current error: only output on have msg
+	if len(e.msg) > 0 {
+		_, _ = io.WriteString(s, e.msg)
+		if e.stack != nil {
+			e.stack.Format(s, verb)
+		}
+	}
+
+	// format prev error
+	if e.prev == nil {
+		return
+	}
+
+	_, _ = s.Write([]byte("\n---------\nPrevious: "))
+	if ex, ok := e.prev.(*ErrorX); ok {
+		ex.Format(s, verb)
+	} else {
+		_, _ = s.Write([]byte(e.prev.Error()))
+	}
+}
+
+// GoString to GO string
+// printing an error with %#v will produce useful information.
+func (e *ErrorX) GoString() string {
+	// var sb strings.Builder
+	var buf bytes.Buffer
+	_, _ = e.WriteTo(&buf)
+	return buf.String()
+}
+
+// Error to string
+func (e *ErrorX) Error() string {
+	return e.GoString()
+}
+
+// String error to string, with stack trace
+func (e *ErrorX) String() string {
+	return e.GoString()
+}
 
 // WriteTo write the error to a writer
-func (e *errorX) WriteTo(w io.Writer) (n int64, err error) {
-	_, _ = w.Write([]byte(e.msg))
+func (e *ErrorX) WriteTo(w io.Writer) (n int64, err error) {
+	// current error: only output on have msg
+	if len(e.msg) > 0 {
+		_, _ = w.Write([]byte(e.msg))
 
-	// with stack
-	if e.stack != nil {
-		_, _ = e.stack.WriteTo(w)
+		// with stack
+		if e.stack != nil {
+			_, _ = e.stack.WriteTo(w)
+		}
 	}
 
 	// with prev error
 	if e.prev != nil {
-		_, _ = io.WriteString(w, "\n----------------------------------\n")
+		_, _ = io.WriteString(w, "\n-------\n")
 
-		if ex, ok := e.prev.(*errorX); ok {
+		if ex, ok := e.prev.(*ErrorX); ok {
 			_, _ = ex.WriteTo(w)
 		} else {
 			_, _ = io.WriteString(w, e.prev.Error())
@@ -89,53 +137,17 @@ func (e *errorX) WriteTo(w io.Writer) (n int64, err error) {
 	return
 }
 
-// GoString to GO string
-// printing an error with %#v will produce useful information.
-func (e *errorX) GoString() string {
-	var sb strings.Builder
-
-	_, _ = e.WriteTo(&sb)
-	return sb.String()
+// Message error message
+func (e *ErrorX) Message() string {
+	return e.msg
 }
 
-// String error to string, with stack trace
-func (e *errorX) String() string {
-	return e.GoString()
-}
-
-// Error to string
-func (e *errorX) Error() string {
-	msg := e.msg
+// StackString returns error stack string.
+func (e *ErrorX) StackString() string {
 	if e.stack != nil {
-		msg = msg + e.stack.String()
+		return e.stack.String()
 	}
-
-	return msg
-}
-
-// Format error
-func (e *errorX) Format(s fmt.State, verb rune) {
-	_, _ = io.WriteString(s, e.msg)
-
-	if e.stack != nil {
-		e.stack.Format(s, verb)
-	}
-
-	e.formatPrev(s, verb)
-}
-
-// formatPrev error
-func (e *errorX) formatPrev(s fmt.State, verb rune) {
-	if e.prev == nil {
-		return
-	}
-
-	_, _ = s.Write([]byte("\nPrevious: "))
-	if ex, ok := e.prev.(*errorX); ok {
-		ex.Format(s, verb)
-	} else {
-		_, _ = s.Write([]byte(e.prev.Error()))
-	}
+	return ""
 }
 
 /*************************************************************
@@ -144,7 +156,7 @@ func (e *errorX) formatPrev(s fmt.State, verb rune) {
 
 // New error message and with caller stacks
 func New(msg string) error {
-	return &errorX{
+	return &ErrorX{
 		msg:   msg,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
@@ -153,7 +165,7 @@ func New(msg string) error {
 // Newf error with format message, and with caller stacks.
 // alias of Errorf()
 func Newf(tpl string, vars ...interface{}) error {
-	return &errorX{
+	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
@@ -161,7 +173,7 @@ func Newf(tpl string, vars ...interface{}) error {
 
 // Errorf error with format message, and with caller stacks
 func Errorf(tpl string, vars ...interface{}) error {
-	return &errorX{
+	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
@@ -169,11 +181,7 @@ func Errorf(tpl string, vars ...interface{}) error {
 
 // With prev error and error message, and with caller stacks
 func With(err error, msg string) error {
-	if err == nil {
-		return nil
-	}
-
-	return &errorX{
+	return &ErrorX{
 		msg:   msg,
 		prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
@@ -182,65 +190,51 @@ func With(err error, msg string) error {
 
 // Withf error and with format message, and with caller stacks
 func Withf(err error, tpl string, vars ...interface{}) error {
-	if err == nil {
-		return nil
-	}
-
-	return &errorX{
+	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
 
-// WithPrev error and message, and with caller stacks
+// WithPrev error and message, and with caller stacks. alias of With()
 func WithPrev(err error, msg string) error {
-	if err == nil {
-		return nil
-	}
-
-	return &errorX{
+	return &ErrorX{
 		msg:   msg,
 		prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
 
-// WithPrevf error and with format message, and with caller stacks
+// WithPrevf error and with format message, and with caller stacks. alias of Withf()
 func WithPrevf(err error, tpl string, vars ...interface{}) error {
-	if err == nil {
-		return nil
-	}
-
-	return &errorX{
+	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
 
-// WithStack annotates err with a stacked trace at the point WithStack was called.
-// If err is nil, WithStack returns nil.
+// WithStack wrap err with a stacked trace. If err is nil, will returns nil.
 func WithStack(err error) error {
 	if err == nil {
 		return nil
 	}
-
-	return &errorX{
-		prev:  err,
+	return &ErrorX{
+		msg: err.Error(),
+		// prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
 
-// Stacked warp a error and with caller stacks.
-// alias of WithStack
+// Stacked warp a error and with caller stacks. alias of WithStack()
 func Stacked(err error) error {
 	if err == nil {
 		return nil
 	}
-
-	return &errorX{
-		prev:  err,
+	return &ErrorX{
+		msg: err.Error(),
+		// prev:  err,
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
@@ -252,7 +246,7 @@ func WithOptions(msg string, fns ...func(opt *ErrStackOpt)) error {
 		fn(opt)
 	}
 
-	return &errorX{
+	return &ErrorX{
 		msg:   msg,
 		stack: callersStack(opt.SkipDepth, opt.TraceDepth),
 	}
@@ -268,7 +262,7 @@ func Wrap(err error, msg string) error {
 		return errors.New(msg)
 	}
 
-	return &errorX{
+	return &ErrorX{
 		msg:  msg,
 		prev: err,
 	}
@@ -280,7 +274,7 @@ func Wrapf(err error, tpl string, vars ...interface{}) error {
 		return errors.New(fmt.Sprintf(tpl, vars...))
 	}
 
-	return &errorX{
+	return &ErrorX{
 		msg:  fmt.Sprintf(tpl, vars...),
 		prev: err,
 	}
