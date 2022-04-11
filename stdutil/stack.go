@@ -1,10 +1,10 @@
 package stdutil
 
 import (
+	"path"
 	"runtime"
+	"strconv"
 	"strings"
-
-	"github.com/gookit/goutil/strutil"
 )
 
 var (
@@ -37,15 +37,31 @@ func GetCallStacks(all bool) []byte {
 	return trace
 }
 
-// SimpleCallersInfo list
+// GetCallerInfo get caller func name and with base filename and line.
+//
+// returns:
+//	github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
+func GetCallerInfo(skip int) string {
+	skip += 1 // ignore current func
+	cs := GetCallersInfo(skip, skip+1)
+
+	if len(cs) > 0 {
+		return cs[0]
+	}
+	return ""
+}
+
+// SimpleCallersInfo returns an array of strings containing
+// the func name, file and line number of each stack frame leading.
 func SimpleCallersInfo(skip, num int) []string {
 	skip += 1 // ignore current func
 	return GetCallersInfo(skip, skip+num)
 }
 
 // GetCallersInfo returns an array of strings containing
-// the file and line number of each stack frame leading
-func GetCallersInfo(skip, max int) (callers []string) {
+// the func name, file and line number of each stack frame leading.
+// NOTICE: max should > skip
+func GetCallersInfo(skip, max int) []string {
 	var (
 		pc         uintptr
 		ok         bool
@@ -53,6 +69,7 @@ func GetCallersInfo(skip, max int) (callers []string) {
 		file, name string
 	)
 
+	callers := make([]string, 0, max-skip)
 	for i := skip; i < max; i++ {
 		pc, file, line, ok = runtime.Caller(i)
 		if !ok {
@@ -66,17 +83,16 @@ func GetCallersInfo(skip, max int) (callers []string) {
 			break
 		}
 
-		f := runtime.FuncForPC(pc)
-		if f == nil {
+		fc := runtime.FuncForPC(pc)
+		if fc == nil {
 			break
 		}
 
-		name = f.Name()
-		parts := strings.Split(file, "/")
-		file = parts[len(parts)-1]
-		if len(parts) > 1 {
+		if strings.Index(file, "/") >= 0 {
+			name = fc.Name()
+			file = path.Base(file)
 			// eg: github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
-			callers = append(callers, name+"(),"+file+":"+strutil.MustString(line))
+			callers = append(callers, name+"(),"+file+":"+strconv.Itoa(line))
 		}
 
 		// Drop the package
