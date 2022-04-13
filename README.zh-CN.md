@@ -322,7 +322,7 @@ func doSomething() error {
 
 #### 使用示例
 
-Examples for use `errorx` package, more please see [errorx/README](errorx/README.md)
+Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
@@ -782,17 +782,19 @@ func MockOsEnv(mp map[string]string, fn func())
 func Now() TimeX
 func Local() TimeX
 func LocalByName(tzName string) TimeX
+func SetLocalByName(tzName string) error
 // source at timex/util.go
 func NowUnix() int64
 func Format(t time.Time) string
 func FormatBy(t time.Time, layout string) string
 func NowAddDay(day int) time.Time
+func NowAddHour(hour int) time.Time
 func NowAddMinutes(minutes int) time.Time
 func NowAddSeconds(seconds int) time.Time
 func AddDay(t time.Time, day int) time.Time
+func AddHour(t time.Time, hour int) time.Time
 func AddMinutes(t time.Time, minutes int) time.Time
 func AddSeconds(t time.Time, seconds int) time.Time
-func SetLocalByName(tzName string) error
 ```
 
 ## Code Check & Testing

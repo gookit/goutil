@@ -45,10 +45,10 @@ can be replaced with:
 
 #### Examples
 
-Examples for use `errorx` package, more please see [errorx/README](errorx/README.md)
+Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 
 ```go
-    err := returnXErrL2("the error message")
+    err := errorx.New("the error message")
 
     fmt.Println(err)
     // fmt.Printf("%v\n", err)

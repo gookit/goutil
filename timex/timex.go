@@ -6,6 +6,7 @@ const (
 	OneMinSec  = 60
 	OneHourSec = 3600
 	OneDaySec  = 86400
+	OneWeekSec = 7 * 86400
 
 	OneMin  = time.Minute
 	OneHour = time.Hour
@@ -62,7 +63,7 @@ func SetLocalByName(tzName string) error {
 	return nil
 }
 
-// Datetime format time use DefaultLayout
+// Datetime use DefaultLayout format time to date
 func (t *TimeX) Datetime() string {
 	if t.DateLayout == "" {
 		t.DateLayout = DefaultLayout

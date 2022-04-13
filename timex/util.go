@@ -17,6 +17,16 @@ func FormatBy(t time.Time, layout string) string {
 	return t.Format(layout)
 }
 
+// FormatUnix time seconds use default layout
+func FormatUnix(sec int64) string {
+	return time.Unix(sec, 0).Format(DefaultLayout)
+}
+
+// FormatUnixBy format time seconds use given layout
+func FormatUnixBy(sec int64, layout string) string {
+	return time.Unix(sec, 0).Format(layout)
+}
+
 // NowAddDay add some day time from now
 func NowAddDay(day int) time.Time {
 	return time.Now().AddDate(0, 0, day)
