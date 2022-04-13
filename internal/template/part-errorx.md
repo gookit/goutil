@@ -42,3 +42,34 @@ can be replaced with:
 	    return errors.Stacked(err)
 	}
 ```
+
+#### Examples
+
+Examples for use `errorx` package, more please see [errorx/README](errorx/README.md)
+
+```go
+    err := returnXErrL2("the error message")
+
+    fmt.Println(err)
+    // fmt.Printf("%v\n", err)
+    // fmt.Printf("%#v\n", err)
+```
+
+> from the test: `errorx/errorx_test.TestNew()`
+
+**Output**:
+
+```text
+the error message
+STACK:
+github.com/gookit/goutil/errorx_test.returnXErr()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:21
+github.com/gookit/goutil/errorx_test.returnXErrL2()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:25
+github.com/gookit/goutil/errorx_test.TestNew()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:29
+testing.tRunner()
+  /usr/local/Cellar/go/1.18/libexec/src/testing/testing.go:1439
+runtime.goexit()
+  /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
+```

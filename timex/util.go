@@ -22,6 +22,11 @@ func NowAddDay(day int) time.Time {
 	return time.Now().AddDate(0, 0, day)
 }
 
+// NowAddHour add some hour time from now
+func NowAddHour(hour int) time.Time {
+	return time.Now().Add(time.Duration(hour) * OneHour)
+}
+
 // NowAddMinutes add some minutes time from now
 func NowAddMinutes(minutes int) time.Time {
 	return time.Now().Add(time.Duration(minutes) * OneMin)
@@ -37,6 +42,11 @@ func AddDay(t time.Time, day int) time.Time {
 	return t.AddDate(0, 0, day)
 }
 
+// AddHour add some hour time for given time
+func AddHour(t time.Time, hour int) time.Time {
+	return t.Add(time.Duration(hour) * OneHour)
+}
+
 // AddMinutes add some minutes time for given time
 func AddMinutes(t time.Time, minutes int) time.Time {
 	return t.Add(time.Duration(minutes) * OneMin)
@@ -45,15 +55,4 @@ func AddMinutes(t time.Time, minutes int) time.Time {
 // AddSeconds add some seconds time for given time
 func AddSeconds(t time.Time, seconds int) time.Time {
 	return t.Add(time.Duration(seconds) * time.Second)
-}
-
-// SetLocalByName tz name. eg: UTC, PRC
-func SetLocalByName(tzName string) error {
-	location, err := time.LoadLocation(tzName)
-	if err != nil {
-		return err
-	}
-
-	time.Local = location
-	return nil
 }

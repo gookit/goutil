@@ -251,6 +251,7 @@ func Withf(err error, tpl string, vars ...interface{}) error
 func WithPrev(err error, msg string) error
 func WithPrevf(err error, tpl string, vars ...interface{}) error
 func WithStack(err error) error
+func Traced(err error) error
 func Stacked(err error) error
 func WithOptions(msg string, fns ...func(opt *ErrStackOpt)) error
 func Wrap(err error, msg string) error
@@ -261,6 +262,7 @@ func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
 func Raw(msg string) error
 // source at errorx/stack.go
+func FuncForPC(pc uintptr) *Func
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
 func TraceDepth(traceDepth int) func(opt *ErrStackOpt)
@@ -318,6 +320,38 @@ can be replaced with:
 	}
 ```
 
+#### Examples
+
+Examples for use `errorx` package, more please see [errorx/README](errorx/README.md)
+
+```go
+    err := errorx.New("the error message")
+
+    fmt.Println(err)
+    // fmt.Printf("%v\n", err)
+    // fmt.Printf("%#v\n", err)
+```
+
+> from the test: `errorx/errorx_test.TestNew()`
+
+**Output**:
+
+```text
+the error message
+STACK:
+github.com/gookit/goutil/errorx_test.returnXErr()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:21
+github.com/gookit/goutil/errorx_test.returnXErrL2()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:25
+github.com/gookit/goutil/errorx_test.TestNew()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:29
+testing.tRunner()
+  /usr/local/Cellar/go/1.18/libexec/src/testing/testing.go:1439
+runtime.goexit()
+  /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
+```
+
+
 ### Formatting
 
 > Package `github.com/gookit/goutil/fmtutil`
@@ -363,8 +397,6 @@ func OSTempFile(pattern string) (*os.File, error)
 func TempFile(dir, pattern string) (*os.File, error)
 func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
-func ExpandPath(path string) string
-func Realpath(pathStr string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 // source at fsutil/info.go
@@ -373,6 +405,8 @@ func PathName(fpath string) string
 func Name(fpath string) string
 func FileExt(fpath string) string
 func Suffix(fpath string) string
+func ExpandPath(path string) string
+func Realpath(pathStr string) string
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -385,6 +419,7 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
 func CopyFile(src string, dst string) error
 func MustCopyFile(src string, dst string)
+func Remove(fpath string) error
 func MustRemove(fpath string)
 func QuietRemove(fpath string)
 func DeleteIfExist(fpath string) error
@@ -514,6 +549,10 @@ func Go(f func() error) error
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
+// source at stdutil/gofunc.go
+func FuncName(fn interface{}) string
+func CutFuncName(fullFcName string) (pkgPath, shortFnName string)
+func PkgName(fullFcName string) string
 // source at stdutil/stack.go
 func GetCallStacks(all bool) []byte
 func GetCallerInfo(skip int) string
@@ -523,8 +562,6 @@ func GetCallersInfo(skip, max int) []string
 func PanicIfErr(err error)
 func PanicIf(err error)
 func Panicf(format string, v ...interface{})
-func FuncName(f interface{}) string
-func PkgName(funcName string) string
 ```
 
 ### Struct
@@ -736,6 +773,28 @@ func MockOsEnvByText(envText string, fn func())
 func MockOsEnv(mp map[string]string, fn func())
 ```
 
+### Timex
+
+> Package `github.com/gookit/goutil/timex`
+
+```go
+// source at timex/timex.go
+func Now() TimeX
+func Local() TimeX
+func LocalByName(tzName string) TimeX
+// source at timex/util.go
+func NowUnix() int64
+func Format(t time.Time) string
+func FormatBy(t time.Time, layout string) string
+func NowAddDay(day int) time.Time
+func NowAddMinutes(minutes int) time.Time
+func NowAddSeconds(seconds int) time.Time
+func AddDay(t time.Time, day int) time.Time
+func AddMinutes(t time.Time, minutes int) time.Time
+func AddSeconds(t time.Time, seconds int) time.Time
+func SetLocalByName(tzName string) error
+```
+
 ## Code Check & Testing
 
 ```bash
@@ -762,43 +821,7 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
-ing, sep ...string) string
-func Camel(s string, sep ...string) string
-func CamelCase(s string, sep ...string) string
-// source at strutil/id.go
-func MicroTimeID() string
-func MicroTimeHexID() string
-// source at strutil/random.go
-func Md5(src interface{}) string
-func GenMd5(src interface{}) string
-func RandomChars(ln int) string
-func RandomCharsV2(ln int) string
-func RandomCharsV3(ln int) string
-func RandomBytes(length int) ([]byte, error)
-func RandomString(length int) (string, error)
-// source at strutil/similar_find.go
-func NewComparator(src, dst string) *SimilarComparator
-func Similarity(s, t string, rate float32) (float32, bool)
-// source at strutil/split.go
-func Cut(s, sep string) (before string, after string, found bool)
-func MustCut(s, sep string) (before string, after string)
-func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
-func Split(s, sep string) (ss []string)
-func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
-func SplitN(s, sep string, n int) (ss []string)
-func SplitTrimmed(s, sep string) (ss []string)
-func SplitNTrimmed(s, sep string, n int) (ss []string)
-func Substr(s string, pos, length int) string
-// source at strutil/strutil.go
-func Padding(s, pad string, length int, pos uint8) string
-func PadLeft(s, pad string, length int) string
-func PadRight(s, pad string, length int) string
-func Repeat(s string, times int) string
-func RepeatRune(char rune, times int) (chars []rune)
-func RepeatBytes(char byte, times int) (chars []byte)
-func Replaces(str string, pairs map[string]string) string
-func PrettyJSON(v interface{}) (string, error)
-func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
+e{}, fns template.FuncMap, isFile ...bool) string
 func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
 ```
 

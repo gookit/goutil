@@ -251,6 +251,7 @@ func Withf(err error, tpl string, vars ...interface{}) error
 func WithPrev(err error, msg string) error
 func WithPrevf(err error, tpl string, vars ...interface{}) error
 func WithStack(err error) error
+func Traced(err error) error
 func Stacked(err error) error
 func WithOptions(msg string, fns ...func(opt *ErrStackOpt)) error
 func Wrap(err error, msg string) error
@@ -261,6 +262,7 @@ func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
 func Raw(msg string) error
 // source at errorx/stack.go
+func FuncForPC(pc uintptr) *Func
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
 func TraceDepth(traceDepth int) func(opt *ErrStackOpt)
@@ -318,6 +320,37 @@ func doSomething() error {
 	}
 ```
 
+#### 使用示例
+
+Examples for use `errorx` package, more please see [errorx/README](errorx/README.md)
+
+```go
+    err := errorx.New("the error message")
+
+    fmt.Println(err)
+    // fmt.Printf("%v\n", err)
+    // fmt.Printf("%#v\n", err)
+```
+
+> from the test: `errorx/errorx_test.TestNew()`
+
+**Output**:
+
+```text
+the error message
+STACK:
+github.com/gookit/goutil/errorx_test.returnXErr()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:21
+github.com/gookit/goutil/errorx_test.returnXErrL2()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:25
+github.com/gookit/goutil/errorx_test.TestNew()
+  /Users/inhere/Workspace/godev/gookit/goutil/errorx/errorx_test.go:29
+testing.tRunner()
+  /usr/local/Cellar/go/1.18/libexec/src/testing/testing.go:1439
+runtime.goexit()
+  /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
+```
+
 
 ### Formatting
 
@@ -364,8 +397,6 @@ func OSTempFile(pattern string) (*os.File, error)
 func TempFile(dir, pattern string) (*os.File, error)
 func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
-func ExpandPath(path string) string
-func Realpath(pathStr string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 // source at fsutil/info.go
@@ -374,6 +405,8 @@ func PathName(fpath string) string
 func Name(fpath string) string
 func FileExt(fpath string) string
 func Suffix(fpath string) string
+func ExpandPath(path string) string
+func Realpath(pathStr string) string
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -386,6 +419,7 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
 func CopyFile(src string, dst string) error
 func MustCopyFile(src string, dst string)
+func Remove(fpath string) error
 func MustRemove(fpath string)
 func QuietRemove(fpath string)
 func DeleteIfExist(fpath string) error
@@ -515,6 +549,10 @@ func Go(f func() error) error
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
+// source at stdutil/gofunc.go
+func FuncName(fn interface{}) string
+func CutFuncName(fullFcName string) (pkgPath, shortFnName string)
+func PkgName(fullFcName string) string
 // source at stdutil/stack.go
 func GetCallStacks(all bool) []byte
 func GetCallerInfo(skip int) string
@@ -524,8 +562,6 @@ func GetCallersInfo(skip, max int) []string
 func PanicIfErr(err error)
 func PanicIf(err error)
 func Panicf(format string, v ...interface{})
-func FuncName(f interface{}) string
-func PkgName(funcName string) string
 ```
 
 ### Struct
@@ -735,6 +771,28 @@ func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
 func MockOsEnvByText(envText string, fn func())
 func MockOsEnv(mp map[string]string, fn func())
+```
+
+### Timex
+
+> Package `github.com/gookit/goutil/timex`
+
+```go
+// source at timex/timex.go
+func Now() TimeX
+func Local() TimeX
+func LocalByName(tzName string) TimeX
+// source at timex/util.go
+func NowUnix() int64
+func Format(t time.Time) string
+func FormatBy(t time.Time, layout string) string
+func NowAddDay(day int) time.Time
+func NowAddMinutes(minutes int) time.Time
+func NowAddSeconds(seconds int) time.Time
+func AddDay(t time.Time, day int) time.Time
+func AddMinutes(t time.Time, minutes int) time.Time
+func AddSeconds(t time.Time, seconds int) time.Time
+func SetLocalByName(tzName string) error
 ```
 
 ## Code Check & Testing
