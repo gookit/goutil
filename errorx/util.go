@@ -48,14 +48,19 @@ func Is(err, target error) bool {
 
 // To try convert err to target, returns is result.
 //
-// NOTICE: target must be ptr and not nil
+// NOTICE: target must be ptr and not nil. alias of errors.As()
 //
-// alias of errors.As()
+// Usage:
+//	var ex *errorx.ErrorX
+//	err := doSomething()
+// 	if errorx.To(err, &ex) {
+// 		fmt.Println(ex.GoString())
+// 	}
 func To(err error, target interface{}) bool {
 	return errors.As(err, target)
 }
 
-// As alias of errors.As()
+// As same of the To(), alias of errors.As()
 //
 // NOTICE: target must be ptr and not nil
 func As(err error, target interface{}) bool {

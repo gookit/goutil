@@ -26,11 +26,11 @@ func returnXErrL2(msg string) error {
 }
 
 func TestNew(t *testing.T) {
-	err := errorx.New("error message")
+	err := returnXErrL2("the error message")
 	assert.Error(t, err)
 
 	fmt.Println(err)
-	fmt.Printf("%v\n", err)
+	// fmt.Printf("%v\n", err)
 	// fmt.Printf("%#v\n", err)
 }
 
@@ -42,6 +42,45 @@ func TestNewf(t *testing.T) {
 	err = errorx.Errorf("error %s", "message")
 	assert.Error(t, err)
 	fmt.Printf("%#v\n", err)
+}
+
+func TestWith_goerr(t *testing.T) {
+	err1 := returnErr("first error message")
+	assert.Error(t, err1)
+
+	err2 := errorx.With(err1, "second error message")
+	assert.Error(t, err2)
+	assert.True(t, errorx.Has(err2, err1))
+	assert.True(t, errorx.Is(err2, err1))
+
+	fmt.Println(err2)
+	// fmt.Printf("%v\n", err2)
+}
+
+func TestWith_errorx(t *testing.T) {
+	err1 := returnXErr("first error message")
+	assert.Error(t, err1)
+
+	err2 := errorx.With(err1, "second error message")
+	assert.Error(t, err2)
+	assert.True(t, errorx.Has(err2, err1))
+	assert.True(t, errorx.Is(err2, err1))
+
+	fmt.Println(err2)
+	// fmt.Printf("%v\n", err2)
+}
+
+func TestWithf_goerr(t *testing.T) {
+	err1 := returnErr("first error message")
+	assert.Error(t, err1)
+
+	err2 := errorx.Withf(err1, "second error %s", "message")
+	assert.Error(t, err2)
+	assert.True(t, errorx.Has(err2, err1))
+	assert.True(t, errorx.Is(err2, err1))
+
+	// fmt.Println(err2)
+	fmt.Printf("%v\n", err2)
 }
 
 func TestWithPrev_goerr(t *testing.T) {
@@ -78,9 +117,13 @@ func TestWithPrev_errorx_l2(t *testing.T) {
 	assert.Error(t, err2)
 	assert.True(t, errorx.Has(err2, err1))
 	assert.True(t, errorx.Is(err2, err1))
+	// assert.True(t, errorx.Is(err2, &errorx.ErrorX{}))
 
 	// fmt.Println(err2)
 	fmt.Printf("%v\n", err2)
+
+	fmt.Println("--- Use format flag: s")
+	fmt.Printf("%s\n", err2)
 }
 
 func TestStacked_goerr(t *testing.T) {
@@ -92,13 +135,41 @@ func TestStacked_goerr(t *testing.T) {
 	fmt.Printf("%+v\n", err2)
 }
 
+func TestStacked_goerr_l2(t *testing.T) {
+	err1 := returnErrL2("first error message")
+	assert.Error(t, err1)
+
+	err2 := errorx.Traced(err1)
+	assert.Error(t, err2)
+	fmt.Printf("%v\n", err2)
+
+	fmt.Println("use format flag: s")
+	fmt.Printf("%s\n", err2)
+}
+
 func TestStacked_errorx(t *testing.T) {
-	err1 := errorx.New("first error message")
+	err1 := returnXErr("first error message")
 	assert.Error(t, err1)
 
 	err2 := errorx.WithStack(err1)
 	assert.Error(t, err2)
 	fmt.Printf("%+v\n", err2)
+}
+
+func TestTo_ErrorX(t *testing.T) {
+	var ex *errorx.ErrorX
+	err := returnXErrL2("an error message")
+	assert.Error(t, err)
+
+	assert.True(t, errorx.To(err, &ex))
+	assert.Contains(t, ex.Location(), "github.com/gookit/goutil/errorx_test.returnXErr(), errorx_test.go")
+	assert.Equal(t, "an error message", ex.Message())
+	assert.Contains(t, ex.StackString(), "github.com/gookit/goutil/errorx_test.returnXErr()")
+
+	fn := ex.CallerFunc()
+	assert.NotNil(t, fn)
+	assert.Equal(t, "github.com/gookit/goutil/errorx_test.returnXErr", fn.Name())
+	assert.Contains(t, fn.String(), "errorx_test.returnXErr()")
 }
 
 func TestWrap(t *testing.T) {
@@ -107,18 +178,25 @@ func TestWrap(t *testing.T) {
 	assert.Nil(t, errorx.Previous(err))
 	assert.Equal(t, "first error message", errorx.Cause(err).Error())
 
+	fmt.Println("----------------F------------------")
 	fmt.Println(err)
-	fmt.Println("----------------------------------")
 
+	fmt.Println("----------------S------------------")
 	err = errorx.Wrap(err, "second error message")
 	fmt.Println(err)
-	fmt.Println("----------------------------------")
+	var ex *errorx.ErrorX
+	assert.True(t, errorx.To(err, &ex))
+	assert.Equal(t, "", ex.StackString())
+	assert.Equal(t, "second error message", ex.Message())
 
+	fmt.Println("----------------T------------------")
 	err = errorx.Wrap(err, "third error message")
 	fmt.Println(err)
+	fmt.Println("err.Error():")
+	fmt.Println(err.Error())
 
 	assert.Equal(t, "first error message", errorx.Cause(err).Error())
-	assert.Equal(t, "second error message", errorx.Unwrap(err).Error())
+	assert.Contains(t, errorx.Unwrap(err).Error(), "second error message")
 }
 
 type MyError struct {

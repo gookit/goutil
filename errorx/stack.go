@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"path"
 	"runtime"
 	"strconv"
 )
@@ -14,7 +15,8 @@ type stack []uintptr
 // Format stack trace
 func (s *stack) Format(fs fmt.State, verb rune) {
 	switch verb {
-	case 'v', 's':
+	// case 'v', 's':
+	case 'v':
 		_, _ = s.WriteTo(fs)
 	}
 }
@@ -63,35 +65,69 @@ func (s *stack) StackFrames() *runtime.Frames {
 	return runtime.CallersFrames(*s)
 }
 
-// Location for error report
-func (s *stack) Location() (file string, line int) {
-	if len(*s) > 0 {
-		// For historical reasons if pc is interpreted as a uintptr
-		// its value represents the program counter + 1.
-		pc := (*s)[0] - 1
-		fc := runtime.FuncForPC(pc)
-		if fc != nil {
-			return fc.FileLine(pc)
-		}
+// CallerPC the caller PC value in the stack. it is first frame.
+func (s *stack) CallerPC() uintptr {
+	if len(*s) == 0 {
+		return 0
 	}
-	return
+
+	// For historical reasons if pc is interpreted as a uintptr
+	// its value represents the program counter + 1.
+	return (*s)[0] - 1
 }
 
-// CallerName for error report.
+/*************************************************************
+ * For error caller func
+ *************************************************************/
+
+// Func struct
+type Func struct {
+	*runtime.Func
+	pc uintptr
+}
+
+// FuncForPC create.
+func FuncForPC(pc uintptr) *Func {
+	fc := runtime.FuncForPC(pc)
+	if fc == nil {
+		return nil
+	}
+
+	return &Func{
+		pc:   pc,
+		Func: fc,
+	}
+}
+
+// FileLine of the func
+func (f *Func) FileLine() (file string, line int) {
+	return f.Func.FileLine(f.pc)
+}
+
+// Location simple location info for the func
+//
+// Returns eg:
+// 	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
+func (f *Func) Location() string {
+	file, line := f.FileLine()
+
+	return f.Name() + "(), " + path.Base(file) + ":" + strconv.Itoa(line)
+}
+
+// String of the func
 //
 // Returns eg:
 // 	github.com/gookit/goutil/errorx_test.TestWithPrev()
-func (s *stack) CallerName() (fcName string) {
-	if len(*s) > 0 {
-		// For historical reasons if pc is interpreted as a uintptr
-		// its value represents the program counter + 1.
-		pc := (*s)[0] - 1
-		fc := runtime.FuncForPC(pc)
-		if fc != nil {
-			return fc.Name()
-		}
-	}
-	return
+// 	  At /path/to/github.com/gookit/goutil/errorx_test.go:34
+func (f *Func) String() string {
+	file, line := f.FileLine()
+
+	return f.Name() + "()\n  At " + file + ":" + strconv.Itoa(line)
+}
+
+// MarshalText handle
+func (f *Func) MarshalText() ([]byte, error) {
+	return []byte(f.String()), nil
 }
 
 /*************************************************************

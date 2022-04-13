@@ -85,7 +85,7 @@ func (e *ErrorX) Format(s fmt.State, verb rune) {
 		return
 	}
 
-	_, _ = s.Write([]byte("\n---------\nPrevious: "))
+	_, _ = s.Write([]byte("\nPrevious: "))
 	if ex, ok := e.prev.(*ErrorX); ok {
 		ex.Format(s, verb)
 	} else {
@@ -93,7 +93,7 @@ func (e *ErrorX) Format(s fmt.State, verb rune) {
 	}
 }
 
-// GoString to GO string
+// GoString to GO string, contains stack information.
 // printing an error with %#v will produce useful information.
 func (e *ErrorX) GoString() string {
 	// var sb strings.Builder
@@ -102,17 +102,19 @@ func (e *ErrorX) GoString() string {
 	return buf.String()
 }
 
-// Error to string
+// Error to string, not contains stack information.
 func (e *ErrorX) Error() string {
-	return e.GoString()
+	var buf bytes.Buffer
+	e.writeMsgTo(&buf)
+	return buf.String()
 }
 
-// String error to string, with stack trace
+// String error to string, contains stack information.
 func (e *ErrorX) String() string {
 	return e.GoString()
 }
 
-// WriteTo write the error to a writer
+// WriteTo write the error to a writer, contains stack information.
 func (e *ErrorX) WriteTo(w io.Writer) (n int64, err error) {
 	// current error: only output on have msg
 	if len(e.msg) > 0 {
@@ -126,7 +128,7 @@ func (e *ErrorX) WriteTo(w io.Writer) (n int64, err error) {
 
 	// with prev error
 	if e.prev != nil {
-		_, _ = io.WriteString(w, "\n-------\n")
+		_, _ = io.WriteString(w, "\nPrevious: ")
 
 		if ex, ok := e.prev.(*ErrorX); ok {
 			_, _ = ex.WriteTo(w)
@@ -137,17 +139,54 @@ func (e *ErrorX) WriteTo(w io.Writer) (n int64, err error) {
 	return
 }
 
-// Message error message
+// Message error message of current
 func (e *ErrorX) Message() string {
 	return e.msg
 }
 
-// StackString returns error stack string.
+// StackString returns error stack string of current.
 func (e *ErrorX) StackString() string {
 	if e.stack != nil {
 		return e.stack.String()
 	}
 	return ""
+}
+
+// writeMsgTo write the error msg to a writer
+func (e *ErrorX) writeMsgTo(w io.Writer) {
+	// current error
+	if len(e.msg) > 0 {
+		_, _ = w.Write([]byte(e.msg))
+	}
+
+	// with prev error
+	if e.prev != nil {
+		_, _ = w.Write([]byte("; "))
+		if ex, ok := e.prev.(*ErrorX); ok {
+			ex.writeMsgTo(w)
+		} else {
+			_, _ = io.WriteString(w, e.prev.Error())
+		}
+	}
+}
+
+// CallerFunc returns the error caller func. if stack is nil, will return nil
+func (e *ErrorX) CallerFunc() *Func {
+	if e.stack == nil {
+		return nil
+	}
+	return FuncForPC(e.stack.CallerPC())
+}
+
+// Location information for the caller func. more please see CallerFunc
+//
+// Returns eg:
+// 	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
+func (e *ErrorX) Location() string {
+	if e.stack == nil {
+		return "unknown"
+	}
+	return e.CallerFunc().Location()
 }
 
 /*************************************************************
@@ -215,7 +254,11 @@ func WithPrevf(err error, tpl string, vars ...interface{}) error {
 	}
 }
 
-// WithStack wrap err with a stacked trace. If err is nil, will returns nil.
+/*************************************************************
+ * wrap go error with call stacks
+ *************************************************************/
+
+// WithStack wrap a go error with a stacked trace. If err is nil, will return nil.
 func WithStack(err error) error {
 	if err == nil {
 		return nil
@@ -227,14 +270,24 @@ func WithStack(err error) error {
 	}
 }
 
-// Stacked warp a error and with caller stacks. alias of WithStack()
+// Traced warp a go error and with caller stacks. alias of WithStack()
+func Traced(err error) error {
+	if err == nil {
+		return nil
+	}
+	return &ErrorX{
+		msg:   err.Error(),
+		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
+	}
+}
+
+// Stacked warp a go error and with caller stacks. alias of WithStack()
 func Stacked(err error) error {
 	if err == nil {
 		return nil
 	}
 	return &ErrorX{
-		msg: err.Error(),
-		// prev:  err,
+		msg:   err.Error(),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
 	}
 }
