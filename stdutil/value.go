@@ -1,4 +1,4 @@
-package goutil
+package stdutil
 
 import (
 	"github.com/gookit/goutil/mathutil"

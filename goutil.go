@@ -3,9 +3,6 @@ package goutil
 
 import (
 	"fmt"
-	"reflect"
-	"runtime"
-	"strings"
 
 	"github.com/gookit/goutil/stdutil"
 )
@@ -24,7 +21,7 @@ func Panicf(format string, v ...interface{}) {
 
 // FuncName get func name
 func FuncName(f interface{}) string {
-	return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+	return stdutil.FuncName(f)
 }
 
 // PkgName get current package name
@@ -33,17 +30,7 @@ func FuncName(f interface{}) string {
 //	funcName := goutil.FuncName(fn)
 //	pgkName := goutil.PkgName(funcName)
 func PkgName(funcName string) string {
-	for {
-		lastPeriod := strings.LastIndex(funcName, ".")
-		lastSlash := strings.LastIndex(funcName, "/")
-		if lastPeriod > lastSlash {
-			funcName = funcName[:lastPeriod]
-		} else {
-			break
-		}
-	}
-
-	return funcName
+	return stdutil.PkgName(funcName)
 }
 
 // GetCallStacks stacks is a wrapper for runtime.

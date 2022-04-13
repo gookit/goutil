@@ -8,19 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFuncName(t *testing.T) {
-	name := stdutil.FuncName(stdutil.PkgName)
-	assert.Equal(t, "github.com/gookit/goutil/stdutil.PkgName", name)
-
-	name = stdutil.FuncName(stdutil.PanicIfErr)
-	assert.Equal(t, "github.com/gookit/goutil/stdutil.PanicIfErr", name)
-}
-
-func TestPkgName(t *testing.T) {
-	name := stdutil.PkgName(stdutil.FuncName(stdutil.PanicIfErr))
-	assert.Equal(t, "github.com/gookit/goutil/stdutil", name)
-}
-
 func TestPanicIfErr(t *testing.T) {
 	stdutil.PanicIfErr(nil)
 }
