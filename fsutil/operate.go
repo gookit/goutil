@@ -137,6 +137,11 @@ var (
 	QuietRm = QuietRemove
 )
 
+// Remove removes the named file or (empty) directory.
+func Remove(fpath string) error {
+	return os.Remove(fpath)
+}
+
 // MustRemove removes the named file or (empty) directory.
 // NOTICE: if error will panic
 func MustRemove(fpath string) {

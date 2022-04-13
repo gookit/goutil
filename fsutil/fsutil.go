@@ -5,9 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path"
-
-	"github.com/mitchellh/go-homedir"
 )
 
 const (
@@ -48,27 +45,13 @@ func OSTempDir(pattern string) (string, error) {
 //
 // Usage:
 // 	fsutil.TempDir("", "example.*")
+// 	fsutil.TempDir("testdata", "example.*")
 func TempDir(dir, pattern string) (string, error) {
 	return ioutil.TempDir(dir, pattern)
 }
 
-// ExpandPath will parse `~` as user home dir path.
-func ExpandPath(path string) string {
-	path, _ = homedir.Expand(path)
-	return path
-}
-
-// Realpath returns the shortest path name equivalent to path by purely lexical processing.
-func Realpath(pathStr string) string {
-	return path.Clean(pathStr)
-}
-
 // MimeType get File Mime Type name. eg "image/png"
 func MimeType(path string) (mime string) {
-	if path == "" {
-		return
-	}
-
 	file, err := os.Open(path)
 	if err != nil {
 		return

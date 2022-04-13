@@ -3,6 +3,8 @@ package fsutil
 import (
 	"path"
 	"path/filepath"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // Dir get dir path, without last name.
@@ -28,4 +30,15 @@ func FileExt(fpath string) string {
 // Suffix get filename ext. alias of path.Ext()
 func Suffix(fpath string) string {
 	return path.Ext(fpath)
+}
+
+// ExpandPath will parse `~` as user home dir path.
+func ExpandPath(path string) string {
+	path, _ = homedir.Expand(path)
+	return path
+}
+
+// Realpath returns the shortest path name equivalent to path by purely lexical processing.
+func Realpath(pathStr string) string {
+	return path.Clean(pathStr)
 }

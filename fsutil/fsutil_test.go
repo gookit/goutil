@@ -42,7 +42,10 @@ func TestDiscardReader(t *testing.T) {
 // }
 
 func TestTempDir(t *testing.T) {
-
+	dir, err := fsutil.TempDir("testdata", "temp.*")
+	assert.NoError(t, err)
+	assert.DirExists(t, dir)
+	assert.NoError(t, fsutil.Remove(dir))
 }
 
 func TestRealpath(t *testing.T) {
