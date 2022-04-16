@@ -183,7 +183,9 @@ func TestWrap(t *testing.T) {
 
 	fmt.Println("----------------S------------------")
 	err = errorx.Wrap(err, "second error message")
+	assert.Error(t, err)
 	fmt.Println(err)
+
 	var ex *errorx.ErrorX
 	assert.True(t, errorx.To(err, &ex))
 	assert.Equal(t, "", ex.StackString())
@@ -191,12 +193,23 @@ func TestWrap(t *testing.T) {
 
 	fmt.Println("----------------T------------------")
 	err = errorx.Wrap(err, "third error message")
+	assert.Error(t, err)
 	fmt.Println(err)
 	fmt.Println("err.Error():")
 	fmt.Println(err.Error())
 
 	assert.Equal(t, "first error message", errorx.Cause(err).Error())
 	assert.Contains(t, errorx.Unwrap(err).Error(), "second error message")
+}
+
+func TestWrapf(t *testing.T) {
+	err := errorx.Rawf("first error %s", "message")
+	err = errorx.Wrapf(err, "second error %s", "message")
+	assert.Error(t, err)
+
+	fmt.Println(err)
+	fmt.Println("err.Error():")
+	fmt.Println(err.Error())
 }
 
 type MyError struct {

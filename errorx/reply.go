@@ -1,7 +1,6 @@
 package errorx
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/gookit/goutil/mathutil"
@@ -41,11 +40,6 @@ func Fail(code int, msg string) ErrorR {
 // Suc success response reply
 func Suc(msg string) ErrorR {
 	return &errorR{code: 0, msg: msg}
-}
-
-// Raw new a raw go error. alias of errors.New()
-func Raw(msg string) error {
-	return errors.New(msg)
 }
 
 // IsSuc code value check
