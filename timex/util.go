@@ -66,3 +66,36 @@ func AddMinutes(t time.Time, minutes int) time.Time {
 func AddSeconds(t time.Time, seconds int) time.Time {
 	return t.Add(time.Duration(seconds) * time.Second)
 }
+
+// HourStart time for given time
+func HourStart(t time.Time) time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
+}
+
+// DayStart time for given time
+func DayStart(t time.Time) time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+}
+
+// DayEnd time for given time
+func DayEnd(t time.Time) time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
+}
+
+// NowHourStart time
+func NowHourStart() time.Time {
+	return HourStart(time.Now())
+}
+
+// TodayStart time
+func TodayStart() time.Time {
+	return DayStart(time.Now())
+}
+
+// TodayEnd time
+func TodayEnd() time.Time {
+	return DayEnd(time.Now())
+}

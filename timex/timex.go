@@ -40,6 +40,13 @@ func Local() TimeX {
 	}
 }
 
+// FromUnix create from unix time
+func FromUnix(sec int64) TimeX {
+	return TimeX{
+		Time: time.Unix(sec, 0),
+	}
+}
+
 // LocalByName time for now
 func LocalByName(tzName string) TimeX {
 	loc, err := time.LoadLocation(tzName)
@@ -93,4 +100,22 @@ func (t *TimeX) AddSeconds(seconds int) TimeX {
 		// with layout
 		DateLayout: DefaultLayout,
 	}
+}
+
+// HourStart time
+func (t *TimeX) HourStart() time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
+}
+
+// DayStart time
+func (t *TimeX) DayStart() time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+}
+
+// DayEnd time
+func (t *TimeX) DayEnd() time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
 }
