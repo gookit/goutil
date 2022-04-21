@@ -138,11 +138,13 @@ func HowLongAgo(sec int64) string {
 //
 // Template Vars:
 // 	Y,y - year
-// 	M,m - month
-// 	D,d - month
-// 	H,h - hour
-// 	I,i - minute
-// 	S,s - second
+// 	 Y - year 2006
+// 	 y - year 06
+// 	M,m - month 01
+// 	D,d - day 02
+// 	H,h - hour 15
+// 	I,i - minute 04
+// 	S,s - second 05
 //
 func ToLayout(template string) string {
 	if template == "" {
@@ -153,8 +155,10 @@ func ToLayout(template string) string {
 	bts := make([]byte, 0, 24)
 	for _, c := range strutil.ToBytes(template) {
 		switch c {
-		case 'Y', 'y':
+		case 'Y':
 			bts = append(bts, '2', '0', '0', '6')
+		case 'y':
+			bts = append(bts, '0', '6')
 		case 'M', 'm':
 			bts = append(bts, '0', '1')
 		case 'D', 'd':

@@ -22,6 +22,7 @@ func TestFormatByTpl(t *testing.T) {
 	assert.Equal(t, now.Format("20060102 15:04:05"), timex.FormatByTpl(now, "YMD H:I:S"))
 	assert.Equal(t, now.Format("2006-01-02 15:04:05"), timex.FormatByTpl(now, "Y-M-D H:I:S"))
 	assert.Equal(t, now.Format("01/02 15:04:05"), timex.Date(now, "M/D H:I:S"))
+	assert.Equal(t, now.Format("06/01/02 15:04:05"), timex.Date(now, "y/M/D H:I:S"))
 	assert.Equal(t, now.Format("2006-01-02 15:04"), timex.DateFormat(now, "Y-M-D H:I"))
 }
 
