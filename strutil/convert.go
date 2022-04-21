@@ -259,6 +259,15 @@ func ToSlice(s string, sep ...string) []string {
 // 	return cliutil.StringToOSArgs(s) // error: import cycle not allowed
 // }
 
+// MustToTime convert date string to time.Time
+func MustToTime(s string, layouts ...string) time.Time {
+	t, err := ToTime(s, layouts...)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
 // ToTime convert date string to time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error) {
 	var layout string

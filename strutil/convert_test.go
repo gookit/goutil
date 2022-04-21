@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/timex"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -213,6 +214,13 @@ func TestToTime(t *testing.T) {
 	tm, err = strutil.ToTime("2018-09-27T15:34", "2018-09-27 15:34:23")
 	is.Error(err)
 	is.True(tm.IsZero())
+
+	tm = strutil.MustToTime("2018-09-27T15:34")
+	is.Equal("2018-09-27T15:34", timex.FormatByTpl(tm, "Y-M-DTH:I"))
+
+	is.Panics(func() {
+		strutil.MustToTime("invalid")
+	})
 }
 
 // func TestToOSArgs(t *testing.T) {
