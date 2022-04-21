@@ -1,6 +1,11 @@
 package timex
 
-import "time"
+import (
+	"time"
+
+	"github.com/gookit/goutil/fmtutil"
+	"github.com/gookit/goutil/strutil"
+)
 
 const (
 	OneMinSec  = 60
@@ -22,44 +27,58 @@ var (
 // TimeX struct
 type TimeX struct {
 	time.Time
-	// DateLayout set the default date format layout. default use DefaultLayout
-	DateLayout string
+	// Layout set the default date format layout. default use DefaultLayout
+	Layout string
 }
 
 // Now time
-func Now() TimeX {
-	return TimeX{
-		Time: time.Now(),
+func Now() *TimeX {
+	return &TimeX{
+		Time:   time.Now(),
+		Layout: DefaultLayout,
+	}
+}
+
+// New form given time
+func New(t time.Time) *TimeX {
+	return &TimeX{
+		Time:   t,
+		Layout: DefaultLayout,
 	}
 }
 
 // Local time for now
-func Local() TimeX {
-	return TimeX{
-		Time: time.Now().In(time.Local),
-	}
+func Local() *TimeX {
+	return New(time.Now().In(time.Local))
 }
 
 // FromUnix create from unix time
-func FromUnix(sec int64) TimeX {
-	return TimeX{
-		Time: time.Unix(sec, 0),
+func FromUnix(sec int64) *TimeX {
+	return New(time.Unix(sec, 0))
+}
+
+// FromString create from datetime string.
+// see strutil.ToTime()
+func FromString(s string, layouts ...string) (*TimeX, error) {
+	t, err := strutil.ToTime(s, layouts...)
+	if err != nil {
+		return nil, err
 	}
+
+	return New(t), nil
 }
 
 // LocalByName time for now
-func LocalByName(tzName string) TimeX {
+func LocalByName(tzName string) *TimeX {
 	loc, err := time.LoadLocation(tzName)
 	if err != nil {
 		panic(err)
 	}
 
-	return TimeX{
-		Time: time.Now().In(loc),
-	}
+	return New(time.Now().In(loc))
 }
 
-// SetLocalByName tz name. eg: UTC, PRC
+// SetLocalByName set local by tz name. eg: UTC, PRC
 func SetLocalByName(tzName string) error {
 	location, err := time.LoadLocation(tzName)
 	if err != nil {
@@ -70,52 +89,128 @@ func SetLocalByName(tzName string) error {
 	return nil
 }
 
-// Datetime use DefaultLayout format time to date
-func (t *TimeX) Datetime() string {
-	if t.DateLayout == "" {
-		t.DateLayout = DefaultLayout
+// Format returns a textual representation of the time value formatted according to the layout defined by the argument.
+//
+// see time.Time.Format()
+func (t *TimeX) Format(layout string) string {
+	if t.Layout == "" {
+		layout = DefaultLayout
 	}
-	return t.Format(t.DateLayout)
+	return t.Time.Format(layout)
+}
+
+// Datetime use DefaultLayout format time to date. see Format()
+func (t *TimeX) Datetime() string {
+	return t.Format(t.Layout)
+}
+
+// TplFormat use input template format time to date.
+func (t *TimeX) TplFormat(template string) string {
+	return t.DateFormat(template)
+}
+
+// DateFormat use input template format time to date.
+// see ToLayout()
+func (t *TimeX) DateFormat(template string) string {
+	return t.Format(ToLayout(template))
+}
+
+// Yesterday get day ago time for the time
+func (t *TimeX) Yesterday() *TimeX {
+	return t.AddSeconds(-OneDaySec)
+}
+
+// DayAgo get some day ago time for the time
+func (t *TimeX) DayAgo(day int) *TimeX {
+	return t.AddSeconds(-day * OneDaySec)
 }
 
 // AddDay add some day time for the time
-func (t *TimeX) AddDay(day int) TimeX {
+func (t *TimeX) AddDay(day int) *TimeX {
 	return t.AddSeconds(day * OneDaySec)
 }
 
+// Tomorrow time. get tomorrow time for the time
+func (t *TimeX) Tomorrow() *TimeX {
+	return t.AddSeconds(OneDaySec)
+}
+
+// DayAfter get some day after time for the time.
+// alias of TimeX.AddDay()
+func (t *TimeX) DayAfter(day int) *TimeX {
+	return t.AddDay(day)
+}
+
 // AddHour add some hour time
-func (t *TimeX) AddHour(hours int) TimeX {
+func (t *TimeX) AddHour(hours int) *TimeX {
 	return t.AddSeconds(hours * OneHourSec)
 }
 
 // AddMinutes add some minutes time for the time
-func (t *TimeX) AddMinutes(minutes int) TimeX {
+func (t *TimeX) AddMinutes(minutes int) *TimeX {
 	return t.AddSeconds(minutes * OneMinSec)
 }
 
 // AddSeconds add some seconds time the time
-func (t *TimeX) AddSeconds(seconds int) TimeX {
-	return TimeX{
+func (t *TimeX) AddSeconds(seconds int) *TimeX {
+	return &TimeX{
 		Time: t.Add(time.Duration(seconds) * time.Second),
 		// with layout
-		DateLayout: DefaultLayout,
+		Layout: DefaultLayout,
 	}
 }
 
+// SubUnix calc diff seconds for t - u
+func (t TimeX) SubUnix(u time.Time) int {
+	return int(t.Sub(u) / time.Second)
+}
+
+// Diff calc diff duration for t - u.
+// alias of time.Time.Sub()
+func (t TimeX) Diff(u time.Time) time.Duration {
+	return t.Sub(u)
+}
+
+// DiffSec calc diff seconds for t - u
+func (t TimeX) DiffSec(u time.Time) int {
+	return int(t.Sub(u) / time.Second)
+}
+
 // HourStart time
-func (t *TimeX) HourStart() time.Time {
+func (t *TimeX) HourStart() *TimeX {
 	y, m, d := t.Date()
-	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
+	newTime := time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
+
+	return New(newTime)
 }
 
 // DayStart time
-func (t *TimeX) DayStart() time.Time {
+func (t *TimeX) DayStart() *TimeX {
 	y, m, d := t.Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+	newTime := time.Date(y, m, d, 0, 0, 0, 0, t.Location())
+
+	return New(newTime)
 }
 
 // DayEnd time
-func (t *TimeX) DayEnd() time.Time {
+func (t *TimeX) DayEnd() *TimeX {
 	y, m, d := t.Date()
-	return time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
+	newTime := time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
+
+	return New(newTime)
+}
+
+// IsBefore the given time
+func (t *TimeX) IsBefore(u time.Time) bool {
+	return t.Before(u)
+}
+
+// IsAfter the given time
+func (t *TimeX) IsAfter(u time.Time) bool {
+	return t.After(u)
+}
+
+// HowLongAgo format diff time to string.
+func (t TimeX) HowLongAgo(before time.Time) string {
+	return fmtutil.HowLongAgo(t.Unix() - before.Unix())
 }

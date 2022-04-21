@@ -260,13 +260,14 @@ func Wrapf(err error, tpl string, vars ...interface{}) error
 func NewR(code int, msg string) ErrorR
 func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
-func Raw(msg string) error
 // source at errorx/stack.go
 func FuncForPC(pc uintptr) *Func
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
 func TraceDepth(traceDepth int) func(opt *ErrStackOpt)
 // source at errorx/util.go
+func Raw(msg string) error
+func Rawf(tpl string, vars ...interface{}) error
 func Cause(err error) error
 func Unwrap(err error) error
 func Previous(err error) error { return Unwrap(err) }
@@ -639,6 +640,7 @@ func Strings(s string, sep ...string) []string
 func ToStrings(s string, sep ...string) []string
 func ToSlice(s string, sep ...string) []string
 func ToOSArgs(s string) []string
+func MustToTime(s string, layouts ...string) time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/encode.go
 func Base64(str string) string
@@ -779,14 +781,23 @@ func MockOsEnv(mp map[string]string, fn func())
 
 ```go
 // source at timex/timex.go
-func Now() TimeX
-func Local() TimeX
-func LocalByName(tzName string) TimeX
+func Now() *TimeX
+func New(t time.Time) *TimeX
+func Local() *TimeX
+func FromUnix(sec int64) *TimeX
+func FromString(s string, layouts ...string) (*TimeX, error)
+func LocalByName(tzName string) *TimeX
 func SetLocalByName(tzName string) error
 // source at timex/util.go
 func NowUnix() int64
 func Format(t time.Time) string
 func FormatBy(t time.Time, layout string) string
+func Date(t time.Time, template string) string
+func DateFormat(t time.Time, template string) string
+func FormatByTpl(t time.Time, template string) string
+func FormatUnix(sec int64) string
+func FormatUnixBy(sec int64, layout string) string
+func FormatUnixByTpl(sec int64, template string) string
 func NowAddDay(day int) time.Time
 func NowAddHour(hour int) time.Time
 func NowAddMinutes(minutes int) time.Time
@@ -795,6 +806,14 @@ func AddDay(t time.Time, day int) time.Time
 func AddHour(t time.Time, hour int) time.Time
 func AddMinutes(t time.Time, minutes int) time.Time
 func AddSeconds(t time.Time, seconds int) time.Time
+func HourStart(t time.Time) time.Time
+func DayStart(t time.Time) time.Time
+func DayEnd(t time.Time) time.Time
+func NowHourStart() time.Time
+func TodayStart() time.Time
+func TodayEnd() time.Time
+func HowLongAgo(sec int64) string
+func ToLayout(template string) string
 ```
 
 ## Code Check & Testing
