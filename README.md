@@ -815,6 +815,38 @@ func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
 func ToLayout(template string) string
 ```
+#### Usage
+
+- **Convert time to date by template**
+
+```text
+Template Vars:
+ Y,y - year
+  Y - year 2006
+  y - year 06
+ M,m - month 01
+ D,d - day 02
+ H,h - hour 15
+ I,i - minute 04
+ S,s - second 05
+```
+
+Examples, use timex:
+
+```go
+now := timex.Now()
+date := now.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+date = now.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
+```
+
+Format time.Time:
+
+```go
+now := time.Now()
+date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+```
+
+
 
 ## Code Check & Testing
 
@@ -842,23 +874,7 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
-l
-func StdIsTerminal() bool
-func CurrentShell(onlyName bool) (path string)
-func HasShellEnv(shell string) bool
-func IsShellSpecialVar(c uint8) bool
-// source at sysutil/sysutil.go
-func Workdir() string
-func BinDir() string
-func BinFile() string
-// source at sysutil/sysutil_nonwin.go
-func Kill(pid int, signal syscall.Signal) error
-func ProcessExists(pid int) bool
-// source at sysutil/user.go
-func MustFindUser(uname string) *user.User
-func LoginUser() *user.User
-func CurrentUser() *user.User
-func UserHomeDir() string
+ string
 func UHomeDir() string
 func HomeDir() string
 func UserDir(subPath string) string

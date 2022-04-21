@@ -84,8 +84,8 @@ var (
 	// short name => full name.
 	pkgNames = make(map[string]string, 16)
 
-	partDocTplS = "/part-%s-s%s.md"
-	partDocTplE = "/part-%s%s.md"
+	partDocTplS = "part-%s-s%s.md"
+	partDocTplE = "part-%s%s.md"
 )
 
 func bindingFlags() {
@@ -244,6 +244,8 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 
 	if len(pkgFuncs) > 0 {
 		bufWriteln(buf, "```")
+		// load last sub-pkg doc file.
+		bufWriteDoc(buf, partDocTplE, dirname)
 	}
 
 	return buf
@@ -263,22 +265,22 @@ func bufWriteDoc(buf *bytes.Buffer, partNameTpl, pkgName string) {
 		lang = "." + genOpts.lang
 	}
 
-	partName := fmt.Sprintf(partNameTpl, pkgName, lang)
+	filename := fmt.Sprintf(partNameTpl, pkgName, lang)
 
-	if !doWriteDoc2buf(buf, partName) {
+	if !doWriteDoc2buf(buf, filename) {
 		// fallback use en docs
-		partName = fmt.Sprintf(partNameTpl, pkgName, "")
-		doWriteDoc2buf(buf, partName)
+		filename = fmt.Sprintf(partNameTpl, pkgName, "")
+		doWriteDoc2buf(buf, filename)
 	}
 }
 
-func doWriteDoc2buf(buf *bytes.Buffer, partName string) bool {
-	partFile := genOpts.tplDir + partName
+func doWriteDoc2buf(buf *bytes.Buffer, filename string) bool {
+	partFile := genOpts.tplDir + "/" + filename
 	// color.Infoln("- try read part readme from", partFile)
 	partBody := fsutil.ReadExistFile(partFile)
 
 	if len(partBody) > 0 {
-		color.Infoln("- find and inject sub-package doc:", partName)
+		color.Infoln("- find and inject sub-package doc:", filename)
 		_, _ = fmt.Fprintln(buf, string(partBody))
 		return true
 	}
