@@ -22,6 +22,8 @@ Go一些常用的工具函数收集、实现和整理
 - `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
 - `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
+- `timex` 提供增强的 time.Time 实现。添加更多常用的功能方法
+  - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
 
 > **[EN README](README.md)**
 

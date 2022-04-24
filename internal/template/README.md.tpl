@@ -24,6 +24,8 @@
 - `strutil` String util functions. eg: bytes, check, convert, encode, format and more
 - `sysutil` System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
+- `timex` Provides an enhanced time.Time implementation. Add more commonly used functional methods
+  - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
 > **[中文说明](README.zh-CN.md)**
 

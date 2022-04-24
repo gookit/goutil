@@ -24,6 +24,8 @@
 - `strutil` String util functions. eg: bytes, check, convert, encode, format and more
 - `sysutil` System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
+- `timex` Provides an enhanced time.Time implementation. Add more commonly used functional methods
+  - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
 > **[中文说明](README.zh-CN.md)**
 
@@ -807,6 +809,7 @@ func AddHour(t time.Time, hour int) time.Time
 func AddMinutes(t time.Time, minutes int) time.Time
 func AddSeconds(t time.Time, seconds int) time.Time
 func HourStart(t time.Time) time.Time
+func HourEnd(t time.Time) time.Time
 func DayStart(t time.Time) time.Time
 func DayEnd(t time.Time) time.Time
 func NowHourStart() time.Time
@@ -874,13 +877,7 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
- string
-func UHomeDir() string
-func HomeDir() string
-func UserDir(subPath string) string
-func UserCacheDir(subPath string) string
-func UserConfigDir(subPath string) string
-func ExpandPath(path string) string
+ng
 // source at sysutil/user_nonwin.go
 func ChangeUserByName(newUname string) (err error)
 func ChangeUserUidGid(newUid int, newGid int) (err error)

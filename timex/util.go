@@ -102,6 +102,12 @@ func HourStart(t time.Time) time.Time {
 	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
 }
 
+// HourEnd time for given time
+func HourEnd(t time.Time) time.Time {
+	y, m, d := t.Date()
+	return time.Date(y, m, d, t.Hour(), 59, 59, int(time.Second-time.Nanosecond), t.Location())
+}
+
 // DayStart time for given time
 func DayStart(t time.Time) time.Time {
 	y, m, d := t.Date()

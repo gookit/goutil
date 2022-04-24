@@ -22,6 +22,8 @@ Go一些常用的工具函数收集、实现和整理
 - `strutil` string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - `sysutil` system 相关操作的函数工具包. eg: sysenv, exec, user, process
 - `testutil` test help 相关操作的函数工具包. eg: http test, mock ENV value
+- `timex` 提供增强的 time.Time 实现。添加更多常用的功能方法
+  - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
 
 > **[EN README](README.md)**
 
@@ -807,6 +809,7 @@ func AddHour(t time.Time, hour int) time.Time
 func AddMinutes(t time.Time, minutes int) time.Time
 func AddSeconds(t time.Time, seconds int) time.Time
 func HourStart(t time.Time) time.Time
+func HourEnd(t time.Time) time.Time
 func DayStart(t time.Time) time.Time
 func DayEnd(t time.Time) time.Time
 func NowHourStart() time.Time

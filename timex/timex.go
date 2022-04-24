@@ -1,3 +1,7 @@
+// Package timex provides an enhanced time.Time implementation.
+// Add more commonly used functional methods.
+//
+// such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 package timex
 
 import (
@@ -184,6 +188,14 @@ func (t *TimeX) HourStart() *TimeX {
 	return New(newTime)
 }
 
+// HourEnd time
+func (t *TimeX) HourEnd() *TimeX {
+	y, m, d := t.Date()
+	newTime := time.Date(y, m, d, t.Hour(), 59, 59, int(time.Second-time.Nanosecond), t.Location())
+
+	return New(newTime)
+}
+
 // DayStart time
 func (t *TimeX) DayStart() *TimeX {
 	y, m, d := t.Date()
@@ -196,6 +208,14 @@ func (t *TimeX) DayStart() *TimeX {
 func (t *TimeX) DayEnd() *TimeX {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
+
+	return New(newTime)
+}
+
+// ChangeHMS change the hour, minute, second for create new time.
+func (t *TimeX) ChangeHMS(hour, min, sec int) *TimeX {
+	y, m, d := t.Date()
+	newTime := time.Date(y, m, d, hour, min, sec, int(time.Second-time.Nanosecond), t.Location())
 
 	return New(newTime)
 }
