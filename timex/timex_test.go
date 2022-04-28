@@ -23,7 +23,7 @@ func TestTimeX_SubUnix(t *testing.T) {
 	tx := timex.Now()
 
 	after1m := tx.AddMinutes(1)
-	
+
 	assert.Equal(t, timex.OneMinSec, after1m.SubUnix(tx.Time))
 }
 
@@ -48,4 +48,9 @@ func TestTimeX_AddDay(t *testing.T) {
 	assert.True(t, tx.IsAfter(yd.Time))
 	assert.True(t, yd.IsBefore(tx.Time))
 	assert.Equal(t, tx.Unix()-yd.Unix(), int64(timex.OneDaySec))
+}
+
+func TestTimeX_CustomHMS(t *testing.T) {
+	tx := timex.Now()
+	assert.Equal(t, "12:23:34", tx.CustomHMS(12, 23, 34).TplFormat("H:I:S"))
 }

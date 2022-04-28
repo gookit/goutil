@@ -212,8 +212,8 @@ func (t *TimeX) DayEnd() *TimeX {
 	return New(newTime)
 }
 
-// ChangeHMS change the hour, minute, second for create new time.
-func (t *TimeX) ChangeHMS(hour, min, sec int) *TimeX {
+// CustomHMS custom change the hour, minute, second for create new time.
+func (t *TimeX) CustomHMS(hour, min, sec int) *TimeX {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, hour, min, sec, int(time.Second-time.Nanosecond), t.Location())
 

@@ -62,6 +62,17 @@ func TestStringsToString(t *testing.T) {
 	is.Equal("a,b", arrutil.StringsJoin(",", "a", "b"))
 }
 
+func TestAnyToString(t *testing.T) {
+	is := assert.New(t)
+	arr := [2]string{"a", "b"}
+
+	is.Equal("[]", arrutil.AnyToString(nil))
+	is.Equal("[]", arrutil.AnyToString([]string{}))
+	is.Equal("[a,b]", arrutil.AnyToString(arr))
+	is.Equal("[a,b]", arrutil.AnyToString([]string{"a", "b"}))
+	is.Equal("", arrutil.AnyToString("invalid"))
+}
+
 func TestSliceToString(t *testing.T) {
 	is := assert.New(t)
 
