@@ -36,8 +36,8 @@ var (
 		"dump":    "dump",
 		"structs": "struct",
 		"json":    "JSON",
-		"cli":     "CLI",
-		"env":     "ENV",
+		"cli":     "CLI/Console",
+		"env":     "ENV/Environment",
 		"std":     "standard",
 	}
 

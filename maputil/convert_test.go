@@ -3,6 +3,7 @@ package maputil_test
 import (
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/maputil"
 	"github.com/stretchr/testify/assert"
 )
@@ -27,12 +28,15 @@ func TestToString(t *testing.T) {
 	src := map[string]interface{}{"a": "v0", "b": 23}
 
 	s := maputil.ToString(src)
-	// dump.P(s)
+	dump.P(s)
 	assert.Contains(t, s, "b:23")
 	assert.Contains(t, s, "a:v0")
 
 	s = maputil.ToString(nil)
 	assert.Equal(t, "", s)
+
+	s = maputil.ToString(map[string]interface{}{})
+	assert.Equal(t, "{}", s)
 
 	s = maputil.ToString(map[string]interface{}{"": nil})
 	assert.Equal(t, "{:}", s)

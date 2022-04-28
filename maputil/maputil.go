@@ -84,6 +84,7 @@ func Keys(mp interface{}) (keys []string) {
 		return
 	}
 
+	keys = make([]string, 0, rftVal.Len())
 	for _, key := range rftVal.MapKeys() {
 		keys = append(keys, key.String())
 	}
@@ -102,6 +103,7 @@ func Values(mp interface{}) (values []interface{}) {
 	}
 
 	rftVal := reflect.ValueOf(mp)
+	values = make([]interface{}, 0, rftVal.Len())
 	for _, key := range rftVal.MapKeys() {
 		values = append(values, rftVal.MapIndex(key).Interface())
 	}

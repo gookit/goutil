@@ -2,7 +2,7 @@ package maputil
 
 import "fmt"
 
-// Aliases implemented an simple string alias map.
+// Aliases implemented a simple string alias map.
 type Aliases map[string]string
 
 // AddAlias to the Aliases

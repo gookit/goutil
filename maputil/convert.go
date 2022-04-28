@@ -37,12 +37,12 @@ func HttpQueryString(data map[string]interface{}) string {
 	return strings.Join(ss, "&")
 }
 
-// ToString simple and fastly convert map[string]interface{} to string.
+// ToString simple and quickly convert map[string]interface{} to string.
 func ToString(mp map[string]interface{}) string {
 	if mp == nil {
 		return ""
 	}
-	if len(mp) <= 0 {
+	if len(mp) == 0 {
 		return "{}"
 	}
 
