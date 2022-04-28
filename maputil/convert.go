@@ -42,6 +42,9 @@ func ToString(mp map[string]interface{}) string {
 	if mp == nil {
 		return ""
 	}
+	if len(mp) <= 0 {
+		return "{}"
+	}
 
 	buf := make([]byte, 0, len(mp)*16)
 	buf = append(buf, '{')
