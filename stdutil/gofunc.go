@@ -56,6 +56,7 @@ func (ffn *FullFcName) String() string {
 }
 
 // FuncName get full func name, contains pkg path.
+//
 // eg:
 // 	// OUTPUT: github.com/gookit/goutil/stdutil.PanicIf
 //	stdutil.FuncName(stdutil.PkgName)
