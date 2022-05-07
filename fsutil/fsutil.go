@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 const (
@@ -76,4 +77,20 @@ func ReaderMimeType(r io.Reader) (mime string) {
 	}
 
 	return http.DetectContentType(buf[:n])
+}
+
+// GlobWithFunc handle matched file
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+
+	for _, filePath := range files {
+		err = fn(filePath)
+		if err != nil {
+			break
+		}
+	}
+	return
 }

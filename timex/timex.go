@@ -230,6 +230,11 @@ func (t *TimeX) IsAfter(u time.Time) bool {
 	return t.After(u)
 }
 
+// Timestamp value. alias t.Unix()
+func (t TimeX) Timestamp() int64 {
+	return t.Unix()
+}
+
 // HowLongAgo format diff time to string.
 func (t TimeX) HowLongAgo(before time.Time) string {
 	return fmtutil.HowLongAgo(t.Unix() - before.Unix())

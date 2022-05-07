@@ -47,9 +47,9 @@ func MustToStrings(arr interface{}) []string {
 }
 
 // StringsToSlice convert []string to []interface{}
-func StringsToSlice(strings []string) []interface{} {
-	args := make([]interface{}, len(strings))
-	for i, s := range strings {
+func StringsToSlice(ss []string) []interface{} {
+	args := make([]interface{}, len(ss))
+	for i, s := range ss {
 		args[i] = s
 	}
 	return args
