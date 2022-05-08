@@ -9,10 +9,10 @@
 
 💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
 
-- `arrutil` Array/Slice util functions. eg: check, convert
-- `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
+- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert
+- [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
-- `errorx` Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
+- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
 - `fsutil` Filesystem util functions. eg: file and dir check, operate
@@ -24,7 +24,7 @@
 - `strutil` String util functions. eg: bytes, check, convert, encode, format and more
 - `sysutil` System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
-- `timex` Provides an enhanced time.Time implementation. Add more commonly used functional methods
+- [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
 > **[中文说明](README.zh-CN.md)**
@@ -58,18 +58,39 @@ func JoinStrings(sep string, ss ...string) string
 func StringsJoin(sep string, ss ...string) string
 func StringsToInts(ss []string) (ints []int, err error)
 func MustToStrings(arr interface{}) []string
-func StringsToSlice(strings []string) []interface{}
+func StringsToSlice(ss []string) []interface{}
 func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
 func ToStrings(arr interface{}) (ret []string, err error)
 func SliceToStrings(arr []interface{}) []string
+func AnyToString(arr interface{}) string
 func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
 func JoinSlice(sep string, arr ...interface{}) string
 ```
+#### Usage
 
-### CLI
+**check value**:
+
+```go
+arrutil.IntsHas([]int{2, 4, 5}, 2) // True
+arrutil.Int64sHas([]int64{2, 4, 5}, 2) // True
+arrutil.StringsHas([]string{"a", "b"}, "a") // True
+
+// list and val interface{}
+arrutil.Contains(list, val)
+arrutil.Contains([]uint32{9, 2, 3}, 9) // True
+```
+
+**convert**:
+
+```go
+ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2} 
+ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
+```
+
+### CLI/Console
 
 > Package `github.com/gookit/goutil/cliutil`
 
@@ -100,7 +121,18 @@ func ReadFirstRune(question string) (rune, error)
 func ReadPassword(question ...string) string
 ```
 
-#### Examples
+#### Usage
+
+**helper functions:**
+
+```go
+cliutil.Workdir() // current workdir
+cliutil.BinDir() // the program exe file dir
+
+cliutil.ReadInput("Your name?")
+cliutil.ReadPassword("Input password:")
+ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
+```
 
 **cmdline parse:**
 
@@ -127,7 +159,7 @@ func main() {
 }
 ```
 
-output:
+**output**:
 
 ```text
 PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)
@@ -141,7 +173,6 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
-
 
 ### Dump
 
@@ -163,7 +194,6 @@ func NewDumper(out io.Writer, skip int) *Dumper
 func NewWithOptions(fn func(opts *Options)) *Dumper
 func NewDefaultOptions(out io.Writer, skip int) *Options
 ```
-
 #### Examples
 
 example code:
@@ -207,8 +237,7 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
-
-### ENV
+### ENV/Environment
 
 > Package `github.com/gookit/goutil/envutil`
 
@@ -216,9 +245,12 @@ Preview:
 // source at envutil/envutil.go
 func VarReplace(s string) string
 func VarParse(str string) string
-func ParseEnvValue(val string) (newVal string)
+func ParseEnvValue(str string) string
+func ParseValue(val string) (newVal string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
+func GetInt(name string, def ...int) int
+func GetBool(name string, def ...bool) bool
 func Environ() map[string]string
 // source at envutil/info.go
 func IsWin() bool
@@ -235,11 +267,27 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
+#### Usage
+
+**helper functions:**
+
+```go
+envutil.IsWin()
+envutil.IsMac()
+envutil.IsLinux()
+
+// get ENV value by key, can with default value
+envutil.Getenv("APP_ENV", "dev")
+envutil.GetInt("LOG_LEVEL", 1)
+envutil.GetBool("APP_DEBUG", true)
+
+// parse ENV var value from input string, support default value.
+envutil.ParseValue("${ENV_NAME | defValue}")
+```
 
 ### Errorx
 
 > Package `github.com/gookit/goutil/errorx`
-
 
 Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
 
@@ -354,7 +402,6 @@ runtime.goexit()
   /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
 ```
 
-
 ### Formatting
 
 > Package `github.com/gookit/goutil/fmtutil`
@@ -402,6 +449,7 @@ func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 // source at fsutil/info.go
 func Dir(fpath string) string
 func PathName(fpath string) string
@@ -465,7 +513,6 @@ func main() {
 		})
 }
 ```
-
 
 ### JSON
 
@@ -548,10 +595,15 @@ func RandomIntWithSeed(min, max int, seed int64) int
 // source at stdutil/chan.go
 func WaitCloseSignals(closer io.Closer) error
 func Go(f func() error) error
+// source at stdutil/check.go
+func ValueIsEmpty(v reflect.Value) bool
+func ValueLen(v reflect.Value) int
 // source at stdutil/convert.go
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
+func BaseTypeVal2(v reflect.Value) (value interface{}, err error)
+func BaseTypeVal(val interface{}) (value interface{}, err error)
 // source at stdutil/gofunc.go
 func FuncName(fn interface{}) string
 func CutFuncName(fullFcName string) (pkgPath, shortFnName string)
@@ -785,8 +837,10 @@ func MockOsEnv(mp map[string]string, fn func())
 // source at timex/timex.go
 func Now() *TimeX
 func New(t time.Time) *TimeX
+func FromTime(t time.Time) *TimeX
 func Local() *TimeX
 func FromUnix(sec int64) *TimeX
+func FromDate(s string, template ...string) (*TimeX, error)
 func FromString(s string, layouts ...string) (*TimeX, error)
 func LocalByName(tzName string) *TimeX
 func SetLocalByName(tzName string) error
@@ -818,9 +872,78 @@ func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
 func ToLayout(template string) string
 ```
-#### Usage
+#### Examples
 
-- **Convert time to date by template**
+**Create timex instance**
+
+```go
+now := timex.Now()
+
+// from time.Time
+tx := timex.New(time.Now())
+tx := timex.FromTime(time.Now())
+
+// from time unix
+tx := timex.FromUnix(1647411580)
+```
+
+Create from datetime string:
+
+```go
+// auto match layout by datetime
+tx, err  := timex.FromString("2022-04-20 19:40:34")
+// custom set the datetime layout
+tx, err  := timex.FromString("2022-04-20 19:40:34", "2006-01-02 15:04:05")
+// use date template as layout
+tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-M-D H:I:S")
+```
+
+**Use timex instance**
+
+```go
+tx := timex.Now()
+```
+
+change time:
+
+```go
+tx.Yesterday()
+tx.Tomorrow()
+
+tx.DayStart() // get time at Y-M-D 00:00:00
+tx.DayEnd() // get time at Y-M-D 23:59:59
+tx.HourStart() // get time at Y-M-D H:00:00
+tx.HourEnd() // get time at Y-M-D H:59:59
+
+tx.AddDay(2)
+tx.AddHour(1)
+tx.AddMinutes(15)
+tx.AddSeconds(120)
+```
+
+compare time:
+
+```go
+// before compare
+tx.IsBefore(u time.Time)
+tx.IsBeforeUnix(1647411580)
+// after compare
+tx.IsAfter(u time.Time)
+tx.IsAfterUnix(1647411580)
+```
+
+**Helper functions**
+
+```go
+ts := timex.NowUnix() // current unix timestamp
+
+t := NowAddDay(1) // from now add 1 day
+t := NowAddHour(1) // from now add 1 hour
+t := NowAddMinutes(3) // from now add 3 minutes
+t := NowAddSeconds(180) // from now add 180 seconds
+```
+
+**Convert time to date by template**
 
 ```text
 Template Vars:
@@ -849,59 +972,13 @@ now := time.Now()
 date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
 ```
 
-
-
-## Code Check & Testing
-
-```bash
-gofmt -w -l ./
-golint ./...
-go test ./...
-```
-
-## Gookit packages
-
-  - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
-  - [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
-  - [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
-  - [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
-  - [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support
-  - [gookit/event](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
-  - [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
-  - [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
-  - [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
-  - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
-  - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
-  - More, please see https://github.com/gookit
-
-## License
-
-[MIT](LICENSE)
-ng
-// source at sysutil/user_nonwin.go
-func ChangeUserByName(newUname string) (err error)
-func ChangeUserUidGid(newUid int, newGid int) (err error)
-```
-
-### Testing
-
-> Package `github.com/gookit/goutil/testutil`
+More usage:
 
 ```go
-// source at testutil/httpmock.go
-func NewHttpRequest(method, path string, data *MD) *http.Request
-func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
-// source at testutil/testutil.go
-func DiscardStdout() error
-func ReadOutput() (s string)
-func RewriteStdout()
-func RestoreStdout() (s string)
-func RewriteStderr()
-func RestoreStderr() (s string)
-func MockEnvValue(key, val string, fn func(nv string))
-func MockEnvValues(kvMap map[string]string, fn func())
-func MockOsEnvByText(envText string, fn func())
-func MockOsEnv(mp map[string]string, fn func())
+ts := timex.NowUnix() // current unix timestamp
+
+date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
+date := FormatUnixByTpl(ts, "Y-M-D H:I:S") // Get: 2022-04-20 19:40:34
 ```
 
 ## Code Check & Testing
@@ -930,3 +1007,4 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
+)

@@ -9,10 +9,10 @@
 
 💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
 
-- `arrutil` Array/Slice util functions. eg: check, convert
-- `dump`  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
+- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert
+- [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
-- `errorx` Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
+- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
 - `fsutil` Filesystem util functions. eg: file and dir check, operate
@@ -24,7 +24,7 @@
 - `strutil` String util functions. eg: bytes, check, convert, encode, format and more
 - `sysutil` System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
-- `timex` Provides an enhanced time.Time implementation. Add more commonly used functional methods
+- [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
 > **[中文说明](README.zh-CN.md)**

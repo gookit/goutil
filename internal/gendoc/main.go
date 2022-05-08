@@ -281,7 +281,7 @@ func doWriteDoc2buf(buf *bytes.Buffer, filename string) bool {
 
 	if len(partBody) > 0 {
 		color.Infoln("- find and inject sub-package doc:", filename)
-		_, _ = fmt.Fprintln(buf, string(partBody))
+		_, _ = fmt.Fprint(buf, string(partBody))
 		return true
 	}
 

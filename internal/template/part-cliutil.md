@@ -1,5 +1,16 @@
 
-#### Examples
+#### Usage
+
+**helper functions:**
+
+```go
+cliutil.Workdir() // current workdir
+cliutil.BinDir() // the program exe file dir
+
+cliutil.ReadInput("Your name?")
+cliutil.ReadPassword("Input password:")
+ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
+```
 
 **cmdline parse:**
 
@@ -26,7 +37,7 @@ func main() {
 }
 ```
 
-output:
+**output**:
 
 ```text
 PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)

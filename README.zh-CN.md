@@ -56,18 +56,39 @@ func JoinStrings(sep string, ss ...string) string
 func StringsJoin(sep string, ss ...string) string
 func StringsToInts(ss []string) (ints []int, err error)
 func MustToStrings(arr interface{}) []string
-func StringsToSlice(strings []string) []interface{}
+func StringsToSlice(ss []string) []interface{}
 func ToInt64s(arr interface{}) (ret []int64, err error)
 func MustToInt64s(arr interface{}) []int64
 func SliceToInt64s(arr []interface{}) []int64
 func ToStrings(arr interface{}) (ret []string, err error)
 func SliceToStrings(arr []interface{}) []string
+func AnyToString(arr interface{}) string
 func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
 func JoinSlice(sep string, arr ...interface{}) string
 ```
+#### Usage
 
-### CLI
+**check value**:
+
+```go
+arrutil.IntsHas([]int{2, 4, 5}, 2) // True
+arrutil.Int64sHas([]int64{2, 4, 5}, 2) // True
+arrutil.StringsHas([]string{"a", "b"}, "a") // True
+
+// list and val interface{}
+arrutil.Contains(list, val)
+arrutil.Contains([]uint32{9, 2, 3}, 9) // True
+```
+
+**convert**:
+
+```go
+ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2} 
+ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
+```
+
+### CLI/Console
 
 > Package `github.com/gookit/goutil/cliutil`
 
@@ -98,7 +119,18 @@ func ReadFirstRune(question string) (rune, error)
 func ReadPassword(question ...string) string
 ```
 
-#### Examples
+#### Usage
+
+**helper functions:**
+
+```go
+cliutil.Workdir() // current workdir
+cliutil.BinDir() // the program exe file dir
+
+cliutil.ReadInput("Your name?")
+cliutil.ReadPassword("Input password:")
+ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
+```
 
 **cmdline parse:**
 
@@ -125,7 +157,7 @@ func main() {
 }
 ```
 
-output:
+**output**:
 
 ```text
 PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)
@@ -139,7 +171,6 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
-
 
 ### Dump
 
@@ -161,7 +192,6 @@ func NewDumper(out io.Writer, skip int) *Dumper
 func NewWithOptions(fn func(opts *Options)) *Dumper
 func NewDefaultOptions(out io.Writer, skip int) *Options
 ```
-
 #### Examples
 
 example code:
@@ -205,8 +235,7 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
-
-### ENV
+### ENV/Environment
 
 > Package `github.com/gookit/goutil/envutil`
 
@@ -214,9 +243,12 @@ Preview:
 // source at envutil/envutil.go
 func VarReplace(s string) string
 func VarParse(str string) string
-func ParseEnvValue(val string) (newVal string)
+func ParseEnvValue(str string) string
+func ParseValue(val string) (newVal string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
+func GetInt(name string, def ...int) int
+func GetBool(name string, def ...bool) bool
 func Environ() map[string]string
 // source at envutil/info.go
 func IsWin() bool
@@ -233,6 +265,23 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
+#### Usage
+
+**helper functions:**
+
+```go
+envutil.IsWin()
+envutil.IsMac()
+envutil.IsLinux()
+
+// get ENV value by key, can with default value
+envutil.Getenv("APP_ENV", "dev")
+envutil.GetInt("LOG_LEVEL", 1)
+envutil.GetBool("APP_DEBUG", true)
+
+// parse ENV var value from input string, support default value.
+envutil.ParseValue("${ENV_NAME | defValue}")
+```
 
 ### Errorx
 
@@ -242,7 +291,6 @@ func IsSupportTrueColor() bool
 `errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
 
 > 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
-
 ```go
 // source at errorx/errorx.go
 func New(msg string) error
@@ -354,7 +402,6 @@ runtime.goexit()
   /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
 ```
 
-
 ### Formatting
 
 > Package `github.com/gookit/goutil/fmtutil`
@@ -402,6 +449,7 @@ func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 // source at fsutil/info.go
 func Dir(fpath string) string
 func PathName(fpath string) string
@@ -465,7 +513,6 @@ func main() {
 		})
 }
 ```
-
 
 ### JSON
 
@@ -548,10 +595,15 @@ func RandomIntWithSeed(min, max int, seed int64) int
 // source at stdutil/chan.go
 func WaitCloseSignals(closer io.Closer) error
 func Go(f func() error) error
+// source at stdutil/check.go
+func ValueIsEmpty(v reflect.Value) bool
+func ValueLen(v reflect.Value) int
 // source at stdutil/convert.go
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
+func BaseTypeVal2(v reflect.Value) (value interface{}, err error)
+func BaseTypeVal(val interface{}) (value interface{}, err error)
 // source at stdutil/gofunc.go
 func FuncName(fn interface{}) string
 func CutFuncName(fullFcName string) (pkgPath, shortFnName string)
@@ -785,8 +837,10 @@ func MockOsEnv(mp map[string]string, fn func())
 // source at timex/timex.go
 func Now() *TimeX
 func New(t time.Time) *TimeX
+func FromTime(t time.Time) *TimeX
 func Local() *TimeX
 func FromUnix(sec int64) *TimeX
+func FromDate(s string, template ...string) (*TimeX, error)
 func FromString(s string, layouts ...string) (*TimeX, error)
 func LocalByName(tzName string) *TimeX
 func SetLocalByName(tzName string) error
@@ -818,9 +872,78 @@ func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
 func ToLayout(template string) string
 ```
-#### Usage
+#### Examples
 
-- **Convert time to date by template**
+**Create timex instance**
+
+```go
+now := timex.Now()
+
+// from time.Time
+tx := timex.New(time.Now())
+tx := timex.FromTime(time.Now())
+
+// from time unix
+tx := timex.FromUnix(1647411580)
+```
+
+Create from datetime string:
+
+```go
+// auto match layout by datetime
+tx, err  := timex.FromString("2022-04-20 19:40:34")
+// custom set the datetime layout
+tx, err  := timex.FromString("2022-04-20 19:40:34", "2006-01-02 15:04:05")
+// use date template as layout
+tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-M-D H:I:S")
+```
+
+**Use timex instance**
+
+```go
+tx := timex.Now()
+```
+
+change time:
+
+```go
+tx.Yesterday()
+tx.Tomorrow()
+
+tx.DayStart() // get time at Y-M-D 00:00:00
+tx.DayEnd() // get time at Y-M-D 23:59:59
+tx.HourStart() // get time at Y-M-D H:00:00
+tx.HourEnd() // get time at Y-M-D H:59:59
+
+tx.AddDay(2)
+tx.AddHour(1)
+tx.AddMinutes(15)
+tx.AddSeconds(120)
+```
+
+compare time:
+
+```go
+// before compare
+tx.IsBefore(u time.Time)
+tx.IsBeforeUnix(1647411580)
+// after compare
+tx.IsAfter(u time.Time)
+tx.IsAfterUnix(1647411580)
+```
+
+**Helper functions**
+
+```go
+ts := timex.NowUnix() // current unix timestamp
+
+t := NowAddDay(1) // from now add 1 day
+t := NowAddHour(1) // from now add 1 hour
+t := NowAddMinutes(3) // from now add 3 minutes
+t := NowAddSeconds(180) // from now add 180 seconds
+```
+
+**Convert time to date by template**
 
 ```text
 Template Vars:
@@ -849,7 +972,14 @@ now := time.Now()
 date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
 ```
 
+More usage:
 
+```go
+ts := timex.NowUnix() // current unix timestamp
+
+date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
+date := FormatUnixByTpl(ts, "Y-M-D H:I:S") // Get: 2022-04-20 19:40:34
+```
 
 ## Code Check & Testing
 
@@ -877,3 +1007,4 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
+
