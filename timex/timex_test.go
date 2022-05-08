@@ -8,6 +8,16 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFromDate(t *testing.T) {
+	tx, err := timex.FromDate("2022-04-20 19:40:34")
+	assert.NoError(t, err)
+	assert.Equal(t, "2022-04-20 19:40:34", tx.Datetime())
+
+	tx, err = timex.FromDate("2022-04-20 19:40:34", "Y-M-D H:I:S")
+	assert.NoError(t, err)
+	assert.Equal(t, "2022-04-20 19:40:34", tx.Datetime())
+}
+
 func TestTimeX_basic(t *testing.T) {
 	tx := timex.Now()
 	assert.NotEmpty(t, tx.String())

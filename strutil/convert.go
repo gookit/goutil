@@ -273,6 +273,10 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 	var layout string
 	if len(layouts) > 0 { // custom layout
 		layout = layouts[0]
+		if layout == "" {
+			err = ErrInvalidParam
+			return
+		}
 	} else { // auto match layout.
 		switch len(s) {
 		case 8:
@@ -287,22 +291,20 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 			layout = "2006-01-02 15:04:05"
 		case 20: // time.RFC3339
 			layout = "2006-01-02T15:04:05Z07:00"
+		default:
+			err = ErrInvalidParam
+			return
 		}
-	}
 
-	if layout == "" {
-		err = ErrInvalidParam
-		return
-	}
+		// has 'T' eg: "2006-01-02T15:04:05"
+		if strings.ContainsRune(s, 'T') {
+			layout = strings.Replace(layout, " ", "T", -1)
+		}
 
-	// has 'T' eg: "2006-01-02T15:04:05"
-	if strings.ContainsRune(s, 'T') {
-		layout = strings.Replace(layout, " ", "T", -1)
-	}
-
-	// eg: "2006/01/02 15:04:05"
-	if strings.ContainsRune(s, '/') {
-		layout = strings.Replace(layout, "-", "/", -1)
+		// eg: "2006/01/02 15:04:05"
+		if strings.ContainsRune(s, '/') {
+			layout = strings.Replace(layout, "-", "/", -1)
+		}
 	}
 
 	t, err = time.Parse(layout, s)

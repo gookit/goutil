@@ -35,7 +35,11 @@ type TimeX struct {
 	Layout string
 }
 
-// Now time
+/*************************************************************
+ * Create timex instance
+ *************************************************************/
+
+// Now time instance
 func Now() *TimeX {
 	return &TimeX{
 		Time:   time.Now(),
@@ -43,8 +47,16 @@ func Now() *TimeX {
 	}
 }
 
-// New form given time
+// New instance form given time
 func New(t time.Time) *TimeX {
+	return &TimeX{
+		Time:   t,
+		Layout: DefaultLayout,
+	}
+}
+
+// FromTime new instance form given time.Time
+func FromTime(t time.Time) *TimeX {
 	return &TimeX{
 		Time:   t,
 		Layout: DefaultLayout,
@@ -59,6 +71,14 @@ func Local() *TimeX {
 // FromUnix create from unix time
 func FromUnix(sec int64) *TimeX {
 	return New(time.Unix(sec, 0))
+}
+
+// FromDate create from datetime string.
+func FromDate(s string, template ...string) (*TimeX, error) {
+	if len(template) > 0 && template[0] != "" {
+		return FromString(s, ToLayout(template[0]))
+	}
+	return FromString(s)
 }
 
 // FromString create from datetime string.
@@ -91,6 +111,15 @@ func SetLocalByName(tzName string) error {
 
 	time.Local = location
 	return nil
+}
+
+/*************************************************************
+ * timex usage
+ *************************************************************/
+
+// T returns the t.Time
+func (t TimeX) T() time.Time {
+	return t.Time
 }
 
 // Format returns a textual representation of the time value formatted according to the layout defined by the argument.
@@ -164,15 +193,15 @@ func (t *TimeX) AddSeconds(seconds int) *TimeX {
 	}
 }
 
-// SubUnix calc diff seconds for t - u
-func (t TimeX) SubUnix(u time.Time) int {
-	return int(t.Sub(u) / time.Second)
-}
-
 // Diff calc diff duration for t - u.
 // alias of time.Time.Sub()
 func (t TimeX) Diff(u time.Time) time.Duration {
 	return t.Sub(u)
+}
+
+// SubUnix calc diff seconds for t - u
+func (t TimeX) SubUnix(u time.Time) int {
+	return int(t.Sub(u) / time.Second)
 }
 
 // DiffSec calc diff seconds for t - u
@@ -217,7 +246,7 @@ func (t *TimeX) CustomHMS(hour, min, sec int) *TimeX {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, hour, min, sec, int(time.Second-time.Nanosecond), t.Location())
 
-	return New(newTime)
+	return FromTime(newTime)
 }
 
 // IsBefore the given time
@@ -225,9 +254,19 @@ func (t *TimeX) IsBefore(u time.Time) bool {
 	return t.Before(u)
 }
 
+// IsBeforeUnix the given unix timestamp
+func (t *TimeX) IsBeforeUnix(ux int64) bool {
+	return t.Before(time.Unix(ux, 0))
+}
+
 // IsAfter the given time
 func (t *TimeX) IsAfter(u time.Time) bool {
 	return t.After(u)
+}
+
+// IsAfterUnix the given unix timestamp
+func (t *TimeX) IsAfterUnix(ux int64) bool {
+	return t.After(time.Unix(ux, 0))
 }
 
 // Timestamp value. alias t.Unix()
