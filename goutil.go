@@ -1,4 +1,5 @@
-// Package goutil Useful utils for the Go: int, string, array/slice, map, format, cli, env, filesystem, testing and more.
+// Package goutil 💪 Useful utils for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem,
+// system, testing, debug and more.
 package goutil
 
 import (

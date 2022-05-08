@@ -7,7 +7,7 @@
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-💪 Useful utils for the Go: string, array/slice, map, format, CLI, ENV, filesystem, testing and more.
+💪 Useful utils for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 - [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert
 - [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location

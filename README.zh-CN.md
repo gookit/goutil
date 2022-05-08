@@ -838,6 +838,7 @@ func MockOsEnv(mp map[string]string, fn func())
 // source at timex/timex.go
 func Now() *TimeX
 func New(t time.Time) *TimeX
+func Wrap(t time.Time) *TimeX
 func FromTime(t time.Time) *TimeX
 func Local() *TimeX
 func FromUnix(sec int64) *TimeX
