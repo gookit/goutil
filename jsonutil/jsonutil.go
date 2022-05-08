@@ -31,9 +31,20 @@ func ReadFile(filePath string, v interface{}) error {
 	return json.NewDecoder(file).Decode(v)
 }
 
+// Pretty JSON string and return
+func Pretty(v interface{}) (string, error) {
+	out, err := json.MarshalIndent(v, "", "    ")
+	return string(out), err
+}
+
 // Encode data to json bytes.
 func Encode(v interface{}) ([]byte, error) {
 	return json.Marshal(v)
+}
+
+// EncodePretty encode pretty JSON data to json bytes.
+func EncodePretty(v interface{}) ([]byte, error) {
+	return json.MarshalIndent(v, "", "    ")
 }
 
 // EncodeToWriter encode data to writer.
@@ -68,12 +79,6 @@ func DecodeString(str string, ptr interface{}) error {
 // DecodeReader decode JSON from io reader.
 func DecodeReader(r io.Reader, ptr interface{}) error {
 	return json.NewDecoder(r).Decode(ptr)
-}
-
-// Pretty JSON string and return
-func Pretty(v interface{}) (string, error) {
-	out, err := json.MarshalIndent(v, "", "    ")
-	return string(out), err
 }
 
 // `(?s:` enable match multi line

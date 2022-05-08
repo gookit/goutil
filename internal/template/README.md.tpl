@@ -15,9 +15,9 @@
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
-- `fsutil` Filesystem util functions. eg: file and dir check, operate
-- `jsonutil` JSON util functions.
-- `maputil` Map data util functions. eg: convert, sub-value get, simple merge
+- [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
+- `jsonutil` some util functions for quick read, write, encode, decode JSON data.
+- [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client

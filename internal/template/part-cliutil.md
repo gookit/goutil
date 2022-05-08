@@ -1,5 +1,5 @@
 
-#### Usage
+#### CLI Util Usage
 
 **helper functions:**
 

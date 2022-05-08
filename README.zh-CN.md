@@ -67,7 +67,7 @@ func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
 func JoinSlice(sep string, arr ...interface{}) string
 ```
-#### Usage
+#### ArrUtil Usage
 
 **check value**:
 
@@ -119,7 +119,7 @@ func ReadFirstRune(question string) (rune, error)
 func ReadPassword(question ...string) string
 ```
 
-#### Usage
+#### CLI Util Usage
 
 **helper functions:**
 
@@ -265,7 +265,7 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
-#### Usage
+#### ENV Util Usage
 
 **helper functions:**
 
@@ -287,10 +287,10 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 > Package `github.com/gookit/goutil/errorx`
 
-
 `errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
 
 > 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
+
 ```go
 // source at errorx/errorx.go
 func New(msg string) error
@@ -327,7 +327,7 @@ func To(err error, target interface{}) bool
 func As(err error, target interface{}) bool
 ```
 
-#### Usage
+#### Errorx 使用示例
 
 **创建错误带有调用栈信息**
 
@@ -371,9 +371,9 @@ func doSomething() error {
 	}
 ```
 
-#### 使用示例
+**使用效果示例**
 
-Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
+更多关于 `errorx` 的使用请看 [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
@@ -478,7 +478,7 @@ func DeleteIfFileExist(fpath string) error
 func Unzip(archive, targetDir string) (err error)
 ```
 
-#### Examples
+#### FsUtil Usage
 
 **files finder:**
 
@@ -522,13 +522,14 @@ func main() {
 // source at jsonutil/jsonutil.go
 func WriteFile(filePath string, data interface{}) error
 func ReadFile(filePath string, v interface{}) error
+func Pretty(v interface{}) (string, error)
 func Encode(v interface{}) ([]byte, error)
+func EncodePretty(v interface{}) ([]byte, error)
 func EncodeToWriter(v interface{}, w io.Writer) error
 func EncodeUnescapeHTML(v interface{}) ([]byte, error)
 func Decode(bts []byte, ptr interface{}) error
 func DecodeString(str string, ptr interface{}) error
 func DecodeReader(r io.Reader, ptr interface{}) error
-func Pretty(v interface{}) (string, error)
 func StripComments(src string) string
 ```
 
@@ -872,7 +873,7 @@ func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
 func ToLayout(template string) string
 ```
-#### Examples
+#### Timex Usage
 
 **Create timex instance**
 
@@ -1007,4 +1008,3 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
-

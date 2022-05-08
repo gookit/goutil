@@ -1,5 +1,5 @@
 
-#### Usage
+#### Errorx Usage
 
 **Create error with call stack info**
 
@@ -43,7 +43,7 @@ can be replaced with:
 	}
 ```
 
-#### Examples
+**Print the errorx.New() error**
 
 Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 

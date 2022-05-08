@@ -30,6 +30,10 @@ func TestPretty(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, want, got)
 	}
+
+	bts, err := jsonutil.EncodePretty(map[string]int{"a": 1})
+	assert.NoError(t, err)
+	assert.Equal(t, want, string(bts))
 }
 
 func TestEncode(t *testing.T) {

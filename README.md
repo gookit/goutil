@@ -15,9 +15,9 @@
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
 - `fmtutil` Format data util functions
-- `fsutil` Filesystem util functions. eg: file and dir check, operate
-- `jsonutil` JSON util functions.
-- `maputil` Map data util functions. eg: convert, sub-value get, simple merge
+- [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
+- `jsonutil` some util functions for quick read, write, encode, decode JSON data.
+- [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
@@ -69,7 +69,7 @@ func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
 func JoinSlice(sep string, arr ...interface{}) string
 ```
-#### Usage
+#### ArrUtil Usage
 
 **check value**:
 
@@ -121,7 +121,7 @@ func ReadFirstRune(question string) (rune, error)
 func ReadPassword(question ...string) string
 ```
 
-#### Usage
+#### CLI Util Usage
 
 **helper functions:**
 
@@ -267,7 +267,7 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 ```
-#### Usage
+#### ENV Util Usage
 
 **helper functions:**
 
@@ -327,7 +327,7 @@ func To(err error, target interface{}) bool
 func As(err error, target interface{}) bool
 ```
 
-#### Usage
+#### Errorx Usage
 
 **Create error with call stack info**
 
@@ -371,7 +371,7 @@ can be replaced with:
 	}
 ```
 
-#### Examples
+**Print the errorx.New() error**
 
 Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 
@@ -478,7 +478,7 @@ func DeleteIfFileExist(fpath string) error
 func Unzip(archive, targetDir string) (err error)
 ```
 
-#### Examples
+#### FsUtil Usage
 
 **files finder:**
 
@@ -522,13 +522,14 @@ func main() {
 // source at jsonutil/jsonutil.go
 func WriteFile(filePath string, data interface{}) error
 func ReadFile(filePath string, v interface{}) error
+func Pretty(v interface{}) (string, error)
 func Encode(v interface{}) ([]byte, error)
+func EncodePretty(v interface{}) ([]byte, error)
 func EncodeToWriter(v interface{}, w io.Writer) error
 func EncodeUnescapeHTML(v interface{}) ([]byte, error)
 func Decode(bts []byte, ptr interface{}) error
 func DecodeString(str string, ptr interface{}) error
 func DecodeReader(r io.Reader, ptr interface{}) error
-func Pretty(v interface{}) (string, error)
 func StripComments(src string) string
 ```
 
@@ -872,7 +873,7 @@ func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
 func ToLayout(template string) string
 ```
-#### Examples
+#### Timex Usage
 
 **Create timex instance**
 
@@ -1007,4 +1008,3 @@ go test ./...
 ## License
 
 [MIT](LICENSE)
-)

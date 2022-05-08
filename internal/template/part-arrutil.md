@@ -1,4 +1,4 @@
-#### Usage
+#### ArrUtil Usage
 
 **check value**:
 

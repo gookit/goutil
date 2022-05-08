@@ -1,4 +1,4 @@
-#### Examples
+#### Timex Usage
 
 **Create timex instance**
 

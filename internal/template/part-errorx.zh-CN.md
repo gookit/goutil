@@ -1,5 +1,5 @@
 
-#### Usage
+#### Errorx 使用示例
 
 **创建错误带有调用栈信息**
 
@@ -43,9 +43,9 @@ func doSomething() error {
 	}
 ```
 
-#### 使用示例
+**使用效果示例**
 
-Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
+更多关于 `errorx` 的使用请看 [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
