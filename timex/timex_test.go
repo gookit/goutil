@@ -2,11 +2,27 @@ package timex_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/timex"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestWrap(t *testing.T) {
+	tx := timex.Wrap(time.Now())
+	assert.False(t, tx.IsZero())
+
+	tx = timex.FromTime(time.Now())
+	assert.False(t, tx.IsZero())
+
+	tx = timex.Local()
+	assert.False(t, tx.IsZero())
+	assert.False(t, tx.T().IsZero())
+
+	tx = timex.FromUnix(time.Now().Unix())
+	assert.False(t, tx.IsZero())
+}
 
 func TestFromDate(t *testing.T) {
 	tx, err := timex.FromDate("2022-04-20 19:40:34")
@@ -43,8 +59,11 @@ func TestTimeX_DateFormat(t *testing.T) {
 	assert.Equal(t, tx.Format("2006/01/02 15:04"), tx.TplFormat("Y/M/D H:I"))
 
 	date := tx.Format("06/01/02 15:04")
-	assert.Equal(t, date, tx.DateFormat("y/M/D H:I"))
 	dump.V(date)
+	assert.Equal(t, date, tx.DateFormat("y/M/D H:I"))
+
+	assert.Equal(t, "23:59:59", tx.DayEnd().DateFormat("H:I:S"))
+	assert.Equal(t, "00:00:00", tx.DayStart().DateFormat("H:I:S"))
 }
 
 func TestTimeX_AddDay(t *testing.T) {
@@ -56,7 +75,10 @@ func TestTimeX_AddDay(t *testing.T) {
 	assert.Equal(t, yd.Unix(), tx.DayAgo(1).Unix())
 
 	assert.True(t, tx.IsAfter(yd.Time))
+	assert.True(t, tx.IsAfterUnix(yd.Time.Unix()))
 	assert.True(t, yd.IsBefore(tx.Time))
+	assert.True(t, yd.IsBeforeUnix(tx.T().Unix()))
+
 	assert.Equal(t, tx.Unix()-yd.Unix(), int64(timex.OneDaySec))
 }
 

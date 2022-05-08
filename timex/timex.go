@@ -41,26 +41,22 @@ type TimeX struct {
 
 // Now time instance
 func Now() *TimeX {
-	return &TimeX{
-		Time:   time.Now(),
-		Layout: DefaultLayout,
-	}
+	return &TimeX{Time: time.Now(), Layout: DefaultLayout}
 }
 
 // New instance form given time
 func New(t time.Time) *TimeX {
-	return &TimeX{
-		Time:   t,
-		Layout: DefaultLayout,
-	}
+	return &TimeX{Time: t, Layout: DefaultLayout}
 }
 
-// FromTime new instance form given time.Time
+// Wrap the go time instance. alias of the New()
+func Wrap(t time.Time) *TimeX {
+	return &TimeX{Time: t, Layout: DefaultLayout}
+}
+
+// FromTime new instance form given time.Time. alias of the New()
 func FromTime(t time.Time) *TimeX {
-	return &TimeX{
-		Time:   t,
-		Layout: DefaultLayout,
-	}
+	return &TimeX{Time: t, Layout: DefaultLayout}
 }
 
 // Local time for now
@@ -225,7 +221,7 @@ func (t *TimeX) HourEnd() *TimeX {
 	return New(newTime)
 }
 
-// DayStart time
+// DayStart get time at 00:00:00
 func (t *TimeX) DayStart() *TimeX {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, 0, 0, 0, 0, t.Location())
@@ -233,7 +229,7 @@ func (t *TimeX) DayStart() *TimeX {
 	return New(newTime)
 }
 
-// DayEnd time
+// DayEnd get time at 23:59:59
 func (t *TimeX) DayEnd() *TimeX {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
