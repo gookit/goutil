@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	TestEnvName         = "TEST_GOUTIL_ENV"
-	TestNoEnvName       = "TEST_GOUTIL_NO_ENV"
-	TestEnvValue        = "1"
-	DefaultTestEnvValue = "1"
+	TestEnvName     = "TEST_GOUTIL_ENV"
+	TestNoEnvName   = "TEST_GOUTIL_NO_ENV"
+	TestEnvValue    = "1"
+	defTestEnvValue = "1"
 )
 
 func TestGetenv(t *testing.T) {
@@ -22,8 +22,22 @@ func TestGetenv(t *testing.T) {
 	}, func() {
 		envValue := Getenv(TestEnvName)
 		assert.Equal(t, TestEnvValue, envValue, "env value not equals")
-		envValue = Getenv(TestNoEnvName, DefaultTestEnvValue)
-		assert.Equal(t, DefaultTestEnvValue, envValue, "env value not default")
+		envValue = Getenv(TestNoEnvName, defTestEnvValue)
+		assert.Equal(t, defTestEnvValue, envValue, "env value not default")
+
+		assert.Equal(t, 1, GetInt(TestEnvName), "int env value not equals")
+		assert.Equal(t, 0, GetInt(TestNoEnvName))
+		assert.Equal(t, 2, GetInt(TestNoEnvName, 2))
+	})
+}
+
+func TestGetBool(t *testing.T) {
+	testutil.MockEnvValues(map[string]string{
+		TestEnvName: "on",
+	}, func() {
+		assert.True(t, GetBool(TestEnvName))
+		assert.False(t, GetBool(TestNoEnvName))
+		assert.True(t, GetBool(TestNoEnvName, true))
 	})
 }
 

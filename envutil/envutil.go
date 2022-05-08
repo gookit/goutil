@@ -25,14 +25,22 @@ var ValueGetter = os.Getenv
 //  var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
 var envRegex = regexp.MustCompile(`\${.+?}`)
 
-// VarParse alias of the ParseEnvValue
+// VarParse alias of the ParseValue
 func VarParse(str string) string {
 	return ParseEnvValue(str)
 }
 
-// ParseEnvValue parse ENV var value from input string, support default value.
+// ParseEnvValue alias of the ParseValue
+func ParseEnvValue(str string) string {
+	return ParseValue(str)
+}
+
+// ParseValue parse ENV var value from input string, support default value.
 // vars like ${var}, ${var| default}
-func ParseEnvValue(val string) (newVal string) {
+//
+// Usage:
+// 	envutil.ParseValue()
+func ParseValue(val string) (newVal string) {
 	if strings.Index(val, "${") == -1 {
 		return val
 	}
