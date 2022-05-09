@@ -11,7 +11,7 @@ var (
 	ErrConvertFail = errors.New("convert value type is failure")
 )
 
-// ToString always convert value to string
+// ToString always convert value to string, will ignore error
 func ToString(v interface{}) string {
 	s, _ := strutil.AnyToString(v, false)
 	return s

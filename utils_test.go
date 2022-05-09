@@ -1,1 +1,0 @@
-package goutil_test

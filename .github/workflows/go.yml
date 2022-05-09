@@ -33,13 +33,28 @@ jobs:
 
     - name: Get dependencies
       run: |
-        go get -v -t -d ./...
-#        go get github.com/mattn/goveralls
-#        go get golang.org/x/tools/cmd/cover
+        go mod tidy
+
+    - name: Revive check
+      uses: morphy2k/revive-action@v2.3.1
+      with:
+        # Exclude patterns, separated by semicolons (optional)
+        exclude: "./internal/..."
+
+    - name: Run staticcheck
+      uses: reviewdog/action-staticcheck@v1
+      with:
+        github_token: ${{ secrets.github_token }}
+        # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
+        reporter: github-pr-review
+        # Report all results.
+        filter_mode: nofilter
+        # Exit with 1 when it find at least one finding.
+        fail_on_error: true
 
     - name: Run unit tests
-      #      run: go test -v -cover ./...
-      #      must add " for profile.cov on Windows OS
+      # run: go test -v -cover ./...
+      # must add " for profile.cov on Windows OS
       run: go test -v -coverprofile="profile.cov" ./...
 
     - name: Send coverage

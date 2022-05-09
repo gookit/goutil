@@ -81,6 +81,17 @@ func DecodeReader(r io.Reader, ptr interface{}) error {
 	return json.NewDecoder(r).Decode(ptr)
 }
 
+// Mapping src data(map,struct) to dst struct use json tags.
+//
+// On src, dst both is struct, equivalent to merging two structures (src should be a subset of dsc)
+func Mapping(src, dst interface{}) error {
+	bts, err := Encode(src)
+	if err != nil {
+		return err
+	}
+	return Decode(bts, dst)
+}
+
 // `(?s:` enable match multi line
 var jsonMLComments = regexp.MustCompile(`(?s:/\*.*?\*/\s*)`)
 

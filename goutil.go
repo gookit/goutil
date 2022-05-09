@@ -5,8 +5,24 @@ package goutil
 import (
 	"fmt"
 
+	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/stdutil"
 )
+
+// Go is a basic promise implementation: it wraps calls a function in a goroutine
+// and returns a channel which will later return the function's return value.
+func Go(f func() error) error {
+	ch := make(chan error)
+	go func() {
+		ch <- f()
+	}()
+	return <-ch
+}
+
+// Filling src data(map,struct) to dst struct
+func Filling(src, dst interface{}) error {
+	return jsonutil.Mapping(src, dst)
+}
 
 // PanicIfErr if error is not empty
 func PanicIfErr(err error) {
@@ -25,7 +41,7 @@ func FuncName(f interface{}) string {
 	return stdutil.FuncName(f)
 }
 
-// PkgName get current package name
+// PkgName get current package name. alias of stdutil.PkgName()
 //
 // Usage:
 //	funcName := goutil.FuncName(fn)
