@@ -55,7 +55,7 @@ jobs:
       with:
         github_token: ${{ secrets.github_token }}
         # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
-        reporter: github-pr-review
+        reporter: github-pr-check
         # Report all results. [added,diff_context,file,nofilter].
         filter_mode: added
         # Exit with 1 when it find at least one finding.
