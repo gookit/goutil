@@ -24,12 +24,19 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v3
-    # https://github.com/actions/setup-go
-    - name: Use Go ${{ matrix.go_version }}
+
+    - name: Setup Go Faster
+      uses: WillAbides/setup-go-faster@v1.7.0
       timeout-minutes: 3
-      uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go_version }}
+
+    # https://github.com/actions/setup-go
+#    - name: Use Go ${{ matrix.go_version }}
+#      timeout-minutes: 3
+#      uses: actions/setup-go@v3
+#      with:
+#        go-version: ${{ matrix.go_version }}
 
     - name: Get dependencies
       run: |
@@ -44,6 +51,7 @@ jobs:
 
     - name: Run staticcheck
       uses: reviewdog/action-staticcheck@v1
+      if: ${{ github.event_name == 'pull_request'}}
       with:
         github_token: ${{ secrets.github_token }}
         # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].
