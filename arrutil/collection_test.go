@@ -201,7 +201,7 @@ func TestFindShouldPassed(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "b", result)
 
-	result, err = arrutil.Find(data, func(a interface{}) bool { return a == "d" })
+	_, err = arrutil.Find(data, func(a interface{}) bool { return a == "d" })
 	assert.NotNil(t, err)
 	assert.Equal(t, arrutil.ErrElementNotFound, err.Error())
 
