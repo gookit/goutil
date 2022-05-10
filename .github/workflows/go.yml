@@ -38,9 +38,9 @@ jobs:
 #      with:
 #        go-version: ${{ matrix.go_version }}
 
-    - name: Get dependencies
-      run: |
-        go mod tidy
+#    - name: Get dependencies
+#      run: |
+#        go mod tidy
 
     - name: Revive check
       uses: morphy2k/revive-action@v2.3.1
