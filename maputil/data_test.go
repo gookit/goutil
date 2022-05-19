@@ -3,7 +3,6 @@ package maputil_test
 import (
 	"testing"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/maputil"
 	"github.com/stretchr/testify/assert"
 )
@@ -14,6 +13,7 @@ func TestData(t *testing.T) {
 		"k2": "ab",
 		"k3": "true",
 		"k4": false,
+		"k5": map[string]string{"a": "b"},
 	}
 
 	assert.True(t, mp.Has("k1"))
@@ -43,7 +43,8 @@ func TestData(t *testing.T) {
 	assert.Equal(t, 23, mp.Default("k1", 10))
 	assert.Equal(t, 10, mp.Default("notExists", 10))
 
-	dump.P(mp.StringMap())
+	assert.Nil(t, mp.StringMap("notExists"))
+	assert.Equal(t, map[string]string{"a": "b"}, mp.StringMap("k5"))
 }
 
 func TestSMap(t *testing.T) {

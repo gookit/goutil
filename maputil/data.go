@@ -1,12 +1,20 @@
 package maputil
 
 import (
+	"strings"
+
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
 
 // Data an map data type
 type Data map[string]interface{}
+
+// TryGet value from the data map
+func (d Data) TryGet(key string) (interface{}, bool) {
+	val, ok := d[key]
+	return val, ok
+}
 
 // Get value from the data map
 func (d Data) Get(key string) interface{} {
@@ -24,7 +32,10 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
-// func (d Data) HasValue(val interface{}) bool {
+// Emtpy if the data map
+func (d Data) Emtpy() bool {
+	return len(d) == 0
+}
 
 // Int value get
 func (d Data) Int(key string) int {
@@ -78,19 +89,51 @@ func (d Data) Default(key string, def interface{}) interface{} {
 	return def
 }
 
-// StringMap convert to map[string]string
-func (d Data) StringMap() map[string]string {
+// Strings get []string value
+func (d Data) Strings(key string) []string {
+	val, ok := d[key]
+	if !ok {
+		return nil
+	}
+
+	if ss, ok := val.([]string); ok {
+		return ss
+	}
+	return nil
+}
+
+// StringsByStr value get by key
+func (d Data) StringsByStr(key string) []string {
+	val, ok := d[key]
+	if !ok {
+		return nil
+	}
+
+	str := strutil.MustString(val)
+	return strings.Split(str, ",")
+}
+
+// StringMap get map[string]string value
+func (d Data) StringMap(key string) map[string]string {
+	val, ok := d[key]
+	if !ok {
+		return nil
+	}
+
+	if smp, ok := val.(map[string]string); ok {
+		return smp
+	}
+	return nil
+}
+
+// ToStringMap convert to map[string]string
+func (d Data) ToStringMap() map[string]string {
 	return ToStringMap(d)
 }
 
 // String data to string
 func (d Data) String() string {
-	// var buf []byte TODO
-	// for k, v := range d {
-	//
-	// }
-
-	return ""
+	return ToString(d)
 }
 
 // SMap is alias of map[string]string
