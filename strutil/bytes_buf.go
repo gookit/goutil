@@ -3,6 +3,7 @@ package strutil
 import (
 	"bytes"
 	"fmt"
+	"strings"
 )
 
 // Buffer wrap and extends the bytes.Buffer
@@ -23,24 +24,20 @@ func (b *Buffer) QuietWritef(tpl string, vs ...interface{}) {
 }
 
 // QuietWriteln write message to buffer with newline
-func (b *Buffer) QuietWriteln(s string) {
-	_, _ = b.WriteString(s)
+func (b *Buffer) QuietWriteln(ss ...string) {
+	_, _ = b.WriteString(strings.Join(ss, ""))
 	_ = b.WriteByte('\n')
 }
 
 // QuietWriteString to buffer
 func (b *Buffer) QuietWriteString(ss ...string) {
-	for _, s := range ss {
-		_, _ = b.WriteString(s)
-	}
+	_, _ = b.WriteString(strings.Join(ss, ""))
 }
 
 // MustWriteString to buffer
 func (b *Buffer) MustWriteString(ss ...string) {
-	for _, s := range ss {
-		_, err := b.WriteString(s)
-		if err != nil {
-			panic(err)
-		}
+	_, err := b.WriteString(strings.Join(ss, ""))
+	if err != nil {
+		panic(err)
 	}
 }

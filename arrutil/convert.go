@@ -121,17 +121,13 @@ func SliceToStrings(arr []interface{}) []string {
 	return ss
 }
 
-// AnyToString convert any array, slice to string
+// AnyToString simple and quickly convert any array, slice to string
 func AnyToString(arr interface{}) string {
 	if arr == nil {
 		return "[]"
 	}
 
-	rftVal := reflect.ValueOf(arr)
-	if rftVal.Type().Kind() == reflect.Ptr {
-		rftVal = rftVal.Elem()
-	}
-
+	rftVal := reflect.Indirect(reflect.ValueOf(arr))
 	if rftVal.Kind() != reflect.Slice && rftVal.Kind() != reflect.Array {
 		return ""
 	}
@@ -157,7 +153,7 @@ func AnyToString(arr interface{}) string {
 // SliceToString convert []interface{} to string
 func SliceToString(arr ...interface{}) string { return ToString(arr) }
 
-// ToString convert []interface{} to string
+// ToString simple and quickly convert []interface{} to string
 func ToString(arr []interface{}) string {
 	// like fmt.Println([]interface{}(nil))
 	if arr == nil {

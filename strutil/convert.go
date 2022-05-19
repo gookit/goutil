@@ -212,9 +212,7 @@ func Ints(s string, sep ...string) []int {
 }
 
 // ToInts alias of the ToIntSlice()
-func ToInts(s string, sep ...string) ([]int, error) {
-	return ToIntSlice(s, sep...)
-}
+func ToInts(s string, sep ...string) ([]int, error) { return ToIntSlice(s, sep...) }
 
 // ToIntSlice split string to slice and convert item to int.
 func ToIntSlice(s string, sep ...string) (ints []int, err error) {
@@ -231,19 +229,13 @@ func ToIntSlice(s string, sep ...string) (ints []int, err error) {
 }
 
 // ToArray alias of the ToSlice()
-func ToArray(s string, sep ...string) []string {
-	return ToSlice(s, sep...)
-}
+func ToArray(s string, sep ...string) []string { return ToSlice(s, sep...) }
 
 // Strings alias of the ToSlice()
-func Strings(s string, sep ...string) []string {
-	return ToSlice(s, sep...)
-}
+func Strings(s string, sep ...string) []string { return ToSlice(s, sep...) }
 
 // ToStrings alias of the ToSlice()
-func ToStrings(s string, sep ...string) []string {
-	return ToSlice(s, sep...)
-}
+func ToStrings(s string, sep ...string) []string { return ToSlice(s, sep...) }
 
 // ToSlice split string to array.
 func ToSlice(s string, sep ...string) []string {
