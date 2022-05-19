@@ -13,11 +13,19 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        go: [1.16]
+        go_version: [1.17]
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go Faster
+        uses: WillAbides/setup-go-faster@v1.7.0
+        timeout-minutes: 3
+        with:
+          go-version: ${{ matrix.go_version }}
 
       - name: Setup ENV
         # https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
@@ -25,14 +33,19 @@ jobs:
           echo "RELEASE_TAG=${GITHUB_REF:10}" >> $GITHUB_ENV
           echo "RELEASE_NAME=$GITHUB_WORKFLOW" >> $GITHUB_ENV
 
-      - name: Display Env
-        run: env
+      - name: Generate changelog
+        run: |
+          go install github.com/gookit/gitw/cmd/chlog@latest
+          chlog -config .github/changelog.yml -output changelog.md prev last 
 
-      # https://github.com/actions/create-release
-      - uses: meeDamian/github-release@2.0
+      # https://github.com/softprops/action-gh-release
+      - name: Create release and upload assets
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          gzip: false
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ env.RELEASE_TAG }}
           name: ${{ env.RELEASE_TAG }}
-#          files: kite-${{ env.RELEASE_TAG }}.phar
+          tag_name: ${{ env.RELEASE_TAG }}
+          body_path: changelog.md
+          token: ${{ secrets.GITHUB_TOKEN }}
+#          files: macos-chlog.exe

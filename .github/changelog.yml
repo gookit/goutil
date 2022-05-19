@@ -1,0 +1,36 @@
+title: '## Change Log'
+# style allow: simple, markdown(mkdown), ghr(gh-release)
+style: gh-release
+# group names
+names: [Refactor, Fixed, Feature, Update, Other]
+repo_url: https://github.com/gookit/goutil
+
+filters:
+  # message length should >= 12
+  - name: msg_len
+    min_len: 12
+  # message words should >= 3
+  - name: words_len
+    min_len: 3
+  - name: keyword
+    keyword: format code
+    exclude: true
+  - name: keywords
+    keywords: format code, action test
+    exclude: true
+
+# group match rules
+# not matched will use 'Other' group.
+rules:
+  - name: Refactor
+    start_withs: [refactor, break]
+    contains: ['refactor:']
+  - name: Fixed
+    start_withs: [fix]
+    contains: ['fix:']
+  - name: Feature
+    start_withs: [feat, new]
+    contains: [feature]
+  - name: Update
+    start_withs: [update, 'up:']
+    contains: [' update']
