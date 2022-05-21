@@ -1,6 +1,7 @@
 package maputil
 
 import (
+	"reflect"
 	"strings"
 
 	"github.com/gookit/goutil/strutil"
@@ -58,7 +59,42 @@ func ToString(mp map[string]interface{}) string {
 		buf = append(buf, ',', ' ')
 	}
 
-	// remove last ','
+	// remove last ', '
 	buf = append(buf[:len(buf)-2], '}')
 	return strutil.Byte2str(buf)
+}
+
+// ToString2 simple and quickly convert map to string.
+func ToString2(mp interface{}) string {
+	if mp == nil {
+		return ""
+	}
+
+	rftVal := reflect.Indirect(reflect.ValueOf(mp))
+	if rftVal.Kind() != reflect.Map {
+		return ""
+	}
+
+	ln := rftVal.Len()
+	if ln == 0 {
+		return "{}"
+	}
+
+	var sb strings.Builder
+	sb.Grow(rftVal.Len() * 16)
+	sb.WriteByte('{')
+
+	for i, key := range rftVal.MapKeys() {
+		kStr, _ := strutil.AnyToString(key.Interface(), false)
+		sb.WriteString(kStr)
+		sb.WriteByte(':')
+
+		vStr, _ := strutil.AnyToString(rftVal.MapIndex(key).Interface(), false)
+		sb.WriteString(vStr)
+		if i < ln-1 {
+			sb.Write([]byte{',', ' '})
+		}
+	}
+
+	return sb.String()
 }
