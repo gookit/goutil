@@ -38,6 +38,7 @@ func TestToInt(t *testing.T) {
 	is.Equal(-2, MustInt("-2"))
 	for _, in := range tests {
 		is.Equal(2, MustInt(in))
+		is.Equal(2, QuietInt(in))
 	}
 	for _, in := range errTests {
 		is.Equal(0, MustInt(in))
@@ -56,6 +57,7 @@ func TestToInt(t *testing.T) {
 		is.Equal(uint64(2), MustUint(in))
 	}
 	for _, in := range errTests {
+		is.Equal(uint64(0), QuietUint(in))
 		is.Equal(uint64(0), MustUint(in))
 	}
 
@@ -73,6 +75,7 @@ func TestToInt(t *testing.T) {
 	}
 	for _, in := range errTests {
 		is.Equal(int64(0), MustInt64(in))
+		is.Equal(int64(0), QuietInt64(in))
 	}
 }
 
@@ -91,6 +94,7 @@ func TestToString(t *testing.T) {
 
 	for _, in := range tests {
 		is.Equal("2", String(in))
+		is.Equal("2", QuietString(in))
 		is.Equal("2", MustString(in))
 		val, err := ToString(in)
 		is.NoError(err)
@@ -119,7 +123,9 @@ func TestToFloat(t *testing.T) {
 	}
 
 	is.Equal(123.5, MustFloat("123.5"))
+	is.Equal(123.5, QuietFloat("123.5"))
 	is.Equal(float64(0), MustFloat("invalid"))
+	is.Equal(float64(0), QuietFloat("invalid"))
 
 	fltVal, err := ToFloat("123.5")
 	is.Nil(err)

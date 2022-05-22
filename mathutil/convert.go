@@ -24,7 +24,13 @@ func Int(in interface{}) (int, error) {
 	return ToInt(in)
 }
 
-// MustInt convert value to int
+// QuietInt convert value to int, will ignore error
+func QuietInt(in interface{}) int {
+	val, _ := ToInt(in)
+	return val
+}
+
+// MustInt convert value to int, will panic on error
 func MustInt(in interface{}) int {
 	val, _ := ToInt(in)
 	return val
@@ -91,6 +97,12 @@ func Uint(in interface{}) (uint64, error) {
 	return ToUint(in)
 }
 
+// QuietUint convert string to uint, will ignore error
+func QuietUint(in interface{}) uint64 {
+	val, _ := ToUint(in)
+	return val
+}
+
 // MustUint convert string to uint
 func MustUint(in interface{}) uint64 {
 	val, _ := ToUint(in)
@@ -149,11 +161,19 @@ func Int64(in interface{}) (int64, error) {
 	return ToInt64(in)
 }
 
+// QuietInt64 convert value to int64, will ignore error
+func QuietInt64(in interface{}) int64 {
+	i64, _ := ToInt64(in)
+	return i64
+}
+
 // MustInt64 convert
 func MustInt64(in interface{}) int64 {
 	i64, _ := ToInt64(in)
 	return i64
 }
+
+// TODO StrictInt64,AsInt64 strict convert to int64
 
 // ToInt64 convert string to int64
 func ToInt64(in interface{}) (i64 int64, err error) {
@@ -200,6 +220,27 @@ func ToInt64(in interface{}) (i64 int64, err error) {
  * convert value to float
  *************************************************************/
 
+// QuietFloat convert value to float64, will ignore error
+func QuietFloat(in interface{}) float64 {
+	val, _ := ToFloat(in)
+	return val
+}
+
+// FloatOrPanic convert value to float64, will panic on error
+func FloatOrPanic(in interface{}) float64 {
+	val, err := ToFloat(in)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+// MustFloat convert value to float64 TODO will panic on error
+func MustFloat(in interface{}) float64 {
+	val, _ := ToFloat(in)
+	return val
+}
+
 // Float convert value to float64
 func Float(in interface{}) (float64, error) {
 	return ToFloat(in)
@@ -244,21 +285,6 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 		err = ErrConvertFail
 	}
 	return
-}
-
-// FloatOrPanic convert value to float64, will panic on error
-func FloatOrPanic(in interface{}) float64 {
-	val, err := ToFloat(in)
-	if err != nil {
-		panic(err)
-	}
-	return val
-}
-
-// MustFloat convert value to float64 TODO will panic on error
-func MustFloat(in interface{}) float64 {
-	val, _ := ToFloat(in)
-	return val
 }
 
 /*************************************************************
@@ -329,6 +355,12 @@ func MustString(val interface{}) string {
 // ToString convert intX/floatX value to string
 func ToString(val interface{}) (string, error) {
 	return TryToString(val, true)
+}
+
+// QuietString convert intX/floatX value to string, other type convert by fmt.Sprint
+func QuietString(val interface{}) string {
+	str, _ := TryToString(val, false)
+	return str
 }
 
 // String convert intX/floatX value to string, other type convert by fmt.Sprint

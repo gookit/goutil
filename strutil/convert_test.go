@@ -75,6 +75,7 @@ func TestAnyToString(t *testing.T) {
 	}
 	for _, in := range tests {
 		is.Equal("2", strutil.MustString(in))
+		is.Equal("2", strutil.QuietString(in))
 	}
 
 	tests1 := []interface{}{

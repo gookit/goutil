@@ -53,6 +53,12 @@ func String(val interface{}) (string, error) {
 	return AnyToString(val, true)
 }
 
+// QuietString convert value to string
+func QuietString(in interface{}) string {
+	val, _ := AnyToString(in, false)
+	return val
+}
+
 // MustString convert value to string
 func MustString(in interface{}) string {
 	val, _ := AnyToString(in, false)
@@ -152,7 +158,13 @@ func ToBool(s string) (bool, error) {
 	return Bool(s)
 }
 
-// MustBool convert.
+// QuietBool convert.
+func QuietBool(s string) bool {
+	val, _ := Bool(strings.TrimSpace(s))
+	return val
+}
+
+// MustBool convert, will panic on error
 func MustBool(s string) bool {
 	val, _ := Bool(strings.TrimSpace(s))
 	return val
@@ -186,7 +198,7 @@ func ToInt(s string) (int, error) {
 	return strconv.Atoi(strings.TrimSpace(s))
 }
 
-// MustInt convert string to int
+// MustInt convert string to int, will panic on error
 func MustInt(s string) int {
 	val, _ := ToInt(s)
 	return val
