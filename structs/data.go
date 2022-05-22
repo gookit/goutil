@@ -1,6 +1,11 @@
 package structs
 
-import "sync"
+import (
+	"sync"
+
+	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/strutil"
+)
 
 // MapDataStore struct
 type MapDataStore struct {
@@ -13,7 +18,7 @@ type MapDataStore struct {
 // NewMapData create
 func NewMapData() *MapDataStore {
 	return &MapDataStore{
-		data: map[string]interface{}{},
+		data: make(map[string]interface{}),
 	}
 }
 
@@ -29,17 +34,14 @@ func (md *MapDataStore) Data() map[string]interface{} {
 
 // SetData set all data
 func (md *MapDataStore) SetData(data map[string]interface{}) {
-	md.data = data
-}
-
-// Value get from data
-func (md *MapDataStore) Value(key string) interface{} {
-	if md.enableLock {
-		md.RLock()
-		defer md.RUnlock()
+	if !md.enableLock {
+		md.data = data
+		return
 	}
 
-	return md.data[key]
+	md.RLock()
+	md.data = data
+	md.RUnlock()
 }
 
 // SetValue to data
@@ -49,13 +51,58 @@ func (md *MapDataStore) SetValue(key string, val interface{}) {
 		defer md.Unlock()
 	}
 
-	if md.data == nil {
-		md.data = make(map[string]interface{})
-	}
 	md.data[key] = val
 }
 
 // ClearData all data
 func (md *MapDataStore) ClearData() {
 	md.data = nil
+}
+
+// Value get from data
+func (md *MapDataStore) Value(key string) (val interface{}, ok bool) {
+	if md.enableLock {
+		md.RLock()
+		defer md.RUnlock()
+	}
+
+	val, ok = md.data[key]
+	return
+}
+
+// GetVal get from data
+func (md *MapDataStore) GetVal(key string) interface{} {
+	if md.enableLock {
+		md.RLock()
+		defer md.RUnlock()
+	}
+
+	return md.data[key]
+}
+
+// StrVal get from data
+func (md *MapDataStore) StrVal(key string) string {
+	return strutil.MustString(md.GetVal(key))
+}
+
+// IntVal get from data
+func (md *MapDataStore) IntVal(key string) int {
+	return mathutil.QuietInt(md.GetVal(key))
+}
+
+// BoolVal get from data
+func (md *MapDataStore) BoolVal(key string) bool {
+	val, ok := md.Value(key)
+	if !ok {
+		return false
+	}
+
+	if bol, ok := val.(bool); ok {
+		return bol
+	}
+
+	if str, ok := val.(string); ok {
+		return strutil.QuietBool(str)
+	}
+	return false
 }
