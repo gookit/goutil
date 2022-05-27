@@ -39,6 +39,11 @@ func Join(sep string, ss ...string) string {
 	return strings.Join(ss, sep)
 }
 
+// JoinSubs alias of strings.Join
+func JoinSubs(sep string, ss []string) string {
+	return strings.Join(ss, sep)
+}
+
 // Implode alias of strings.Join
 func Implode(sep string, ss ...string) string {
 	return strings.Join(ss, sep)
