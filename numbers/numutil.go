@@ -1,4 +1,4 @@
-package numutil
+package numbers
 
 import "github.com/gookit/goutil/mathutil"
 
