@@ -489,11 +489,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/gookit/goutil/fsutil"
+	"github.com/gookit/goutil/fsutil/finder"
 )
 
 func main() {
-	f := fsutil.EmptyFinder()
+	f := finder.EmptyFinder()
 
 	f.
 		AddDir("./testdata").
@@ -505,7 +505,7 @@ func main() {
 			fmt.Println(filePath)
 		})
 
-	fsutil.NewFinder([]string{"./testdata"}).
+	finder.NewFinder([]string{"./testdata"}).
 		AddFile("finder.go").
 		NoDotDir().
 		EachStat(func(fi os.FileInfo, filePath string) {
