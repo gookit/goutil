@@ -123,31 +123,7 @@ func SliceToStrings(arr []interface{}) []string {
 
 // AnyToString simple and quickly convert any array, slice to string
 func AnyToString(arr interface{}) string {
-	if arr == nil {
-		return "[]"
-	}
-
-	rftVal := reflect.Indirect(reflect.ValueOf(arr))
-	if rftVal.Kind() != reflect.Slice && rftVal.Kind() != reflect.Array {
-		return ""
-	}
-
-	if rftVal.Len() == 0 {
-		return "[]"
-	}
-
-	var sb strings.Builder
-	sb.WriteByte('[')
-
-	for i := 0; i < rftVal.Len(); i++ {
-		if i > 0 {
-			sb.WriteByte(',')
-		}
-		sb.WriteString(strutil.MustString(rftVal.Index(i).Interface()))
-	}
-
-	sb.WriteByte(']')
-	return sb.String()
+	return NewFormatter(arr).Format()
 }
 
 // SliceToString convert []interface{} to string
