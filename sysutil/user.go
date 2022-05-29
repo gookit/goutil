@@ -56,21 +56,18 @@ func HomeDir() string {
 // UserDir will prepend user home dir to subPath
 func UserDir(subPath string) string {
 	dir, _ := homedir.Dir()
-
 	return dir + "/" + subPath
 }
 
 // UserCacheDir will prepend user `$HOME/.cache` to subPath
 func UserCacheDir(subPath string) string {
 	dir, _ := homedir.Dir()
-
 	return dir + "/.cache/" + subPath
 }
 
 // UserConfigDir will prepend user `$HOME/.config` to subPath
 func UserConfigDir(subPath string) string {
 	dir, _ := homedir.Dir()
-
 	return dir + "/.config/" + subPath
 }
 

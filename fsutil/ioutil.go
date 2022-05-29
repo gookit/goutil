@@ -1,6 +1,7 @@
 package fsutil
 
 import (
+	"fmt"
 	"io"
 	"strings"
 )
@@ -34,4 +35,12 @@ func (w *WriteWrapper) WriteByte(c byte) error {
 // WriteString data
 func (w *WriteWrapper) WriteString(s string) (n int, err error) {
 	return w.Out.Write([]byte(s))
+}
+
+// String get write data string
+func (w *WriteWrapper) String() string {
+	if sw, ok := w.Out.(fmt.Stringer); ok {
+		return sw.String()
+	}
+	return ""
 }
