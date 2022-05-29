@@ -1,19 +1,16 @@
 package maputil
 
 import (
-	"bytes"
+	"io"
 	"reflect"
 
+	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/strutil"
 )
 
 // MapFormatter struct
 type MapFormatter struct {
-	Buf *bytes.Buffer
-	// Map source data
-	Map interface{}
-	// MaxDepth limit TODO
-	MaxDepth int
+	common.BaseFormatter
 	// Prefix string for each element
 	Prefix string
 	// Indent string for each element
@@ -21,12 +18,15 @@ type MapFormatter struct {
 	// ClosePrefix string for last "}"
 	ClosePrefix string
 	// AfterReset after reset on call Format().
-	AfterReset bool
+	// AfterReset bool
 }
 
 // NewFormatter instance
 func NewFormatter(mp interface{}) *MapFormatter {
-	return &MapFormatter{Map: mp}
+	f := &MapFormatter{}
+	f.Src = mp
+
+	return f
 }
 
 // WithFn for config self
@@ -41,46 +41,48 @@ func (f *MapFormatter) WithIndent(indent string) *MapFormatter {
 	return f
 }
 
-// Buffer get
-func (f *MapFormatter) Buffer() *bytes.Buffer {
-	if f.Buf == nil {
-		f.Buf = new(bytes.Buffer)
-	}
-	return f.Buf
+// FormatTo to custom buffer
+func (f *MapFormatter) FormatTo(w io.Writer) {
+	f.SetOutput(w)
+	f.doFormat()
 }
 
-// Reset after format
-func (f *MapFormatter) Reset() {
-	f.Buf = nil
-	f.Map = nil
+// Format to string
+func (f *MapFormatter) String() string {
+	f.Format()
+	return f.Format()
+}
+
+// Format to string
+func (f *MapFormatter) Format() string {
+	f.doFormat()
+	return f.BsWriter().String()
 }
 
 // Format map data to string.
-func (f *MapFormatter) Format() string {
-	if f.Map == nil {
-		return ""
+//goland:noinspection GoUnhandledErrorResult
+func (f *MapFormatter) doFormat() {
+	if f.Src == nil {
+		return
 	}
 
-	rv, ok := f.Map.(reflect.Value)
+	rv, ok := f.Src.(reflect.Value)
 	if !ok {
-		rv = reflect.ValueOf(f.Map)
+		rv = reflect.ValueOf(f.Src)
 	}
 
 	rv = reflect.Indirect(rv)
 	if rv.Kind() != reflect.Map {
-		return ""
+		return
 	}
 
+	buf := f.BsWriter()
 	ln := rv.Len()
 	if ln == 0 {
-		return "{}"
+		buf.WriteString("{}")
+		return
 	}
 
-	if f.AfterReset {
-		defer f.Reset()
-	}
-
-	buf := f.Buffer()
 	// buf.Grow(ln * 16)
 	buf.WriteByte('{')
 
@@ -120,7 +122,6 @@ func (f *MapFormatter) Format() string {
 	}
 
 	buf.WriteByte('}')
-	return buf.String()
 }
 
 // FormatIndent map data to string.

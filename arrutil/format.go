@@ -1,42 +1,30 @@
 package arrutil
 
 import (
-	"bytes"
+	"io"
 	"reflect"
 
+	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/strutil"
 )
 
 // ArrFormatter struct
 type ArrFormatter struct {
-	Buf *bytes.Buffer
-	// Arr src array data
-	Arr interface{}
-	// MaxDepth limit TODO
-	MaxDepth int
+	common.BaseFormatter
 	// Prefix string for each element
 	Prefix string
 	// Indent string for format each element
 	Indent string
 	// ClosePrefix string for last "]"
 	ClosePrefix string
-	// AfterReset after reset on call Format().
-	// AfterReset bool
 }
 
 // NewFormatter instance
 func NewFormatter(arr interface{}) *ArrFormatter {
-	return &ArrFormatter{
-		Arr: arr,
-	}
-}
+	f := &ArrFormatter{}
+	f.Src = arr
 
-// Buffer get
-func (f *ArrFormatter) Buffer() *bytes.Buffer {
-	if f.Buf == nil {
-		f.Buf = new(bytes.Buffer)
-	}
-	return f.Buf
+	return f
 }
 
 // WithFn for config self
@@ -51,86 +39,86 @@ func (f *ArrFormatter) WithIndent(indent string) *ArrFormatter {
 	return f
 }
 
-// Reset after format
-func (f *ArrFormatter) Reset() {
-	f.Buf = nil
-	f.Arr = nil
+// FormatTo to custom buffer
+func (f *ArrFormatter) FormatTo(w io.Writer) {
+	f.SetOutput(w)
+	f.doFormat()
 }
 
 // Format to string
 func (f *ArrFormatter) String() string {
 	f.Format()
-	return f.Buf.String()
-}
-
-// FormatTo to custom buffer
-func (f *ArrFormatter) FormatTo(buf *bytes.Buffer) {
-	f.Buf = buf
-	f.Format()
+	return f.Format()
 }
 
 // Format to string
 func (f *ArrFormatter) Format() string {
-	if f.Arr == nil {
-		return ""
+	f.doFormat()
+	return f.BsWriter().String()
+}
+
+// Format to string
+//goland:noinspection GoUnhandledErrorResult
+func (f *ArrFormatter) doFormat() {
+	if f.Src == nil {
+		return
 	}
 
-	rv, ok := f.Arr.(reflect.Value)
+	rv, ok := f.Src.(reflect.Value)
 	if !ok {
-		rv = reflect.ValueOf(f.Arr)
+		rv = reflect.ValueOf(f.Src)
 	}
 
 	rv = reflect.Indirect(rv)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
-		return ""
+		return
 	}
 
+	writer := f.BsWriter()
 	arrLn := rv.Len()
 	if arrLn == 0 {
-		return "[]"
+		writer.WriteString("[]")
+		return
 	}
 
 	// if f.AfterReset {
 	// 	defer f.Reset()
 	// }
 
-	buf := f.Buffer()
 	// sb.Grow(arrLn * 4)
-	buf.WriteByte('[')
+	writer.WriteByte('[')
 
 	indentLn := len(f.Indent)
 	if indentLn > 0 {
-		buf.WriteByte('\n')
+		writer.WriteByte('\n')
 	}
 
 	for i := 0; i < arrLn; i++ {
 		if indentLn > 0 {
-			buf.WriteString(f.Indent)
+			writer.WriteString(f.Indent)
 		}
-		buf.WriteString(strutil.QuietString(rv.Index(i).Interface()))
+		writer.WriteString(strutil.QuietString(rv.Index(i).Interface()))
 
 		if i < arrLn-1 {
-			buf.WriteByte(',')
+			writer.WriteByte(',')
 
 			// no indent, with space
 			if indentLn == 0 {
-				buf.WriteByte(' ')
+				writer.WriteByte(' ')
 			}
 		}
 		if indentLn > 0 {
-			buf.WriteByte('\n')
+			writer.WriteByte('\n')
 		}
 	}
 
 	if f.ClosePrefix != "" {
-		buf.WriteString(f.ClosePrefix)
+		writer.WriteString(f.ClosePrefix)
 	}
-
-	buf.WriteByte(']')
-	return buf.String()
+	writer.WriteByte(']')
 }
 
 // FormatIndent array data to string.
 func FormatIndent(arr interface{}, indent string) string {
-	return NewFormatter(arr).WithIndent(indent).String()
+	return NewFormatter(arr).WithIndent(indent).Format()
 }
