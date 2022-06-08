@@ -7,24 +7,19 @@ type BKind uint
 
 // base kinds
 const (
-	Invalid BKind = iota
-	Bool
-	Int
-	Uint
-	Float
-	String
-	Array
-	Map
-	Struct
-	Complex
-	Unsupported
+	// Int for all intX types
+	Int = BKind(reflect.Int)
+	// Uint for all uintX types
+	Uint  = BKind(reflect.Uint)
+	Float = BKind(reflect.Float32)
+	Array = BKind(reflect.Array)
+	// Complex for all complexX types
+	Complex = BKind(reflect.Complex64)
 )
 
 // ToBaseKind convert reflect.Kind to base kind
 func ToBaseKind(kind reflect.Kind) BKind {
 	switch kind {
-	case reflect.Bool:
-		return Bool
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return Int
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
@@ -33,18 +28,12 @@ func ToBaseKind(kind reflect.Kind) BKind {
 		return Float
 	case reflect.Complex64, reflect.Complex128:
 		return Complex
-	case reflect.String:
-		return String
 	case reflect.Array, reflect.Slice:
 		return Array
-	case reflect.Map:
-		return Map
-	case reflect.Struct:
-		return Struct
+	default:
+		// like: string, map, struct, ptr, func, interface ...
+		return BKind(kind)
 	}
-
-	// like: ptr, func, interface ...
-	return Unsupported
 }
 
 // Type struct
