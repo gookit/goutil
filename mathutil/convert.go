@@ -45,7 +45,12 @@ func IntOrPanic(in interface{}) int {
 	return val
 }
 
-// ToInt convert string to int
+// IntOrErr convert value to int, return error on failed
+func IntOrErr(in interface{}) (iVal int, err error) {
+	return ToInt(in)
+}
+
+// ToInt convert value to int, return error on failed
 func ToInt(in interface{}) (iVal int, err error) {
 	switch tVal := in.(type) {
 	case nil:
@@ -92,7 +97,7 @@ func ToInt(in interface{}) (iVal int, err error) {
  * convert value to uint
  *************************************************************/
 
-// Uint convert string to uint
+// Uint convert string to uint, return error on failed
 func Uint(in interface{}) (uint64, error) {
 	return ToUint(in)
 }
@@ -103,13 +108,18 @@ func QuietUint(in interface{}) uint64 {
 	return val
 }
 
-// MustUint convert string to uint
+// MustUint convert string to uint, will panic on error
 func MustUint(in interface{}) uint64 {
 	val, _ := ToUint(in)
 	return val
 }
 
-// ToUint convert string to uint
+// UintOrErr convert value to uint, return error on failed
+func UintOrErr(in interface{}) (uint64, error) {
+	return ToUint(in)
+}
+
+// ToUint convert value to uint, return error on failed
 func ToUint(in interface{}) (u64 uint64, err error) {
 	switch tVal := in.(type) {
 	case nil:
@@ -156,7 +166,7 @@ func ToUint(in interface{}) (u64 uint64, err error) {
  * convert value to int64
  *************************************************************/
 
-// Int64 convert string to int64
+// Int64 convert string to int64, return error on failed
 func Int64(in interface{}) (int64, error) {
 	return ToInt64(in)
 }
@@ -167,7 +177,7 @@ func QuietInt64(in interface{}) int64 {
 	return i64
 }
 
-// MustInt64 convert
+// MustInt64 convert value to int64, will panic on error
 func MustInt64(in interface{}) int64 {
 	i64, _ := ToInt64(in)
 	return i64
@@ -175,7 +185,12 @@ func MustInt64(in interface{}) int64 {
 
 // TODO StrictInt64,AsInt64 strict convert to int64
 
-// ToInt64 convert string to int64
+// Int64OrErr convert string to int64, return error on failed
+func Int64OrErr(in interface{}) (int64, error) {
+	return ToInt64(in)
+}
+
+// ToInt64 convert string to int64, return error on failed
 func ToInt64(in interface{}) (i64 int64, err error) {
 	switch tVal := in.(type) {
 	case nil:
@@ -241,12 +256,17 @@ func MustFloat(in interface{}) float64 {
 	return val
 }
 
-// Float convert value to float64
+// Float convert value to float64, return error on failed
 func Float(in interface{}) (float64, error) {
 	return ToFloat(in)
 }
 
-// ToFloat convert value to float64
+// FloatOrErr convert value to float64, return error on failed
+func FloatOrErr(in interface{}) (float64, error) {
+	return ToFloat(in)
+}
+
+// ToFloat convert value to float64, return error on failed
 func ToFloat(in interface{}) (f64 float64, err error) {
 	switch tVal := in.(type) {
 	case nil:
@@ -352,8 +372,13 @@ func MustString(val interface{}) string {
 	return StringOrPanic(val)
 }
 
-// ToString convert intX/floatX value to string
+// ToString convert intX/floatX value to string, return error on failed
 func ToString(val interface{}) (string, error) {
+	return TryToString(val, true)
+}
+
+// StringOrErr convert intX/floatX value to string, return error on failed
+func StringOrErr(val interface{}) (string, error) {
 	return TryToString(val, true)
 }
 

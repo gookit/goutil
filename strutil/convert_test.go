@@ -97,6 +97,10 @@ func TestAnyToString(t *testing.T) {
 	is.NoError(err)
 	is.Equal("true", str)
 
+	str, err = strutil.StringOrErr(true)
+	is.NoError(err)
+	is.Equal("true", str)
+
 	str, err = strutil.String(nil)
 	is.NoError(err)
 	is.Equal("", str)

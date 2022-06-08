@@ -125,6 +125,7 @@ func Camel(s string, sep ...string) string {
 }
 
 // CamelCase convert string to camel case.
+//
 // Support:
 // 	"range_price" -> "rangePrice"
 // 	"range price" -> "rangePrice"

@@ -146,7 +146,7 @@ var stdOpt = newErrOpt()
 func newErrOpt() *ErrStackOpt {
 	return &ErrStackOpt{
 		SkipDepth:  3,
-		TraceDepth: 6,
+		TraceDepth: 8,
 	}
 }
 

@@ -64,10 +64,15 @@ func QuietString(in interface{}) string {
 	return val
 }
 
-// MustString convert value to string
+// MustString convert value to string, TODO will panic on error
 func MustString(in interface{}) string {
 	val, _ := AnyToString(in, false)
 	return val
+}
+
+// StringOrErr convert value to string, return error on failed
+func StringOrErr(val interface{}) (string, error) {
+	return AnyToString(val, true)
 }
 
 // ToString convert value to string
