@@ -27,6 +27,7 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 }
 
 // ExecCmd an command and return output.
+//
 // Usage:
 // 	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
@@ -41,7 +42,7 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 }
 
 // ShellExec exec command by shell
-// cmdStr eg. "ls -al"
+// cmdLine eg. "ls -al"
 func ShellExec(cmdLine string, shells ...string) (string, error) {
 	// shell := "/bin/sh"
 	shell := "sh"
@@ -50,21 +51,19 @@ func ShellExec(cmdLine string, shells ...string) (string, error) {
 	}
 
 	var out bytes.Buffer
-
 	cmd := exec.Command(shell, "-c", cmdLine)
 	cmd.Stdout = &out
 
 	if err := cmd.Run(); err != nil {
 		return "", err
 	}
-
 	return out.String(), nil
 }
 
 // FindExecutable in the system
 //
 // Usage:
-// 	FindExecutable("bash")
+// 	sysutil.FindExecutable("bash")
 func FindExecutable(binName string) (string, error) {
 	return exec.LookPath(binName)
 }
@@ -72,7 +71,7 @@ func FindExecutable(binName string) (string, error) {
 // Executable find in the system
 //
 // Usage:
-// 	Executable("bash")
+// 	sysutil.Executable("bash")
 func Executable(binName string) (string, error) {
 	return exec.LookPath(binName)
 }

@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/sysutil"
 	"github.com/mattn/go-isatty"
 )
@@ -86,7 +87,7 @@ func IsConsole(out io.Writer) bool {
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
-	return sysutil.HasShellEnv(shell)
+	return comfunc.HasShellEnv(shell)
 }
 
 // Support color:
@@ -106,6 +107,7 @@ var specialColorTerms = map[string]bool{
 //
 // Supported:
 // 	linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
+//
 // Not support:
 // 	windows cmd.exe, powerShell.exe
 func IsSupportColor() bool {

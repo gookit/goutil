@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/sysutil"
 )
 
@@ -49,12 +50,12 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 // Usage:
 // 	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
-	return sysutil.ExecCmd(binName, args, workDir...)
+	return comfunc.ExecCmd(binName, args, workDir...)
 }
 
 // ExecCommand alias of the ExecCmd()
 func ExecCommand(binName string, args []string, workDir ...string) (string, error) {
-	return sysutil.ExecCmd(binName, args, workDir...)
+	return comfunc.ExecCmd(binName, args, workDir...)
 }
 
 // ShellExec exec command by shell
@@ -62,12 +63,12 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 // Usage:
 // ret, err := cliutil.ShellExec("ls -al")
 func ShellExec(cmdLine string, shells ...string) (string, error) {
-	return sysutil.ShellExec(cmdLine, shells...)
+	return comfunc.ShellExec(cmdLine, shells...)
 }
 
 // CurrentShell get current used shell env file. eg "/bin/zsh" "/bin/bash"
 func CurrentShell(onlyName bool) (path string) {
-	return sysutil.CurrentShell(onlyName)
+	return comfunc.CurrentShell(onlyName)
 }
 
 // HasShellEnv has shell env check.
@@ -76,7 +77,7 @@ func CurrentShell(onlyName bool) (path string) {
 // 	HasShellEnv("sh")
 // 	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
-	return sysutil.HasShellEnv(shell)
+	return comfunc.HasShellEnv(shell)
 }
 
 // Workdir get

@@ -3,19 +3,13 @@ package sysutil
 import (
 	"io"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"syscall"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/mattn/go-isatty"
 )
-
-// Hostname is alias of os.Hostname, but ignore error
-func Hostname() string {
-	name, _ := os.Hostname()
-	return name
-}
 
 // IsWin system. linux windows darwin
 func IsWin() bool {
@@ -40,11 +34,7 @@ func IsLinux() bool {
 // IsMSys msys(MINGW64) env，不一定支持颜色
 func IsMSys() bool {
 	// "MSYSTEM=MINGW64"
-	if len(os.Getenv("MSYSTEM")) > 0 {
-		return true
-	}
-
-	return false
+	return len(os.Getenv("MSYSTEM")) > 0
 }
 
 // IsConsole check out is in stderr/stdout/stdin
@@ -76,30 +66,18 @@ func StdIsTerminal() bool {
 	return IsTerminal(os.Stdout.Fd())
 }
 
-var curShell string
+// Hostname is alias of os.Hostname, but ignore error
+func Hostname() string {
+	name, _ := os.Hostname()
+	return name
+}
 
 // CurrentShell get current used shell env file.
+//
 // eg "/bin/zsh" "/bin/bash".
 // if onlyName=true, will return "zsh", "bash"
 func CurrentShell(onlyName bool) (path string) {
-	var err error
-	if curShell == "" {
-		path, err = ShellExec("echo $SHELL")
-		if err != nil {
-			return ""
-		}
-
-		path = strings.TrimSpace(path)
-		// cache result
-		curShell = path
-	} else {
-		path = curShell
-	}
-
-	if onlyName && len(path) > 0 {
-		path = filepath.Base(path)
-	}
-	return
+	return comfunc.CurrentShell(onlyName)
 }
 
 // HasShellEnv has shell env check.
