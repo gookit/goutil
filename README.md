@@ -18,11 +18,11 @@
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 - `jsonutil` some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
-- `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
+- [`mathutil`](./mathutil), `numutil` Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
-- `strutil` String util functions. eg: bytes, check, convert, encode, format and more
-- `sysutil` System util functions. eg: sysenv, exec, user, process
+- [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
+- [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
@@ -53,6 +53,17 @@ func StringsHas(ss []string, val string) bool
 func HasValue(arr, val interface{}) bool
 func Contains(arr, val interface{}) bool
 func NotContains(arr, val interface{}) bool
+// source at arrutil/collection.go
+func TwowaySearch(data interface{}, item interface{}, fn Comparer) (int, error)
+func MakeEmptySlice(itemType reflect.Type) interface{}
+func CloneSlice(data interface{}) interface{}
+func Excepts(first interface{}, second interface{}, fn Comparer) interface{}
+func Intersects(first interface{}, second interface{}, fn Comparer) interface{}
+func Union(first interface{}, second interface{}, fn Comparer) interface{}
+func Find(source interface{}, fn Predicate) (interface{}, error)
+func FindOrDefault(source interface{}, fn Predicate, defaultValue interface{}) interface{}
+func TakeWhile(data interface{}, fn Predicate) interface{}
+func ExceptWhile(data interface{}, fn Predicate) interface{}
 // source at arrutil/convert.go
 func JoinStrings(sep string, ss ...string) string
 func StringsJoin(sep string, ss ...string) string
@@ -68,6 +79,9 @@ func AnyToString(arr interface{}) string
 func SliceToString(arr ...interface{}) string { return ToString(arr) }
 func ToString(arr []interface{}) string
 func JoinSlice(sep string, arr ...interface{}) string
+// source at arrutil/format.go
+func NewFormatter(arr interface{}) *ArrFormatter
+func FormatIndent(arr interface{}, indent string) string
 ```
 #### ArrUtil Usage
 
@@ -111,6 +125,37 @@ func HasShellEnv(shell string) bool
 func Workdir() string
 func BinDir() string
 func BinFile() string
+// source at cliutil/color_print.go
+func Redp(a ...interface{}) { color.Red.Print(a...) }
+func Redf(format string, a ...interface{}) { color.Red.Printf(format, a...) }
+func Redln(a ...interface{}) { color.Red.Println(a...) }
+func Bluep(a ...interface{}) { color.Blue.Print(a...) }
+func Bluef(format string, a ...interface{}) { color.Blue.Printf(format, a...) }
+func Blueln(a ...interface{}) { color.Blue.Println(a...) }
+func Cyanp(a ...interface{}) { color.Cyan.Print(a...) }
+func Cyanf(format string, a ...interface{}) { color.Cyan.Printf(format, a...) }
+func Cyanln(a ...interface{}) { color.Cyan.Println(a...) }
+func Grayp(a ...interface{}) { color.Gray.Print(a...) }
+func Grayf(format string, a ...interface{}) { color.Gray.Printf(format, a...) }
+func Grayln(a ...interface{}) { color.Gray.Println(a...) }
+func Greenp(a ...interface{}) { color.Green.Print(a...) }
+func Greenf(format string, a ...interface{}) { color.Green.Printf(format, a...) }
+func Greenln(a ...interface{}) { color.Green.Println(a...) }
+func Yellowp(a ...interface{}) { color.Yellow.Print(a...) }
+func Yellowf(format string, a ...interface{}) { color.Yellow.Printf(format, a...) }
+func Yellowln(a ...interface{}) { color.Yellow.Println(a...) }
+func Magentap(a ...interface{}) { color.Magenta.Print(a...) }
+func Magentaf(format string, a ...interface{}) { color.Magenta.Printf(format, a...) }
+func Magentaln(a ...interface{}) { color.Magenta.Println(a...) }
+func Infop(a ...interface{}) { color.Info.Print(a...) }
+func Infof(format string, a ...interface{}) { color.Info.Printf(format, a...) }
+func Infoln(a ...interface{}) { color.Info.Println(a...) }
+func Errorp(a ...interface{}) { color.Error.Print(a...) }
+func Errorf(format string, a ...interface{}) { color.Error.Printf(format, a...) }
+func Errorln(a ...interface{}) { color.Error.Println(a...) }
+func Warnp(a ...interface{}) { color.Warn.Print(a...) }
+func Warnf(format string, a ...interface{}) { color.Warn.Printf(format, a...) }
+func Warnln(a ...interface{}) { color.Warn.Println(a...) }
 // source at cliutil/read.go
 func ReadInput(question string) (string, error)
 func ReadLine(question string) (string, error)
@@ -172,6 +217,13 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 ]
 
 Build line: ./myapp -a val0 -m "this is message" arg0
+```
+
+### Common
+
+> Package `github.com/gookit/goutil/common`
+
+```go
 ```
 
 ### Dump
@@ -429,52 +481,50 @@ func IsFile(path string) bool
 func IsAbsPath(aPath string) bool
 func IsImageFile(path string) bool
 func IsZipFile(filepath string) bool
-// source at fsutil/finder.go
-func EmptyFinder() *FileFinder
-func NewFinder(dirPaths []string, filePaths ...string) *FileFinder
-func ExtFilterFunc(exts []string, include bool) FileFilterFunc
-func SuffixFilterFunc(suffixes []string, include bool) FileFilterFunc
-func PathNameFilterFunc(names []string, include bool) FileFilterFunc
-func DotFileFilterFunc(include bool) FileFilterFunc
-func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc
-func GlobFilterFunc(patterns []string, include bool) FileFilterFunc
-func RegexFilterFunc(pattern string, include bool) FileFilterFunc
-func DotDirFilterFunc(include bool) DirFilterFunc
-func DirNameFilterFunc(names []string, include bool) DirFilterFunc
 // source at fsutil/fsutil.go
-func DiscardReader(src io.Reader)
 func OSTempFile(pattern string) (*os.File, error)
 func TempFile(dir, pattern string) (*os.File, error)
 func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error)
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
-func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 // source at fsutil/info.go
 func Dir(fpath string) string
 func PathName(fpath string) string
 func Name(fpath string) string
 func FileExt(fpath string) string
 func Suffix(fpath string) string
-func ExpandPath(path string) string
+func Expand(pathStr string) string
+func ExpandPath(pathStr string) string
 func Realpath(pathStr string) string
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
+func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error)
+// source at fsutil/ioutil.go
+func QuietWriteString(w io.Writer, ss ...string)
+func NewWriteWrapper(w io.Writer) *WriteWrapper
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
+func DiscardReader(src io.Reader)
 func MustReadFile(filePath string) []byte
 func MustReadReader(r io.Reader) []byte
+func GetContents(in interface{}) []byte
 func ReadExistFile(filePath string) []byte
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
 func QuickOpenFile(filepath string) (*os.File, error)
+func OpenReadFile(filepath string) (*os.File, error)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
-func CopyFile(src string, dst string) error
-func MustCopyFile(src string, dst string)
-func Remove(fpath string) error
-func MustRemove(fpath string)
-func QuietRemove(fpath string)
-func DeleteIfExist(fpath string) error
-func DeleteIfFileExist(fpath string) error
+func PutContents(filePath string, contents string) (int, error)
+func CopyFile(srcPath string, dstPath string) error
+func MustCopyFile(srcPath string, dstPath string)
+func Remove(fPath string) error
+func MustRemove(fPath string)
+func QuietRemove(fPath string)
+func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }
+func DeleteIfExist(fPath string) error
+func RmFileIfExist(fPath string) error { return DeleteIfFileExist(fPath) }
+func DeleteIfFileExist(fPath string) error
 func Unzip(archive, targetDir string) (err error)
 ```
 
@@ -530,6 +580,7 @@ func EncodeUnescapeHTML(v interface{}) ([]byte, error)
 func Decode(bts []byte, ptr interface{}) error
 func DecodeString(str string, ptr interface{}) error
 func DecodeReader(r io.Reader, ptr interface{}) error
+func Mapping(src, dst interface{}) error
 func StripComments(src string) string
 ```
 
@@ -543,6 +594,10 @@ func KeyToLower(src map[string]string) map[string]string
 func ToStringMap(src map[string]interface{}) map[string]string
 func HttpQueryString(data map[string]interface{}) string
 func ToString(mp map[string]interface{}) string
+func ToString2(mp interface{}) string
+// source at maputil/format.go
+func NewFormatter(mp interface{}) *MapFormatter
+func FormatIndent(mp interface{}, indent string) string
 // source at maputil/maputil.go
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
@@ -557,24 +612,40 @@ func Values(mp interface{}) (values []interface{})
 ```go
 // source at mathutil/convert.go
 func Int(in interface{}) (int, error)
+func QuietInt(in interface{}) int
 func MustInt(in interface{}) int
 func IntOrPanic(in interface{}) int
+func IntOrErr(in interface{}) (iVal int, err error)
 func ToInt(in interface{}) (iVal int, err error)
 func Uint(in interface{}) (uint64, error)
+func QuietUint(in interface{}) uint64
 func MustUint(in interface{}) uint64
+func UintOrErr(in interface{}) (uint64, error)
 func ToUint(in interface{}) (u64 uint64, err error)
 func Int64(in interface{}) (int64, error)
+func QuietInt64(in interface{}) int64
 func MustInt64(in interface{}) int64
+func Int64OrErr(in interface{}) (int64, error)
 func ToInt64(in interface{}) (i64 int64, err error)
-func Float(in interface{}) (float64, error)
-func ToFloat(in interface{}) (f64 float64, err error)
+func QuietFloat(in interface{}) float64
 func FloatOrPanic(in interface{}) float64
 func MustFloat(in interface{}) float64
+func Float(in interface{}) (float64, error)
+func FloatOrErr(in interface{}) (float64, error)
+func ToFloat(in interface{}) (f64 float64, err error)
 func TryToString(val interface{}, defaultAsErr bool) (str string, err error)
 func StringOrPanic(val interface{}) string
 func MustString(val interface{}) string
 func ToString(val interface{}) (string, error)
+func StringOrErr(val interface{}) (string, error)
+func QuietString(val interface{}) string
 func String(val interface{}) string
+// source at mathutil/mathutil.go
+func MaxFloat(x, y float64) float64
+func MaxInt(x, y int) int
+func SwapMaxInt(x, y int) (int, int)
+func MaxI64(x, y int64) int64
+func SwapMaxI64(x, y int64) (int64, int64)
 // source at mathutil/number.go
 func IsNumeric(c byte) bool
 func Percent(val, total int) float64
@@ -586,6 +657,27 @@ func RandomInt(min, max int) int
 func RandInt(min, max int) int { return RandomInt(min, max) }
 func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
+```
+
+### Numbers
+
+> Package `github.com/gookit/goutil/numbers`
+
+```go
+```
+
+### Reflects
+
+> Package `github.com/gookit/goutil/reflects`
+
+```go
+// source at reflects/type.go
+func ToBaseKind(kind reflect.Kind) BKind
+func TypeOf(v interface{}) Type
+// source at reflects/value.go
+func Elem(v reflect.Value) reflect.Value
+func Wrap(rv reflect.Value) Value
+func ValueOf(v interface{}) Value
 ```
 
 ### Standard
@@ -645,7 +737,9 @@ func ParseTagValueINI(field, str string) (mp maputil.SMap, err error)
 > Package `github.com/gookit/goutil/strutil`
 
 ```go
-// source at strutil/bytes.go
+// source at strutil/bytes_buf.go
+func NewEmptyBuffer() *Buffer
+// source at strutil/bytes_pool.go
 func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool
 // source at strutil/check.go
 func IsNumeric(c byte) bool
@@ -672,15 +766,19 @@ func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 // source at strutil/convert.go
 func Join(sep string, ss ...string) string
+func JoinSubs(sep string, ss []string) string
 func Implode(sep string, ss ...string) string
 func String(val interface{}) (string, error)
+func QuietString(in interface{}) string
 func MustString(in interface{}) string
+func StringOrErr(val interface{}) (string, error)
 func ToString(val interface{}) (string, error)
 func AnyToString(val interface{}, defaultAsErr bool) (str string, err error)
 func Byte2str(b []byte) string
 func Byte2string(b []byte) string
 func ToBytes(s string) (b []byte)
 func ToBool(s string) (bool, error)
+func QuietBool(s string) bool
 func MustBool(s string) bool
 func Bool(s string) (bool, error)
 func Int(s string) (int, error)
@@ -688,20 +786,26 @@ func ToInt(s string) (int, error)
 func MustInt(s string) int
 func IntOrPanic(s string) int
 func Ints(s string, sep ...string) []int
-func ToInts(s string, sep ...string) ([]int, error)
+func ToInts(s string, sep ...string) ([]int, error) { return ToIntSlice(s, sep...) }
 func ToIntSlice(s string, sep ...string) (ints []int, err error)
-func ToArray(s string, sep ...string) []string
-func Strings(s string, sep ...string) []string
-func ToStrings(s string, sep ...string) []string
+func ToArray(s string, sep ...string) []string { return ToSlice(s, sep...) }
+func Strings(s string, sep ...string) []string { return ToSlice(s, sep...) }
+func ToStrings(s string, sep ...string) []string { return ToSlice(s, sep...) }
 func ToSlice(s string, sep ...string) []string
 func ToOSArgs(s string) []string
 func MustToTime(s string, layouts ...string) time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/encode.go
+func EscapeJS(s string) string
+func EscapeHTML(s string) string
+func B32Encode(str string) string
+func B32Decode(str string) string
 func Base64(str string) string
 func B64Encode(str string) string
+func B64Decode(str string) string
 func URLEncode(s string) string
 func URLDecode(s string) string
+func NewBaseEncoder(base int) *BaseEncoder
 // source at strutil/filter.go
 func Trim(s string, cutSet ...string) string
 func Ltrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
@@ -797,8 +901,8 @@ func ProcessExists(pid int) bool
 func MustFindUser(uname string) *user.User
 func LoginUser() *user.User
 func CurrentUser() *user.User
-func UserHomeDir() string
 func UHomeDir() string
+func UserHomeDir() string
 func HomeDir() string
 func UserDir(subPath string) string
 func UserCacheDir(subPath string) string
@@ -828,6 +932,8 @@ func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
 func MockOsEnvByText(envText string, fn func())
 func MockOsEnv(mp map[string]string, fn func())
+// source at testutil/writer.go
+func NewTestWriter() *TestWriter
 ```
 
 ### Timex

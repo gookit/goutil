@@ -18,11 +18,11 @@
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 - `jsonutil` some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
-- `mathutil`, `numutil` Math(int, number) util functions. eg: convert, math calc, random
+- [`mathutil`](./mathutil), `numutil` Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
-- `strutil` String util functions. eg: bytes, check, convert, encode, format and more
-- `sysutil` System util functions. eg: sysenv, exec, user, process
+- [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
+- [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
 - `testutil` Test help util functions. eg: http test, mock ENV value
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
