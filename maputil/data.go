@@ -10,17 +10,6 @@ import (
 // Data an map data type
 type Data map[string]interface{}
 
-// Value get from the data map
-func (d Data) Value(key string) (interface{}, bool) {
-	val, ok := d[key]
-	return val, ok
-}
-
-// Get value from the data map
-func (d Data) Get(key string) interface{} {
-	return d[key]
-}
-
 // Set value to the data map
 func (d Data) Set(key string, val interface{}) {
 	d[key] = val
@@ -37,6 +26,31 @@ func (d Data) Emtpy() bool {
 	return len(d) == 0
 }
 
+// Get value from the data map
+func (d Data) Get(key string) interface{} {
+	return d[key]
+}
+
+// Value get from the data map
+func (d Data) Value(key string) (interface{}, bool) {
+	val, ok := d[key]
+	return val, ok
+}
+
+// GetByPath get value from the data map by path. eg: top.sub
+func (d Data) GetByPath(path string) (interface{}, bool) {
+	return GetByPath(path, d)
+}
+
+// Default get value from the data map with default value
+func (d Data) Default(key string, def interface{}) interface{} {
+	val, ok := d[key]
+	if ok {
+		return val
+	}
+	return def
+}
+
 // Int value get
 func (d Data) Int(key string) int {
 	val, ok := d[key]
@@ -44,7 +58,7 @@ func (d Data) Int(key string) int {
 		return 0
 	}
 
-	return mathutil.MustInt(val)
+	return mathutil.QuietInt(val)
 }
 
 // Int64 value get
@@ -54,7 +68,7 @@ func (d Data) Int64(key string) int64 {
 		return 0
 	}
 
-	return mathutil.MustInt64(val)
+	return mathutil.QuietInt64(val)
 }
 
 // Str value get by key
@@ -63,7 +77,7 @@ func (d Data) Str(key string) string {
 	if !ok {
 		return ""
 	}
-	return strutil.MustString(val)
+	return strutil.QuietString(val)
 }
 
 // Bool value get
@@ -80,15 +94,6 @@ func (d Data) Bool(key string) bool {
 		return strutil.QuietBool(str)
 	}
 	return false
-}
-
-// Default get value from the data map with default value
-func (d Data) Default(key string, def interface{}) interface{} {
-	val, ok := d[key]
-	if ok {
-		return val
-	}
-	return def
 }
 
 // Strings get []string value
@@ -111,7 +116,7 @@ func (d Data) StringsByStr(key string) []string {
 		return nil
 	}
 
-	str := strutil.MustString(val)
+	str := strutil.QuietString(val)
 	return strings.Split(str, ",")
 }
 

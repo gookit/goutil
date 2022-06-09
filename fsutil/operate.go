@@ -262,14 +262,14 @@ func Unzip(archive, targetDir string) (err error) {
 
 		targetFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
-			fileReader.Close()
+			_ = fileReader.Close()
 			return err
 		}
 
 		_, err = io.Copy(targetFile, fileReader)
 
 		// close all
-		fileReader.Close()
+		_ = fileReader.Close()
 		targetFile.Close()
 
 		if err != nil {

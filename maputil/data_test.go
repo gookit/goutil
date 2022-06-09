@@ -33,6 +33,10 @@ func TestData(t *testing.T) {
 	mp.Set("new", "val1")
 	assert.Equal(t, "val1", mp.Str("new"))
 
+	val, ok := mp.Value("new")
+	assert.True(t, ok)
+	assert.Equal(t, "val1", val)
+
 	// not exists
 	assert.False(t, mp.Bool("notExists"))
 	assert.Equal(t, 0, mp.Int("notExists"))

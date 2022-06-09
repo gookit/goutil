@@ -52,7 +52,7 @@ func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
 			if item, ok = tData[k]; !ok {
 				return
 			}
-		case []interface{}: // is an slice
+		case []interface{}: // is a slice
 			if item, ok = getBySlice(k, tData); !ok {
 				return
 			}
