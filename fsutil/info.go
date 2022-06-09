@@ -1,10 +1,11 @@
 package fsutil
 
 import (
+	"os"
 	"path"
 	"path/filepath"
 
-	"github.com/mitchellh/go-homedir"
+	"github.com/gookit/goutil/internal/comfunc"
 )
 
 // Dir get dir path, without last name.
@@ -32,13 +33,85 @@ func Suffix(fpath string) string {
 	return path.Ext(fpath)
 }
 
+// Expand will parse first `~` as user home dir path.
+func Expand(pathStr string) string {
+	return comfunc.ExpandPath(pathStr)
+}
+
 // ExpandPath will parse `~` as user home dir path.
-func ExpandPath(path string) string {
-	path, _ = homedir.Expand(path)
-	return path
+func ExpandPath(pathStr string) string {
+	return comfunc.ExpandPath(pathStr)
 }
 
 // Realpath returns the shortest path name equivalent to path by purely lexical processing.
 func Realpath(pathStr string) string {
 	return path.Clean(pathStr)
+}
+
+// GlobWithFunc handle matched file
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
+	files, err := filepath.Glob(pattern)
+	if err != nil {
+		return err
+	}
+
+	for _, filePath := range files {
+		err = fn(filePath)
+		if err != nil {
+			break
+		}
+	}
+	return
+}
+
+// filter and handle func for FindInDir
+type (
+	FilterFunc func(fPath string, fi os.FileInfo) bool
+	HandleFunc func(fPath string, fi os.FileInfo) error
+)
+
+// FindInDir code refer the go pkg: path/filepath.glob()
+func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error) {
+	fi, err := os.Stat(dir)
+	if err != nil {
+		return // ignore I/O error
+	}
+	if !fi.IsDir() {
+		return // ignore I/O error
+	}
+
+	d, err := os.Open(dir)
+	if err != nil {
+		return // ignore I/O error
+	}
+	defer d.Close()
+
+	// names, _ := d.Readdirnames(-1)
+	// sort.Strings(names)
+
+	stats, _ := d.Readdir(-1)
+	for _, fi := range stats {
+		baseName := fi.Name()
+		filePath := dir + "/" + baseName
+
+		// call filters
+		if len(filters) > 0 {
+			var filtered = false
+			for _, filter := range filters {
+				if !filter(filePath, fi) {
+					filtered = true
+					break
+				}
+			}
+
+			if filtered {
+				continue
+			}
+		}
+
+		if err := handleFn(filePath, fi); err != nil {
+			return err
+		}
+	}
+	return nil
 }

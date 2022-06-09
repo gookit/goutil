@@ -8,10 +8,14 @@ import (
 
 var (
 	// DefaultDirPerm perm and flags for create log file
-	DefaultDirPerm  os.FileMode = 0775
-	DefaultFilePerm os.FileMode = 0665
+	DefaultDirPerm   os.FileMode = 0775
+	DefaultFilePerm  os.FileMode = 0665
+	OnlyReadFilePerm os.FileMode = 0444
 
+	// DefaultFileFlags for create and write
 	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
+	// OnlyReadFileFlags open file for read
+	OnlyReadFileFlags = os.O_RDONLY
 )
 
 // alias methods

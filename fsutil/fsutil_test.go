@@ -35,6 +35,7 @@ func TestDiscardReader(t *testing.T) {
 	fsutil.DiscardReader(sr)
 
 	assert.Empty(t, fsutil.MustReadReader(sr))
+	assert.Empty(t, fsutil.GetContents(sr))
 }
 
 // func TestDir(t *testing.T) {

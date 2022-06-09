@@ -5,18 +5,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 )
 
 const (
 	// MimeSniffLen sniff Length, use for detect file mime type
 	MimeSniffLen = 512
 )
-
-// DiscardReader anything from the reader
-func DiscardReader(src io.Reader) {
-	_, _ = io.Copy(ioutil.Discard, src)
-}
 
 // OSTempFile create a temp file on os.TempDir()
 //
@@ -77,20 +71,4 @@ func ReaderMimeType(r io.Reader) (mime string) {
 	}
 
 	return http.DetectContentType(buf[:n])
-}
-
-// GlobWithFunc handle matched file
-func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
-	files, err := filepath.Glob(pattern)
-	if err != nil {
-		return err
-	}
-
-	for _, filePath := range files {
-		err = fn(filePath)
-		if err != nil {
-			break
-		}
-	}
-	return
 }

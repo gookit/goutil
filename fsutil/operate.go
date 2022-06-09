@@ -2,7 +2,6 @@ package fsutil
 
 import (
 	"archive/zip"
-	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -24,6 +23,11 @@ func MkParentDir(fpath string) error {
 	return nil
 }
 
+// DiscardReader anything from the reader
+func DiscardReader(src io.Reader) {
+	_, _ = io.Copy(ioutil.Discard, src)
+}
+
 // MustReadFile read file contents, will panic on error
 func MustReadFile(filePath string) []byte {
 	bs, err := ioutil.ReadFile(filePath)
@@ -43,6 +47,19 @@ func MustReadReader(r io.Reader) []byte {
 	}
 
 	return bs
+}
+
+// GetContents read contents from path or io.Reader, will panic on error
+func GetContents(in interface{}) []byte {
+	if fPath, ok := in.(string); ok {
+		return MustReadFile(fPath)
+	}
+
+	if r, ok := in.(io.Reader); ok {
+		return MustReadReader(r)
+	}
+
+	panic("invalid type of input")
 }
 
 // ReadExistFile read file contents if existed, will panic on error
@@ -78,12 +95,17 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	return file, nil
 }
 
-// QuickOpenFile like os.OpenFile
+/* TODO MustOpenFile() */
+
+// QuickOpenFile like os.OpenFile for write, if not exists, will create it.
 func QuickOpenFile(filepath string) (*os.File, error) {
 	return OpenFile(filepath, DefaultFileFlags, DefaultFilePerm)
 }
 
-/* TODO MustOpenFile() */
+// OpenReadFile like os.OpenFile, open file for read contents
+func OpenReadFile(filepath string) (*os.File, error) {
+	return os.OpenFile(filepath, OnlyReadFileFlags, OnlyReadFilePerm)
+}
 
 // CreateFile create file if not exists
 //
@@ -112,17 +134,46 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
 }
 
 // ************************************************************
-//	copy files
+//	write, copy files
 // ************************************************************
 
-// CopyFile copy file to another path.
-func CopyFile(src string, dst string) error {
-	return errors.New("TODO")
+// PutContents to file
+func PutContents(filePath string, contents string) (int, error) {
+	// create and open file
+	dstFile, err := QuickOpenFile(filePath)
+	if err != nil {
+		return 0, err
+	}
+
+	defer dstFile.Close()
+	return dstFile.WriteString(contents)
+}
+
+// CopyFile copy a file to another file path.
+func CopyFile(srcPath string, dstPath string) error {
+	srcFile, err := os.OpenFile(srcPath, os.O_RDONLY, 0)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	// create and open file
+	dstFile, err := QuickOpenFile(dstPath)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	return err
 }
 
 // MustCopyFile copy file to another path.
-func MustCopyFile(src string, dst string) {
-	panic("TODO")
+func MustCopyFile(srcPath string, dstPath string) {
+	err := CopyFile(srcPath, dstPath)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // ************************************************************
@@ -138,40 +189,44 @@ var (
 )
 
 // Remove removes the named file or (empty) directory.
-func Remove(fpath string) error {
-	return os.Remove(fpath)
+func Remove(fPath string) error {
+	return os.Remove(fPath)
 }
 
 // MustRemove removes the named file or (empty) directory.
-// NOTICE: if error will panic
-func MustRemove(fpath string) {
-	if err := os.Remove(fpath); err != nil {
+// NOTICE: will panic on error
+func MustRemove(fPath string) {
+	if err := os.Remove(fPath); err != nil {
 		panic(err)
 	}
 }
 
 // QuietRemove removes the named file or (empty) directory.
 // NOTICE: will ignore error
-func QuietRemove(fpath string) {
-	_ = os.Remove(fpath)
+func QuietRemove(fPath string) {
+	_ = os.Remove(fPath)
 }
+
+// RmIfExist removes the named file or (empty) directory on exists.
+func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }
 
 // DeleteIfExist removes the named file or (empty) directory on exists.
-func DeleteIfExist(fpath string) error {
-	if !PathExists(fpath) {
-		return nil
+func DeleteIfExist(fPath string) error {
+	if PathExists(fPath) {
+		return os.Remove(fPath)
 	}
-
-	return os.Remove(fpath)
+	return nil
 }
 
-// DeleteIfFileExist removes the named file on exists.
-func DeleteIfFileExist(fpath string) error {
-	if !IsFile(fpath) {
-		return nil
-	}
+// RmFileIfExist removes the named file on exists.
+func RmFileIfExist(fPath string) error { return DeleteIfFileExist(fPath) }
 
-	return os.Remove(fpath)
+// DeleteIfFileExist removes the named file on exists.
+func DeleteIfFileExist(fPath string) error {
+	if IsFile(fPath) {
+		return os.Remove(fPath)
+	}
+	return nil
 }
 
 // ************************************************************
@@ -197,7 +252,6 @@ func Unzip(archive, targetDir string) (err error) {
 			if err != nil {
 				return err
 			}
-
 			continue
 		}
 

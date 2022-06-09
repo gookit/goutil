@@ -83,3 +83,19 @@ func TestQuietRemove(t *testing.T) {
 		fsutil.QuietRemove("/path-not-exist")
 	})
 }
+
+func TestMustCopyFile(t *testing.T) {
+	srcPath := "./testdata/cp-file-src.txt"
+	dstPath := "./testdata/cp-file-dst.txt"
+
+	assert.NoError(t, fsutil.RmIfExist(srcPath))
+	assert.NoError(t, fsutil.RmFileIfExist(dstPath))
+
+	_, err := fsutil.PutContents(srcPath, "hello")
+	if err != nil {
+		assert.NoError(t, err)
+	}
+
+	fsutil.MustCopyFile(srcPath, dstPath)
+	assert.Equal(t, []byte("hello"), fsutil.GetContents(dstPath))
+}
