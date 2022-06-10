@@ -35,7 +35,7 @@ func ParseLine(line string) []string {
 	return cmdline.NewParser(line).Parse()
 }
 
-// QuickExec quick exec an simple command line
+// QuickExec quick exec a simple command line
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
 	return sysutil.ExecLine(cmdLine, workDir...)
 }
@@ -88,8 +88,7 @@ func Workdir() string {
 
 // BinDir get
 func BinDir() string {
-	binFile := os.Args[0]
-	return path.Dir(binFile)
+	return path.Dir(os.Args[0])
 }
 
 // BinFile get

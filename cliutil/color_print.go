@@ -33,69 +33,69 @@ func Cyanf(format string, a ...interface{}) { color.Cyan.Printf(format, a...) }
 // Cyanln print message line with Cyan color
 func Cyanln(a ...interface{}) { color.Cyan.Println(a...) }
 
-// Grayp print message with Gray color
+// Grayp print message with gray color
 func Grayp(a ...interface{}) { color.Gray.Print(a...) }
 
-// Grayf print message with Gray color
+// Grayf print message with gray color
 func Grayf(format string, a ...interface{}) { color.Gray.Printf(format, a...) }
 
-// Grayln print message line with Gray color
+// Grayln print message line with gray color
 func Grayln(a ...interface{}) { color.Gray.Println(a...) }
 
-// Greenp print message with Green color
+// Greenp print message with green color
 func Greenp(a ...interface{}) { color.Green.Print(a...) }
 
-// Greenf print message with Green color
+// Greenf print message with green color
 func Greenf(format string, a ...interface{}) { color.Green.Printf(format, a...) }
 
-// Greenln print message line with Green color
+// Greenln print message line with green color
 func Greenln(a ...interface{}) { color.Green.Println(a...) }
 
-// Yellowp print message with Yellow color
+// Yellowp print message with yellow color
 func Yellowp(a ...interface{}) { color.Yellow.Print(a...) }
 
-// Yellowf print message with Yellow color
+// Yellowf print message with yellow color
 func Yellowf(format string, a ...interface{}) { color.Yellow.Printf(format, a...) }
 
-// Yellowln print message line with Yellow color
+// Yellowln print message line with yellow color
 func Yellowln(a ...interface{}) { color.Yellow.Println(a...) }
 
-// Magentap print message with Magenta color
+// Magentap print message with magenta color
 func Magentap(a ...interface{}) { color.Magenta.Print(a...) }
 
-// Magentaf print message with Magenta color
+// Magentaf print message with magenta color
 func Magentaf(format string, a ...interface{}) { color.Magenta.Printf(format, a...) }
 
-// Magentaln print message line with Magenta color
+// Magentaln print message line with magenta color
 func Magentaln(a ...interface{}) { color.Magenta.Println(a...) }
 
 /*************************************************************
  * quick use style print message
  *************************************************************/
 
-// Infop print message with Info color
+// Infop print message with info color
 func Infop(a ...interface{}) { color.Info.Print(a...) }
 
-// Infof print message with Info style
+// Infof print message with info style
 func Infof(format string, a ...interface{}) { color.Info.Printf(format, a...) }
 
-// Infoln print message with Info style
+// Infoln print message with info style
 func Infoln(a ...interface{}) { color.Info.Println(a...) }
 
-// Errorp print message with Error color
+// Errorp print message with error color
 func Errorp(a ...interface{}) { color.Error.Print(a...) }
 
-// Errorf print message with Error style
+// Errorf print message with error style
 func Errorf(format string, a ...interface{}) { color.Error.Printf(format, a...) }
 
-// Errorln print message with Error style
+// Errorln print message with error style
 func Errorln(a ...interface{}) { color.Error.Println(a...) }
 
-// Warnp print message with Warn color
+// Warnp print message with warn color
 func Warnp(a ...interface{}) { color.Warn.Print(a...) }
 
-// Warnf print message with Warn style
+// Warnf print message with warn style
 func Warnf(format string, a ...interface{}) { color.Warn.Printf(format, a...) }
 
-// Warnln print message with Warn style
+// Warnln print message with warn style
 func Warnln(a ...interface{}) { color.Warn.Println(a...) }

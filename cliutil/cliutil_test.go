@@ -31,7 +31,7 @@ func TestExecCmd(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "OK1", strings.TrimSpace(ret))
 
-	ret, err = cliutil.ExecLine("echo OK2")
+	ret, err = cliutil.QuickExec("echo OK2")
 	assert.NoError(t, err)
 	assert.Equal(t, "OK2", strings.TrimSpace(ret))
 
@@ -82,4 +82,44 @@ func TestParseLine(t *testing.T) {
 	dump.P(args)
 	assert.Len(t, args, 7)
 	assert.Equal(t, "msg text", args[6])
+}
+
+func TestWorkdir(t *testing.T) {
+	assert.NotEmpty(t, cliutil.Workdir())
+	assert.NotEmpty(t, cliutil.BinDir())
+	assert.NotEmpty(t, cliutil.BinFile())
+}
+
+func TestColorPrint(t *testing.T) {
+	// code gen by: kite gen parse cliutil/_demo/gen-code.tpl
+	cliutil.Redp("p:red color message, ")
+	cliutil.Redf("f:%s color message, ", "red")
+	cliutil.Redln("ln:red color message print in cli.")
+	cliutil.Bluep("p:blue color message, ")
+	cliutil.Bluef("f:%s color message, ", "blue")
+	cliutil.Blueln("ln:blue color message print in cli.")
+	cliutil.Cyanp("p:cyan color message, ")
+	cliutil.Cyanf("f:%s color message, ", "cyan")
+	cliutil.Cyanln("ln:cyan color message print in cli.")
+	cliutil.Grayp("p:gray color message, ")
+	cliutil.Grayf("f:%s color message, ", "gray")
+	cliutil.Grayln("ln:gray color message print in cli.")
+	cliutil.Greenp("p:green color message, ")
+	cliutil.Greenf("f:%s color message, ", "green")
+	cliutil.Greenln("ln:green color message print in cli.")
+	cliutil.Yellowp("p:yellow color message, ")
+	cliutil.Yellowf("f:%s color message, ", "yellow")
+	cliutil.Yellowln("ln:yellow color message print in cli.")
+	cliutil.Magentap("p:magenta color message, ")
+	cliutil.Magentaf("f:%s color message, ", "magenta")
+	cliutil.Magentaln("ln:magenta color message print in cli.")
+	cliutil.Infop("p:info color message, ")
+	cliutil.Infof("f:%s color message, ", "info")
+	cliutil.Infoln("ln:info color message print in cli.")
+	cliutil.Warnp("p:warn color message, ")
+	cliutil.Warnf("f:%s color message, ", "warn")
+	cliutil.Warnln("ln:warn color message print in cli.")
+	cliutil.Errorp("p:error color message, ")
+	cliutil.Errorf("f:%s color message, ", "error")
+	cliutil.Errorln("ln:error color message print in cli.")
 }

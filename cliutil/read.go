@@ -41,7 +41,6 @@ func ReadLine(question string) (string, error) {
 // ReadFirst read first char
 func ReadFirst(question string) (string, error) {
 	answer, err := ReadFirstByte(question)
-
 	return string(answer), err
 }
 
