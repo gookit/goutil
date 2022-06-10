@@ -3,6 +3,7 @@ package structs
 import (
 	"sync"
 
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -22,9 +23,10 @@ func NewMapData() *MapDataStore {
 	}
 }
 
-// EnableLock for data
-func (md *MapDataStore) EnableLock() {
+// EnableLock for operate data
+func (md *MapDataStore) EnableLock() *MapDataStore {
 	md.enableLock = true
+	return md
 }
 
 // Data get all
@@ -54,9 +56,14 @@ func (md *MapDataStore) SetValue(key string, val interface{}) {
 	md.data[key] = val
 }
 
-// ClearData all data
-func (md *MapDataStore) ClearData() {
-	md.data = nil
+// Len of data
+func (md *MapDataStore) Len() int {
+	return len(md.data)
+}
+
+// Clear all data
+func (md *MapDataStore) Clear() {
+	md.data = make(map[string]interface{})
 }
 
 // Value get from data
@@ -105,4 +112,9 @@ func (md *MapDataStore) BoolVal(key string) bool {
 		return strutil.QuietBool(str)
 	}
 	return false
+}
+
+// String format data
+func (md *MapDataStore) String() string {
+	return maputil.ToString(md.data)
 }

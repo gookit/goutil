@@ -71,10 +71,11 @@ func ParseTagValue(str string) maputil.SMap {
 }
 
 // ParseTagValueINI tag value string. is like INI format data
+//
 // eg: "name=int0;shorts=i;required=true;desc=int option message"
-func ParseTagValueINI(field, str string) (mp maputil.SMap, err error) {
-	str = strings.Trim(str, "; ")
-	ss := strutil.Split(str, ";")
+func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error) {
+	tagStr = strings.Trim(tagStr, "; ")
+	ss := strutil.Split(tagStr, ";")
 	if len(ss) == 0 {
 		return
 	}
@@ -87,7 +88,7 @@ func ParseTagValueINI(field, str string) (mp maputil.SMap, err error) {
 		}
 
 		kvNodes := strings.SplitN(s, "=", 2)
-		key, val := kvNodes[0], kvNodes[1]
+		key, val := kvNodes[0], strings.TrimSpace(kvNodes[1])
 		// if !flagTagKeys.Has(key) {
 		// 	panicf("parse tag error on field '%s': invalid key name '%s'", name, key)
 		// }
