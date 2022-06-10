@@ -1,15 +1,9 @@
-package fsutil
+package stdio
 
 import (
 	"fmt"
 	"io"
-	"strings"
 )
-
-// QuietWriteString to writer
-func QuietWriteString(w io.Writer, ss ...string) {
-	_, _ = io.WriteString(w, strings.Join(ss, ""))
-}
 
 // WriteWrapper struct
 type WriteWrapper struct {
