@@ -2,7 +2,6 @@ package fsutil_test
 
 import (
 	"bytes"
-	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
@@ -29,18 +28,6 @@ func TestMimeType(t *testing.T) {
 
 	assert.True(t, fsutil.IsImageFile("testdata/test.jpg"))
 }
-
-func TestDiscardReader(t *testing.T) {
-	sr := strings.NewReader("hello")
-	fsutil.DiscardReader(sr)
-
-	assert.Empty(t, fsutil.MustReadReader(sr))
-	assert.Empty(t, fsutil.GetContents(sr))
-}
-
-// func TestDir(t *testing.T) {
-//
-// }
 
 func TestTempDir(t *testing.T) {
 	dir, err := fsutil.TempDir("testdata", "temp.*")

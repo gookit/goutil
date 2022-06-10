@@ -17,3 +17,5 @@
 *.out
 *.cov
 .DS_Store
+
+testdata/

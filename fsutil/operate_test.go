@@ -2,8 +2,10 @@ package fsutil_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +22,15 @@ func TestMkdir(t *testing.T) {
 	if assert.NoError(t, err) {
 		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub21", os.ModePerm))
 		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub22", 0666))
-		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub23/sub31", 0777)) // 066X will error
+		// 066X will error
+		assert.NoError(t, fsutil.Mkdir("./testdata/sub/sub23/sub31", 0777))
+
+		assert.NoError(t, fsutil.MkParentDir("./testdata/sub/sub24/sub32"))
+		assert.True(t, fsutil.IsDir("./testdata/sub/sub24"))
 
 		assert.NoError(t, os.RemoveAll("./testdata/sub"))
+	} else {
+		cliutil.Redln("chmod dir ./testdata fail")
 	}
 }
 
@@ -52,16 +60,38 @@ func TestCreateFile(t *testing.T) {
 		assert.NoError(t, file.Close())
 		assert.NoError(t, os.RemoveAll("./testdata/sub"))
 	}
+
+	fpath := "./testdata/sub/sub3/test-must-create.txt"
+	assert.NoError(t, fsutil.RmFileIfExist(fpath))
+	file = fsutil.MustCreateFile(fpath, 0, 0766)
+	assert.NoError(t, file.Close())
 }
 
 func TestQuickOpenFile(t *testing.T) {
-	fname := "./testdata/quick-open-file.txt"
-	file, err := fsutil.QuickOpenFile(fname)
-	if assert.NoError(t, err) {
-		assert.Equal(t, fname, file.Name())
-		assert.NoError(t, file.Close())
-		assert.NoError(t, os.Remove(file.Name()))
-	}
+	fpath := "./testdata/quick-open-file.txt"
+	assert.NoError(t, fsutil.RmFileIfExist(fpath))
+
+	file, err := fsutil.QuickOpenFile(fpath)
+	assert.NoError(t, err)
+	assert.Equal(t, fpath, file.Name())
+
+	_, err = file.WriteString("hello")
+	assert.NoError(t, err)
+
+	// close
+	assert.NoError(t, file.Close())
+
+	// open for read
+	file, err = fsutil.OpenReadFile(fpath)
+	// var bts [5]byte
+	bts := make([]byte, 5)
+	_, err = file.Read(bts)
+	assert.NoError(t, err)
+	assert.Equal(t, "hello", string(bts))
+
+	// close
+	assert.NoError(t, file.Close())
+	assert.NoError(t, fsutil.Remove(file.Name()))
 }
 
 func TestMustRemove(t *testing.T) {
@@ -84,6 +114,29 @@ func TestQuietRemove(t *testing.T) {
 	})
 }
 
+func TestDiscardReader(t *testing.T) {
+	sr := strings.NewReader("hello")
+	fsutil.DiscardReader(sr)
+
+	assert.Empty(t, fsutil.MustReadReader(sr))
+	assert.Empty(t, fsutil.GetContents(sr))
+}
+
+func TestGetContents(t *testing.T) {
+	fpath := "./testdata/get-contents.txt"
+	assert.NoError(t, fsutil.RmFileIfExist(fpath))
+
+	_, err := fsutil.PutContents(fpath, "hello")
+	assert.NoError(t, err)
+
+	assert.Nil(t, fsutil.ReadExistFile("/path-not-exist"))
+	assert.Equal(t, []byte("hello"), fsutil.ReadExistFile(fpath))
+
+	assert.Panics(t, func() {
+		fsutil.GetContents(45)
+	})
+}
+
 func TestMustCopyFile(t *testing.T) {
 	srcPath := "./testdata/cp-file-src.txt"
 	dstPath := "./testdata/cp-file-dst.txt"
@@ -92,9 +145,7 @@ func TestMustCopyFile(t *testing.T) {
 	assert.NoError(t, fsutil.RmFileIfExist(dstPath))
 
 	_, err := fsutil.PutContents(srcPath, "hello")
-	if err != nil {
-		assert.NoError(t, err)
-	}
+	assert.NoError(t, err)
 
 	fsutil.MustCopyFile(srcPath, dstPath)
 	assert.Equal(t, []byte("hello"), fsutil.GetContents(dstPath))

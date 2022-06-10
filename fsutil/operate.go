@@ -45,7 +45,6 @@ func MustReadReader(r io.Reader) []byte {
 	if err != nil {
 		panic(err)
 	}
-
 	return bs
 }
 
@@ -91,13 +90,12 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return file, nil
 }
 
 /* TODO MustOpenFile() */
 
-// QuickOpenFile like os.OpenFile for write, if not exists, will create it.
+// QuickOpenFile like os.OpenFile, open for write, if not exists, will create it.
 func QuickOpenFile(filepath string) (*os.File, error) {
 	return OpenFile(filepath, DefaultFileFlags, DefaultFilePerm)
 }
@@ -129,7 +127,6 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
 	if err != nil {
 		panic(err)
 	}
-
 	return file
 }
 
