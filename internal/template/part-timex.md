@@ -86,16 +86,16 @@ Template Vars:
 Examples, use timex:
 
 ```go
-now := timex.Now()
-date := now.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
-date = now.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
+tx := timex.Now()
+date := tx.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+date = tx.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
 ```
 
 Format time.Time:
 
 ```go
-now := time.Now()
-date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+tx := time.Now()
+date := timex.DateFormat(tx, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
 ```
 
 More usage:

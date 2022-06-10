@@ -7,12 +7,12 @@
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-Go一些常用的工具函数收集、实现和整理
+Go一些常用的工具函数实现、增强、收集和整理
 
 - [`arrutil`](./arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
-- [`errorx`](./errorx)  为 go 提供增强的错误实现，允许使用堆栈跟踪和包装另一个错误。
+- [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` 格式化数据工具函数
 - [`fsutil`](./fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
@@ -218,13 +218,7 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
-### Common
-
-> Package `github.com/gookit/goutil/common`
-
-```go
-```
-
+> More, please see [./cliutil/README](cliutil/README.md)
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -500,9 +494,6 @@ func ExpandPath(pathStr string) string
 func Realpath(pathStr string) string
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error)
-// source at fsutil/ioutil.go
-func QuietWriteString(w io.Writer, ss ...string)
-func NewWriteWrapper(w io.Writer) *WriteWrapper
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -565,7 +556,7 @@ func main() {
 }
 ```
 
-### JSON
+### JSON util
 
 > Package `github.com/gookit/goutil/jsonutil`
 
@@ -660,13 +651,6 @@ func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
 
-### Numbers
-
-> Package `github.com/gookit/goutil/numbers`
-
-```go
-```
-
 ### Reflects
 
 > Package `github.com/gookit/goutil/reflects`
@@ -679,6 +663,19 @@ func TypeOf(v interface{}) Type
 func Elem(v reflect.Value) reflect.Value
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
+```
+
+### Stdio
+
+> Package `github.com/gookit/goutil/stdio`
+
+```go
+// source at stdio/ioutil.go
+func QuietWriteString(w io.Writer, ss ...string)
+func DiscardReader(src io.Reader)
+func MustReadReader(r io.Reader) []byte
+// source at stdio/writer.go
+func NewWriteWrapper(w io.Writer) *WriteWrapper
 ```
 
 ### Standard
@@ -730,7 +727,7 @@ func MustToMap(st interface{}) map[string]interface{}
 func ParseTags(v interface{}) error
 func ParseReflectTags(v reflect.Value) error
 func ParseTagValue(str string) maputil.SMap
-func ParseTagValueINI(field, str string) (mp maputil.SMap, err error)
+func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error)
 ```
 
 ### String
@@ -879,7 +876,6 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 // source at sysutil/sysenv.go
-func Hostname() string
 func IsWin() bool
 func IsWindows() bool
 func IsMac() bool
@@ -888,6 +884,7 @@ func IsMSys() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
+func Hostname() string
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
 func IsShellSpecialVar(c uint8) bool
@@ -1069,16 +1066,16 @@ Template Vars:
 Examples, use timex:
 
 ```go
-now := timex.Now()
-date := now.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
-date = now.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
+tx := timex.Now()
+date := tx.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+date = tx.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
 ```
 
 Format time.Time:
 
 ```go
-now := time.Now()
-date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+tx := time.Now()
+date := timex.DateFormat(tx, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
 ```
 
 More usage:

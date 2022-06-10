@@ -219,13 +219,7 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
-### Common
-
-> Package `github.com/gookit/goutil/common`
-
-```go
-```
-
+> More, please see [./cliutil/README](cliutil/README.md)
 ### Dump
 
 > Package `github.com/gookit/goutil/dump`
@@ -499,9 +493,6 @@ func ExpandPath(pathStr string) string
 func Realpath(pathStr string) string
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error)
-// source at fsutil/ioutil.go
-func QuietWriteString(w io.Writer, ss ...string)
-func NewWriteWrapper(w io.Writer) *WriteWrapper
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -564,7 +555,7 @@ func main() {
 }
 ```
 
-### JSON
+### JSON util
 
 > Package `github.com/gookit/goutil/jsonutil`
 
@@ -659,13 +650,6 @@ func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
 
-### Numbers
-
-> Package `github.com/gookit/goutil/numbers`
-
-```go
-```
-
 ### Reflects
 
 > Package `github.com/gookit/goutil/reflects`
@@ -678,6 +662,19 @@ func TypeOf(v interface{}) Type
 func Elem(v reflect.Value) reflect.Value
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
+```
+
+### Stdio
+
+> Package `github.com/gookit/goutil/stdio`
+
+```go
+// source at stdio/ioutil.go
+func QuietWriteString(w io.Writer, ss ...string)
+func DiscardReader(src io.Reader)
+func MustReadReader(r io.Reader) []byte
+// source at stdio/writer.go
+func NewWriteWrapper(w io.Writer) *WriteWrapper
 ```
 
 ### Standard
@@ -729,7 +726,7 @@ func MustToMap(st interface{}) map[string]interface{}
 func ParseTags(v interface{}) error
 func ParseReflectTags(v reflect.Value) error
 func ParseTagValue(str string) maputil.SMap
-func ParseTagValueINI(field, str string) (mp maputil.SMap, err error)
+func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error)
 ```
 
 ### String
@@ -878,7 +875,6 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 // source at sysutil/sysenv.go
-func Hostname() string
 func IsWin() bool
 func IsWindows() bool
 func IsMac() bool
@@ -887,6 +883,7 @@ func IsMSys() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
+func Hostname() string
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
 func IsShellSpecialVar(c uint8) bool
@@ -1068,16 +1065,16 @@ Template Vars:
 Examples, use timex:
 
 ```go
-now := timex.Now()
-date := now.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
-date = now.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
+tx := timex.Now()
+date := tx.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+date = tx.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
 ```
 
 Format time.Time:
 
 ```go
-now := time.Now()
-date := timex.DateFormat(now, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+tx := time.Now()
+date := timex.DateFormat(tx, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
 ```
 
 More usage:

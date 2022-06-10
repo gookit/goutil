@@ -7,12 +7,12 @@
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-Go一些常用的工具函数收集、实现和整理
+Go一些常用的工具函数实现、增强、收集和整理
 
 - [`arrutil`](./arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
 - `dump`  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - `cliutil` CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
-- [`errorx`](./errorx)  为 go 提供增强的错误实现，允许使用堆栈跟踪和包装另一个错误。
+- [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - `envutil` ENV 信息获取判断工具包. eg: get one, get info, parse var
 - `fmtutil` 格式化数据工具函数
 - [`fsutil`](./fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate

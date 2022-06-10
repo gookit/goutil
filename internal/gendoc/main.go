@@ -22,7 +22,8 @@ import (
 var (
 	hidden = []string{
 		"netutil",
-		"numutil",
+		"common",
+		"numbers",
 		"internal",
 	}
 	nameMap = map[string]string{
@@ -35,19 +36,10 @@ var (
 		"test":    "testing",
 		"dump":    "dump",
 		"structs": "struct",
-		"json":    "JSON",
+		"json":    "JSON util",
 		"cli":     "CLI/Console",
 		"env":     "ENV/Environment",
 		"std":     "standard",
-	}
-
-	pkgDesc = map[string]map[string]string{
-		"en": {
-			"arr": "Package arrutil provides some util functions for array, slice",
-		},
-		"zh-CN": {
-			"arr": "`arrutil` 包提供一些辅助函数，用于数组、切片处理",
-		},
 	}
 
 	allowLang = map[string]int{

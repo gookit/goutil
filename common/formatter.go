@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io"
 
-	"github.com/gookit/goutil/fsutil"
+	"github.com/gookit/goutil/stdio"
 )
 
 // DataFormatter interface
@@ -49,7 +49,7 @@ func (f *BaseFormatter) BsWriter() ByteStringWriter {
 		} else if ow, ok := f.Out.(ByteStringWriter); ok {
 			f.ow = ow
 		} else {
-			f.ow = fsutil.NewWriteWrapper(f.Out)
+			f.ow = stdio.NewWriteWrapper(f.Out)
 		}
 	}
 

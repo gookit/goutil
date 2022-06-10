@@ -51,3 +51,5 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
+
+> More, please see [./cliutil/README](cliutil/README.md)

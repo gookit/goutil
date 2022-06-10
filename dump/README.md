@@ -49,10 +49,13 @@ You will see:
 
 ## More preview
 
+- print struct
+
+![](_examples/struct.png)
+
 - nested struct
 
 ![](_examples/preview-nested-struct.png)
-
 
 ## Functions
 
