@@ -32,5 +32,5 @@ rules:
     start_withs: [feat, new]
     contains: [feature]
   - name: Update
-    start_withs: [update, 'up:']
-    contains: [' update']
+    start_withs: [update, 'up']
+    contains: []

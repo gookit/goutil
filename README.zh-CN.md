@@ -219,7 +219,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
 > More, please see [./cliutil/README](cliutil/README.md)
-### Dump
+### Dumper
 
 > Package `github.com/gookit/goutil/dump`
 
@@ -463,7 +463,7 @@ func ArgsWithSpaces(args []interface{}) (message string)
 func HowLongAgo(sec int64) string
 ```
 
-### FileSystem
+### File System
 
 > Package `github.com/gookit/goutil/fsutil`
 
@@ -556,7 +556,7 @@ func main() {
 }
 ```
 
-### JSON util
+### JSON Utils
 
 > Package `github.com/gookit/goutil/jsonutil`
 
@@ -710,7 +710,7 @@ func PanicIf(err error)
 func Panicf(format string, v ...interface{})
 ```
 
-### Struct
+### Structs
 
 > Package `github.com/gookit/goutil/structs`
 
@@ -730,7 +730,7 @@ func ParseTagValue(str string) maputil.SMap
 func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error)
 ```
 
-### String
+### Strings
 
 > Package `github.com/gookit/goutil/strutil`
 
