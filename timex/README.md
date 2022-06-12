@@ -1,6 +1,16 @@
-#### Timex Usage
+# Timex
 
-**Create timex instance**
+Provides an enhanced time.Time implementation, and add more commonly used functional methods.
+
+## Install
+
+```go
+go get github.com/gookit/goutil/timex
+```
+
+## Timex Usage
+
+### Create timex instance
 
 ```go
 now := timex.Now()
@@ -24,13 +34,13 @@ tx, err  := timex.FromString("2022-04-20 19:40:34", "2006-01-02 15:04:05")
 tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-m-d H:I:S")
 ```
 
-**Use timex instance**
+### Use timex instance
 
 ```go
 tx := timex.Now()
 ```
 
-change time:
+**Change time**:
 
 ```go
 tx.Yesterday()
@@ -47,7 +57,7 @@ tx.AddMinutes(15)
 tx.AddSeconds(120)
 ```
 
-compare time:
+**Compare time**:
 
 ```go
 // before compare
@@ -58,7 +68,7 @@ tx.IsAfter(u time.Time)
 tx.IsAfterUnix(1647411580)
 ```
 
-**Helper functions**
+### Helper functions
 
 ```go
 ts := timex.NowUnix() // current unix timestamp
@@ -69,9 +79,9 @@ t := NowAddMinutes(3) // from now add 3 minutes
 t := NowAddSeconds(180) // from now add 180 seconds
 ```
 
-**Convert time to date by template**
+### Convert time to date by template
 
-Template Chars:
+**Template Chars**:
 
 ```text
  Y,y - year
@@ -88,11 +98,12 @@ Template Chars:
  S,s - second
   S - second 00-59
   s - second 0-59
+... ...
 ```
 
-> More, please see [char map](./timex/template.go)
+> More, please see [charMap](./template.go)
 
-Examples, use timex:
+Examples, use timex format date:
 
 ```go
 tx := timex.Now()
@@ -100,7 +111,7 @@ date := tx.DateFormat("Y-m-d H:I:S") // Output: 2022-04-20 19:09:03
 date = tx.DateFormat("y-m-d h:i:s") // Output: 22-04-20 07:9:3
 ```
 
-Format time.Time:
+**Format time.Time**:
 
 ```go
 tx := time.Now()

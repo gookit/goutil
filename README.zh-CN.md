@@ -938,7 +938,7 @@ func NewTestWriter() *TestWriter
 
 > Package `github.com/gookit/goutil/timex`
 
-```go
+Provides an enhanced time.Time implementation, and add more commonly used functional methods.```go
 // source at timex/template.go
 func ToLayout(template string) string
 // source at timex/timex.go
@@ -1071,7 +1071,7 @@ Template Chars:
   s - second 0-59
 ```
 
-> More, please [char map](./timex/template.go)
+> More, please see [char map](./timex/template.go)
 
 Examples, use timex:
 
