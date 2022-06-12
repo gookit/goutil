@@ -14,6 +14,15 @@ func TestBasic(t *testing.T) {
 
 	assert.NotEmpty(t, timex.FormatUnix(sec))
 	assert.NotEmpty(t, timex.FormatUnixBy(sec, time.RFC3339))
+
+	tt := timex.TodayStart()
+	assert.Equal(t, "00:00:00", timex.DateFormat(tt, "H:I:S"))
+
+	tt = timex.TodayEnd()
+	assert.Equal(t, "23:59:59", timex.DateFormat(tt, "H:I:S"))
+
+	tt = timex.NowHourStart()
+	assert.Equal(t, "00:00", timex.DateFormat(tt, "I:S"))
 }
 
 func TestDateFormat(t *testing.T) {

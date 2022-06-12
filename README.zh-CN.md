@@ -939,6 +939,8 @@ func NewTestWriter() *TestWriter
 > Package `github.com/gookit/goutil/timex`
 
 ```go
+// source at timex/template.go
+func ToLayout(template string) string
 // source at timex/timex.go
 func Now() *TimeX
 func New(t time.Time) *TimeX
@@ -976,7 +978,6 @@ func NowHourStart() time.Time
 func TodayStart() time.Time
 func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
-func ToLayout(template string) string
 ```
 #### Timex Usage
 
@@ -1001,7 +1002,7 @@ tx, err  := timex.FromString("2022-04-20 19:40:34")
 // custom set the datetime layout
 tx, err  := timex.FromString("2022-04-20 19:40:34", "2006-01-02 15:04:05")
 // use date template as layout
-tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-M-D H:I:S")
+tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-m-d H:I:S")
 ```
 
 **Use timex instance**
@@ -1016,10 +1017,10 @@ change time:
 tx.Yesterday()
 tx.Tomorrow()
 
-tx.DayStart() // get time at Y-M-D 00:00:00
-tx.DayEnd() // get time at Y-M-D 23:59:59
-tx.HourStart() // get time at Y-M-D H:00:00
-tx.HourEnd() // get time at Y-M-D H:59:59
+tx.DayStart() // get time at Y-m-d 00:00:00
+tx.DayEnd() // get time at Y-m-d 23:59:59
+tx.HourStart() // get time at Y-m-d H:00:00
+tx.HourEnd() // get time at Y-m-d H:59:59
 
 tx.AddDay(2)
 tx.AddHour(1)
@@ -1051,31 +1052,40 @@ t := NowAddSeconds(180) // from now add 180 seconds
 
 **Convert time to date by template**
 
+Template Chars:
+
 ```text
-Template Vars:
  Y,y - year
   Y - year 2006
   y - year 06
- M,m - month 01
- D,d - day 02
- H,h - hour 15
- I,i - minute 04
- S,s - second 05
+ m - month 01-12
+ d - day 01-31
+ H,h - hour
+  H - hour 00-23
+  h - hour 01-12
+ I,i - minute
+  I - minute 00-59
+  i - minute 0-59
+ S,s - second
+  S - second 00-59
+  s - second 0-59
 ```
+
+> More, please [char map](./timex/template.go)
 
 Examples, use timex:
 
 ```go
 tx := timex.Now()
-date := tx.DateFormat("Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
-date = tx.DateFormat("y-M-D H:i:s") // Output: 22-04-20 19:40:34
+date := tx.DateFormat("Y-m-d H:I:S") // Output: 2022-04-20 19:09:03
+date = tx.DateFormat("y-m-d h:i:s") // Output: 22-04-20 07:9:3
 ```
 
 Format time.Time:
 
 ```go
 tx := time.Now()
-date := timex.DateFormat(tx, "Y-M-D H:i:s") // Output: 2022-04-20 19:40:34
+date := timex.DateFormat(tx, "Y-m-d H:I:S") // Output: 2022-04-20 19:40:34
 ```
 
 More usage:
@@ -1084,7 +1094,7 @@ More usage:
 ts := timex.NowUnix() // current unix timestamp
 
 date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
-date := FormatUnixByTpl(ts, "Y-M-D H:I:S") // Get: 2022-04-20 19:40:34
+date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```
 
 ## Code Check & Testing
