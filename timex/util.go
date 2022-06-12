@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/fmtutil"
-	"github.com/gookit/goutil/strutil"
 )
 
 // NowUnix is short of time.Now().Unix()
@@ -138,47 +137,4 @@ func TodayEnd() time.Time {
 // HowLongAgo format given timestamp to string.
 func HowLongAgo(sec int64) string {
 	return fmtutil.HowLongAgo(sec)
-}
-
-// ToLayout convert date template to go time layout
-//
-// Template Vars:
-// 	Y,y - year
-// 	 Y - year 2006
-// 	 y - year 06
-// 	M,m - month 01
-// 	D,d - day 02
-// 	H,h - hour 15
-// 	I,i - minute 04
-// 	S,s - second 05
-//
-func ToLayout(template string) string {
-	if template == "" {
-		return DefaultLayout
-	}
-
-	// layout eg: "2006-01-02 15:04:05"
-	bts := make([]byte, 0, 24)
-	for _, c := range strutil.ToBytes(template) {
-		switch c {
-		case 'Y':
-			bts = append(bts, '2', '0', '0', '6')
-		case 'y':
-			bts = append(bts, '0', '6')
-		case 'M', 'm':
-			bts = append(bts, '0', '1')
-		case 'D', 'd':
-			bts = append(bts, '0', '2')
-		case 'H', 'h':
-			bts = append(bts, '1', '5')
-		case 'I', 'i':
-			bts = append(bts, '0', '4')
-		case 'S', 's':
-			bts = append(bts, '0', '5')
-		default:
-			bts = append(bts, c)
-		}
-	}
-
-	return strutil.Byte2str(bts)
 }

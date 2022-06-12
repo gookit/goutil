@@ -29,7 +29,7 @@ func TestFromDate(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, "2022-04-20 19:40:34", tx.Datetime())
 
-	tx, err = timex.FromDate("2022-04-20 19:40:34", "Y-M-D H:I:S")
+	tx, err = timex.FromDate("2022-04-20 19:40:34", "Y-m-d H:I:S")
 	assert.NoError(t, err)
 	assert.Equal(t, "2022-04-20 19:40:34", tx.Datetime())
 }
@@ -42,7 +42,7 @@ func TestTimeX_basic(t *testing.T) {
 
 func TestTimeX_Format(t *testing.T) {
 	tx := timex.Now()
-	assert.Equal(t, tx.Datetime(), tx.DateFormat("Y-M-D H:I:S"))
+	assert.Equal(t, tx.Datetime(), tx.DateFormat("Y-m-d H:I:S"))
 }
 
 func TestTimeX_SubUnix(t *testing.T) {
@@ -55,12 +55,12 @@ func TestTimeX_SubUnix(t *testing.T) {
 
 func TestTimeX_DateFormat(t *testing.T) {
 	tx := timex.Now()
-	assert.Equal(t, tx.Format(timex.DefaultLayout), tx.DateFormat("Y-M-D H:I:S"))
-	assert.Equal(t, tx.Format("2006/01/02 15:04"), tx.TplFormat("Y/M/D H:I"))
+	assert.Equal(t, tx.Format(timex.DefaultLayout), tx.DateFormat("Y-m-d H:I:S"))
+	assert.Equal(t, tx.Format("2006/01/02 15:04"), tx.TplFormat("Y/m/d H:I"))
 
 	date := tx.Format("06/01/02 15:04")
 	dump.V(date)
-	assert.Equal(t, date, tx.DateFormat("y/M/D H:I"))
+	assert.Equal(t, date, tx.DateFormat("y/m/d H:I"))
 
 	assert.Equal(t, "23:59:59", tx.DayEnd().DateFormat("H:I:S"))
 	assert.Equal(t, "00:00:00", tx.DayStart().DateFormat("H:I:S"))

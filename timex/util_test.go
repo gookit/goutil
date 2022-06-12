@@ -16,14 +16,27 @@ func TestBasic(t *testing.T) {
 	assert.NotEmpty(t, timex.FormatUnixBy(sec, time.RFC3339))
 }
 
-func TestFormatByTpl(t *testing.T) {
+func TestDateFormat(t *testing.T) {
 	now := time.Now()
 
-	assert.Equal(t, now.Format("20060102 15:04:05"), timex.FormatByTpl(now, "YMD H:I:S"))
-	assert.Equal(t, now.Format("2006-01-02 15:04:05"), timex.FormatByTpl(now, "Y-M-D H:I:S"))
-	assert.Equal(t, now.Format("01/02 15:04:05"), timex.Date(now, "M/D H:I:S"))
-	assert.Equal(t, now.Format("06/01/02 15:04:05"), timex.Date(now, "y/M/D H:I:S"))
-	assert.Equal(t, now.Format("2006-01-02 15:04"), timex.DateFormat(now, "Y-M-D H:I"))
+	tests := []struct{ layout, template string }{
+		{"20060102 15:04:05", "Ymd H:I:S"},
+		{"2006-01-02 15:04:05", "Y-m-d H:I:S"},
+		{"2006-01-02 15:04", "Y-m-d H:I"},
+		{"01/02 15:04:05", "m/d H:I:S"},
+		{"06/01/02 15:04:05", "y/m/d H:I:S"},
+		{"06/01/02 15:04:05.000", "y/m/d H:I:Sv"},
+	}
+
+	for i, item := range tests {
+		date := now.Format(item.layout)
+		assert.Equal(t, date, timex.DateFormat(now, item.template))
+		if i%2 == 0 {
+			assert.Equal(t, date, timex.Date(now, item.template))
+		}
+	}
+
+	assert.Equal(t, now.Format("01/02 15:04:05.000000"), timex.Date(now, "m/d H:I:Su"))
 }
 
 func TestFormatUnix(t *testing.T) {
@@ -32,11 +45,12 @@ func TestFormatUnix(t *testing.T) {
 
 	assert.Equal(t, want, timex.FormatUnix(now.Unix()))
 	assert.Equal(t, want, timex.FormatUnixBy(now.Unix(), timex.DefaultLayout))
-	assert.Equal(t, want, timex.FormatUnixByTpl(now.Unix(), "Y-M-D H:I:S"))
+	assert.Equal(t, want, timex.FormatUnixByTpl(now.Unix(), "Y-m-d H:I:S"))
 	dump.P(want)
 }
 
 func TestToLayout(t *testing.T) {
 	assert.Equal(t, timex.DefaultLayout, timex.ToLayout(""))
-	assert.Equal(t, time.RFC3339, timex.ToLayout("Y-M-DTH:I:SZ07:00"))
+	assert.Equal(t, time.RFC3339, timex.ToLayout("c"))
+	assert.Equal(t, time.RFC3339, timex.ToLayout("Y-m-dTH:I:SP"))
 }
