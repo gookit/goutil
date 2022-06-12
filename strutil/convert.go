@@ -282,6 +282,12 @@ func MustToTime(s string, layouts ...string) time.Time {
 	return t
 }
 
+// var layoutMap = map[int][]string{
+// 	8: {"20060102"},
+// 	10: {"2006-01-02"},
+// 	13: {"2006-01-02 15", "2006-01-02T15"},
+// }
+
 // ToTime convert date string to time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error) {
 	var layout string
@@ -291,7 +297,7 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 			err = ErrInvalidParam
 			return
 		}
-	} else { // auto match layout.
+	} else { // auto match for some commonly layout.
 		switch len(s) {
 		case 8:
 			layout = "20060102"

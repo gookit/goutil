@@ -221,7 +221,7 @@ func TestToTime(t *testing.T) {
 	is.True(tm.IsZero())
 
 	tm = strutil.MustToTime("2018-09-27T15:34")
-	is.Equal("2018-09-27T15:34", timex.FormatByTpl(tm, "Y-M-DTH:I"))
+	is.Equal("2018-09-27T15:34", timex.FormatByTpl(tm, "Y-m-dTH:I"))
 
 	is.Panics(func() {
 		strutil.MustToTime("invalid")
