@@ -7,14 +7,14 @@
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 
-💪 Useful utils for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
+💪 Useful utils package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
-- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert
+- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting
 - [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
 - `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 - `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
-- `fmtutil` Format data util functions
+- `fmtutil` Format data util functions. eg: data, size
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 - `jsonutil` some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge

@@ -3,7 +3,8 @@ title: '## Change Log'
 style: gh-release
 # group names
 names: [Refactor, Fixed, Feature, Update, Other]
-repo_url: https://github.com/gookit/goutil
+# if empty will auto fetch by git remote
+#repo_url: https://github.com/gookit/goutil
 
 filters:
   # message length should >= 12

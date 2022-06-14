@@ -31,9 +31,5 @@ func main() {
 	fmt.Println(s1, s2)
 
 	color.Infoln("\n- Use dump.Println:")
-	dump.P(
-		s1,
-		s2,
-	)
-
+	dump.P(s1, s2)
 }
