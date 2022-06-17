@@ -1,14 +1,14 @@
-package stdutil_test
+package structs_test
 
 import (
 	"testing"
 
-	"github.com/gookit/goutil/stdutil"
+	"github.com/gookit/goutil/structs"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestValue_Val(t *testing.T) {
-	v := stdutil.Value{V: 23}
+	v := structs.Value{V: 23}
 
 	assert.Equal(t, 23, v.Val())
 	assert.Equal(t, 23, v.Int())

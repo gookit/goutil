@@ -26,3 +26,7 @@ func TestGetCallStacks(t *testing.T) {
 	msg = stdutil.GetCallStacks(true)
 	fmt.Println(string(msg))
 }
+
+func TestGoVersion(t *testing.T) {
+	assert.NotEmpty(t, stdutil.GoVersion())
+}
