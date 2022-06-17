@@ -126,3 +126,26 @@ func TestHasAllSubs(t *testing.T) {
 	assert.False(t, strutil.HasAllSubs("h3ab2c", []string{"a", "d"}))
 	assert.True(t, strutil.HasAllSubs("h3ab2c", []string{"a", "b"}))
 }
+
+func TestVersionCompare(t *testing.T) {
+	versions := []struct{ a, b string }{
+		{"1.0.221.9289", "1.05.00.0156"},
+		// Go versions
+		{"1", "1.0.1"},
+		{"1.0.1", "1.0.2"},
+		{"1.0.2", "1.0.3"},
+		{"1.0.3", "1.1"},
+		{"1.1", "1.1.1"},
+		{"1.1.1", "1.1.2"},
+		{"1.1.2", "1.2"},
+	}
+	for _, version := range versions {
+		assert.True(t, strutil.VersionCompare(version.a, version.b, "<"), version.a+"<"+version.b)
+		assert.True(t, strutil.VersionCompare(version.a, version.b, "<="), version.a+"<="+version.b)
+		assert.True(t, strutil.VersionCompare(version.b, version.a, ">"), version.a+">"+version.b)
+		assert.True(t, strutil.VersionCompare(version.b, version.a, ">="), version.a+">="+version.b)
+	}
+
+	assert.True(t, strutil.VersionCompare("1.0", "1.0", ""))
+	assert.True(t, strutil.VersionCompare("1.0", "1.0", "="))
+}

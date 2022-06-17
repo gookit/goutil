@@ -58,7 +58,7 @@ func String(val interface{}) (string, error) {
 	return AnyToString(val, true)
 }
 
-// QuietString convert value to string
+// QuietString convert value to string, will ignore error
 func QuietString(in interface{}) string {
 	val, _ := AnyToString(in, false)
 	return val
@@ -168,7 +168,7 @@ func ToBool(s string) (bool, error) {
 	return Bool(s)
 }
 
-// QuietBool convert.
+// QuietBool convert to bool, will ignore error
 func QuietBool(s string) bool {
 	val, _ := Bool(strings.TrimSpace(s))
 	return val
@@ -208,6 +208,12 @@ func ToInt(s string) (int, error) {
 	return strconv.Atoi(strings.TrimSpace(s))
 }
 
+// QuietInt convert string to int, will ignore error
+func QuietInt(s string) int {
+	val, _ := ToInt(s)
+	return val
+}
+
 // MustInt convert string to int, will panic on error
 func MustInt(s string) int {
 	val, _ := ToInt(s)
@@ -217,6 +223,32 @@ func MustInt(s string) int {
 // IntOrPanic convert value to int, will panic on error
 func IntOrPanic(s string) int {
 	val, err := ToInt(s)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+// Int64 convert string to int, will ignore error
+func Int64(s string) int64 {
+	val, _ := Int64OrErr(s)
+	return val
+}
+
+// QuietInt64 convert string to int, will ignore error
+func QuietInt64(s string) int64 {
+	val, _ := Int64OrErr(s)
+	return val
+}
+
+// Int64OrErr convert string to int
+func Int64OrErr(s string) (int64, error) {
+	return strconv.ParseInt(s, 10, 0)
+}
+
+// Int64OrPanic convert value to int, will panic on error
+func Int64OrPanic(s string) int64 {
+	val, err := strconv.ParseInt(s, 10, 0)
 	if err != nil {
 		panic(err)
 	}

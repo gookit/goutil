@@ -8,14 +8,17 @@ import (
 
 // Buffer wrap and extends the bytes.Buffer
 type Buffer struct {
-	*bytes.Buffer
+	bytes.Buffer
 }
 
 // NewEmptyBuffer instance
 func NewEmptyBuffer() *Buffer {
-	return &Buffer{
-		Buffer: new(bytes.Buffer),
-	}
+	return &Buffer{}
+}
+
+// QuietWriteByte to buffer
+func (b *Buffer) QuietWriteByte(c byte) {
+	_ = b.WriteByte(c)
 }
 
 // QuietWritef write message to buffer

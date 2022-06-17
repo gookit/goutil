@@ -156,3 +156,19 @@ func IsBlankBytes(bs []byte) bool {
 func IsSymbol(r rune) bool {
 	return unicode.IsSymbol(r)
 }
+
+// VersionCompare for two version string.
+func VersionCompare(v1, v2, op string) bool {
+	switch op {
+	case ">":
+		return v1 > v2
+	case "<":
+		return v1 < v2
+	case ">=":
+		return v1 >= v2
+	case "<=":
+		return v1 <= v2
+	default:
+		return v1 == v2
+	}
+}
