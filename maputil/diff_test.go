@@ -12,8 +12,7 @@ import (
 func TestDiff(t *testing.T) {
 	var (
 		err   error
-		m1    map[string]interface{}
-		m2    map[string]interface{}
+		b     = true
 		tests = []struct {
 			name  string
 			dataa interface{}
@@ -26,6 +25,7 @@ func TestDiff(t *testing.T) {
 					"company_id":  "aabbcc",
 					"create_time": "2022-06-01T02:14:58.72Z",
 					"description": "",
+					"null":        nil,
 					"arr":         []string{"aaa", "bbb", "ccc"},
 					"type":        0,
 					"settings": struct {
@@ -49,10 +49,12 @@ func TestDiff(t *testing.T) {
 							}},
 						},
 					},
+					"ptr": new(bool),
 				},
 				datab: map[string]interface{}{
 					"create_time": "2022-06-01T02:14:58.72Z",
 					"description": "xxx",
+					"null":        nil,
 					"arr":         []string{"aaa", "bbb", "ccc"},
 					"type":        0,
 					"settings": struct {
@@ -76,6 +78,7 @@ func TestDiff(t *testing.T) {
 							}},
 						},
 					},
+					"ptr": &b,
 				},
 				want: map[string]interface{}{
 					"company_id":  nil,
@@ -93,11 +96,32 @@ func TestDiff(t *testing.T) {
 							},
 						},
 					},
+					"ptr": b,
+				},
+			},
+			{
+				name: "test2",
+				dataa: map[string]interface{}{
+					"a": "a",
+					"b": "b",
+				},
+				datab: map[string]interface{}{
+					"b": "b",
+					"c": "c",
+				},
+				want: map[string]interface{}{
+					"a": nil,
+					"c": "c",
 				},
 			},
 		}
 	)
 	for _, test := range tests {
+		var (
+			m1 map[string]interface{}
+			m2 map[string]interface{}
+		)
+
 		r1, _ := json.Marshal(test.dataa)
 		r2, _ := json.Marshal(test.datab)
 

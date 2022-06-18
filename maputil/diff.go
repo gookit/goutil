@@ -8,6 +8,11 @@ import (
 )
 
 // Diff get a map record the difference between the two maps.
+// The calculation is based on a map change to b map
+// if deleted some field in a map then the field will be returned in result field same key but is nil value.
+// a map {"a":"a","b":"b"}
+// b map {"b":"b","c":"c"}
+// return map {"a":nil,"c":"c"}
 func Diff(a, b map[string]interface{}) (map[string]interface{}, error) {
 	res := make(map[string]interface{})
 	memo := make(map[string]struct{}, len(a))
