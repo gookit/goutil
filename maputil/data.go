@@ -21,8 +21,8 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
-// Emtpy if the data map
-func (d Data) Emtpy() bool {
+// IsEmpty if the data map
+func (d Data) IsEmpty() bool {
 	return len(d) == 0
 }
 
@@ -42,8 +42,8 @@ func (d Data) GetByPath(path string) (interface{}, bool) {
 	return GetByPath(path, d)
 }
 
-// Default get value from the data map with default value
-func (d Data) Default(key string, def interface{}) interface{} {
+// GetOrDefault get value from the data map with default value
+func (d Data) GetOrDefault(key string, def interface{}) interface{} {
 	val, ok := d[key]
 	if ok {
 		return val
@@ -118,6 +118,17 @@ func (d Data) StringsByStr(key string) []string {
 
 	str := strutil.QuietString(val)
 	return strings.Split(str, ",")
+}
+
+// GetStringsBySplit value get by key
+func (d Data) GetStringsBySplit(key, sep string) []string {
+	val, ok := d[key]
+	if !ok {
+		return nil
+	}
+
+	str := strutil.QuietString(val)
+	return strings.Split(str, sep)
 }
 
 // StringMap get map[string]string value

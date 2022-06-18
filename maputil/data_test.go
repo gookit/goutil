@@ -14,6 +14,7 @@ func TestData(t *testing.T) {
 		"k3": "true",
 		"k4": false,
 		"k5": map[string]string{"a": "b"},
+		"k6": "a,b,c",
 	}
 
 	assert.True(t, mp.Has("k1"))
@@ -44,8 +45,13 @@ func TestData(t *testing.T) {
 	assert.Equal(t, "", mp.Str("notExists"))
 
 	// default
-	assert.Equal(t, 23, mp.Default("k1", 10))
-	assert.Equal(t, 10, mp.Default("notExists", 10))
+	assert.Equal(t, 23, mp.GetOrDefault("k1", 10))
+	assert.Equal(t, 10, mp.GetOrDefault("notExists", 10))
+
+	// StringsByStr
+	assert.Equal(t, []string{"a", "b", "c"}, mp.StringsByStr("k6"))
+	//  GetStringsBySplit
+	assert.Equal(t, []string{"a", "b", "c"}, mp.GetStringsBySplit("k6", ","))
 
 	assert.Nil(t, mp.StringMap("notExists"))
 	assert.Equal(t, map[string]string{"a": "b"}, mp.StringMap("k5"))
