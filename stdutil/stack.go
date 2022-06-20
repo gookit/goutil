@@ -89,7 +89,7 @@ func GetCallersInfo(skip, max int) []string {
 			break
 		}
 
-		if strings.Index(file, "/") >= 0 {
+		if strings.ContainsRune(file, '/') {
 			name = fc.Name()
 			file = path.Base(file)
 			// eg: github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26

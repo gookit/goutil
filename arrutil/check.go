@@ -83,5 +83,5 @@ func Contains(arr, val interface{}) bool {
 
 // NotContains check array(strings, ints, uints) should be not contains the given value.
 func NotContains(arr, val interface{}) bool {
-	return false == Contains(arr, val)
+	return !Contains(arr, val)
 }

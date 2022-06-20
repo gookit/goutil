@@ -41,7 +41,7 @@ func ParseEnvValue(str string) string {
 // Usage:
 // 	envutil.ParseValue()
 func ParseValue(val string) (newVal string) {
-	if strings.Index(val, "${") == -1 {
+	if !strings.Contains(val, "${") {
 		return val
 	}
 

@@ -130,7 +130,6 @@ func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
 			if now-fi.ModTime().Second() > limitSec {
 				return include
 			}
-
 			return !include
 		}
 
@@ -138,7 +137,6 @@ func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
 		if now-fi.ModTime().Second() < limitSec {
 			return include
 		}
-
 		return !include
 	}
 }

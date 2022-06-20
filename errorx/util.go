@@ -12,7 +12,7 @@ func Raw(msg string) error {
 
 // Rawf new a raw go error. alias of errors.New()
 func Rawf(tpl string, vars ...interface{}) error {
-	return errors.New(fmt.Sprintf(tpl, vars...))
+	return fmt.Errorf(tpl, vars...)
 }
 
 /*************************************************************

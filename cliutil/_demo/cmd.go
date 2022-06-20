@@ -18,8 +18,7 @@ func main() {
 		bol  bool
 	}{}
 
-	c := cflag.NewCFlags()
-	c.WithDesc("this is a demo command")
+	c := cflag.NewCFlags(cflag.WithDesc("this is a demo command"))
 	c.IntVar(&opts.age, "age", 0, "this is a int option;;")
 	c.StringVar(&opts.name, "name", "", "this is a string option and required;true")
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value")

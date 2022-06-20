@@ -272,7 +272,7 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 	case nil:
 		f64 = 0
 	case string:
-		f64, err = strconv.ParseFloat(strings.TrimSpace(tVal), 0)
+		f64, err = strconv.ParseFloat(strings.TrimSpace(tVal), 64)
 	case int:
 		f64 = float64(tVal)
 	case int8:

@@ -20,23 +20,25 @@ type TagParser struct {
 }
 
 // ParseTags TODO for parse struct tags.
-func ParseTags(v interface{}) error {
+func ParseTags(v interface{}, tagNames []string) (map[string]maputil.SMap, error) {
 	rv := reflect.ValueOf(v)
-	return ParseReflectTags(rv)
+	return ParseReflectTags(rv, tagNames)
 }
 
-// ParseReflectTags value
-func ParseReflectTags(v reflect.Value) error {
+// ParseReflectTags value.
+func ParseReflectTags(v reflect.Value, tagNames []string) (map[string]maputil.SMap, error) {
 	if v.Kind() == reflect.Ptr && !v.IsNil() {
 		v = v.Elem()
 	}
 
 	t := v.Type()
 	if t.Kind() != reflect.Struct {
-		return errNotAnStruct
+		return nil, errNotAnStruct
 	}
 
-	tagName := "xxx"
+	// key is field name.
+	result := make(map[string]maputil.SMap)
+
 	for i := 0; i < t.NumField(); i++ {
 		sf := t.Field(i)
 		ft := t.Field(i).Type
@@ -47,12 +49,20 @@ func ParseReflectTags(v reflect.Value) error {
 			continue
 		}
 
-		// eg: "name=int0;shorts=i;required=true;desc=int option message"
-		str := sf.Tag.Get(tagName)
-		if str == "" {
-			continue
+		smp := make(maputil.SMap)
+		for _, tagName := range tagNames {
+			// eg: "name=int0;shorts=i;required=true;desc=int option message"
+			tagVal := sf.Tag.Get(tagName)
+			if tagVal == "" {
+				continue
+			}
+
+			smp[tagName] = tagVal
 		}
 
+		result[name] = smp
+
+		// TODO field is struct.
 		fv := v.Field(i)
 		if ft.Kind() == reflect.Ptr {
 			// isPtr = true
@@ -62,12 +72,7 @@ func ParseReflectTags(v reflect.Value) error {
 
 		fmt.Println(fv.String())
 	}
-	return nil
-}
-
-// ParseTagValue string.
-func ParseTagValue(str string) maputil.SMap {
-	return make(maputil.SMap) // TODO
+	return result, nil
 }
 
 // ParseTagValueINI tag value string. is like INI format data
@@ -82,7 +87,7 @@ func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error) {
 
 	mp = make(maputil.SMap, len(ss))
 	for _, s := range ss {
-		if strings.ContainsRune(s, '=') == false {
+		if !strings.ContainsRune(s, '=') {
 			err = fmt.Errorf("parse tag error on field '%s': item must match `KEY=VAL`", field)
 			return
 		}

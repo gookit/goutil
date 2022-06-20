@@ -30,6 +30,12 @@ func newStd() *Dumper {
 	return NewDumper(os.Stdout, 2)
 }
 
+func TestNewDefaultOptions(t *testing.T) {
+	opts := NewDefaultOptions(os.Stdout, 2)
+
+	assert.Equal(t, "<normal>text value</>", opts.ColorTheme.value("text value"))
+}
+
 func TestDumper_Fprint(t *testing.T) {
 	buffer := new(bytes.Buffer)
 	dumper := newStd()
@@ -212,7 +218,7 @@ func TestDump_Map(t *testing.T) {
 		"key5": -34,
 		"key6": nil,
 		"key7": []int{23, 34},
-		"key8": map[string]interface{} {
+		"key8": map[string]interface{}{
 			"key8sub1": []int{23, 34},
 			"key8sub2": []string{"a", "b"},
 		},

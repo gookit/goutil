@@ -101,23 +101,18 @@ func NewEmptyCFlags(fns ...func(c *CFlags)) *CFlags {
 	return c.WithConfigFn(fns...)
 }
 
+// WithDesc for command
+func WithDesc(desc string) func(c *CFlags) {
+	return func(c *CFlags) {
+		c.Desc = desc
+	}
+}
+
 // WithConfigFn for command
 func (c *CFlags) WithConfigFn(fns ...func(c *CFlags)) *CFlags {
 	for _, fn := range fns {
 		fn(c)
 	}
-	return c
-}
-
-// WithDesc for command
-func (c *CFlags) WithDesc(desc string) *CFlags {
-	c.Desc = desc
-	return c
-}
-
-// WithFunc for command
-func (c *CFlags) WithFunc(fn func(c *CFlags) error) *CFlags {
-	c.Func = fn
 	return c
 }
 

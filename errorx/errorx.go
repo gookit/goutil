@@ -324,7 +324,7 @@ func Wrap(err error, msg string) error {
 // Wrapf error with format message, but not with stack
 func Wrapf(err error, tpl string, vars ...interface{}) error {
 	if err == nil {
-		return errors.New(fmt.Sprintf(tpl, vars...))
+		return fmt.Errorf(tpl, vars...)
 	}
 
 	return &ErrorX{
