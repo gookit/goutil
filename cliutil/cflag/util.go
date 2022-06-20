@@ -15,7 +15,7 @@ func IsZeroValue(opt *flag.Flag, value string) (bool, bool) {
 	// This works unless the Value type is itself an interface type.
 	typ := reflect.TypeOf(opt.Value)
 	var z reflect.Value
-	if typ.Kind() == reflect.Pointer {
+	if typ.Kind() == reflect.Ptr {
 		z = reflect.New(typ.Elem())
 	} else {
 		z = reflect.Zero(typ)
