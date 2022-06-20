@@ -83,6 +83,7 @@ func TestQuickOpenFile(t *testing.T) {
 
 	// open for read
 	file, err = fsutil.OpenReadFile(fpath)
+	assert.NoError(t, err)
 	// var bts [5]byte
 	bts := make([]byte, 5)
 	_, err = file.Read(bts)

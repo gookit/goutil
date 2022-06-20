@@ -17,6 +17,7 @@ func TestSMap(t *testing.T) {
 
 	assert.True(t, mp.Has("k1"))
 	assert.True(t, mp.Bool("k3"))
+	assert.False(t, mp.IsEmpty())
 
 	val, ok := mp.Value("k2")
 	assert.True(t, ok)

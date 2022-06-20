@@ -8,6 +8,11 @@ import (
 // SMap is alias of map[string]string
 type SMap map[string]string
 
+// IsEmpty of the data map
+func (m SMap) IsEmpty() bool {
+	return len(m) == 0
+}
+
 // Has kay on the data map
 func (m SMap) Has(key string) bool {
 	_, ok := m[key]
@@ -36,7 +41,7 @@ func (m SMap) Int(key string) int {
 	if !ok {
 		return 0
 	}
-	return mathutil.MustInt(val)
+	return mathutil.QuietInt(val)
 }
 
 // Int64 value get
@@ -45,7 +50,7 @@ func (m SMap) Int64(key string) int64 {
 	if !ok {
 		return 0
 	}
-	return mathutil.MustInt64(val)
+	return mathutil.QuietInt64(val)
 }
 
 // Get value by key
@@ -64,7 +69,7 @@ func (m SMap) Bool(key string) bool {
 	if !ok {
 		return false
 	}
-	return strutil.MustBool(val)
+	return strutil.QuietBool(val)
 }
 
 // Ints value to []int

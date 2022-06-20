@@ -19,29 +19,27 @@ type TagParser struct {
 	Func func(tagVal string) map[string]string
 }
 
-// ParseTags TODO for parse struct tags.
+// ParseTags for parse struct tags.
 func ParseTags(v interface{}, tagNames []string) (map[string]maputil.SMap, error) {
 	rv := reflect.ValueOf(v)
-	return ParseReflectTags(rv, tagNames)
-}
-
-// ParseReflectTags value.
-func ParseReflectTags(v reflect.Value, tagNames []string) (map[string]maputil.SMap, error) {
-	if v.Kind() == reflect.Ptr && !v.IsNil() {
-		v = v.Elem()
+	if rv.Kind() == reflect.Ptr && !rv.IsNil() {
+		rv = rv.Elem()
 	}
 
-	t := v.Type()
-	if t.Kind() != reflect.Struct {
+	return ParseReflectTags(rv.Type(), tagNames)
+}
+
+// ParseReflectTags parse struct tags info.
+func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error) {
+	if rt.Kind() != reflect.Struct {
 		return nil, errNotAnStruct
 	}
 
 	// key is field name.
 	result := make(map[string]maputil.SMap)
 
-	for i := 0; i < t.NumField(); i++ {
-		sf := t.Field(i)
-		ft := t.Field(i).Type
+	for i := 0; i < rt.NumField(); i++ {
+		sf := rt.Field(i)
 
 		// skip don't exported field
 		name := sf.Name
@@ -63,14 +61,13 @@ func ParseReflectTags(v reflect.Value, tagNames []string) (map[string]maputil.SM
 		result[name] = smp
 
 		// TODO field is struct.
-		fv := v.Field(i)
-		if ft.Kind() == reflect.Ptr {
-			// isPtr = true
-			ft = ft.Elem()
-			// fv = fv.Elem()
-		}
-
-		fmt.Println(fv.String())
+		// fv := v.Field(i)
+		// ft := t.Field(i).Type
+		// if ft.Kind() == reflect.Ptr {
+		// 	// isPtr = true
+		// 	ft = ft.Elem()
+		// 	// fv = fv.Elem()
+		// }
 	}
 	return result, nil
 }
