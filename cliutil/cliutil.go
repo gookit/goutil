@@ -4,6 +4,7 @@ package cliutil
 import (
 	"os"
 	"path"
+	"strings"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/gookit/goutil/internal/comfunc"
@@ -94,4 +95,23 @@ func BinDir() string {
 // BinFile get
 func BinFile() string {
 	return os.Args[0]
+}
+
+// BuildOptionHelpName for render flag help
+func BuildOptionHelpName(names []string) string {
+	var sb strings.Builder
+
+	size := len(names) - 1
+	for i, name := range names {
+		sb.WriteByte('-')
+		if len(name) > 1 {
+			sb.WriteByte('-')
+			sb.WriteString(name)
+		}
+
+		if i < size {
+			sb.WriteString(", ")
+		}
+	}
+	return sb.String()
 }
