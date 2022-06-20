@@ -44,6 +44,11 @@ func TestEncode(t *testing.T) {
 	bts, err = jsonutil.Encode(&testUser)
 	assert.NoError(t, err)
 	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+
+	bts, err = jsonutil.EncodeUnescapeHTML(&testUser)
+	assert.NoError(t, err)
+	assert.Equal(t, `{"name":"inhere","age":200}
+`, string(bts))
 }
 
 func TestEncodeUnescapeHTML(t *testing.T) {

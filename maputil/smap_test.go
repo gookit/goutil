@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSMap(t *testing.T) {
+func TestSMap_usage(t *testing.T) {
 	mp := maputil.SMap{
 		"k1": "23",
 		"k2": "ab",
@@ -16,8 +16,10 @@ func TestSMap(t *testing.T) {
 	}
 
 	assert.True(t, mp.Has("k1"))
+	assert.True(t, mp.HasValue("true"))
 	assert.True(t, mp.Bool("k3"))
 	assert.False(t, mp.IsEmpty())
+	assert.False(t, mp.HasValue("not-exist"))
 
 	val, ok := mp.Value("k2")
 	assert.True(t, ok)
@@ -34,6 +36,7 @@ func TestSMap(t *testing.T) {
 	// slice
 	assert.Equal(t, []int{1, 2}, mp.Ints("k4"))
 	assert.Equal(t, []string{"1", "2"}, mp.Strings("k4"))
+	assert.Nil(t, mp.Strings("not-exist"))
 
 	// not exists
 	assert.False(t, mp.Bool("notExists"))

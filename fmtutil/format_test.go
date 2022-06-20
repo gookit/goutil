@@ -16,6 +16,7 @@ func TestDataSize(t *testing.T) {
 		{346, "346B"},
 		{3467, "3.39K"},
 		{346778, "338.65K"},
+		{12346778, "11.77M"},
 		{1200346778, "1.12G"},
 	}
 
@@ -39,6 +40,13 @@ func TestPrettyJSON(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, want, got)
 	}
+}
+
+func TestArgsWithSpaces(t *testing.T) {
+	assert.Equal(t, "", fmtutil.ArgsWithSpaces(nil))
+	assert.Equal(t, "", fmtutil.ArgsWithSpaces([]interface{}{}))
+	assert.Equal(t, "abc", fmtutil.ArgsWithSpaces([]interface{}{"abc"}))
+	assert.Equal(t, "23 abc", fmtutil.ArgsWithSpaces([]interface{}{23, "abc"}))
 }
 
 func TestStringsToInts(t *testing.T) {

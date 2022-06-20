@@ -235,7 +235,7 @@ func DeleteIfFileExist(fPath string) error {
 func Unzip(archive, targetDir string) (err error) {
 	reader, err := zip.OpenReader(archive)
 	if err != nil {
-		return
+		return err
 	}
 
 	if err = os.MkdirAll(targetDir, DefaultDirPerm); err != nil {

@@ -127,6 +127,8 @@ func TestWithPrev_errorx_l2(t *testing.T) {
 }
 
 func TestStacked_goerr(t *testing.T) {
+	assert.Nil(t, errorx.Stacked(nil))
+
 	err1 := errorx.Raw("first error message")
 	assert.Error(t, err1)
 
@@ -184,11 +186,19 @@ func TestWrap(t *testing.T) {
 	fmt.Println("----------------S------------------")
 	err = errorx.Wrap(err, "second error message")
 	assert.Error(t, err)
+	_, ok := err.(*errorx.ErrorX)
+	assert.True(t, ok)
 	fmt.Println(err)
 
 	var ex *errorx.ErrorX
 	assert.True(t, errorx.To(err, &ex))
+	assert.Nil(t, ex.CallerFunc())
+	assert.Equal(t, "unknown", ex.Location())
 	assert.Equal(t, "", ex.StackString())
+	assert.Equal(t, "second error message", ex.Message())
+
+	ex, ok = errorx.ToErrorX(err)
+	assert.True(t, ok)
 	assert.Equal(t, "second error message", ex.Message())
 
 	fmt.Println("----------------T------------------")
@@ -200,6 +210,18 @@ func TestWrap(t *testing.T) {
 
 	assert.Equal(t, "first error message", errorx.Cause(err).Error())
 	assert.Contains(t, errorx.Unwrap(err).Error(), "second error message")
+
+	err = errorx.Wrap(nil, "error message")
+	assert.Error(t, err)
+	_, ok = err.(*errorx.ErrorX)
+	assert.False(t, ok)
+	_, ok = errorx.ToErrorX(err)
+	assert.False(t, ok)
+}
+
+func TestCause(t *testing.T) {
+	assert.Nil(t, errorx.Cause(nil))
+	assert.Nil(t, errorx.Unwrap(nil))
 }
 
 func TestWrapf(t *testing.T) {

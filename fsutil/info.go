@@ -13,12 +13,12 @@ func Dir(fpath string) string {
 	return filepath.Dir(fpath)
 }
 
-// PathName get file/dir name from fullpath
+// PathName get file/dir name from full path
 func PathName(fpath string) string {
 	return path.Base(fpath)
 }
 
-// Name get file/dir name from fullpath
+// Name get file/dir name from full path
 func Name(fpath string) string {
 	return filepath.Base(fpath)
 }

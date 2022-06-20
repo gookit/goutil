@@ -29,9 +29,9 @@ func ToStringMap(src map[string]interface{}) map[string]string {
 
 // HttpQueryString convert map[string]interface{} data to http query string.
 func HttpQueryString(data map[string]interface{}) string {
-	ss := make([]string, len(data))
+	ss := make([]string, 0, len(data))
 	for k, v := range data {
-		ss = append(ss, k+"="+strutil.MustString(v))
+		ss = append(ss, k+"="+strutil.QuietString(v))
 	}
 
 	return strings.Join(ss, "&")
@@ -53,7 +53,7 @@ func ToString(mp map[string]interface{}) string {
 		buf = append(buf, k...)
 		buf = append(buf, ':')
 
-		str, _ := strutil.AnyToString(val, false)
+		str := strutil.QuietString(val)
 		buf = append(buf, str...)
 		buf = append(buf, ',', ' ')
 	}

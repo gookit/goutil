@@ -48,6 +48,12 @@ func Unwrap(err error) error {
 // Previous alias of Unwrap()
 func Previous(err error) error { return Unwrap(err) }
 
+// ToErrorX convert check
+func ToErrorX(err error) (ex *ErrorX, ok bool) {
+	ex, ok = err.(*ErrorX)
+	return
+}
+
 // Has check err has contains target, or err is eq target.
 // alias of errors.Is()
 func Has(err, target error) bool {

@@ -58,8 +58,7 @@ func EncodeUnescapeHTML(v interface{}) ([]byte, error) {
 	enc := json.NewEncoder(buf)
 	enc.SetEscapeHTML(false)
 
-	err := enc.Encode(v)
-	if err != nil {
+	if err := enc.Encode(v); err != nil {
 		return nil, err
 	}
 

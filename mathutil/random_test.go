@@ -21,4 +21,6 @@ func TestRandomInt(t *testing.T) {
 		val = RandomIntWithSeed(min, max, seed)
 		assert.True(t, val >= min)
 	}
+
+	assert.True(t, RandInt(min, max) > 999)
 }

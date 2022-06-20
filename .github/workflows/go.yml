@@ -40,7 +40,7 @@ jobs:
 
     - name: Run staticcheck
       uses: reviewdog/action-staticcheck@v1
-      if: ${{ matrix.os == 'ubuntu-latest' and matrix.go_version == '1.18'  }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.go_version == '1.18'  }}
       with:
         github_token: ${{ secrets.github_token }}
         # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].

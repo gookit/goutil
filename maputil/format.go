@@ -49,7 +49,6 @@ func (f *MapFormatter) FormatTo(w io.Writer) {
 
 // Format to string
 func (f *MapFormatter) String() string {
-	f.Format()
 	return f.Format()
 }
 

@@ -143,6 +143,11 @@ type ErrStackOpt struct {
 // default option
 var stdOpt = newErrOpt()
 
+// ResetStdOpt config
+func ResetStdOpt() {
+	stdOpt = newErrOpt()
+}
+
 func newErrOpt() *ErrStackOpt {
 	return &ErrStackOpt{
 		SkipDepth:  3,

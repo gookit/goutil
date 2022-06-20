@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -22,6 +23,23 @@ func TestToStringMap(t *testing.T) {
 
 	assert.Equal(t, ret["a"], "v0")
 	assert.Equal(t, ret["b"], "23")
+}
+
+func TestHttpQueryString(t *testing.T) {
+	src := map[string]interface{}{"a": "v0", "b": 23}
+	str := maputil.HttpQueryString(src)
+
+	fmt.Println(str)
+	assert.Contains(t, str, "b=23")
+	assert.Contains(t, str, "a=v0")
+}
+
+func TestToString2(t *testing.T) {
+	src := map[string]interface{}{"a": "v0", "b": 23}
+
+	s := maputil.ToString2(src)
+	assert.Contains(t, s, "b:23")
+	assert.Contains(t, s, "a:v0")
 }
 
 func TestToString(t *testing.T) {

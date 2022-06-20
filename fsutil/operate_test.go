@@ -151,3 +151,7 @@ func TestMustCopyFile(t *testing.T) {
 	fsutil.MustCopyFile(srcPath, dstPath)
 	assert.Equal(t, []byte("hello"), fsutil.GetContents(dstPath))
 }
+
+func TestUnzip(t *testing.T) {
+	assert.Error(t, fsutil.Unzip("/path-not-exists", ""))
+}

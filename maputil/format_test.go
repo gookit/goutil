@@ -5,11 +5,23 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/maputil"
+	"github.com/gookit/goutil/testutil"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewFormatter(t *testing.T) {
 	mp := map[string]interface{}{"a": "v0", "b": 23}
+
+	mf := maputil.NewFormatter(mp)
+	assert.Contains(t, mf.String(), "b:23")
+
+	buf := testutil.NewTestWriter()
+	mf = maputil.NewFormatter(mp).WithFn(func(f *maputil.MapFormatter) {
+		f.Indent = "   "
+	})
+	mf.FormatTo(buf)
+	assert.Contains(t, buf.String(), "\n   ")
+	fmt.Println(buf.String())
 
 	s := maputil.FormatIndent(mp, "  ")
 	fmt.Println(s)

@@ -31,7 +31,7 @@ func newStd() *Dumper {
 }
 
 func TestNewDefaultOptions(t *testing.T) {
-	opts := NewDefaultOptions(os.Stdout, 2)
+	opts := NewDefaultOptions(nil, 2)
 
 	assert.Equal(t, "<normal>text value</>", opts.ColorTheme.value("text value"))
 }

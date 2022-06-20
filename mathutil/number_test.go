@@ -8,6 +8,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestIsNumeric(t *testing.T) {
+	assert.True(t, mathutil.IsNumeric('3'))
+	assert.False(t, mathutil.IsNumeric('a'))
+}
+
 func TestPercent(t *testing.T) {
 	assert.Equal(t, float64(34), mathutil.Percent(34, 100))
 	assert.Equal(t, float64(0), mathutil.Percent(34, 0))
