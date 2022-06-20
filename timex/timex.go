@@ -11,6 +11,7 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// provide some commonly time consts
 const (
 	OneMinSec  = 60
 	OneHourSec = 3600

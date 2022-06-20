@@ -7,9 +7,8 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-var (
-	ErrConvertFail = errors.New("convert value type is failure")
-)
+// ErrConvertFail error define
+var ErrConvertFail = errors.New("convert value type is failure")
 
 // ToString always convert value to string, will ignore error
 func ToString(v interface{}) string {

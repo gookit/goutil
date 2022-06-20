@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// some commonly consts
 var (
 	DefStackLen = 10000
 	MaxStackLen = 100000
@@ -42,7 +43,7 @@ func GetCallStacks(all bool) []byte {
 // returns:
 //	github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
 func GetCallerInfo(skip int) string {
-	skip += 1 // ignore current func
+	skip++ // ignore current func
 	cs := GetCallersInfo(skip, skip+1)
 
 	if len(cs) > 0 {
@@ -54,7 +55,7 @@ func GetCallerInfo(skip int) string {
 // SimpleCallersInfo returns an array of strings containing
 // the func name, file and line number of each stack frame leading.
 func SimpleCallersInfo(skip, num int) []string {
-	skip += 1 // ignore current func
+	skip++ // ignore current func
 	return GetCallersInfo(skip, skip+num)
 }
 

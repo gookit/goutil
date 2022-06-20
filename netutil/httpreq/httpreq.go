@@ -10,8 +10,8 @@ import (
 	"github.com/gookit/goutil/netutil/httpctype"
 )
 
-// HttpReq an simple http requester.
-type HttpReq struct {
+// Req an simple http requester.
+type Req struct {
 	client Doer
 	// some config for request
 	method  string
@@ -26,8 +26,8 @@ type HttpReq struct {
 }
 
 // New instance with base URL
-func New(baseURL ...string) *HttpReq {
-	h := &HttpReq{
+func New(baseURL ...string) *Req {
+	h := &Req{
 		method: http.MethodGet,
 		client: http.DefaultClient,
 		// init map
@@ -41,25 +41,25 @@ func New(baseURL ...string) *HttpReq {
 }
 
 // BaseURL with base URL
-func (h *HttpReq) BaseURL(baseURL string) *HttpReq {
+func (h *Req) BaseURL(baseURL string) *Req {
 	h.baseURL = baseURL
 	return h
 }
 
 // Method with custom method
-func (h *HttpReq) Method(method string) *HttpReq {
+func (h *Req) Method(method string) *Req {
 	h.method = method
 	return h
 }
 
 // WithHeader with custom header
-func (h *HttpReq) WithHeader(key, val string) *HttpReq {
+func (h *Req) WithHeader(key, val string) *Req {
 	h.headerMap[key] = val
 	return h
 }
 
 // WithHeaders with custom headers
-func (h *HttpReq) WithHeaders(kvMap map[string]string) *HttpReq {
+func (h *Req) WithHeaders(kvMap map[string]string) *Req {
 	for k, v := range kvMap {
 		h.headerMap[k] = v
 	}
@@ -67,49 +67,49 @@ func (h *HttpReq) WithHeaders(kvMap map[string]string) *HttpReq {
 }
 
 // ContentType with custom content-Type header.
-func (h *HttpReq) ContentType(cType string) *HttpReq {
+func (h *Req) ContentType(cType string) *Req {
 	return h.WithHeader("Content-Type", cType)
 }
 
 // BeforeSend add callback before send.
-func (h *HttpReq) BeforeSend(fn func(req *http.Request)) *HttpReq {
+func (h *Req) BeforeSend(fn func(req *http.Request)) *Req {
 	h.beforeSend = fn
 	return h
 }
 
 // WithBody with custom body
-func (h *HttpReq) WithBody(r io.Reader) *HttpReq {
+func (h *Req) WithBody(r io.Reader) *Req {
 	h.body = r
 	return h
 }
 
 // BytesBody with custom bytes body
-func (h *HttpReq) BytesBody(bs []byte) *HttpReq {
+func (h *Req) BytesBody(bs []byte) *Req {
 	h.body = bytes.NewReader(bs)
 	return h
 }
 
 // JSONBytesBody with custom bytes body, and set JSON content type
-func (h *HttpReq) JSONBytesBody(bs []byte) *HttpReq {
+func (h *Req) JSONBytesBody(bs []byte) *Req {
 	h.body = bytes.NewReader(bs)
 	h.ContentType(httpctype.JSON)
 	return h
 }
 
 // StringBody with custom string body
-func (h *HttpReq) StringBody(s string) *HttpReq {
+func (h *Req) StringBody(s string) *Req {
 	h.body = strings.NewReader(s)
 	return h
 }
 
 // Client custom http client
-func (h *HttpReq) Client(c Doer) *HttpReq {
+func (h *Req) Client(c Doer) *Req {
 	h.client = c
 	return h
 }
 
 // MustSend request, will panic on error
-func (h *HttpReq) MustSend(url string) *http.Response {
+func (h *Req) MustSend(url string) *http.Response {
 	resp, err := h.Send(url)
 	if err != nil {
 		panic(err)
@@ -119,7 +119,7 @@ func (h *HttpReq) MustSend(url string) *http.Response {
 }
 
 // Send request and return http response
-func (h *HttpReq) Send(url string) (*http.Response, error) {
+func (h *Req) Send(url string) (*http.Response, error) {
 	if len(h.baseURL) > 0 {
 		if !strings.HasPrefix(url, "http") {
 			url = h.baseURL + url
