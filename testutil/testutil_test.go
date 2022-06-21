@@ -19,6 +19,8 @@ func TestDiscardStdout(t *testing.T) {
 }
 
 func TestRewriteStdout(t *testing.T) {
+	assert.Equal(t, "", testutil.RestoreStdout())
+
 	testutil.RewriteStdout()
 	fmt.Println("Hello, playground")
 	msg := testutil.RestoreStdout()
@@ -27,34 +29,12 @@ func TestRewriteStdout(t *testing.T) {
 }
 
 func TestRewriteStderr(t *testing.T) {
+	assert.Equal(t, "", testutil.RestoreStderr())
+
 	testutil.RewriteStderr()
 	_, err := fmt.Fprint(os.Stderr, "Hello, playground")
 	msg := testutil.RestoreStderr()
 
 	assert.NoError(t, err)
 	assert.Equal(t, "Hello, playground", msg)
-}
-
-func TestMockEnvValue(t *testing.T) {
-	ris := assert.New(t)
-	ris.Equal("", os.Getenv("APP_COMMAND"))
-
-	testutil.MockEnvValue("APP_COMMAND", "new val", func(nv string) {
-		ris.Equal("new val", nv)
-	})
-
-	ris.Equal("", os.Getenv("APP_COMMAND"))
-}
-
-func TestMockEnvValues(t *testing.T) {
-	ris := assert.New(t)
-	ris.Equal("", os.Getenv("APP_COMMAND"))
-
-	testutil.MockEnvValues(map[string]string{
-		"APP_COMMAND": "new val",
-	}, func() {
-		ris.Equal("new val", os.Getenv("APP_COMMAND"))
-	})
-
-	ris.Equal("", os.Getenv("APP_COMMAND"))
 }

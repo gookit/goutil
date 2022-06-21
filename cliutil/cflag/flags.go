@@ -37,7 +37,6 @@ func (a *FlagArg) check() error {
 	if a.Required && a.V != nil {
 		return errorx.Rawf("cannot set default value for 'required' arg: %s", a.Name)
 	}
-
 	return nil
 }
 
@@ -209,8 +208,7 @@ func (c *CFlags) prepare() error {
 // check required option flags
 func (c *CFlags) checkRequired() error {
 	for name, _ := range c.required {
-		opt := c.Lookup(name)
-		if opt.Value.String() == "" {
+		if c.Lookup(name).Value.String() == "" {
 			return errorx.Rawf("flag option '%s' is required", AddPrefix(name))
 		}
 	}

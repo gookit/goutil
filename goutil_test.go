@@ -38,4 +38,6 @@ func TestGetCallStacks(t *testing.T) {
 	fmt.Println("-------------full stacks-------------")
 	msg = goutil.GetCallStacks(true)
 	fmt.Println(string(msg))
+
+	assert.NotEmpty(t, goutil.GetCallersInfo(1, 3))
 }

@@ -23,6 +23,9 @@ func TestBasic(t *testing.T) {
 
 	tt = timex.NowHourStart()
 	assert.Equal(t, "00:00", timex.DateFormat(tt, "I:S"))
+
+	tt = timex.NowHourEnd()
+	assert.Equal(t, "59:59", timex.DateFormat(tt, "I:S"))
 }
 
 func TestDateFormat(t *testing.T) {

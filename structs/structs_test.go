@@ -34,6 +34,7 @@ func TestTryToMap(t *testing.T) {
 
 	mp, err = structs.TryToMap(&u)
 	assert.NoError(t, err)
+	dump.P(mp)
 
 	mp = structs.ToMap(&u)
 	assert.NoError(t, err)

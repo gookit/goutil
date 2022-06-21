@@ -75,6 +75,16 @@ func NowAddSeconds(seconds int) time.Time {
 	return time.Now().Add(time.Duration(seconds) * time.Second)
 }
 
+// NowHourStart time
+func NowHourStart() time.Time {
+	return HourStart(time.Now())
+}
+
+// NowHourEnd time
+func NowHourEnd() time.Time {
+	return HourEnd(time.Now())
+}
+
 // AddDay add some day time for given time
 func AddDay(t time.Time, day int) time.Time {
 	return t.AddDate(0, 0, day)
@@ -117,11 +127,6 @@ func DayStart(t time.Time) time.Time {
 func DayEnd(t time.Time) time.Time {
 	y, m, d := t.Date()
 	return time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
-}
-
-// NowHourStart time
-func NowHourStart() time.Time {
-	return HourStart(time.Now())
 }
 
 // TodayStart time

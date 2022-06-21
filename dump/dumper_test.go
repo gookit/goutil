@@ -12,9 +12,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func newBufDumper(buf *bytes.Buffer) *Dumper {
-	return NewDumper(buf, 2)
-}
+// func newBufDumper(buf *bytes.Buffer) *Dumper {
+// 	return NewDumper(buf, 2)
+// }
 
 var (
 	ints1 = []int{1, 2, 3, 4}

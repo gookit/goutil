@@ -46,6 +46,11 @@ func (md *MapDataStore) SetData(data map[string]interface{}) {
 	md.RUnlock()
 }
 
+// Set value to data
+func (md *MapDataStore) Set(key string, val interface{}) {
+	md.SetValue(key, val)
+}
+
 // SetValue to data
 func (md *MapDataStore) SetValue(key string, val interface{}) {
 	if md.enableLock {
@@ -77,6 +82,11 @@ func (md *MapDataStore) Value(key string) (val interface{}, ok bool) {
 	return
 }
 
+// Get val from data
+func (md *MapDataStore) Get(key string) interface{} {
+	return md.GetVal(key)
+}
+
 // GetVal get from data
 func (md *MapDataStore) GetVal(key string) interface{} {
 	if md.enableLock {
@@ -89,7 +99,7 @@ func (md *MapDataStore) GetVal(key string) interface{} {
 
 // StrVal get from data
 func (md *MapDataStore) StrVal(key string) string {
-	return strutil.MustString(md.GetVal(key))
+	return strutil.QuietString(md.GetVal(key))
 }
 
 // IntVal get from data

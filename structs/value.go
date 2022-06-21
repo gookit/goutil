@@ -12,10 +12,15 @@ type Value struct {
 }
 
 // NewValue instance.
-func NewValue(v interface{}) *Value {
+func NewValue(val interface{}) *Value {
 	return &Value{
-		V: v,
+		V: val,
 	}
+}
+
+// Set value
+func (v *Value) Set(val interface{}) {
+	v.V = val
 }
 
 // Reset value
@@ -28,7 +33,7 @@ func (v Value) Val() interface{} {
 	return v.V
 }
 
-// Int value
+// Int value get
 func (v Value) Int() int {
 	if v.V == nil {
 		return 0
@@ -65,7 +70,6 @@ func (v Value) Float64() float64 {
 	if v.V == nil {
 		return 0
 	}
-
 	return mathutil.QuietFloat(v.V)
 }
 

@@ -4,53 +4,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 )
-
-// FileMeta struct
-type FileMeta struct {
-	filePath string
-	filename string
-}
-
-// FindResults struct
-type FindResults struct {
-	f *FileFilter
-
-	// founded file paths.
-	filePaths []string
-
-	// filters
-	dirFilters  []DirFilter  // filters for filter dir paths
-	fileFilters []FileFilter // filters for filter file paths
-	// bodyFilters []BodyFilter // filters for filter file contents
-}
-
-func (r *FindResults) append(filePath ...string) {
-	r.filePaths = append(r.filePaths, filePath...)
-}
-
-// AddFilters Result get find paths
-func (r *FindResults) AddFilters(filterFuncs ...FileFilter) *FindResults {
-	// TODO
-	return r
-}
-
-// Filter Result get find paths
-func (r *FindResults) Filter() *FindResults {
-	return r
-}
-
-// Each Result get find paths
-func (r *FindResults) Each() *FindResults {
-	return r
-}
-
-// Result get find paths
-func (r *FindResults) Result() []string {
-	return r.filePaths
-}
 
 // TODO use excludeDotFlag 1 file 2 dir 1|2 both
 type exDotFlag uint8
@@ -64,11 +19,9 @@ const (
 type FileFinder struct {
 	// r *FindResults
 
-	// mark has been run find()
-	founded bool
 	// dir paths for find file.
 	dirPaths []string
-	// file paths for filter.
+	// file paths for handle.
 	srcFiles []string
 
 	// builtin include filters
@@ -91,11 +44,13 @@ type FileFinder struct {
 	dirFilters  []DirFilter  // filters for filter dir paths
 	fileFilters []FileFilter // filters for filter file paths
 
+	// mark has been run find()
+	founded bool
 	// founded file paths.
 	filePaths []string
 
 	// the founded file instances
-	osFiles map[string]*os.File
+	// osFiles map[string]*os.File
 	osInfos map[string]os.FileInfo
 
 	// handlers on found
@@ -105,9 +60,7 @@ type FileFinder struct {
 
 // EmptyFinder new empty FileFinder instance
 func EmptyFinder() *FileFinder {
-	return &FileFinder{
-		osInfos: make(map[string]os.FileInfo),
-	}
+	return &FileFinder{}
 }
 
 // NewFinder new instance with source dir paths.
@@ -115,7 +68,6 @@ func NewFinder(dirPaths []string, filePaths ...string) *FileFinder {
 	return &FileFinder{
 		dirPaths:  dirPaths,
 		filePaths: filePaths,
-		osInfos:   make(map[string]os.FileInfo),
 	}
 }
 
@@ -257,12 +209,12 @@ func (f *FileFinder) Find() *FileFinder {
 
 // do finding
 func (f *FileFinder) find() {
-	// mark found
 	if f.founded {
 		return
 	}
-	f.founded = true
 
+	// mark found
+	f.founded = true
 	for _, filePath := range f.filePaths {
 		fi, err := os.Stat(filePath)
 		if err != nil {
@@ -271,9 +223,6 @@ func (f *FileFinder) find() {
 		if fi.IsDir() {
 			continue // ignore I/O error
 		}
-
-		// cache file info
-		f.osInfos[filePath] = fi
 
 		// call handler
 		if f.pathHandler != nil {
@@ -306,68 +255,50 @@ func (f *FileFinder) findInDir(dirPath string) {
 		return // ignore I/O error
 	}
 
-	names, _ := d.Readdirnames(-1)
-	sort.Strings(names)
-
-	hasDirFilter := len(f.dirFilters) > 0
-	hasFileFilter := len(f.fileFilters) > 0
-	for _, name := range names {
-		fullPath := filepath.Join(dirPath, name)
-		fi, err := os.Stat(fullPath)
-		if err != nil {
-			continue // ignore I/O error
-		}
+	// names, _ := d.Readdirnames(-1)
+	// sort.Strings(names)
+	stats, _ := d.Readdir(-1)
+	for _, fi := range stats {
+		baseName := fi.Name()
+		fullPath := filepath.Join(dirPath, baseName)
 
 		// --- dir
 		if fi.IsDir() {
-			if f.excludeDotDir && name[0] == '.' {
+			if f.excludeDotDir && baseName[0] == '.' {
 				continue
 			}
 
-			var ok bool
-			if hasDirFilter {
-				for _, df := range f.dirFilters {
-					ok = df.FilterDir(fullPath, name)
-					if true == ok { // 有一个满足即可
-						break
-					}
-				}
-
-				// find in sub dir.
-				if ok {
-					f.findInDir(fullPath)
-				}
-			} else {
-				// find in sub dir.
-				f.findInDir(fullPath)
-			}
-
-			continue
-		}
-
-		// --- file
-		if f.excludeDotFile && name[0] == '.' {
-			continue
-		}
-
-		// use custom filter functions
-		var ok bool
-		if hasFileFilter {
-			for _, ff := range f.fileFilters {
-				ok = ff.FilterFile(fullPath, name)
+			ok := true
+			for _, df := range f.dirFilters {
+				ok = df.FilterDir(fullPath, baseName)
 				if true == ok { // 有一个满足即可
 					break
 				}
 			}
-		} else {
-			ok = true
+
+			// find in sub dir.
+			if ok {
+				f.findInDir(fullPath)
+			}
+			continue
+		}
+
+		// --- file
+		if f.excludeDotFile && baseName[0] == '.' {
+			continue
+		}
+
+		// use custom filter functions
+		ok := true
+		for _, ff := range f.fileFilters {
+			if ok = ff.FilterFile(fullPath, baseName); ok { // 有一个满足即可
+				break
+			}
 		}
 
 		// append
 		if ok {
 			f.filePaths = append(f.filePaths, fullPath)
-			// cache file info
-			f.osInfos[fullPath] = fi
 
 			// call handler
 			if f.pathHandler != nil {
@@ -382,20 +313,6 @@ func (f *FileFinder) findInDir(dirPath string) {
 	_ = d.Close()
 }
 
-// Each file paths.
-func (f *FileFinder) Each(fn func(filePath string)) {
-	f.pathHandler = fn
-
-	if f.founded {
-		for _, filePath := range f.filePaths {
-			fn(filePath)
-		}
-		return
-	}
-
-	f.find()
-}
-
 // EachFile each file os.File
 func (f *FileFinder) EachFile(fn func(file *os.File)) {
 	f.Each(func(filePath string) {
@@ -407,16 +324,22 @@ func (f *FileFinder) EachFile(fn func(file *os.File)) {
 	})
 }
 
-// EachStat each file os.FileInfo
-func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
-	f.statHandler = fn
+// Each file paths.
+func (f *FileFinder) Each(fn func(filePath string)) {
+	f.pathHandler = fn
 	if f.founded {
-		for filePath, fi := range f.osInfos {
-			fn(fi, filePath)
+		for _, filePath := range f.filePaths {
+			fn(filePath)
 		}
 		return
 	}
 
+	f.find()
+}
+
+// EachStat each file os.FileInfo
+func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
+	f.statHandler = fn
 	f.find()
 }
 
@@ -435,11 +358,16 @@ func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
 // Reset data setting.
 func (f *FileFinder) Reset() {
 	f.founded = false
-	f.filePaths = make([]string, 0)
+	f.filePaths = f.filePaths[:0]
 
 	f.excludeNames = make([]string, 0)
 	f.excludeExts = make([]string, 0)
 	f.excludeDirs = make([]string, 0)
+}
+
+// FilePaths get
+func (f *FileFinder) FilePaths() []string {
+	return f.filePaths
 }
 
 // String all file paths

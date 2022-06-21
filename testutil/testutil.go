@@ -3,7 +3,6 @@ package testutil
 import (
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 var oldStdout, oldStderr, newReader *os.File
@@ -101,87 +100,4 @@ func RestoreStderr() (s string) {
 		newReader = nil
 	}
 	return
-}
-
-// Env mocking
-
-// MockEnvValue will store old env value, set new val. will restore old value on end.
-func MockEnvValue(key, val string, fn func(nv string)) {
-	old := os.Getenv(key)
-	err := os.Setenv(key, val)
-	if err != nil {
-		panic(err)
-	}
-
-	fn(os.Getenv(key))
-
-	// if old is empty, unset key.
-	if old == "" {
-		err = os.Unsetenv(key)
-	} else {
-		err = os.Setenv(key, old)
-	}
-	if err != nil {
-		panic(err)
-	}
-}
-
-// MockEnvValues will store old env value, set new val. will restore old value on end.
-func MockEnvValues(kvMap map[string]string, fn func()) {
-	backups := make(map[string]string, len(kvMap))
-
-	for key, val := range kvMap {
-		backups[key] = os.Getenv(key)
-		_ = os.Setenv(key, val)
-	}
-
-	fn()
-
-	for key := range kvMap {
-		if old := backups[key]; old == "" {
-			_ = os.Unsetenv(key)
-		} else {
-			_ = os.Setenv(key, old)
-		}
-	}
-}
-
-// MockOsEnvByText by env text string.
-// clear all old ENV data, use given data map, will recover old ENV after fn run.
-func MockOsEnvByText(envText string, fn func()) {
-	ss := strings.Split(envText, "\n")
-	mp := make(map[string]string, len(ss))
-	for _, line := range ss {
-		if line = strings.TrimSpace(line); line == "" {
-			continue
-		}
-		nodes := strings.SplitN(line, "=", 2)
-
-		if len(nodes) < 2 {
-			mp[nodes[0]] = ""
-		} else {
-			mp[nodes[0]] = nodes[1]
-		}
-	}
-
-	MockOsEnv(mp, fn)
-}
-
-// MockOsEnv by env map data.
-// clear all old ENV data, use given data map, will recover old ENV after fn run.
-func MockOsEnv(mp map[string]string, fn func()) {
-	envBak := os.Environ()
-
-	os.Clearenv()
-	for key, val := range mp {
-		_ = os.Setenv(key, val)
-	}
-
-	fn()
-
-	os.Clearenv()
-	for _, str := range envBak {
-		nodes := strings.SplitN(str, "=", 2)
-		_ = os.Setenv(nodes[0], nodes[1])
-	}
 }

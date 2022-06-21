@@ -62,7 +62,7 @@ func (fn FilterFunc) Filter(filePath, filename string) bool {
 // ExtFilterFunc filter filepath by given file ext.
 //
 // Usage:
-//	f := EmptyFiler()
+//	f := EmptyFinder()
 //	f.AddFilter(ExtFilterFunc([]string{".go", ".md"}, true))
 //	f.AddFilter(ExtFilterFunc([]string{".log", ".tmp"}, false))
 func ExtFilterFunc(exts []string, include bool) FileFilterFunc {
@@ -80,7 +80,7 @@ func ExtFilterFunc(exts []string, include bool) FileFilterFunc {
 // SuffixFilterFunc filter filepath by given file ext.
 //
 // Usage:
-//	f := EmptyFiler()
+//	f := EmptyFinder()
 //	f.AddFilter(SuffixFilterFunc([]string{"util.go", ".md"}, true))
 //	f.AddFilter(SuffixFilterFunc([]string{"_test.go", ".log"}, false))
 func SuffixFilterFunc(suffixes []string, include bool) FileFilterFunc {

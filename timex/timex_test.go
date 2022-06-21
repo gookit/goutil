@@ -56,6 +56,7 @@ func TestTimeX_SubUnix(t *testing.T) {
 func TestTimeX_DateFormat(t *testing.T) {
 	tx := timex.Now()
 	assert.Equal(t, tx.Format(timex.DefaultLayout), tx.DateFormat("Y-m-d H:I:S"))
+	assert.Equal(t, tx.Format(""), tx.DateFormat("Y-m-d H:I:S"))
 	assert.Equal(t, tx.Format("2006/01/02 15:04"), tx.TplFormat("Y/m/d H:I"))
 
 	date := tx.Format("06/01/02 15:04")
@@ -80,6 +81,30 @@ func TestTimeX_AddDay(t *testing.T) {
 	assert.True(t, yd.IsBeforeUnix(tx.T().Unix()))
 
 	assert.Equal(t, tx.Unix()-yd.Unix(), int64(timex.OneDaySec))
+
+	md := tx.Tomorrow()
+	yd2 := tx.DayAfter(1)
+	assert.Equal(t, md.Unix(), yd2.Unix())
+}
+
+func TestTimeX_AddSeconds(t *testing.T) {
+	tx := timex.Now()
+
+	h1 := tx.AddHour(1)
+	s1 := tx.AddSeconds(timex.OneHourSec)
+	assert.Equal(t, h1.Unix(), s1.Unix())
+
+	assert.Equal(t, timex.OneHour, h1.Diff(tx.Time))
+	assert.Equal(t, timex.OneHourSec, h1.DiffSec(tx.Time))
+}
+
+func TestTimeX_HourStart(t *testing.T) {
+	tx := timex.Now()
+	hs := tx.HourStart()
+	he := tx.HourEnd()
+
+	assert.Equal(t, "00:00", hs.DateFormat("I:S"))
+	assert.Equal(t, "59:59", he.DateFormat("I:S"))
 }
 
 func TestTimeX_CustomHMS(t *testing.T) {

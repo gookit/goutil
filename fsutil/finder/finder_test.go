@@ -22,6 +22,13 @@ func TestEmptyFinder(t *testing.T) {
 			fmt.Println(filePath)
 		})
 
+	assert.NotEmpty(t, f.FilePaths())
+
+	f.Reset()
+	assert.Empty(t, f.FilePaths())
+}
+
+func TestNewFinder(t *testing.T) {
 	finder.NewFinder([]string{"./testdata"}).
 		AddFile("finder.go").
 		NoDotDir().

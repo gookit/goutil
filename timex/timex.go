@@ -123,8 +123,8 @@ func (t TimeX) T() time.Time {
 //
 // see time.Time.Format()
 func (t *TimeX) Format(layout string) string {
-	if t.Layout == "" {
-		layout = DefaultLayout
+	if layout == "" {
+		layout = t.Layout
 	}
 	return t.Time.Format(layout)
 }
@@ -196,13 +196,13 @@ func (t TimeX) Diff(u time.Time) time.Duration {
 	return t.Sub(u)
 }
 
-// SubUnix calc diff seconds for t - u
-func (t TimeX) SubUnix(u time.Time) int {
+// DiffSec calc diff seconds for t - u
+func (t TimeX) DiffSec(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
-// DiffSec calc diff seconds for t - u
-func (t TimeX) DiffSec(u time.Time) int {
+// SubUnix calc diff seconds for t - u
+func (t TimeX) SubUnix(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 

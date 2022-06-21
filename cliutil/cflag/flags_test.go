@@ -17,6 +17,7 @@ func TestNewCFlags(t *testing.T) {
 
 	c := cflag.NewCFlags(cflag.WithDesc("desc for command"))
 	c.IntVar(&opts.int, "int", 0, "this is a int option;;")
+	c.AddArg("ag1", "this is a int option", false, "")
 
 	inArgs := []string{"--help"}
 	err := c.Parse(inArgs)

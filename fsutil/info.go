@@ -71,7 +71,8 @@ type (
 )
 
 // FindInDir code refer the go pkg: path/filepath.glob()
-func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error) {
+// filters: return false will skip the file.
+func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) {
 	fi, err := os.Stat(dir)
 	if err != nil {
 		return // ignore I/O error

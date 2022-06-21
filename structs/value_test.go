@@ -7,6 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNewValue(t *testing.T) {
+	v := structs.NewValue(true)
+	assert.True(t, v.Bool())
+
+	v.Set("false")
+	assert.False(t, v.Bool())
+}
+
 func TestValue_Val(t *testing.T) {
 	v := structs.Value{V: 23}
 
@@ -25,8 +33,11 @@ func TestValue_Val(t *testing.T) {
 	v.Reset()
 	assert.Nil(t, v.V)
 	assert.Nil(t, v.Val())
+	assert.Nil(t, v.Strings())
 	assert.True(t, v.IsEmpty())
+	assert.False(t, v.Bool())
 	assert.Equal(t, 0, v.Int())
 	assert.Equal(t, int64(0), v.Int64())
-	assert.True(t, v.IsEmpty())
+	assert.Equal(t, float64(0), v.Float64())
+	assert.Equal(t, "", v.String())
 }

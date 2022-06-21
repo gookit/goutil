@@ -27,6 +27,8 @@ func (w *TestWriter) Flush() error {
 	if w.ErrOnFlush {
 		return errorx.Raw("flush error")
 	}
+
+	w.Reset()
 	return nil
 }
 
