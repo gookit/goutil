@@ -255,9 +255,11 @@ func (f *FileFinder) findInDir(dirPath string) {
 		return // ignore I/O error
 	}
 
-	// names, _ := d.Readdirnames(-1)
 	// sort.Strings(names)
+	// names, _ := d.Readdirnames(-1)
 	stats, _ := d.Readdir(-1)
+	_ = d.Close() // close dir.
+
 	for _, fi := range stats {
 		baseName := fi.Name()
 		fullPath := filepath.Join(dirPath, baseName)
@@ -309,8 +311,6 @@ func (f *FileFinder) findInDir(dirPath string) {
 			}
 		}
 	}
-
-	_ = d.Close()
 }
 
 // EachFile each file os.File
