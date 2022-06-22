@@ -97,6 +97,11 @@ func BinFile() string {
 	return os.Args[0]
 }
 
+// BinName get
+func BinName() string {
+	return path.Base(os.Args[0])
+}
+
 // BuildOptionHelpName for render flag help
 func BuildOptionHelpName(names []string) string {
 	var sb strings.Builder

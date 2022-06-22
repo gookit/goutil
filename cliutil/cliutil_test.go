@@ -88,6 +88,7 @@ func TestWorkdir(t *testing.T) {
 	assert.NotEmpty(t, cliutil.Workdir())
 	assert.NotEmpty(t, cliutil.BinDir())
 	assert.NotEmpty(t, cliutil.BinFile())
+	assert.NotEmpty(t, cliutil.BinName())
 }
 
 func TestColorPrint(t *testing.T) {

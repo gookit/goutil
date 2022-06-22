@@ -3,6 +3,7 @@ package cflag
 import (
 	"flag"
 	"reflect"
+	"strings"
 )
 
 // IsZeroValue determines whether the string represents the zero
@@ -24,10 +25,26 @@ func IsZeroValue(opt *flag.Flag, value string) (bool, bool) {
 	return value == z.Interface().(flag.Value).String(), z.Kind() == reflect.String
 }
 
-// AddPrefix for render flag help
+// AddPrefix for render flag options help
 func AddPrefix(name string) string {
 	if len(name) > 1 {
 		return "--" + name
 	}
 	return "-" + name
+}
+
+// AddPrefixes for render flag options help
+func AddPrefixes(name string, shorts []string) string {
+	shortLn := len(shorts)
+	if shortLn == 0 {
+		return AddPrefix(name)
+	}
+
+	withPfx := make([]string, 0, shortLn+1)
+	withPfx = append(withPfx, AddPrefix(name))
+	for _, short := range shorts {
+		withPfx = append(withPfx, AddPrefix(short))
+	}
+
+	return strings.Join(withPfx, ", ")
 }

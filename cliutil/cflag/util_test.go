@@ -10,4 +10,6 @@ import (
 func TestAddPrefix(t *testing.T) {
 	assert.Equal(t, "-a", cflag.AddPrefix("a"))
 	assert.Equal(t, "--long", cflag.AddPrefix("long"))
+
+	assert.Equal(t, "--long", cflag.AddPrefixes("long", nil))
 }
