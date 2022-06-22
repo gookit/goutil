@@ -124,6 +124,8 @@ func HasShellEnv(shell string) bool
 func Workdir() string
 func BinDir() string
 func BinFile() string
+func BinName() string
+func BuildOptionHelpName(names []string) string
 // source at cliutil/color_print.go
 func Redp(a ...interface{}) { color.Red.Print(a...) }
 func Redf(format string, a ...interface{}) { color.Red.Printf(format, a...) }
@@ -359,6 +361,7 @@ func Fail(code int, msg string) ErrorR
 func Suc(msg string) ErrorR
 // source at errorx/stack.go
 func FuncForPC(pc uintptr) *Func
+func ResetStdOpt()
 func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt)
 func TraceDepth(traceDepth int) func(opt *ErrStackOpt)
@@ -368,6 +371,7 @@ func Rawf(tpl string, vars ...interface{}) error
 func Cause(err error) error
 func Unwrap(err error) error
 func Previous(err error) error { return Unwrap(err) }
+func ToErrorX(err error) (ex *ErrorX, ok bool)
 func Has(err, target error) bool
 func Is(err, target error) bool
 func To(err error, target interface{}) bool
@@ -493,7 +497,7 @@ func Expand(pathStr string) string
 func ExpandPath(pathStr string) string
 func Realpath(pathStr string) string
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
-func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (err error)
+func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error)
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error
 func MkParentDir(fpath string) error
@@ -708,6 +712,7 @@ func GetCallersInfo(skip, max int) []string
 func PanicIfErr(err error)
 func PanicIf(err error)
 func Panicf(format string, v ...interface{})
+func GoVersion() string
 ```
 
 ### Structs
@@ -723,11 +728,13 @@ func NewMapData() *MapDataStore
 func ToMap(st interface{}) map[string]interface{}
 func TryToMap(st interface{}) (map[string]interface{}, error)
 func MustToMap(st interface{}) map[string]interface{}
+func MapStruct(srcSt, dstSt interface{})
 // source at structs/tags.go
-func ParseTags(v interface{}) error
-func ParseReflectTags(v reflect.Value) error
-func ParseTagValue(str string) maputil.SMap
+func ParseTags(v interface{}, tagNames []string) (map[string]maputil.SMap, error)
+func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error)
 func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error)
+// source at structs/value.go
+func NewValue(val interface{}) *Value
 ```
 
 ### Strings
@@ -762,6 +769,7 @@ func IsBlank(s string) bool
 func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
+func VersionCompare(v1, v2, op string) bool
 // source at strutil/convert.go
 func Join(sep string, ss ...string) string
 func JoinSubs(sep string, ss []string) string
@@ -781,8 +789,13 @@ func MustBool(s string) bool
 func Bool(s string) (bool, error)
 func Int(s string) (int, error)
 func ToInt(s string) (int, error)
+func QuietInt(s string) int
 func MustInt(s string) int
 func IntOrPanic(s string) int
+func Int64(s string) int64
+func QuietInt64(s string) int64
+func Int64OrErr(s string) (int64, error)
+func Int64OrPanic(s string) int64
 func Ints(s string, sep ...string) []int
 func ToInts(s string, sep ...string) ([]int, error) { return ToIntSlice(s, sep...) }
 func ToIntSlice(s string, sep ...string) (ints []int, err error)
@@ -916,6 +929,12 @@ func ChangeUserUidGid(newUid int, newGid int) (err error)
 > Package `github.com/gookit/goutil/testutil`
 
 ```go
+// source at testutil/envmock.go
+func MockEnvValue(key, val string, fn func(nv string))
+func MockEnvValues(kvMap map[string]string, fn func())
+func MockOsEnvByText(envText string, fn func())
+func MockOsEnv(mp map[string]string, fn func())
+func MockCleanOsEnv(mp map[string]string, fn func())
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
@@ -926,10 +945,6 @@ func RewriteStdout()
 func RestoreStdout() (s string)
 func RewriteStderr()
 func RestoreStderr() (s string)
-func MockEnvValue(key, val string, fn func(nv string))
-func MockEnvValues(kvMap map[string]string, fn func())
-func MockOsEnvByText(envText string, fn func())
-func MockOsEnv(mp map[string]string, fn func())
 // source at testutil/writer.go
 func NewTestWriter() *TestWriter
 ```
@@ -966,6 +981,8 @@ func NowAddDay(day int) time.Time
 func NowAddHour(hour int) time.Time
 func NowAddMinutes(minutes int) time.Time
 func NowAddSeconds(seconds int) time.Time
+func NowHourStart() time.Time
+func NowHourEnd() time.Time
 func AddDay(t time.Time, day int) time.Time
 func AddHour(t time.Time, hour int) time.Time
 func AddMinutes(t time.Time, minutes int) time.Time
@@ -974,7 +991,6 @@ func HourStart(t time.Time) time.Time
 func HourEnd(t time.Time) time.Time
 func DayStart(t time.Time) time.Time
 func DayEnd(t time.Time) time.Time
-func NowHourStart() time.Time
 func TodayStart() time.Time
 func TodayEnd() time.Time
 func HowLongAgo(sec int64) string

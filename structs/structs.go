@@ -21,3 +21,8 @@ func MustToMap(st interface{}) map[string]interface{} {
 	}
 	return mp
 }
+
+// MapStruct simple copy src struct value to dst struct
+// func MapStruct(srcSt, dstSt interface{}) {
+// 	// TODO
+// }

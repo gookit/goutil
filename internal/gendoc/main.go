@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -14,6 +13,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/cliutil/cflag"
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/strutil"
@@ -80,39 +80,37 @@ var (
 	partDocTplE = "part-%s%s.md"
 )
 
-func bindingFlags() {
-	flag.StringVar(&genOpts.lang, "l", "en", "package desc message language. allow: en, zh-CN")
-	flag.StringVar(&genOpts.output,
-		"o",
-		"./metadata.log",
-		"the result output file. if is 'stdout', will direct print it.",
-	)
-	flag.StringVar(&genOpts.tplDir,
-		"t",
-		"./internal/template",
-		"the template file dir, use for generate, will inject metadata to the template.\nsee ./internal/template/*.tpl",
-	)
-
-	flag.Usage = func() {
-		color.Info.Println("Collect and dump all exported functions for goutil\n")
-
-		color.Comment.Println("Options:")
-		flag.PrintDefaults()
-
-		color.Comment.Println("Example:")
-		fmt.Println(`  go run ./internal/gendoc -o stdout
-  go run ./internal/gendoc -o stdout -l zh-CN
-  go run ./internal/gendoc -o README.md
-  go run ./internal/gendoc -o README.zh-CN.md -l zh-CN`)
-	}
-}
-
 // go run ./internal/gendoc -h
 // go run ./internal/gendoc
 func main() {
-	bindingFlags()
-	flag.Parse()
+	cmd := cflag.New(func(c *cflag.CFlags) {
+		c.Version = "0.1.2"
+		c.Desc = "Collect and dump all exported functions for goutil"
+	})
 
+	cmd.StringVar(&genOpts.lang, "lang", "en", "package desc message language. allow: en, zh-CN;;l")
+	cmd.StringVar(&genOpts.output,
+		"output",
+		"./metadata.log",
+		"the result output file. if is 'stdout', will direct print it;;o",
+	)
+	cmd.StringVar(&genOpts.tplDir,
+		"tpl",
+		"./internal/template",
+		"template file dir, use for generate, will inject metadata to the template.\nsee ./internal/template/*.tpl;;t",
+	)
+
+	cmd.Func = handle
+	cmd.Example = `
+  go run ./internal/gendoc -o stdout
+  go run ./internal/gendoc -o stdout -l zh-CN
+  go run ./internal/gendoc -o README.md
+  go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
+`
+	cmd.MustParse(nil)
+}
+
+func handle(c *cflag.CFlags) error {
 	ms, err := filepath.Glob("./*/*.go")
 	goutil.PanicIfErr(err)
 
@@ -159,6 +157,7 @@ func main() {
 	if toFile {
 		color.Info.Println("OK. write result to the", genOpts.output)
 	}
+	return nil
 }
 
 func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {

@@ -10,10 +10,14 @@ import (
 	"time"
 )
 
+// some consts string chars
 const (
+	Numbers   = "0123456789"
 	AlphaBet  = "abcdefghijklmnopqrstuvwxyz"
+	AlphaBet1 = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 	AlphaNum  = "abcdefghijklmnopqrstuvwxyz0123456789"
 	AlphaNum2 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	AlphaNum3 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 )
 
 // Md5 Generate a 32-bit md5 string
