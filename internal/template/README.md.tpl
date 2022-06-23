@@ -10,20 +10,23 @@
 💪 Useful utils package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 - [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting
+- [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
+- [`cliutil`](./cliutil) Command-line util functions. eg: read input, exec command, cmdline parse/build
 - [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
-- `cliutil` Command-line util functions. eg: read input, exec command, cmdline parse/build
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
-- `envutil` ENV util for current runtime env information. eg: get one, get info, parse var
-- `fmtutil` Format data util functions. eg: data, size
+- [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
+- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
-- `jsonutil` some util functions for quick read, write, encode, decode JSON data.
+- [`jsonutil`](./jsonutil) some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
-- [`mathutil`](./mathutil), `numutil` Math(int, number) util functions. eg: convert, math calc, random
+- [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
+- [`stdutil`](./stdutil) Provide some commonly std util functions.
+- [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
-- `testutil` Test help util functions. eg: http test, mock ENV value
+- [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
@@ -32,6 +35,12 @@
 ## GoDoc
 
 - [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
+
+## Install
+
+```shell
+go get github.com/gookit/goutil
+```
 
 ## Packages
 {{pgkFuncs}}

@@ -13,7 +13,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
-	"github.com/gookit/goutil/cliutil/cflag"
+	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/strutil"
