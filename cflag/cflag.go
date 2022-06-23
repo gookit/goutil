@@ -1,4 +1,4 @@
-// Package cflag wrap and extends the go flag.FlagSet.
+// Package cflag Wraps and extends go `flag.FlagSet` to build simple command line applications
 //
 // - Support auto render a pretty help panel
 //
@@ -217,6 +217,9 @@ func (c *CFlags) Parse(args []string) error {
 
 	defer func() {
 		if err := recover(); err != nil {
+			if Debug {
+				cliutil.Errorln("recover error on run parse")
+			}
 			cliutil.Errorln("ERROR:", err)
 		}
 	}()

@@ -3,13 +3,13 @@ package main
 import (
 	"os"
 
+	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/cliutil"
-	"github.com/gookit/goutil/cliutil/cflag"
 )
 
-// go run ./_demo/cmd.go
-// go run ./cliutil/_demo/cmd.go -h
-// go run ./cliutil/_demo/cmd.go --name inhere ab cd
+// go run ./_example/cmd.go
+// go run ./cflag/_example/cmd.go -h
+// go run ./cflag/_example/cmd.go --name inhere ab cd
 func main() {
 	opts := struct {
 		age  int

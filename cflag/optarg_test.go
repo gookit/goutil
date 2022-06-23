@@ -3,7 +3,7 @@ package cflag_test
 import (
 	"testing"
 
-	"github.com/gookit/goutil/cliutil/cflag"
+	"github.com/gookit/goutil/cflag"
 	"github.com/stretchr/testify/assert"
 )
 

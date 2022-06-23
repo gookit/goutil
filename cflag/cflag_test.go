@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/cliutil"
-	"github.com/gookit/goutil/cliutil/cflag"
 	"github.com/gookit/goutil/errorx"
 	"github.com/stretchr/testify/assert"
 )
