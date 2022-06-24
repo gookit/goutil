@@ -23,7 +23,7 @@ func Elem(v reflect.Value) reflect.Value {
 func Wrap(rv reflect.Value) Value {
 	return Value{
 		Value:    rv,
-		baseKind: ToBaseKind(rv.Kind()),
+		baseKind: ToBKind(rv.Kind()),
 	}
 }
 
@@ -36,7 +36,7 @@ func ValueOf(v interface{}) Value {
 	rv := reflect.ValueOf(v)
 	return Value{
 		Value:    rv,
-		baseKind: ToBaseKind(rv.Kind()),
+		baseKind: ToBKind(rv.Kind()),
 	}
 }
 
@@ -54,7 +54,7 @@ func (v Value) Elem() Value {
 
 		return Value{
 			Value:    elem,
-			baseKind: ToBaseKind(elem.Kind()),
+			baseKind: ToBKind(elem.Kind()),
 		}
 	}
 
@@ -73,4 +73,26 @@ func (v Value) Type() Type {
 // BaseKind value
 func (v Value) BaseKind() BKind {
 	return v.baseKind
+}
+
+// Int value. if is uintX will convert to int64
+func (v Value) Int() int64 {
+	switch v.baseKind {
+	case Uint:
+		return int64(v.Value.Uint())
+	case Int:
+		return v.Value.Int()
+	}
+	panic(&reflect.ValueError{Method: "reflect.Value.Int", Kind: v.Kind()})
+}
+
+// Uint value. if is intX will convert to uint64
+func (v Value) Uint() uint64 {
+	switch v.baseKind {
+	case Uint:
+		return v.Value.Uint()
+	case Int:
+		return uint64(v.Value.Int())
+	}
+	panic(&reflect.ValueError{Method: "reflect.Value.Uint", Kind: v.Kind()})
 }

@@ -10,8 +10,10 @@ const (
 	// Int for all intX types
 	Int = BKind(reflect.Int)
 	// Uint for all uintX types
-	Uint  = BKind(reflect.Uint)
+	Uint = BKind(reflect.Uint)
+	// Float for all floatX types
 	Float = BKind(reflect.Float32)
+	// Array for array,slice types
 	Array = BKind(reflect.Array)
 	// Complex for all complexX types
 	Complex = BKind(reflect.Complex64)
@@ -19,6 +21,11 @@ const (
 
 // ToBaseKind convert reflect.Kind to base kind
 func ToBaseKind(kind reflect.Kind) BKind {
+	return ToBKind(kind)
+}
+
+// ToBKind convert reflect.Kind to base kind
+func ToBKind(kind reflect.Kind) BKind {
 	switch kind {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return Int
@@ -54,7 +61,7 @@ func TypeOf(v interface{}) Type {
 
 	return &xType{
 		Type:     rftTyp,
-		baseKind: ToBaseKind(rftTyp.Kind()),
+		baseKind: ToBKind(rftTyp.Kind()),
 	}
 }
 

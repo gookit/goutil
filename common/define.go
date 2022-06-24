@@ -12,3 +12,11 @@ type ByteStringWriter interface {
 	io.StringWriter
 	fmt.Stringer
 }
+
+type (
+	// MarshalFunc define
+	MarshalFunc func(v interface{}) ([]byte, error)
+
+	// UnmarshalFunc define
+	UnmarshalFunc func(bts []byte, ptr interface{}) error
+)
