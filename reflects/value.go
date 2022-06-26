@@ -8,17 +8,6 @@ type Value struct {
 	baseKind BKind
 }
 
-// Elem returns the value that the interface v contains
-// or that the pointer v points to.
-func Elem(v reflect.Value) reflect.Value {
-	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
-		return v.Elem()
-	}
-
-	// otherwise, will return self
-	return v
-}
-
 // Wrap the give value
 func Wrap(rv reflect.Value) Value {
 	return Value{
@@ -40,9 +29,17 @@ func ValueOf(v interface{}) Value {
 	}
 }
 
-// Indirect value
+// Indirect value. alias of the reflect.Indirect()
 func (v Value) Indirect() Value {
-	return v.Elem()
+	if v.Kind() != reflect.Ptr {
+		return v
+	}
+
+	elem := v.Value.Elem()
+	return Value{
+		Value:    elem,
+		baseKind: ToBKind(elem.Kind()),
+	}
 }
 
 // Elem returns the value that the interface v contains or that the pointer v points to.
@@ -70,9 +67,23 @@ func (v Value) Type() Type {
 	}
 }
 
+// BKind value
+func (v Value) BKind() BKind {
+	return v.baseKind
+}
+
 // BaseKind value
 func (v Value) BaseKind() BKind {
 	return v.baseKind
+}
+
+// HasChild check. eg: array, slice, map, struct
+func (v Value) HasChild() bool {
+	switch v.Kind() {
+	case reflect.Array, reflect.Slice, reflect.Map, reflect.Struct:
+		return true
+	}
+	return false
 }
 
 // Int value. if is uintX will convert to int64
