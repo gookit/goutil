@@ -35,5 +35,8 @@ func TestValueLen(t *testing.T) {
 		is.Equal(3, stdutil.ValueLen(reflect.ValueOf(sample)))
 	}
 
+	ptrArr := &[]string{"a", "b"}
+	is.Equal(2, stdutil.ValueLen(reflect.ValueOf(ptrArr)))
+
 	is.Equal(-1, stdutil.ValueLen(reflect.ValueOf(nil)))
 }

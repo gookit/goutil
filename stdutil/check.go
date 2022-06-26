@@ -35,11 +35,14 @@ func ValueIsEmpty(v reflect.Value) bool {
 
 // ValueLen get value length
 func ValueLen(v reflect.Value) int {
+	v = reflect.Indirect(v)
 	k := v.Kind()
 
 	// (u)int use width.
 	switch k {
-	case reflect.Map, reflect.Array, reflect.Chan, reflect.Slice, reflect.String:
+	case reflect.String:
+		return len([]rune(v.String()))
+	case reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
 		return v.Len()
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		return len(strconv.FormatInt(int64(v.Uint()), 10))
