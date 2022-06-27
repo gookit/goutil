@@ -114,9 +114,13 @@ func TestColorPrint(t *testing.T) {
 	cliutil.Magentap("p:magenta color message, ")
 	cliutil.Magentaf("f:%s color message, ", "magenta")
 	cliutil.Magentaln("ln:magenta color message print in cli.")
+
 	cliutil.Infop("p:info color message, ")
 	cliutil.Infof("f:%s color message, ", "info")
 	cliutil.Infoln("ln:info color message print in cli.")
+	cliutil.Successp("p:success color message, ")
+	cliutil.Successf("f:%s color message, ", "success")
+	cliutil.Successln("ln:success color message print in cli.")
 	cliutil.Warnp("p:warn color message, ")
 	cliutil.Warnf("f:%s color message, ", "warn")
 	cliutil.Warnln("ln:warn color message print in cli.")

@@ -82,6 +82,15 @@ func Infof(format string, a ...interface{}) { color.Info.Printf(format, a...) }
 // Infoln print message with info style
 func Infoln(a ...interface{}) { color.Info.Println(a...) }
 
+// Successp print message with success color
+func Successp(a ...interface{}) { color.Success.Print(a...) }
+
+// Successf print message with success style
+func Successf(format string, a ...interface{}) { color.Success.Printf(format, a...) }
+
+// Successln print message with success style
+func Successln(a ...interface{}) { color.Success.Println(a...) }
+
 // Errorp print message with error color
 func Errorp(a ...interface{}) { color.Error.Print(a...) }
 
