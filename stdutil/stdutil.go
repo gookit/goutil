@@ -6,6 +6,9 @@ import (
 	"runtime"
 )
 
+// DiscardE discard error
+func DiscardE(_ error) {}
+
 // PanicIfErr if error is not empty
 func PanicIfErr(err error) {
 	if err != nil {

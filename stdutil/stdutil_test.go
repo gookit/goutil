@@ -4,12 +4,23 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/stdutil"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestPanicIfErr(t *testing.T) {
+	stdutil.DiscardE(nil)
+
+	stdutil.PanicIf(nil)
 	stdutil.PanicIfErr(nil)
+
+	assert.Panics(t, func() {
+		stdutil.PanicIf(errorx.Raw("a error"))
+	})
+	assert.Panics(t, func() {
+		stdutil.PanicIfErr(errorx.Raw("a error"))
+	})
 }
 
 func TestPanicf(t *testing.T) {

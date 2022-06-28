@@ -1,8 +1,6 @@
 package testutil
 
 import (
-	"bytes"
-	"fmt"
 	"io/ioutil"
 	"os"
 )
@@ -10,6 +8,7 @@ import (
 var oldStdout, oldStderr, newReader *os.File
 
 // DiscardStdout Discard os.Stdout output
+//
 // Usage:
 // 	DiscardStdout()
 // 	fmt.Println("Hello, playground")
@@ -22,7 +21,6 @@ func DiscardStdout() error {
 	if err == nil {
 		os.Stdout = stdout
 	}
-
 	return err
 }
 
@@ -31,11 +29,16 @@ func DiscardStdout() error {
 // }
 
 // RewriteStdout rewrite os.Stdout
+//
 // Usage:
 // 	RewriteStdout()
 // 	fmt.Println("Hello, playground")
 // 	msg := RestoreStdout()
 func RewriteStdout() {
+	if oldStdout != nil {
+		return
+	}
+
 	oldStdout = os.Stdout
 	r, w, _ := os.Pipe()
 	newReader = r
@@ -43,7 +46,7 @@ func RewriteStdout() {
 }
 
 // RestoreStdout restore os.Stdout
-func RestoreStdout() (s string) {
+func RestoreStdout(printData ...bool) (s string) {
 	if oldStdout == nil {
 		return
 	}
@@ -54,25 +57,36 @@ func RestoreStdout() (s string) {
 	// restore
 	os.Stdout = oldStdout
 	oldStdout = nil
+	if newReader == nil {
+		return
+	}
 
 	// read output data
-	if newReader != nil {
-		out, _ := ioutil.ReadAll(newReader)
-		s = string(out)
+	out, _ := ioutil.ReadAll(newReader)
+	s = string(out)
 
-		// close reader
-		_ = newReader.Close()
-		newReader = nil
+	// print the read data to stdout
+	if len(printData) > 0 && printData[0] {
+		_, _ = os.Stdout.WriteString(s)
 	}
+
+	// close reader
+	_ = newReader.Close()
+	newReader = nil
 	return
 }
 
 // RewriteStderr rewrite os.Stderr
+//
 // Usage:
 // 	RewriteStderr()
 // 	fmt.Fprintln(os.Stderr, "Hello, playground")
 // 	msg := RestoreStderr()
 func RewriteStderr() {
+	if oldStderr != nil {
+		return
+	}
+
 	oldStderr = os.Stderr
 	r, w, _ := os.Pipe()
 	newReader = r
@@ -80,7 +94,7 @@ func RewriteStderr() {
 }
 
 // RestoreStderr restore os.Stderr
-func RestoreStderr() (s string) {
+func RestoreStderr(printData ...bool) (s string) {
 	if oldStderr == nil {
 		return
 	}
@@ -91,52 +105,21 @@ func RestoreStderr() (s string) {
 	// restore
 	os.Stderr = oldStderr
 	oldStderr = nil
+	if newReader == nil {
+		return
+	}
 
 	// read output data
-	if newReader != nil {
-		out, _ := ioutil.ReadAll(newReader)
-		s = string(out)
+	bts, _ := ioutil.ReadAll(newReader)
+	s = string(bts)
 
-		// close reader
-		_ = newReader.Close()
-		newReader = nil
+	// print the read data to stderr
+	if len(printData) > 0 && printData[0] {
+		_, _ = os.Stderr.WriteString(s)
 	}
+
+	// close reader
+	_ = newReader.Close()
+	newReader = nil
 	return
-}
-
-// Buffer wrap and extends the bytes.Buffer
-type Buffer struct {
-	bytes.Buffer
-}
-
-// NewBuffer instance
-func NewBuffer() *Buffer {
-	return &Buffer{}
-}
-
-// WriteString rewrite
-func (b *Buffer) WriteString(ss ...string) {
-	for _, s := range ss {
-		_, _ = b.Buffer.WriteString(s)
-	}
-}
-
-// WriteAny method
-func (b *Buffer) WriteAny(vs ...interface{}) {
-	for _, v := range vs {
-		_, _ = b.Buffer.WriteString(fmt.Sprint(v))
-	}
-}
-
-// Writeln method
-func (b *Buffer) Writeln(s string) {
-	_, _ = b.Buffer.WriteString(s)
-	_ = b.Buffer.WriteByte('\n')
-}
-
-// ResetAndGet buffer string.
-func (b *Buffer) ResetAndGet() string {
-	s := b.String()
-	b.Reset()
-	return s
 }
