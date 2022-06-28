@@ -113,6 +113,7 @@ ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2}
 ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```
 
+
 ### Cflag
 
 > Package `github.com/gookit/goutil/cflag`
@@ -134,6 +135,7 @@ func AddPrefixes(name string, shorts []string) string
 #### `cflag` Usage
 
 `cflag` usage please see [cflag/README.md](cflag/README.md)
+
 
 ### CLI/Console
 
@@ -183,6 +185,9 @@ func Magentaln(a ...interface{}) { color.Magenta.Println(a...) }
 func Infop(a ...interface{}) { color.Info.Print(a...) }
 func Infof(format string, a ...interface{}) { color.Info.Printf(format, a...) }
 func Infoln(a ...interface{}) { color.Info.Println(a...) }
+func Successp(a ...interface{}) { color.Success.Print(a...) }
+func Successf(format string, a ...interface{}) { color.Success.Printf(format, a...) }
+func Successln(a ...interface{}) { color.Success.Println(a...) }
 func Errorp(a ...interface{}) { color.Error.Print(a...) }
 func Errorf(format string, a ...interface{}) { color.Error.Printf(format, a...) }
 func Errorln(a ...interface{}) { color.Error.Println(a...) }
@@ -253,6 +258,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 ```
 
 > More, please see [./cliutil/README](cliutil/README.md)
+
 ### Dumper
 
 > Package `github.com/gookit/goutil/dump`
@@ -316,6 +322,7 @@ Preview:
 
 ![](dump/_examples/preview-nested-struct.png)
 
+
 ### ENV/Environment
 
 > Package `github.com/gookit/goutil/envutil`
@@ -364,11 +371,13 @@ envutil.GetBool("APP_DEBUG", true)
 envutil.ParseValue("${ENV_NAME | defValue}")
 ```
 
+
 ### Errorx
 
 > Package `github.com/gookit/goutil/errorx`
 
 Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
+
 
 ```go
 // source at errorx/errorx.go
@@ -483,6 +492,7 @@ runtime.goexit()
   /usr/local/Cellar/go/1.18/libexec/src/runtime/asm_amd64.s:1571
 ```
 
+
 ### Formatting
 
 > Package `github.com/gookit/goutil/fmtutil`
@@ -590,6 +600,7 @@ func main() {
 }
 ```
 
+
 ### JSON Utils
 
 > Package `github.com/gookit/goutil/jsonutil`
@@ -692,9 +703,12 @@ func RandomIntWithSeed(min, max int, seed int64) int
 ```go
 // source at reflects/type.go
 func ToBaseKind(kind reflect.Kind) BKind
+func ToBKind(kind reflect.Kind) BKind
 func TypeOf(v interface{}) Type
-// source at reflects/value.go
+// source at reflects/util.go
 func Elem(v reflect.Value) reflect.Value
+func HasChild(v reflect.Value) bool
+// source at reflects/value.go
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
 ```
@@ -705,6 +719,8 @@ func ValueOf(v interface{}) Value
 
 ```go
 // source at stdio/ioutil.go
+func QuietFprintf(w io.Writer, tpl string, vs ...interface{})
+func QuietFprintln(w io.Writer, ss ...string)
 func QuietWriteString(w io.Writer, ss ...string)
 func DiscardReader(src io.Reader)
 func MustReadReader(r io.Reader) []byte
@@ -739,6 +755,7 @@ func GetCallerInfo(skip int) string
 func SimpleCallersInfo(skip, num int) []string
 func GetCallersInfo(skip, max int) []string
 // source at stdutil/stdutil.go
+func DiscardE(_ error) {}
 func PanicIfErr(err error)
 func PanicIf(err error)
 func Panicf(format string, v ...interface{})
@@ -972,9 +989,10 @@ func MockRequest(h http.Handler, method, path string, data *MD) *httptest.Respon
 func DiscardStdout() error
 func ReadOutput() (s string)
 func RewriteStdout()
-func RestoreStdout() (s string)
+func RestoreStdout(printData ...bool) (s string)
 func RewriteStderr()
-func RestoreStderr() (s string)
+func RestoreStderr(printData ...bool) (s string)
+func NewBuffer() *Buffer
 // source at testutil/writer.go
 func NewTestWriter() *TestWriter
 ```
@@ -983,7 +1001,8 @@ func NewTestWriter() *TestWriter
 
 > Package `github.com/gookit/goutil/timex`
 
-Provides an enhanced time.Time implementation, and add more commonly used functional methods.```go
+Provides an enhanced time.Time implementation, and add more commonly used functional methods.
+```go
 // source at timex/template.go
 func ToLayout(template string) string
 // source at timex/timex.go
@@ -1142,6 +1161,7 @@ ts := timex.NowUnix() // current unix timestamp
 date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
 date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```
+
 
 ## Code Check & Testing
 
