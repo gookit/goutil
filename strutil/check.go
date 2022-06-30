@@ -101,19 +101,16 @@ func IsEndOf(s, sub string) bool {
 }
 
 // Len of the string
-func Len(s string) int {
-	return len(s)
-}
+func Len(s string) int { return len(s) }
+
+// Utf8Len of the string
+func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 
 // Utf8len of the string
-func Utf8len(s string) int {
-	return utf8.RuneCount([]byte(s))
-}
+func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 
 // ValidUtf8String check
-func ValidUtf8String(s string) bool {
-	return utf8.ValidString(s)
-}
+func ValidUtf8String(s string) bool { return utf8.ValidString(s) }
 
 // ----- refer from github.com/yuin/goldmark/util
 
@@ -128,9 +125,7 @@ func IsSpaceRune(r rune) bool {
 }
 
 // IsEmpty returns true if the given string is empty.
-func IsEmpty(s string) bool {
-	return len(s) == 0
-}
+func IsEmpty(s string) bool { return len(s) == 0 }
 
 // IsBlank returns true if the given string is all space characters.
 func IsBlank(s string) bool {

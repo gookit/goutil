@@ -1,6 +1,6 @@
 # String Util
 
-This is an go string operate util package.
+This is a go string operate util package.
 
 - Github: https://github.com/gookit/goutil/strutil
 - GoDoc: https://godoc.org/github.com/gookit/goutil/strutil

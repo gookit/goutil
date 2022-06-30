@@ -38,6 +38,7 @@ func TestLen(t *testing.T) {
 	assert.Equal(t, 7, strutil.Len("Hello, "))
 	assert.Equal(t, 13, strutil.Len(str))
 	assert.Equal(t, 9, strutil.Utf8len(str))
+	assert.Equal(t, 9, strutil.Utf8Len(str))
 }
 
 func TestStrPos(t *testing.T) {

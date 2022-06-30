@@ -1,11 +1,8 @@
 package strutil
 
 import (
-	"crypto/md5"
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/hex"
-	"fmt"
 	mathRand "math/rand"
 	"time"
 )
@@ -19,23 +16,6 @@ const (
 	AlphaNum2 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	AlphaNum3 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 )
-
-// Md5 Generate a 32-bit md5 string
-func Md5(src interface{}) string {
-	return GenMd5(src)
-}
-
-// GenMd5 Generate a 32-bit md5 string
-func GenMd5(src interface{}) string {
-	h := md5.New()
-	if s, ok := src.(string); ok {
-		h.Write([]byte(s))
-	} else {
-		h.Write([]byte(fmt.Sprint(src)))
-	}
-
-	return hex.EncodeToString(h.Sum(nil))
-}
 
 // RandomChars generate give length random chars at `a-z`
 func RandomChars(ln int) string {
