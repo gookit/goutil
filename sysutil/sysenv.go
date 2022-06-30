@@ -3,33 +3,12 @@ package sysutil
 import (
 	"io"
 	"os"
-	"runtime"
 	"strings"
 	"syscall"
 
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/mattn/go-isatty"
 )
-
-// IsWin system. linux windows darwin
-func IsWin() bool {
-	return runtime.GOOS == "windows"
-}
-
-// IsWindows system. linux windows darwin
-func IsWindows() bool {
-	return runtime.GOOS == "windows"
-}
-
-// IsMac system
-func IsMac() bool {
-	return runtime.GOOS == "darwin"
-}
-
-// IsLinux system
-func IsLinux() bool {
-	return runtime.GOOS == "linux"
-}
 
 // IsMSys msys(MINGW64) env，不一定支持颜色
 func IsMSys() bool {
