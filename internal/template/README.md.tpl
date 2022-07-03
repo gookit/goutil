@@ -52,6 +52,14 @@ golint ./...
 go test ./...
 ```
 
+Testing in docker:
+
+```shell
+cd goutil
+docker run -ti -v $(pwd):/go/work golang:1.18
+root@xx:/go/work# go test ./...
+```
+
 ## Gookit packages
 
   - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files

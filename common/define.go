@@ -13,6 +13,12 @@ type ByteStringWriter interface {
 	fmt.Stringer
 }
 
+// StringWriteStringer interface
+type StringWriteStringer interface {
+	io.StringWriter
+	fmt.Stringer
+}
+
 type (
 	// MarshalFunc define
 	MarshalFunc func(v interface{}) ([]byte, error)

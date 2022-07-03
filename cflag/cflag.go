@@ -200,7 +200,17 @@ func (c *CFlags) BindArg(arg *FlagArg) {
  * parse command flags
  *************************************************************/
 
-// MustParse flags for command
+// QuickRun parse OS flags and run command, will auto handle error
+func (c *CFlags) QuickRun() {
+	c.MustParse(nil)
+}
+
+// MustRun parse flags and run command. alias of MustParse()
+func (c *CFlags) MustRun(args []string) {
+	c.MustParse(args)
+}
+
+// MustParse parse flags and run command, will auto handle error
 func (c *CFlags) MustParse(args []string) {
 	err := c.Parse(args)
 	if err != nil {
@@ -208,7 +218,8 @@ func (c *CFlags) MustParse(args []string) {
 	}
 }
 
-// Parse flags for command.
+// Parse flags and run command
+//
 // If args is nil, will parse os.Args
 func (c *CFlags) Parse(args []string) error {
 	if args == nil {
