@@ -41,8 +41,7 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	return string(bs), err
 }
 
-// ShellExec exec command by shell
-// cmdLine eg. "ls -al"
+// ShellExec exec command by shell cmdLine. eg. "ls -al"
 func ShellExec(cmdLine string, shells ...string) (string, error) {
 	// shell := "/bin/sh"
 	shell := "sh"
