@@ -15,9 +15,10 @@ func TestSimilarity(t *testing.T) {
 
 func TestRepeat(t *testing.T) {
 	assert.Equal(t, "aaa", strutil.Repeat("a", 3))
+	assert.Equal(t, "DD", strutil.Repeat("D", 2))
 	assert.Equal(t, "D", strutil.Repeat("D", 1))
-	assert.Equal(t, "D", strutil.Repeat("D", 0))
-	assert.Equal(t, "D", strutil.Repeat("D", -3))
+	assert.Equal(t, "", strutil.Repeat("0", 0))
+	assert.Equal(t, "", strutil.Repeat("D", -3))
 }
 
 func TestRepeatRune(t *testing.T) {

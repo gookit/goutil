@@ -60,11 +60,14 @@ func PadRight(s, pad string, length int) string {
 
 // Repeat a string
 func Repeat(s string, times int) string {
-	if times < 2 {
+	if times <= 0 {
+		return ""
+	}
+	if times == 1 {
 		return s
 	}
 
-	var ss []string
+	ss := make([]string, 0, times)
 	for i := 0; i < times; i++ {
 		ss = append(ss, s)
 	}
