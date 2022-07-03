@@ -1,14 +1,12 @@
 package testutil
 
 import (
-	"bytes"
-
 	"github.com/gookit/goutil/errorx"
 )
 
 // TestWriter struct, useful for testing
 type TestWriter struct {
-	bytes.Buffer
+	Buffer
 	// ErrOnWrite return error on write, useful for testing
 	ErrOnWrite bool
 	// ErrOnFlush return error on flush, useful for testing
@@ -20,6 +18,21 @@ type TestWriter struct {
 // NewTestWriter instance
 func NewTestWriter() *TestWriter {
 	return &TestWriter{}
+}
+
+// SetErrOnWrite method
+func (w *TestWriter) SetErrOnWrite() {
+	w.ErrOnWrite = true
+}
+
+// SetErrOnFlush method
+func (w *TestWriter) SetErrOnFlush() {
+	w.ErrOnFlush = true
+}
+
+// SetErrOnClose method
+func (w *TestWriter) SetErrOnClose() {
+	w.ErrOnClose = true
 }
 
 // Flush implements
@@ -45,6 +58,5 @@ func (w *TestWriter) Write(p []byte) (n int, err error) {
 	if w.ErrOnWrite {
 		return 0, errorx.Raw("write error")
 	}
-
 	return w.Buffer.Write(p)
 }

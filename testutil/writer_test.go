@@ -16,14 +16,14 @@ func TestNewTestWriter(t *testing.T) {
 	assert.Equal(t, "", tw.String())
 	assert.NoError(t, tw.Close())
 
-	tw.ErrOnWrite = true
+	tw.SetErrOnWrite()
 	_, err = tw.Write([]byte("hello"))
 	assert.Error(t, err)
 	assert.Equal(t, "", tw.String())
 
-	tw.ErrOnFlush = true
+	tw.SetErrOnFlush()
 	assert.Error(t, tw.Flush())
 
-	tw.ErrOnClose = true
+	tw.SetErrOnClose()
 	assert.Error(t, tw.Close())
 }
