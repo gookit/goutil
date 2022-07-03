@@ -708,6 +708,11 @@ func TypeOf(v interface{}) Type
 // source at reflects/util.go
 func Elem(v reflect.Value) reflect.Value
 func HasChild(v reflect.Value) bool
+func IsNil(v reflect.Value) bool
+func IsFunc(val interface{}) bool
+func IsEqual(src, dst interface{}) bool
+func IsEmpty(v reflect.Value) bool
+func Len(v reflect.Value) int
 // source at reflects/value.go
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
@@ -719,6 +724,7 @@ func ValueOf(v interface{}) Value
 
 ```go
 // source at stdio/ioutil.go
+func QuietFprint(w io.Writer, ss ...string)
 func QuietFprintf(w io.Writer, tpl string, vs ...interface{})
 func QuietFprintln(w io.Writer, ss ...string)
 func QuietWriteString(w io.Writer, ss ...string)
@@ -737,6 +743,9 @@ func NewWriteWrapper(w io.Writer) *WriteWrapper
 func WaitCloseSignals(closer io.Closer) error
 func Go(f func() error) error
 // source at stdutil/check.go
+func IsNil(v interface{}) bool
+func IsEmpty(v interface{}) bool
+func IsFunc(val interface{}) bool
 func ValueIsEmpty(v reflect.Value) bool
 func ValueLen(v reflect.Value) int
 // source at stdutil/convert.go
@@ -806,12 +815,13 @@ func IsStartsOf(s string, subs []string) bool
 func HasOnePrefix(s string, subs []string) bool
 func IsStartOf(s, sub string) bool
 func IsEndOf(s, sub string) bool
-func Len(s string) int
-func Utf8len(s string) int
-func ValidUtf8String(s string) bool
+func Len(s string) int { return len(s) }
+func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
+func Utf8len(s string) int { return utf8.RuneCountInString(s) }
+func ValidUtf8String(s string) bool { return utf8.ValidString(s) }
 func IsSpace(c byte) bool
 func IsSpaceRune(r rune) bool
-func IsEmpty(s string) bool
+func IsEmpty(s string) bool { return len(s) == 0 }
 func IsBlank(s string) bool
 func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
@@ -856,13 +866,18 @@ func ToTime(s string, layouts ...string) (t time.Time, err error)
 // source at strutil/encode.go
 func EscapeJS(s string) string
 func EscapeHTML(s string) string
+func AddSlashes(s string) string
+func StripSlashes(s string) string
+func Md5(src interface{}) string { return GenMd5(src) }
+func MD5(src interface{}) string { return GenMd5(src) }
+func GenMd5(src interface{}) string
+func URLEncode(s string) string
+func URLDecode(s string) string
 func B32Encode(str string) string
 func B32Decode(str string) string
 func Base64(str string) string
 func B64Encode(str string) string
 func B64Decode(str string) string
-func URLEncode(s string) string
-func URLDecode(s string) string
 func NewBaseEncoder(base int) *BaseEncoder
 // source at strutil/filter.go
 func Trim(s string, cutSet ...string) string
@@ -889,8 +904,6 @@ func CamelCase(s string, sep ...string) string
 func MicroTimeID() string
 func MicroTimeHexID() string
 // source at strutil/random.go
-func Md5(src interface{}) string
-func GenMd5(src interface{}) string
 func RandomChars(ln int) string
 func RandomCharsV2(ln int) string
 func RandomCharsV3(ln int) string
@@ -935,11 +948,9 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
+// source at sysutil/stack.go
+func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
 // source at sysutil/sysenv.go
-func IsWin() bool
-func IsWindows() bool
-func IsMac() bool
-func IsLinux() bool
 func IsMSys() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
@@ -953,8 +964,14 @@ func Workdir() string
 func BinDir() string
 func BinFile() string
 // source at sysutil/sysutil_nonwin.go
+func IsWin() bool
+func IsWindows() bool
+func IsMac() bool
+func IsDarwin() bool
+func IsLinux() bool
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool
+func OpenBrowser(URL string) error
 // source at sysutil/user.go
 func MustFindUser(uname string) *user.User
 func LoginUser() *user.User
@@ -976,6 +993,8 @@ func ChangeUserUidGid(newUid int, newGid int) (err error)
 > Package `github.com/gookit/goutil/testutil`
 
 ```go
+// source at testutil/buffer.go
+func NewBuffer() *Buffer
 // source at testutil/envmock.go
 func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
@@ -992,7 +1011,6 @@ func RewriteStdout()
 func RestoreStdout(printData ...bool) (s string)
 func RewriteStderr()
 func RestoreStderr(printData ...bool) (s string)
-func NewBuffer() *Buffer
 // source at testutil/writer.go
 func NewTestWriter() *TestWriter
 ```
@@ -1169,6 +1187,14 @@ date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 gofmt -w -l ./
 golint ./...
 go test ./...
+```
+
+Testing in docker:
+
+```shell
+cd goutil
+docker run -ti -v $(pwd):/go/work golang:1.18
+root@xx:/go/work# go test ./...
 ```
 
 ## Gookit packages
