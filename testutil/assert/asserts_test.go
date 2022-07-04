@@ -11,15 +11,20 @@ import (
 func TestErr(t *testing.T) {
 	err := errorx.Raw("this is a error")
 	// assert2.EqualError(t, err, "user custom message")
-	assert.NoErr(t, err, "user custom message")
-	assert.ErrMsg(t, err, "")
+	assert.Err(t, err, "user custom message")
+	assert.ErrMsg(t, err, "this is a error")
 }
 
 func TestEq(t *testing.T) {
 	str := "abc"
-	assert2.Equal(t, "def", str)
-	assert2.Empty(t, str)
-	assert2.Len(t, str, 2)
+
+	assert2.Equal(t, "abc", str)
+	assert2.NotEmpty(t, str)
+	assert2.Panics(t, func() {
+		panic("hh")
+	})
+	assert2.Len(t, str, 3)
 	assert2.NotEqual(t, "def", str)
-	assert.Eq(t, "def", str)
+
+	assert.Eq(t, "abc", str)
 }

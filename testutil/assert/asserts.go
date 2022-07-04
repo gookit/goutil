@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"reflect"
 	"runtime"
+	"runtime/debug"
 	"strings"
 
 	"github.com/gookit/color"
@@ -85,11 +86,75 @@ func NotEmpty(t TestingT, give any, fmtAndArgs ...any) bool {
 	return nEmpty
 }
 
-func Panics(t TestingT, fn func(), fmtAndArgs ...any) bool {
+// PanicRunFunc define
+type PanicRunFunc func()
+
+// didPanic returns true if the function passed to it panics. Otherwise, it returns false.
+func runPanicFunc(f PanicRunFunc) (didPanic bool, message interface{}, stack string) {
+	didPanic = true
+	defer func() {
+		message = recover()
+		if didPanic {
+			stack = string(debug.Stack())
+		}
+	}()
+
+	// call the target function
+	f()
+	didPanic = false
+
+	return
+}
+
+// Panics asserts that the code inside the specified func panics.
+func Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
+	if hasPanic, panicVal, _ := runPanicFunc(fn); !hasPanic {
+		t.Helper()
+
+		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+	}
+
 	return true
 }
 
-func PanicsMsg(t TestingT, fn func(), wantMsg string, fmtAndArgs ...any) bool {
+// PanicsMsg should panic and with a value
+func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) bool {
+	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
+	if !hasPanic {
+		t.Helper()
+		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+	}
+
+	if panicVal != wantVal {
+		t.Helper()
+		return fail(t, fmt.Sprintf(
+			"func %#v should panic with value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			fn, wantVal, panicVal, stackMsg),
+			fmtAndArgs,
+		)
+	}
+
+	return true
+}
+
+// PanicsErrMsg should panic and with error message
+func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any) bool {
+	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
+	if !hasPanic {
+		t.Helper()
+		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+	}
+
+	err, ok := panicVal.(error)
+	if !ok || err.Error() != errMsg {
+		t.Helper()
+		return fail(t, fmt.Sprintf(
+			"func %#v should panic with error message:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			fn, errMsg, panicVal, stackMsg),
+			fmtAndArgs,
+		)
+	}
+
 	return true
 }
 
