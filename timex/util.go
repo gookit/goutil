@@ -143,3 +143,9 @@ func TodayEnd() time.Time {
 func HowLongAgo(sec int64) string {
 	return fmtutil.HowLongAgo(sec)
 }
+
+// ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
+// Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+func ToDuration(s string) (time.Duration, error) {
+	return time.ParseDuration(s)
+}
