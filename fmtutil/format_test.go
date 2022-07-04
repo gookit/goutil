@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fmtutil"
+	assert2 "github.com/gookit/goutil/testutil/assert"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,6 +23,24 @@ func TestDataSize(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.want, fmtutil.DataSize(tt.args))
+	}
+	assert.Equal(t, "1.12G", fmtutil.SizeToString(1200346778))
+}
+
+func TestParseByte(t *testing.T) {
+	tests := []struct {
+		bytes uint64
+		sizeS string
+	}{
+		{346, "346B"},
+		{3471, "3.39K"},
+		{346777, "338.65Kb"},
+		{12341739, "11.77M"},
+		{1202590842, "1.12GB"},
+	}
+
+	for _, tt := range tests {
+		assert2.Eq(t, tt.bytes, fmtutil.StringToByte(tt.sizeS))
 	}
 }
 
