@@ -8,13 +8,13 @@ import (
 )
 
 func TestFindExecutable(t *testing.T) {
-	path, err := sysutil.Executable("type")
+	path, err := sysutil.Executable("echo")
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, path)
 
-	path, err = sysutil.FindExecutable("type")
+	path, err = sysutil.FindExecutable("echo")
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, path)
 
-	assert.True(t, sysutil.HasExecutable("type"))
+	assert.True(t, sysutil.HasExecutable("echo"))
 }

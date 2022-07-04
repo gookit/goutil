@@ -12,6 +12,7 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 	cb := clipboard.New()
 	if ok := cb.Available(); !ok {
 		assert.False(t, ok)
+		t.Skipf("skip test on program '%s' not found", clipboard.GetReaderBin())
 		return
 	}
 

@@ -46,7 +46,7 @@ func formatUnequalValues(expected, actual any) (e string, a string) {
 // This helps keep formatted error messages lines from exceeding the
 // bufio.MaxScanTokenSize max line length that the go testing framework imposes.
 func truncatingFormat(data any) string {
-	value := fmt.Sprintf("%#v", data)
+	value := fmt.Sprintf("%T(%v)", data, data)
 	// Give us some space the type info too if needed.
 	max := bufio.MaxScanTokenSize - 100
 	if len(value) > max {
