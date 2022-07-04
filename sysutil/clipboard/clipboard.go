@@ -1,4 +1,4 @@
-// Package clipboard provide a simple clipboard read and write function.
+// Package clipboard provide a simple clipboard read and write operations.
 package clipboard
 
 import (
@@ -8,33 +8,38 @@ import (
 
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/sysutil"
 )
 
 // Clipboard struct
 type Clipboard struct {
+	// TODO add event on write, read
 	buf *bytes.Buffer
 
-	// TODO add event on write, read
+	// available - bin file exist on the OS.
+	available bool
 	readerBin string
 	writerBin string
 	// add slashes. eg: '\' -> '\\'
-	addSlashes bool
+	// addSlashes bool
 }
 
 // New instance
 func New() *Clipboard {
+	reader := GetReaderBin()
+
 	return &Clipboard{
-		readerBin: GetReaderBin(),
+		readerBin: reader,
 		writerBin: GetWriterBin(),
+		available: sysutil.HasExecutable(reader),
 	}
 }
 
 // WithSlashes for the contents
-func (c *Clipboard) WithSlashes() *Clipboard {
-	c.addSlashes = true
-	return c
-}
+// func (c *Clipboard) WithSlashes() *Clipboard {
+// 	c.addSlashes = true
+// 	return c
+// }
 
 // Reset and clean the clipboard
 func (c *Clipboard) Reset() error {
@@ -56,9 +61,9 @@ func (c *Clipboard) Write(p []byte) (int, error) {
 
 // WriteString data to clipboard
 func (c *Clipboard) WriteString(s string) (int, error) {
-	if c.addSlashes {
-		s = strutil.AddSlashes(s)
-	}
+	// if c.addSlashes {
+	// 	s = strutil.AddSlashes(s)
+	// }
 	return c.buffer().WriteString(s)
 }
 
@@ -83,14 +88,19 @@ func (c *Clipboard) Flush() error {
 
 // WriteFromFile contents to clipboard
 func (c *Clipboard) WriteFromFile(filepath string) error {
+	// eg:
+	// 	Mac: pbcopy < tempfile.txt
+	// return exec.Command(c.writerBin, "<", filepath).Run()
 	file, err := fsutil.OpenReadFile(filepath)
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
-	// eg:
-	// 	Mac: pbcopy < tempfile.txt
-	return c.doExec(c.writerBin, "<", file.Name())
+	cmd := exec.Command(c.writerBin)
+	cmd.Stdin = file
+
+	return cmd.Run()
 }
 
 // Read contents from clipboard
@@ -108,15 +118,22 @@ func (c *Clipboard) ReadString() (string, error) {
 func (c *Clipboard) ReadToFile(filepath string) error {
 	// eg:
 	// 	Mac: pbpaste >> tasklist.txt
-	return c.doExec(c.readerBin, ">>", filepath)
+	// return exec.Command(c.readerBin, ">>", filepath).Run()
+	file, err := fsutil.QuickOpenFile(filepath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
-	// cmd := exec.Command(c.readerBin)
-	// file, err := fsutil.QuickOpenFile(filepath)
-	// if err != nil {
-	// 	return err
-	// }
-	// cmd.Stdout = file
-	// return cmd.Run()
+	cmd := exec.Command(c.readerBin)
+	cmd.Stdout = file
+
+	return cmd.Run()
+}
+
+// Available check
+func (c *Clipboard) Available() bool {
+	return c.available
 }
 
 func (c *Clipboard) buffer() *bytes.Buffer {
@@ -124,13 +141,4 @@ func (c *Clipboard) buffer() *bytes.Buffer {
 		c.buf = new(bytes.Buffer)
 	}
 	return c.buf
-}
-
-func (c *Clipboard) doExec(binName string, args ...string) error {
-	return exec.Command(binName, args...).Run()
-}
-
-func (c *Clipboard) checkBin(binName string) error {
-	_, err := exec.LookPath(binName)
-	return err
 }

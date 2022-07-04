@@ -19,6 +19,11 @@ func Reset() error {
 	return std.Reset()
 }
 
+// Available clipboard available check
+func Available() bool {
+	return std.Available()
+}
+
 // ReadString contents from clipboard
 func ReadString() (string, error) {
 	return std.ReadString()
@@ -26,8 +31,7 @@ func ReadString() (string, error) {
 
 // WriteString contents to clipboard and flush
 func WriteString(s string) error {
-	_, err := std.WriteString(s)
-	if err != nil {
+	if _, err := std.WriteString(s); err != nil {
 		return err
 	}
 

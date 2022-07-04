@@ -7,20 +7,21 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestReadString(t *testing.T) {
+func TestClipboard_read_write(t *testing.T) {
+	err := clipboard.WriteString("")
+	assert.ErrMsg(t, err, "not write contents")
 
-}
+	if !clipboard.Available() {
+		assert.False(t, clipboard.Available())
+		return
+	}
 
-func TestWriteString(t *testing.T) {
-	err := clipboard.Reset()
+	err = clipboard.Reset()
 	assert.NoErr(t, err)
 
 	str, err := clipboard.ReadString()
 	assert.NoErr(t, err)
 	assert.Empty(t, str)
-
-	err = clipboard.WriteString("")
-	assert.ErrMsg(t, err, "not write contents")
 
 	src := "hello, this is clipboard"
 	err = clipboard.WriteString(src)
