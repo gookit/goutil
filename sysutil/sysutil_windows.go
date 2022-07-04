@@ -5,6 +5,7 @@ package sysutil
 
 import (
 	"errors"
+	"os/exec"
 	"syscall"
 
 	"github.com/gookit/goutil/sysutil/process"
