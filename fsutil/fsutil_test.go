@@ -38,4 +38,8 @@ func TestTempDir(t *testing.T) {
 
 func TestRealpath(t *testing.T) {
 	assert.Equal(t, "/path/to/dir", fsutil.Realpath("/path/to/some/../dir"))
+
+	dir, file := fsutil.SplitPath("/path/to/dir/some.txt")
+	assert.Equal(t, "/path/to/dir/", dir)
+	assert.Equal(t, "some.txt", file)
 }

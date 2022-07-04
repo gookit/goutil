@@ -48,6 +48,11 @@ func Realpath(pathStr string) string {
 	return path.Clean(pathStr)
 }
 
+// SplitPath splits path immediately following the final Separator, separating it into a directory and file name component
+func SplitPath(pathStr string) (dir, name string) {
+	return filepath.Split(pathStr)
+}
+
 // GlobWithFunc handle matched file
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
 	files, err := filepath.Glob(pattern)
