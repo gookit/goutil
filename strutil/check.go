@@ -6,14 +6,8 @@ import (
 	"unicode/utf8"
 )
 
-var (
-	Equal     = strings.EqualFold
-	HasPrefix = strings.HasPrefix
-	HasSuffix = strings.HasSuffix
-)
-
-// refer from github.com/yuin/goldmark/util
-var spaceTable = [256]int8{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+// Equal check
+var Equal = strings.EqualFold
 
 // IsNumeric returns true if the given character is a numeric, otherwise false.
 func IsNumeric(c byte) bool {
@@ -76,32 +70,37 @@ func HasAllSubs(s string, subs []string) bool {
 }
 
 // IsStartsOf alias of the HasOnePrefix
-func IsStartsOf(s string, subs []string) bool {
-	return HasOnePrefix(s, subs)
+func IsStartsOf(s string, prefixes []string) bool {
+	return HasOnePrefix(s, prefixes)
 }
 
 // HasOnePrefix the string start withs one of the subs
-func HasOnePrefix(s string, subs []string) bool {
-	for _, sub := range subs {
-		if strings.HasPrefix(s, sub) {
+func HasOnePrefix(s string, prefixes []string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
 			return true
 		}
 	}
 	return false
 }
 
+// HasPrefix substr in the given string.
+func HasPrefix(s string, prefix string) bool { return strings.HasPrefix(s, prefix) }
+
 // IsStartOf alias of the strings.HasPrefix
-func IsStartOf(s, sub string) bool {
-	return strings.HasPrefix(s, sub)
-}
+func IsStartOf(s, prefix string) bool { return strings.HasPrefix(s, prefix) }
+
+// HasSuffix substr in the given string.
+func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffix) }
 
 // IsEndOf alias of the strings.HasSuffix
-func IsEndOf(s, sub string) bool {
-	return strings.HasSuffix(s, sub)
-}
+func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
 
 // Len of the string
 func Len(s string) int { return len(s) }
+
+// RuneLen of the string
+func RuneLen(s string) int { return len([]rune(s)) }
 
 // Utf8Len of the string
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
@@ -109,10 +108,13 @@ func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 // Utf8len of the string
 func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 
-// ValidUtf8String check
-func ValidUtf8String(s string) bool { return utf8.ValidString(s) }
+// IsValidUtf8 valid utf8 string check
+func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
 
 // ----- refer from github.com/yuin/goldmark/util
+
+// refer from github.com/yuin/goldmark/util
+var spaceTable = [256]int8{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 
 // IsSpace returns true if the given character is a space, otherwise false.
 func IsSpace(c byte) bool {

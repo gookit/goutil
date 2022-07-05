@@ -20,10 +20,10 @@ func MustCut(s, sep string) (before string, after string) {
 	return
 }
 
-// SplitValid string to slice. will filter empty string node.
+// SplitValid string to slice. will trim each item and filter empty string node.
 func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 
-// Split string to slice. will filter empty string node.
+// Split string to slice. will trim each item and filter empty string node.
 func Split(s, sep string) (ss []string) {
 	if s = strings.TrimSpace(s); s == "" {
 		return

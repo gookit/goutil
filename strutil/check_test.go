@@ -8,6 +8,9 @@ import (
 )
 
 func TestIsAlphabet(t *testing.T) {
+	assert.True(t, strutil.IsNumeric('9'))
+	assert.False(t, strutil.IsNumeric('A'))
+
 	assert.False(t, strutil.IsAlphabet('9'))
 	assert.False(t, strutil.IsAlphabet('+'))
 
@@ -37,8 +40,10 @@ func TestLen(t *testing.T) {
 
 	assert.Equal(t, 7, strutil.Len("Hello, "))
 	assert.Equal(t, 13, strutil.Len(str))
+	assert.Equal(t, 9, strutil.RuneLen(str))
 	assert.Equal(t, 9, strutil.Utf8len(str))
 	assert.Equal(t, 9, strutil.Utf8Len(str))
+	assert.True(t, strutil.IsValidUtf8(str))
 }
 
 func TestStrPos(t *testing.T) {
@@ -76,6 +81,7 @@ func TestIsStartOf(t *testing.T) {
 	}
 
 	assert.True(t, strutil.IsStartsOf("abc", []string{"a", "b"}))
+	assert.False(t, strutil.IsStartsOf("abc", []string{"d", "e"}))
 }
 
 func TestIsEndOf(t *testing.T) {
