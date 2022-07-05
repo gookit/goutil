@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
@@ -48,6 +49,8 @@ type visit struct {
 // Dumper struct definition
 type Dumper struct {
 	*Options
+	// locker for visited
+	mu sync.RWMutex
 	// visited struct records
 	visited map[visit]int
 	// is value in the slice, map, struct. will not apply indent.
@@ -400,13 +403,18 @@ func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
 	addr := v.UnsafeAddr()
 	vis := visit{addr, t}
 
+	d.mu.RLock()
 	if vd, ok := d.visited[vis]; ok && vd < d.MaxDepth {
 		d.indentPrint(t.String(), "{(!CYCLIC REFERENCE!)}\n")
+		d.mu.RUnlock()
 		return false // don't print v again
 	}
+	d.mu.RUnlock()
 
-	// record
+	// record visited
+	// d.mu.Lock()
 	d.visited[vis] = d.curDepth
+	// d.mu.Unlock()
 	return true
 }
 
