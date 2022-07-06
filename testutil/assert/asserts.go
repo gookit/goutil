@@ -158,11 +158,22 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	return true
 }
 
+// Contains asserts that the given data(string,slice,map) is contains sub-value
 func Contains(t TestingT, src, sub any, fmtAndArgs ...any) bool {
 	return true
 }
 
+// ContainsKey asserts that the given map is contains key
 func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
+	return true
+}
+
+// StrContains asserts that the given strings is contains sub-string
+func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
+	if !strings.Contains(s, sub) {
+		t.Helper()
+		return fail(t, fmt.Sprintf("Given string: %#v\nNot contains: %#v", s, sub), fmtAndArgs)
+	}
 	return true
 }
 

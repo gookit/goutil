@@ -15,6 +15,11 @@ func TestErr(t *testing.T) {
 	assert.ErrMsg(t, err, "this is a error")
 }
 
+func TestContains(t *testing.T) {
+	str := "abc+123"
+	assert.StrContains(t, str, "123")
+}
+
 func TestEq(t *testing.T) {
 	str := "abc"
 
