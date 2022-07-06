@@ -299,7 +299,7 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 
 		// shortcuts
 		if ln > 2 && len(parts[2]) > 0 {
-			opt.Shortcuts = strutil.Split(parts[2], ",")
+			opt.Shortcuts = SplitShortcut(parts[2])
 			c.addShortcuts(name, opt.Shortcuts)
 		}
 	}
@@ -310,7 +310,7 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 // do parse and validate
 func (c *CFlags) doParse(args []string) error {
 	if len(c.shortcuts) > 0 && len(args) > 0 {
-		args = c.replaceShorts(args)
+		args = ReplaceShorts(args, c.shortcuts)
 	}
 
 	// do parsing
@@ -324,37 +324,6 @@ func (c *CFlags) doParse(args []string) error {
 	}
 
 	return c.bindParsedArgs()
-}
-
-// replace shorts to full option. will stop on '--'
-func (c *CFlags) replaceShorts(args []string) []string {
-	fmtArgs := make([]string, 0, len(args))
-	for i, arg := range args {
-		if arg == "" || arg[0] != '-' {
-			fmtArgs = append(fmtArgs, arg)
-			continue
-		}
-		if arg == "--" {
-			fmtArgs = append(fmtArgs, args[i:]...)
-			break
-		}
-
-		var handled bool
-		for short, name := range c.shortcuts {
-			// is short name, replace to full opt
-			if arg == AddPrefix(short) {
-				handled = true
-				fmtArgs = append(fmtArgs, AddPrefix(name))
-				break
-			}
-		}
-
-		if !handled {
-			fmtArgs = append(fmtArgs, arg)
-		}
-	}
-
-	return fmtArgs
 }
 
 // check bind option flags

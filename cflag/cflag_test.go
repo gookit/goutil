@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func ExampleNew() {
+func Example() {
 	opts := struct {
 		age  int
 		name string

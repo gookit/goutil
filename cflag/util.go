@@ -48,3 +48,59 @@ func AddPrefixes(name string, shorts []string) string {
 
 	return strings.Join(withPfx, ", ")
 }
+
+// SplitShortcut string to []string
+func SplitShortcut(shortcut string) (shorts []string) {
+	for _, sub := range strings.Split(shortcut, ",") {
+		sub = strings.TrimSpace(sub)
+		if sub != "" {
+			sub = strings.Trim(sub, "- ")
+			if sub != "" {
+				shorts = append(shorts, sub)
+			}
+		}
+	}
+
+	return
+}
+
+// ParseStopMark string
+const ParseStopMark = "--"
+
+// ReplaceShorts replace shorts to full option. will stop on ParseStopMark
+// eg: '-f' -> '--file'.
+func ReplaceShorts(args []string, shortsMap map[string]string) []string {
+	if len(args) == 0 {
+		return args
+	}
+
+	fmtArgs := make([]string, 0, len(args))
+
+	for i, arg := range args {
+		if arg == "" || arg[0] != '-' || len(arg) > 48 {
+			fmtArgs = append(fmtArgs, arg)
+			continue
+		}
+
+		if arg == ParseStopMark {
+			fmtArgs = append(fmtArgs, args[i:]...)
+			break
+		}
+
+		var handled bool
+		for short, name := range shortsMap {
+			// is short name, replace to full opt
+			if arg == AddPrefix(short) {
+				handled = true
+				fmtArgs = append(fmtArgs, AddPrefix(name))
+				break
+			}
+		}
+
+		if !handled {
+			fmtArgs = append(fmtArgs, arg)
+		}
+	}
+
+	return fmtArgs
+}

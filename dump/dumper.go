@@ -412,9 +412,9 @@ func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
 	d.mu.RUnlock()
 
 	// record visited
-	// d.mu.Lock()
+	d.mu.Lock()
 	d.visited[vis] = d.curDepth
-	// d.mu.Unlock()
+	d.mu.Unlock()
 	return true
 }
 
