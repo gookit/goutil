@@ -1,6 +1,8 @@
 package structs
 
 import (
+	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -95,7 +97,34 @@ func (v Value) Strings() (ss []string) {
 		return ss
 	}
 	if str, ok := v.V.(string); ok {
-		return strutil.Split(str, ",")
+		return strutil.Split(str, common.DefaultSep)
+	}
+	return
+}
+
+// SplitToStrings split string value to strings
+func (v Value) SplitToStrings(sep ...string) (ss []string) {
+	if v.V == nil {
+		return
+	}
+
+	if str, ok := v.V.(string); ok {
+		return strutil.Split(str, sepStr(sep))
+	}
+	return
+}
+
+// SplitToInts split string value to []int
+func (v Value) SplitToInts(sep ...string) (ss []int) {
+	if v.V == nil {
+		return
+	}
+
+	if str, ok := v.V.(string); ok {
+		ints, err := arrutil.StringsToInts(strutil.Split(str, sepStr(sep)))
+		if err == nil {
+			return ints
+		}
 	}
 	return
 }
@@ -103,4 +132,11 @@ func (v Value) Strings() (ss []string) {
 // IsEmpty value
 func (v Value) IsEmpty() bool {
 	return v.V == nil
+}
+
+func sepStr(seps []string) string {
+	if len(seps) > 0 {
+		return seps[0]
+	}
+	return common.DefaultSep
 }
