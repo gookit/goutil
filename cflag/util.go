@@ -33,19 +33,31 @@ func AddPrefix(name string) string {
 	return "-" + name
 }
 
-// AddPrefixes for render flag options help
+// AddPrefixes for render flag options help, name will first add.
 func AddPrefixes(name string, shorts []string) string {
+	return AddPrefixes2(name, shorts, false)
+}
+
+// AddPrefixes2 for render flag options help, can custom name add position.
+func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string {
 	shortLn := len(shorts)
 	if shortLn == 0 {
 		return AddPrefix(name)
 	}
 
 	withPfx := make([]string, 0, shortLn+1)
-	withPfx = append(withPfx, AddPrefix(name))
+	if !nameAtEnd {
+		withPfx = append(withPfx, AddPrefix(name))
+	}
+
+	// append shorts
 	for _, short := range shorts {
 		withPfx = append(withPfx, AddPrefix(short))
 	}
 
+	if nameAtEnd {
+		withPfx = append(withPfx, AddPrefix(name))
+	}
 	return strings.Join(withPfx, ", ")
 }
 
@@ -62,6 +74,14 @@ func SplitShortcut(shortcut string) (shorts []string) {
 	}
 
 	return
+}
+
+// IsFlagHelpErr check
+func IsFlagHelpErr(err error) bool {
+	if err == nil {
+		return false
+	}
+	return err == flag.ErrHelp
 }
 
 // ParseStopMark string

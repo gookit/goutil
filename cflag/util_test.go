@@ -1,6 +1,7 @@
 package cflag_test
 
 import (
+	"flag"
 	"testing"
 
 	"github.com/gookit/goutil/cflag"
@@ -12,6 +13,13 @@ func TestAddPrefix(t *testing.T) {
 	assert.Eq(t, "--long", cflag.AddPrefix("long"))
 
 	assert.Eq(t, "--long", cflag.AddPrefixes("long", nil))
+	assert.Eq(t, "--long, -l", cflag.AddPrefixes("long", []string{"l"}))
+	assert.Eq(t, "-l, --long", cflag.AddPrefixes2("long", []string{"l"}, true))
+}
+
+func TestIsFlagHelpErr(t *testing.T) {
+	assert.False(t, cflag.IsFlagHelpErr(nil))
+	assert.True(t, cflag.IsFlagHelpErr(flag.ErrHelp))
 }
 
 func TestSplitShortcut(t *testing.T) {

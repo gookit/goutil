@@ -13,7 +13,6 @@ package cflag
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -24,6 +23,7 @@ import (
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/stdutil"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
@@ -476,7 +476,7 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 		var b strings.Builder
 
 		mate := c.bindOpts[opt.Name]
-		_, _ = fmt.Fprintf(&b, "  <info>%s</>", mate.HelpName(opt.Name))
+		stdio.QuietFprintf(&b, "  <info>%s</>", mate.HelpName(opt.Name))
 
 		typName, usage := flag.UnquoteUsage(opt)
 		if len(typName) > 0 {
@@ -486,7 +486,7 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 
 		// Boolean flags of one ASCII letter are so common we
 		// treat them specially, putting their usage on the same line.
-		if b.Len() <= 10 { // space, space, '-', 'x'.
+		if b.Len() <= 20 { // space, space, '-', 'x'.
 			b.WriteString("\t")
 		} else {
 			// Four spaces before the tab triggers good alignment
@@ -498,9 +498,9 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 		// put quotes on the string value
 		if isZero, isStr := IsZeroValue(opt, opt.DefValue); !isZero {
 			if isStr {
-				_, _ = fmt.Fprintf(&b, " (default <magentaB>%q</>)", opt.DefValue)
+				stdio.QuietFprintf(&b, " (default <magentaB>%q</>)", opt.DefValue)
 			} else {
-				_, _ = fmt.Fprintf(&b, " (default <magentaB>%v</>)", opt.DefValue)
+				stdio.QuietFprintf(&b, " (default <magentaB>%v</>)", opt.DefValue)
 			}
 		}
 
