@@ -28,8 +28,8 @@ func (o *FlagOpt) HelpName(name string) string {
 type FlagArg struct {
 	// Value for the flag argument
 	*structs.Value
-	// defaultVal string
-	defaultVal string
+	// default val string
+	defVal string
 	// Name of the argument
 	Name string
 	// Desc arg description
@@ -61,7 +61,7 @@ func (a *FlagArg) check() error {
 		a.Desc = "no description"
 	}
 
-	a.defaultVal = a.String()
+	a.defVal = a.String()
 	return nil
 }
 
@@ -72,8 +72,8 @@ func (a *FlagArg) HelpDesc() string {
 		desc = "<red>*</>" + desc
 	}
 
-	if a.defaultVal != "" {
-		desc += "(Default:" + a.defaultVal + ")"
+	if a.defVal != "" {
+		desc += "(Default:" + a.defVal + ")"
 	}
 	return desc
 }

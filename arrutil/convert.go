@@ -32,7 +32,7 @@ func StringsToInts(ss []string) (ints []int, err error) {
 	for _, str := range ss {
 		iVal, err := strconv.Atoi(str)
 		if err != nil {
-			return []int{}, err
+			return nil, err
 		}
 
 		ints = append(ints, iVal)
