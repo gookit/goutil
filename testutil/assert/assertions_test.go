@@ -11,8 +11,11 @@ func TestAssertions_Chain(t *testing.T) {
 	// err := "error message"
 	err := errorx.Raw("error message")
 
-	assert.New(t).
+	as := assert.New(t).
 		NotNil(err).
 		Err(err).
 		ErrMsg(err, "error message")
+
+	assert.True(t, as.IsOk())
+	assert.False(t, as.IsFail())
 }

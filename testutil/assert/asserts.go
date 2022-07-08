@@ -117,6 +117,21 @@ func Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 	return true
 }
 
+// NotPanics asserts that the code inside the specified func NOT panics.
+func NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
+	if hasPanic, panicVal, stackMsg := runPanicFunc(fn); hasPanic {
+		t.Helper()
+
+		return fail(t, fmt.Sprintf(
+			"func %#v should not panic\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			fn, panicVal, stackMsg,
+		), fmtAndArgs,
+		)
+	}
+
+	return true
+}
+
 // PanicsMsg should panic and with a value
 func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) bool {
 	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
@@ -128,7 +143,7 @@ func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...a
 	if panicVal != wantVal {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
-			"func %#v should panic with value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			"func %#v should panic.\n\tWant  value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
 			fn, wantVal, panicVal, stackMsg),
 			fmtAndArgs,
 		)
@@ -149,7 +164,7 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	if !ok || err.Error() != errMsg {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
-			"func %#v should panic with error message:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			"func %#v should panic.\n\tWant  error:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
 			fn, errMsg, panicVal, stackMsg),
 			fmtAndArgs,
 		)
@@ -172,8 +187,12 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if !strings.Contains(s, sub) {
 		t.Helper()
-		return fail(t, fmt.Sprintf("Given string: %#v\nNot contains: %#v", s, sub), fmtAndArgs)
+		return fail(t,
+			fmt.Sprintf("String value check fail:\nGiven string: %#v\nNot contains: %#v", s, sub),
+			fmtAndArgs,
+		)
 	}
+
 	return true
 }
 
@@ -218,10 +237,18 @@ func ErrMsg(t TestingT, err error, wantMsg string, fmtAndArgs ...any) bool {
 }
 
 // ErrSubMsg asserts that the given is a not nil error and the error message contains subMsg
-func ErrSubMsg(t TestingT, subMsg, err error, fmtAndArgs ...any) bool {
+func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
 	if err == nil {
 		t.Helper()
 		return fail(t, "An error is expected but got nil.", fmtAndArgs)
+	}
+
+	errMsg := err.Error()
+	if !strings.Contains(errMsg, subMsg) {
+		t.Helper()
+		return fail(t, fmt.Sprintf("Error message check fail:\n"+
+			"error  message : %q\n"+
+			"should contains: %q", errMsg, subMsg), fmtAndArgs)
 	}
 
 	return true
