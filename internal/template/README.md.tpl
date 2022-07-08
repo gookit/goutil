@@ -22,11 +22,14 @@
 - [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
+- [`reflects`](./reflects) Provide extends reflect util functions.
 - [`stdutil`](./stdutil) Provide some commonly std util functions.
 - [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
+  - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
 - [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
+  - [assert](./testutil/assert) Asserts functions for help testing
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 

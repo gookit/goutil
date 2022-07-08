@@ -22,11 +22,14 @@
 - [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
   - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
+- [`reflects`](./reflects) Provide extends reflect util functions.
 - [`stdutil`](./stdutil) Provide some commonly std util functions.
 - [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
+  - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
 - [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
+  - [assert](./testutil/assert) Asserts functions for help testing
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
@@ -131,6 +134,10 @@ func NewArg(name, desc string, required bool) *FlagArg
 func IsZeroValue(opt *flag.Flag, value string) (bool, bool)
 func AddPrefix(name string) string
 func AddPrefixes(name string, shorts []string) string
+func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string
+func SplitShortcut(shortcut string) (shorts []string)
+func IsFlagHelpErr(err error) bool
+func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
 #### `cflag` Usage
 
@@ -499,7 +506,10 @@ runtime.goexit()
 
 ```go
 // source at fmtutil/format.go
-func DataSize(bytes uint64) string
+func DataSize(size uint64) string
+func SizeToString(size uint64) string { return DataSize(size) }
+func StringToByte(sizeStr string) uint64 { return ParseByte(sizeStr) }
+func ParseByte(sizeStr string) uint64
 func PrettyJSON(v interface{}) (string, error)
 func StringsToInts(ss []string) (ints []int, err error)
 func ArgsWithSpaces(args []interface{}) (message string)
@@ -536,6 +546,7 @@ func Suffix(fpath string) string
 func Expand(pathStr string) string
 func ExpandPath(pathStr string) string
 func Realpath(pathStr string) string
+func SplitPath(pathStr string) (dir, name string)
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error)
 // source at fsutil/operate.go
@@ -811,14 +822,17 @@ func BytePos(s string, bt byte) int
 func RunePos(s string, ru rune) int
 func HasOneSub(s string, subs []string) bool
 func HasAllSubs(s string, subs []string) bool
-func IsStartsOf(s string, subs []string) bool
-func HasOnePrefix(s string, subs []string) bool
-func IsStartOf(s, sub string) bool
-func IsEndOf(s, sub string) bool
+func IsStartsOf(s string, prefixes []string) bool
+func HasOnePrefix(s string, prefixes []string) bool
+func HasPrefix(s string, prefix string) bool { return strings.HasPrefix(s, prefix) }
+func IsStartOf(s, prefix string) bool { return strings.HasPrefix(s, prefix) }
+func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffix) }
+func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
 func Len(s string) int { return len(s) }
+func RuneLen(s string) int { return len([]rune(s)) }
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 func Utf8len(s string) int { return utf8.RuneCountInString(s) }
-func ValidUtf8String(s string) bool { return utf8.ValidString(s) }
+func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
 func IsSpace(c byte) bool
 func IsSpaceRune(r rune) bool
 func IsEmpty(s string) bool { return len(s) == 0 }
@@ -863,6 +877,7 @@ func ToSlice(s string, sep ...string) []string
 func ToOSArgs(s string) []string
 func MustToTime(s string, layouts ...string) time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error)
+func ToDuration(s string) (time.Duration, error)
 // source at strutil/encode.go
 func EscapeJS(s string) string
 func EscapeHTML(s string) string
@@ -1061,6 +1076,7 @@ func DayEnd(t time.Time) time.Time
 func TodayStart() time.Time
 func TodayEnd() time.Time
 func HowLongAgo(sec int64) string
+func ToDuration(s string) (time.Duration, error)
 ```
 #### Timex Usage
 

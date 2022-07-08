@@ -51,9 +51,19 @@ var (
 
 type genOptsSt struct {
 	lang     string
+	baseDir  string
 	output   string
 	template string
 	tplDir   string
+}
+
+func (o genOptsSt) filePattern() string {
+	baseDir := genOpts.baseDir
+	if baseDir == "/" || baseDir == "./" {
+		return baseDir + "*/*.go"
+	}
+
+	return strings.TrimRight(baseDir, "/") + "/*/*.go"
 }
 
 func (o genOptsSt) tplFilename() string {
@@ -90,6 +100,7 @@ func main() {
 	})
 
 	cmd.StringVar(&genOpts.lang, "lang", "en", "package desc message language. allow: en, zh-CN;;l")
+	cmd.StringVar(&genOpts.baseDir, "dir", "./", "the base dir path for collect;;d")
 	cmd.StringVar(&genOpts.output,
 		"output",
 		"./metadata.log",
@@ -112,7 +123,7 @@ func main() {
 }
 
 func handle(c *cflag.CFlags) error {
-	ms, err := filepath.Glob("./*/*.go")
+	ms, err := filepath.Glob(genOpts.baseDir + "*/*.go")
 	goutil.PanicIfErr(err)
 
 	var out io.Writer
