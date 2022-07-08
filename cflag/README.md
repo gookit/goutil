@@ -2,11 +2,11 @@
 
 `cflag` - Wraps and extends go `flag.FlagSet` to build simple command line applications
 
-- Support auto render a pretty help panel
-- Allow to add shortcuts for flag option
-- Allow binding named arguments
-- Allow set required for argument or option
-- Allow set validator for argument or option
+- Supports auto-rendering of pretty help messages
+- Allows adding short options to flag options, and multiples
+- Allows binding named parameters
+- Allows setting arguments or options as required
+- Allows setting validators for arguments or options
 
 > **[中文说明](README.zh-CN.md)**
 

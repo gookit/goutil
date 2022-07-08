@@ -161,7 +161,12 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	}
 
 	err, ok := panicVal.(error)
-	if !ok || err.Error() != errMsg {
+	if !ok {
+		t.Helper()
+		return fail(t, fmt.Sprintf("func %#v should panic and is error type,\nbut type was: %T", fn, panicVal), fmtAndArgs)
+	}
+
+	if err.Error() != errMsg {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
 			"func %#v should panic.\n\tWant  error:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",

@@ -48,15 +48,17 @@ func SetDebug(open bool) {
 // 	cmd.IntVar(&age, "age", 0, "your age;true;a")
 type CFlags struct {
 	*flag.FlagSet
-	// bind options.
+	// bound options.
 	bindOpts map[string]*FlagOpt
 	// shortcuts map for options. eg: n -> name
 	shortcuts map[string]string
 
 	// argWidth max width value
 	argWidth int
-	// bind arguments.
-	bindArgs map[string]*FlagArg
+	// bound arguments.
+	bindArgs []*FlagArg
+	// the argument name to index map.
+	argNames map[string]int
 	// remainArgs after binding args
 	remainArgs []string
 
@@ -95,7 +97,7 @@ func NewEmpty(fns ...func(c *CFlags)) *CFlags {
 		argWidth:  12,
 		shortcuts: make(map[string]string),
 		bindOpts:  make(map[string]*FlagOpt),
-		bindArgs:  make(map[string]*FlagArg),
+		argNames:  make(map[string]int, 4),
 	}
 
 	return c.WithConfigFn(fns...)
@@ -184,16 +186,17 @@ func (c *CFlags) AddArg(name, desc string, required bool, value interface{}) {
 func (c *CFlags) BindArg(arg *FlagArg) {
 	arg.Index = len(c.bindArgs)
 
-	// check
+	// check arg info
 	stdutil.PanicIf(arg.check())
 
-	if _, ok := c.bindArgs[arg.Name]; ok {
+	if _, ok := c.argNames[arg.Name]; ok {
 		stdutil.Panicf("cflag: arg '%s' have been registered", arg.Name)
 	}
 
 	// register
-	c.bindArgs[arg.Name] = arg
+	c.bindArgs = append(c.bindArgs, arg)
 	c.argWidth = mathutil.MaxInt(c.argWidth, len(arg.Name))
+	c.argNames[arg.Name] = arg.Index
 }
 
 /*************************************************************
@@ -355,7 +358,8 @@ func (c *CFlags) bindParsedArgs() error {
 	argN := len(args) - 1
 
 	var lastIdx int
-	for name, arg := range c.bindArgs {
+	for _, arg := range c.bindArgs {
+		name := arg.Name
 		if arg.Index > argN {
 			if arg.Required {
 				return errorx.Rawf("argument '%s'(#%d) is required", name, arg.Index)
@@ -381,17 +385,15 @@ func (c *CFlags) bindParsedArgs() error {
 
 // Arg get by bind name
 func (c *CFlags) Arg(name string) *FlagArg {
-	arg, ok := c.bindArgs[name]
+	idx, ok := c.argNames[name]
 	if !ok {
 		stdutil.Panicf("cflag: get not binding arg '%s'", name)
 	}
-	return arg
+	return c.bindArgs[idx]
 }
 
 // RemainArgs get
-func (c *CFlags) RemainArgs() []string {
-	return c.remainArgs
-}
+func (c *CFlags) RemainArgs() []string { return c.remainArgs }
 
 // Name for command
 func (c *CFlags) Name() string {
@@ -399,9 +401,7 @@ func (c *CFlags) Name() string {
 }
 
 // BinFile path for command
-func (c *CFlags) BinFile() string {
-	return c.FlagSet.Name()
-}
+func (c *CFlags) BinFile() string { return c.FlagSet.Name() }
 
 /*************************************************************
  * render command help
@@ -448,8 +448,12 @@ func (c *CFlags) showHelp(err error) {
 
 	if len(c.bindArgs) > 0 {
 		buf.QuietWriteString("\n<comment>Arguments:</>\n")
-		for name, arg := range c.bindArgs {
-			buf.QuietWritef("  <green>%s</>   %s\n", strutil.PadRight(name, " ", c.argWidth), arg.HelpDesc())
+		for _, arg := range c.bindArgs {
+			buf.QuietWritef(
+				"  <green>%s</>   %s\n",
+				strutil.PadRight(arg.Name, " ", c.argWidth),
+				arg.HelpDesc(),
+			)
 		}
 	}
 
