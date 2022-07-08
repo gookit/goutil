@@ -140,7 +140,7 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
 #### `cflag` Usage
 
-`cflag` usage please see [cflag/README.md](cflag/README.md)
+`cflag` 使用说明请看 [cflag/README.zh-CN.md](cflag/README.zh-CN.md)
 
 
 ### CLI/Console

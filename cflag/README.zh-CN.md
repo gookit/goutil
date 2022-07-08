@@ -1,24 +1,24 @@
 # cflag
 
-`cflag` - Wraps and extends go `flag.FlagSet` to build simple command line applications
+`cflag` - 包装和扩展 Go `flag.FlagSet` 以构建简单的命令行应用程序
 
-- Support auto render a pretty help panel
-- Allow to add shortcuts for flag option
-- Allow binding named arguments
-- Allow set required for argument or option
-- Allow set validator for argument or option
+- 支持自动渲染漂亮的帮助信息
+- 允许为标志选项添加短选项,并且允许多个
+- 允许绑定命名参数
+- 允许设置参数或选项为必须
+- 允许设置参数或选项的验证器
 
-> **[中文说明](README.zh-CN.md)**
+> **[EN Readme](README.md)**
 
-## Install
+## 安装
 
 ```shell
 go get github.com/gookit/goutil/cflag
 ```
 
-## Usage
+## 使用
 
-Examples, code please see [_example/cmd.go](_example/cmd.go)
+例子，代码请看 [_example/cmd.go](_example/cmd.go)
 
 ```go
 package main
@@ -70,22 +70,22 @@ func main() {
 }
 ```
 
-## Set `required` and short options
+## 设置必须和短选项
 
-Options can be set as `required`, and **short** option names can be set.
+可以设置选项为必填项，并且支持设置 **短选项** 名称。
 
-> TIPs: Implements `required` and `shorts` by extending `usage` with options parsed
+> TIPs: 通过扩展解析了选项的 `usage` 来实现 `required` 和 `shorts`
 
-**Format**:
+### `usage` 格式
 
-- format1: `desc;required`
-- format2: `desc;required;shorts`
-- required: a bool string. mark option is required
+- 格式1: `desc;required`
+- 格式2: `desc;required;shorts`
+- `required`: 一个布尔字符串。标记选项是必需的
   - True: `true,on,yes`
   - False: `false,off,no,''`
-- shorts: shortcut names for option, allow multi values, split by comma `,`
+- `shorts`: 选项的快捷方式名称，允许多值，用逗号 `,` 分隔
 
-**Examples**:
+**示例**:
 
 ```go
     // set option 'name' is required
@@ -94,7 +94,7 @@ Options can be set as `required`, and **short** option names can be set.
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
 ```
 
-## Show help
+## 显示帮助信息
 
 ```shell
 go run ./cflag/_example/cmd.go -h
@@ -104,7 +104,7 @@ go run ./cflag/_example/cmd.go -h
 
 ![cmd-help](_example/cmd-help.png)
 
-## Run command
+## 运行命令
 
 ```shell
 go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd
@@ -115,7 +115,7 @@ go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd de fg
 
 ![cmd-run](_example/cmd-run.png)
 
-## `required` Check
+## `required` 检查
 
 ```shell
 go run ./cflag/_example/cmd.go -a 22
