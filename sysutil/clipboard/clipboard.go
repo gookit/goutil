@@ -128,6 +128,14 @@ func (c *Clipboard) Read() ([]byte, error) {
 // ReadString contents as string from clipboard
 func (c *Clipboard) ReadString() (string, error) {
 	bts, err := c.Read()
+	if err != nil {
+		return "", err
+	}
+
+	// fix: at Windows will always return end of the "\r\n"
+	if sysutil.IsWindows() {
+		return strings.TrimRight(string(bts), "\r\n"), err
+	}
 	return string(bts), err
 }
 
