@@ -70,6 +70,22 @@ func main() {
 }
 ```
 
+## Bind and get arguments
+
+Bind arguments:
+
+```go
+	c.AddArg("arg1", "this is arg1", true, nil)
+	c.AddArg("arg2", "this is arg2", true, nil)
+```
+
+Get arguments by name:
+
+```go
+	cliutil.Infoln("arg1 =", c.Arg("arg1").String())
+	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
+```
+
 ## Set `required` and short options
 
 Options can be set as `required`, and **short** option names can be set.
