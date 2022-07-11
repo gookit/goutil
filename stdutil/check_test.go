@@ -5,8 +5,32 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/stdutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
+
+func TestIsEqual(t *testing.T) {
+	is := assert.New(t)
+
+	is.True(stdutil.IsEqual("a", "a"))
+	is.True(stdutil.IsEqual([]string{"a"}, []string{"a"}))
+	is.True(stdutil.IsEqual(23, 23))
+	is.True(stdutil.IsEqual(nil, nil))
+	is.True(stdutil.IsEqual([]byte("abc"), []byte("abc")))
+
+	is.False(stdutil.IsEqual([]byte("abc"), "abc"))
+	is.False(stdutil.IsEqual(nil, 23))
+	is.False(stdutil.IsEqual(stdutil.IsEmpty, 23))
+}
+
+func TestContains(t *testing.T) {
+	is := assert.New(t)
+
+	is.True(stdutil.Contains("abc", "a"))
+	is.True(stdutil.Contains([]string{"abc", "def"}, "abc"))
+	is.True(stdutil.Contains(map[int]string{2: "abc", 4: "def"}, 4))
+
+	is.False(stdutil.Contains("abc", "def"))
+}
 
 func TestValueIsEmpty(t *testing.T) {
 	is := assert.New(t)
@@ -32,11 +56,11 @@ func TestValueLen(t *testing.T) {
 	}
 
 	for _, sample := range tests {
-		is.Equal(3, stdutil.ValueLen(reflect.ValueOf(sample)))
+		is.Eq(3, stdutil.ValueLen(reflect.ValueOf(sample)))
 	}
 
 	ptrArr := &[]string{"a", "b"}
-	is.Equal(2, stdutil.ValueLen(reflect.ValueOf(ptrArr)))
+	is.Eq(2, stdutil.ValueLen(reflect.ValueOf(ptrArr)))
 
-	is.Equal(-1, stdutil.ValueLen(reflect.ValueOf(nil)))
+	is.Eq(-1, stdutil.ValueLen(reflect.ValueOf(nil)))
 }
