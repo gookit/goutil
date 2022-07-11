@@ -24,6 +24,7 @@ func TestIsFlagHelpErr(t *testing.T) {
 
 func TestSplitShortcut(t *testing.T) {
 	assert.Eq(t, []string{"a", "b"}, cflag.SplitShortcut("a,-b"))
+	assert.Eq(t, []string{"a", "b"}, cflag.SplitShortcut("a, ,-b"))
 	assert.Eq(t, []string{"ab", "cd"}, cflag.SplitShortcut("-- ab,,-cd"))
 }
 

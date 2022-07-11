@@ -62,18 +62,22 @@ func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string {
 }
 
 // SplitShortcut string to []string
-func SplitShortcut(shortcut string) (shorts []string) {
-	for _, sub := range strings.Split(shortcut, ",") {
-		sub = strings.TrimSpace(sub)
-		if sub != "" {
-			sub = strings.Trim(sub, "- ")
+func SplitShortcut(shortcut string) []string {
+	return FilterNames(strings.Split(shortcut, ","))
+}
+
+// FilterNames for option names
+func FilterNames(names []string) []string {
+	filtered := make([]string, 0, len(names))
+	for _, sub := range names {
+		if sub = strings.TrimSpace(sub); sub != "" {
+			sub = strings.Trim(sub, "-+= ")
 			if sub != "" {
-				shorts = append(shorts, sub)
+				filtered = append(filtered, sub)
 			}
 		}
 	}
-
-	return
+	return filtered
 }
 
 // IsFlagHelpErr check
