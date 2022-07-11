@@ -31,6 +31,7 @@ func TestEq(t *testing.T) {
 	assert2.NotPanics(t, func() {})
 	assert2.Len(t, str, 3)
 	assert2.NotEqual(t, "def", str)
+	assert2.Contains(t, str, "a")
 
 	assert.Eq(t, "abc", str)
 }

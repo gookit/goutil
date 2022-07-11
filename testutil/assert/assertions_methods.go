@@ -1,8 +1,8 @@
 package assert
 
-func (as *Assertions) Nil(t TestingT, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Nil(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Nil(t, give, fmtAndArgs...)
+	as.ok = Nil(as.t, give, fmtAndArgs...)
 	return as
 }
 
@@ -13,69 +13,75 @@ func (as *Assertions) NotNil(val any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
-func (as *Assertions) True(t TestingT, give bool, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) True(give bool, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = True(t, give, fmtAndArgs...)
+	as.ok = True(as.t, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) False(t TestingT, give bool, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) False(give bool, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = False(t, give, fmtAndArgs...)
+	as.ok = False(as.t, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Empty(t TestingT, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Empty(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Empty(t, give, fmtAndArgs...)
+	as.ok = Empty(as.t, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) NotEmpty(t TestingT, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) NotEmpty(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = NotEmpty(t, give, fmtAndArgs...)
+	as.ok = NotEmpty(as.t, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Panics(fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Panics(t, fn, fmtAndArgs...)
+	as.ok = Panics(as.t, fn, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) NotPanics(fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = NotPanics(t, fn, fmtAndArgs...)
+	as.ok = NotPanics(as.t, fn, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) PanicsMsg(t TestingT, fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) PanicsMsg(fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = PanicsMsg(t, fn, wantVal, fmtAndArgs...)
+	as.ok = PanicsMsg(as.t, fn, wantVal, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) PanicsErrMsg(fn PanicRunFunc, errMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = PanicsErrMsg(t, fn, errMsg, fmtAndArgs...)
+	as.ok = PanicsErrMsg(as.t, fn, errMsg, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Contains(t TestingT, src, sub any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Contains(src, elem any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Contains(t, src, sub, fmtAndArgs...)
+	as.ok = Contains(as.t, src, elem, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) NotContains(src, elem any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = ContainsKey(t, mp, key, fmtAndArgs...)
+	as.ok = NotContains(as.t, src, elem, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) StrContains(t TestingT, s, sub string, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) ContainsKey(mp, key any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = StrContains(t, s, sub, fmtAndArgs...)
+	as.ok = ContainsKey(as.t, mp, key, fmtAndArgs...)
+	return as
+}
+
+func (as *Assertions) StrContains(s, sub string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = StrContains(as.t, s, sub, fmtAndArgs...)
 	return as
 }
 
@@ -99,62 +105,62 @@ func (as *Assertions) ErrMsg(err error, errMsg string, fmtAndArgs ...any) *Asser
 	return as
 }
 
-func (as *Assertions) ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) ErrSubMsg(err error, subMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = ErrSubMsg(t, err, subMsg, fmtAndArgs...)
+	as.ok = ErrSubMsg(as.t, err, subMsg, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Len(t TestingT, give any, wantLn int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Len(give any, wantLn int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Len(t, give, wantLn, fmtAndArgs...)
+	as.ok = Len(as.t, give, wantLn, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) LenGt(t TestingT, give any, minLn int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) LenGt(give any, minLn int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = LenGt(t, give, minLn, fmtAndArgs...)
+	as.ok = LenGt(as.t, give, minLn, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Eq(t TestingT, want, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Eq(want, give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Eq(t, want, give, fmtAndArgs...)
+	as.ok = Eq(as.t, want, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Neq(t TestingT, want, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Neq(want, give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Neq(t, want, give, fmtAndArgs...)
+	as.ok = Neq(as.t, want, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) NotEq(t TestingT, want, give any, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) NotEq(want, give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = NotEq(t, want, give, fmtAndArgs...)
+	as.ok = NotEq(as.t, want, give, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Lt(t TestingT, give, max int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Lt(give, max int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Lt(t, give, max, fmtAndArgs...)
+	as.ok = Lt(as.t, give, max, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Gt(t TestingT, give, min int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Gt(give, min int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Gt(t, give, min, fmtAndArgs...)
+	as.ok = Gt(as.t, give, min, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) Fail(t TestingT, failMsg string, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Fail(failMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = Fail(t, failMsg, fmtAndArgs...)
+	as.ok = Fail(as.t, failMsg, fmtAndArgs...)
 	return as
 }
 
-func (as *Assertions) FailNow(t TestingT, failMsg string, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) FailNow(failMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
-	as.ok = FailNow(t, failMsg, fmtAndArgs...)
+	as.ok = FailNow(as.t, failMsg, fmtAndArgs...)
 	return as
 }

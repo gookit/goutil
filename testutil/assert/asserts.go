@@ -11,20 +11,13 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/fsutil"
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/stdutil"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/sysutil"
 )
-
-// TestingT is an interface wrapper around *testing.T
-type TestingT interface {
-	Helper()
-	Name() string
-	Error(args ...any)
-	Errorf(format string, args ...any)
-}
 
 // Nil asserts that the given is a nil value
 func Nil(t TestingT, give any, fmtAndArgs ...any) bool {
@@ -50,7 +43,7 @@ func NotNil(t TestingT, give any, fmtAndArgs ...any) bool {
 func True(t TestingT, give bool, fmtAndArgs ...any) bool {
 	if !give {
 		t.Helper()
-		return fail(t, "Should be True", fmtAndArgs)
+		return fail(t, "Result should be True", fmtAndArgs)
 	}
 	return true
 }
@@ -59,7 +52,7 @@ func True(t TestingT, give bool, fmtAndArgs ...any) bool {
 func False(t TestingT, give bool, fmtAndArgs ...any) bool {
 	if give {
 		t.Helper()
-		return fail(t, "Should be False", fmtAndArgs)
+		return fail(t, "Result should be False", fmtAndArgs)
 	}
 	return true
 }
@@ -178,13 +171,62 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	return true
 }
 
-// Contains asserts that the given data(string,slice,map) is contains sub-value
-func Contains(t TestingT, src, sub any, fmtAndArgs ...any) bool {
-	return true
+// Contains asserts that the given data(string,slice,map) should contain element
+//
+// TIP: only support types: string, map, array, slice
+// 	map         - check key exists
+// 	string      - check sub-string exists
+// 	array,slice - check sub-element exists
+func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
+	valid, found := stdutil.CheckContains(src, elem)
+	if valid && found {
+		return true
+	}
+
+	t.Helper()
+
+	// src invalid
+	if !valid {
+		return fail(t, fmt.Sprintf("%#v could not be applied builtin len()", src), fmtAndArgs)
+	}
+
+	// not found
+	return fail(t, fmt.Sprintf("%#v should contain %#v", src, elem), fmtAndArgs)
+}
+
+// NotContains asserts that the given data(string,slice,map) should not contain element
+//
+// TIP: only support types: string, map, array, slice
+// 	map         - check key exists
+// 	string      - check sub-string exists
+// 	array,slice - check sub-element exists
+func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
+	valid, found := stdutil.CheckContains(src, elem)
+	if valid && !found {
+		return true
+	}
+
+	t.Helper()
+
+	// src invalid
+	if !valid {
+		return fail(t, fmt.Sprintf("%#v could not be applied builtin len()", src), fmtAndArgs)
+	}
+
+	// found
+	return fail(t, fmt.Sprintf("%#v should not contain %#v", src, elem), fmtAndArgs)
 }
 
 // ContainsKey asserts that the given map is contains key
 func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
+	if !maputil.HasKey(mp, key) {
+		t.Helper()
+		return fail(t,
+			fmt.Sprintf("Map data should contains the key: %#v\nMap data: %#v", key, mp),
+			fmtAndArgs,
+		)
+	}
+
 	return true
 }
 
@@ -432,7 +474,7 @@ func callerInfos() []string {
 		}
 
 		fcName := fc.Name()
-		if fcName == "testing.tRunner" {
+		if fcName == "testing.tRunner" || strings.Contains(fcName, "goutil/testutil/assert") {
 			return false
 		}
 
