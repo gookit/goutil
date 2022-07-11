@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
+	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/sysutil/clipboard"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -25,7 +26,7 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 
 	readStr, err := cb.ReadString()
 	assert.NoErr(t, err)
-	assert.Eq(t, srcStr, readStr)
+	assert.Eq(t, srcStr, strutil.Trim(readStr))
 
 	dstFile := "testdata/read-from-cb.txt"
 	assert.NoErr(t, fsutil.RmFileIfExist(dstFile))
@@ -33,5 +34,5 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 	assert.NoErr(t, err)
 
 	dstStr := string(fsutil.MustReadFile(dstFile))
-	assert.Eq(t, srcStr, dstStr)
+	assert.Eq(t, srcStr, strutil.Trim(dstStr))
 }

@@ -22,14 +22,23 @@ type Clipboard struct {
 	writerBin string
 	// add slashes. eg: '\' -> '\\'
 	// addSlashes bool
+	readArgs []string
 }
 
 // New instance
 func New() *Clipboard {
+	var readArgs []string
+
+	// special handle on Windows
 	reader := GetReaderBin()
+	if strings.Contains(reader, " ") {
+		args := strings.Split(reader, " ")
+		reader, readArgs = args[0], args[1:]
+	}
 
 	return &Clipboard{
 		readerBin: reader,
+		readArgs:  readArgs,
 		writerBin: GetWriterBin(),
 		available: sysutil.HasExecutable(reader),
 	}
@@ -53,6 +62,10 @@ func (c *Clipboard) Reset() error {
 	cmd.Stdin = strings.NewReader("")
 	return cmd.Run()
 }
+
+//
+// -------------------- write --------------------
+//
 
 // Write bytes data to clipboard
 func (c *Clipboard) Write(p []byte) (int, error) {
@@ -103,14 +116,26 @@ func (c *Clipboard) WriteFromFile(filepath string) error {
 	return cmd.Run()
 }
 
+//
+// -------------------- read --------------------
+//
+
 // Read contents from clipboard
 func (c *Clipboard) Read() ([]byte, error) {
-	return exec.Command(c.readerBin).Output()
+	return exec.Command(c.readerBin, c.readArgs...).Output()
 }
 
 // ReadString contents as string from clipboard
 func (c *Clipboard) ReadString() (string, error) {
 	bts, err := c.Read()
+	if err != nil {
+		return "", err
+	}
+
+	// fix: at Windows will always return end of the "\r\n"
+	if sysutil.IsWindows() {
+		return strings.TrimRight(string(bts), "\r\n"), err
+	}
 	return string(bts), err
 }
 
@@ -125,7 +150,7 @@ func (c *Clipboard) ReadToFile(filepath string) error {
 	}
 	defer file.Close()
 
-	cmd := exec.Command(c.readerBin)
+	cmd := exec.Command(c.readerBin, c.readArgs...)
 	cmd.Stdout = file
 
 	return cmd.Run()

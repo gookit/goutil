@@ -3,11 +3,11 @@ package clipboard
 // clipboard writer, reader program names
 const (
 	WriterOnMac = "pbcopy"
-	WriterOnWin = "clip"
+	WriterOnWin = "clip" // clip only support write contents to clipboard.
 	WriterOnLin = "xsel"
 
 	ReaderOnMac = "pbpaste"
-	ReaderOnWin = "clip"
+	ReaderOnWin = "powershell get-clipboard" // read should use: powershell get-clipboard
 	ReaderOnLin = "xclip"
 )
 

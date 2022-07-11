@@ -2,6 +2,7 @@
 
 `cflag` - 包装和扩展 Go `flag.FlagSet` 以构建简单的命令行应用程序
 
+- 使用跟 Go `flag` 一样简单
 - 支持自动渲染漂亮的帮助信息
 - 允许为标志选项添加短选项,并且允许多个
 - 允许绑定命名参数
@@ -20,7 +21,7 @@ go get github.com/gookit/goutil/cflag
 
 例子，代码请看 [_example/cmd.go](_example/cmd.go)
 
-```go
+```go title="cflag/_example/cmd.go"
 package main
 
 import (
@@ -58,6 +59,7 @@ func main() {
 		cliutil.Infoln("option.name =", opts.name)
 		cliutil.Infoln("option.str1 =", opts.str1)
 		cliutil.Infoln("option.lOpt =", opts.lOpt)
+
 		cliutil.Infoln("arg1 =", c.Arg("arg1").String())
 		cliutil.Infoln("arg2 =", c.Arg("arg2").String())
 		cliutil.Infoln("remain args =", c.RemainArgs())
@@ -72,12 +74,13 @@ func main() {
 
 ## 设置必须和短选项
 
-可以设置选项为必填项，并且支持设置 **短选项** 名称。
+可以设置选项为 `required` 必填项，并且支持设置 **短选项** 名称。
 
 > TIPs: 通过扩展解析了选项的 `usage` 来实现 `required` 和 `shorts`
 
 ### `usage` 格式
 
+- 默认：`desc`
 - 格式1: `desc;required`
 - 格式2: `desc;required;shorts`
 - `required`: 一个布尔字符串。标记选项是必需的
@@ -92,6 +95,22 @@ func main() {
 	c.StringVar(&opts.name, "name", "", "this is a string option and required;true")
     // set option 'str1' shorts: s
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
+```
+
+## 绑定和获取参数
+
+绑定参数信息
+
+```go
+	c.AddArg("arg1", "this is arg1", true, nil)
+	c.AddArg("arg2", "this is arg2", true, nil)
+```
+
+获取参数信息
+
+```go
+	cliutil.Infoln("arg1 =", c.Arg("arg1").String())
+	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
 ```
 
 ## 显示帮助信息
