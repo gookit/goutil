@@ -24,6 +24,13 @@ func TestStringsRemove(t *testing.T) {
 	assert.Len(t, ns, 2)
 }
 
+func TestStringsFilter(t *testing.T) {
+	is := assert.New(t)
+
+	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
+	is.Equal([]string{"a", "b"}, ss)
+}
+
 func TestTrimStrings(t *testing.T) {
 	is := assert.New(t)
 

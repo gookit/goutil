@@ -11,7 +11,6 @@ import (
 // Reverse string slice [site user info 0] -> [0 info user site]
 func Reverse(ss []string) {
 	ln := len(ss)
-
 	for i := 0; i < ln/2; i++ {
 		li := ln - i - 1
 		// fmt.Println(i, "<=>", li)
@@ -27,7 +26,30 @@ func StringsRemove(ss []string, s string) []string {
 			ns = append(ns, v)
 		}
 	}
+	return ns
+}
 
+// StringsFilter given strings, default will filter emtpy string.
+//
+// Usage:
+//	// output: [a, b]
+// 	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
+func StringsFilter(ss []string, filter ...func(s string) bool) []string {
+	var fn func(s string) bool
+	if len(filter) > 0 && filter[0] != nil {
+		fn = filter[0]
+	} else {
+		fn = func(s string) bool {
+			return s != ""
+		}
+	}
+
+	ns := make([]string, 0, len(ss))
+	for _, s := range ss {
+		if fn(s) {
+			ns = append(ns, s)
+		}
+	}
 	return ns
 }
 
@@ -35,7 +57,7 @@ func StringsRemove(ss []string, s string) []string {
 //
 // Usage:
 //	// output: [a, b, c]
-// 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
+// 	ss := arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
 func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 	cutSetLn := len(cutSet)
 	hasCutSet := cutSetLn > 0 && cutSet[0] != ""
@@ -59,7 +81,10 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 }
 
 // GetRandomOne get random element from an array/slice
-func GetRandomOne(arr interface{}) interface{} {
+func GetRandomOne(arr interface{}) interface{} { return RandomOne(arr) }
+
+// RandomOne get random element from an array/slice
+func RandomOne(arr interface{}) interface{} {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
 		return arr
