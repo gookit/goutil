@@ -8,5 +8,4 @@ type TestingT interface {
 	Helper()
 	Name() string
 	Error(args ...any)
-	Errorf(format string, args ...any)
 }
