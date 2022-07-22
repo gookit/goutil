@@ -224,6 +224,20 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 	return true
 }
 
+// ContainsKeys asserts that the map is contains all given keys
+func ContainsKeys(t TestingT, mp any, keys []interface{}, fmtAndArgs ...any) bool {
+	ok, noKey := maputil.HasAllKeys(mp, keys...)
+	if !ok {
+		t.Helper()
+		return fail(t,
+			fmt.Sprintf("Map data should contains the key: %#v\nMap data: %#v", noKey, mp),
+			fmtAndArgs,
+		)
+	}
+
+	return true
+}
+
 // StrContains asserts that the given strings is contains sub-string
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if !strings.Contains(s, sub) {
