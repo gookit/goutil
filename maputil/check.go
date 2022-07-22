@@ -20,3 +20,27 @@ func HasKey(mp, key interface{}) (ok bool) {
 	}
 	return
 }
+
+// HasAllKeys check of the given map.
+func HasAllKeys(mp interface{}, keys ...interface{}) (ok bool, noKey interface{}) {
+	rftVal := reflect.Indirect(reflect.ValueOf(mp))
+	if rftVal.Kind() != reflect.Map {
+		return
+	}
+
+	for _, key := range keys {
+		var exist bool
+		for _, keyRv := range rftVal.MapKeys() {
+			if reflects.IsEqual(keyRv.Interface(), key) {
+				exist = true
+				break
+			}
+		}
+
+		if !exist {
+			return false, key
+		}
+	}
+
+	return true, nil
+}
