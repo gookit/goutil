@@ -2,6 +2,12 @@
 
 `errorx` provide an enhanced error implements for go, allow with stacktraces and wrap another error.
 
+## Install
+
+```go
+go get github.com/gookit/goutil/errorx
+```
+
 ## Usage
 
 ### Create error with call stack info

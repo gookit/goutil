@@ -2,8 +2,7 @@ package errorx
 
 import (
 	"fmt"
-
-	"github.com/gookit/goutil/mathutil"
+	"strconv"
 )
 
 // ErrorCoder interface
@@ -64,7 +63,7 @@ func (e *errorR) Error() string {
 
 // String get
 func (e *errorR) String() string {
-	return e.msg + "(code: " + mathutil.String(e.code) + ")"
+	return e.msg + "(code: " + strconv.FormatInt(int64(e.code), 10) + ")"
 }
 
 // GoString get.
