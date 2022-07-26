@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/maputil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestSMap_usage(t *testing.T) {
@@ -23,25 +23,25 @@ func TestSMap_usage(t *testing.T) {
 
 	val, ok := mp.Value("k2")
 	assert.True(t, ok)
-	assert.Equal(t, "ab", val)
+	assert.Eq(t, "ab", val)
 
 	// int
-	assert.Equal(t, 23, mp.Int("k1"))
-	assert.Equal(t, int64(23), mp.Int64("k1"))
+	assert.Eq(t, 23, mp.Int("k1"))
+	assert.Eq(t, int64(23), mp.Int64("k1"))
 
 	// str
-	assert.Equal(t, "23", mp.Str("k1"))
-	assert.Equal(t, "ab", mp.Get("k2"))
+	assert.Eq(t, "23", mp.Str("k1"))
+	assert.Eq(t, "ab", mp.Get("k2"))
 
 	// slice
-	assert.Equal(t, []int{1, 2}, mp.Ints("k4"))
-	assert.Equal(t, []string{"1", "2"}, mp.Strings("k4"))
+	assert.Eq(t, []int{1, 2}, mp.Ints("k4"))
+	assert.Eq(t, []string{"1", "2"}, mp.Strings("k4"))
 	assert.Nil(t, mp.Strings("not-exist"))
 
 	// not exists
 	assert.False(t, mp.Bool("notExists"))
-	assert.Equal(t, 0, mp.Int("notExists"))
-	assert.Equal(t, int64(0), mp.Int64("notExists"))
-	assert.Equal(t, "", mp.Str("notExists"))
+	assert.Eq(t, 0, mp.Int("notExists"))
+	assert.Eq(t, int64(0), mp.Int64("notExists"))
+	assert.Eq(t, "", mp.Str("notExists"))
 	assert.Empty(t, mp.Ints("notExists"))
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestNewFormatter(t *testing.T) {

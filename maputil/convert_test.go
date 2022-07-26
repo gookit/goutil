@@ -6,7 +6,7 @@ import (
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/maputil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestKeyToLower(t *testing.T) {
@@ -21,8 +21,8 @@ func TestToStringMap(t *testing.T) {
 	src := map[string]interface{}{"a": "v0", "b": 23}
 	ret := maputil.ToStringMap(src)
 
-	assert.Equal(t, ret["a"], "v0")
-	assert.Equal(t, ret["b"], "23")
+	assert.Eq(t, ret["a"], "v0")
+	assert.Eq(t, ret["b"], "23")
 }
 
 func TestHttpQueryString(t *testing.T) {
@@ -51,11 +51,11 @@ func TestToString(t *testing.T) {
 	assert.Contains(t, s, "a:v0")
 
 	s = maputil.ToString(nil)
-	assert.Equal(t, "", s)
+	assert.Eq(t, "", s)
 
 	s = maputil.ToString(map[string]interface{}{})
-	assert.Equal(t, "{}", s)
+	assert.Eq(t, "{}", s)
 
 	s = maputil.ToString(map[string]interface{}{"": nil})
-	assert.Equal(t, "{:}", s)
+	assert.Eq(t, "{:}", s)
 }
