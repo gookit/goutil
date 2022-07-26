@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/reflects"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestIsFunc(t *testing.T) {
@@ -36,11 +36,11 @@ func TestLen(t *testing.T) {
 	}
 
 	for _, sample := range tests {
-		is.Equal(3, reflects.Len(reflect.ValueOf(sample)))
+		is.Eq(3, reflects.Len(reflect.ValueOf(sample)))
 	}
 
 	ptrArr := &[]string{"a", "b"}
-	is.Equal(2, reflects.Len(reflect.ValueOf(ptrArr)))
+	is.Eq(2, reflects.Len(reflect.ValueOf(ptrArr)))
 
-	is.Equal(-1, reflects.Len(reflect.ValueOf(nil)))
+	is.Eq(-1, reflects.Len(reflect.ValueOf(nil)))
 }

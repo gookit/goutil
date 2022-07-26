@@ -8,7 +8,7 @@ import (
 	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/errorx"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func Example() {
@@ -85,18 +85,18 @@ func TestNew(t *testing.T) {
 
 	inArgs := []string{"--help"}
 	err := c.Parse(inArgs)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	inArgs = []string{"--int", "23"}
 	err = c.Parse(inArgs)
-	assert.NoError(t, err)
-	assert.Equal(t, 23, opts.int)
+	assert.NoErr(t, err)
+	assert.Eq(t, 23, opts.int)
 
 	// use validate
 	inArgs = []string{"--int", "3"}
 	err = c.Parse(inArgs)
-	assert.Error(t, err)
-	assert.Equal(t, "flag option 'int': value should >= 10", err.Error())
+	assert.Err(t, err)
+	assert.Eq(t, "flag option 'int': value should >= 10", err.Error())
 }
 
 func TestCFlags_Parse(t *testing.T) {
@@ -117,7 +117,7 @@ func TestCFlags_Parse(t *testing.T) {
 	os.Args = []string{"./myapp", "ag1", "ag2"}
 
 	c.MustParse(nil)
-	assert.Equal(t, "[ag1 ag2]", fmt.Sprint(c.RemainArgs()))
+	assert.Eq(t, "[ag1 ag2]", fmt.Sprint(c.RemainArgs()))
 
 	os.Args = osArgs
 }

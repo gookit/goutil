@@ -5,21 +5,21 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/reflects"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestToBaseKind(t *testing.T) {
-	assert.Equal(t, reflects.ToBaseKind(reflect.Int16), reflects.Int)
-	assert.Equal(t, reflects.ToBaseKind(reflect.Uint16), reflects.Uint)
-	assert.Equal(t, reflects.ToBaseKind(reflect.Float32), reflects.Float)
-	assert.Equal(t, reflects.ToBaseKind(reflect.Slice), reflects.Array)
-	assert.Equal(t, reflects.ToBaseKind(reflect.Complex64), reflects.Complex)
-	assert.Equal(t, reflects.ToBaseKind(reflect.String), reflects.BKind(reflect.String))
+	assert.Eq(t, reflects.ToBaseKind(reflect.Int16), reflects.Int)
+	assert.Eq(t, reflects.ToBaseKind(reflect.Uint16), reflects.Uint)
+	assert.Eq(t, reflects.ToBaseKind(reflect.Float32), reflects.Float)
+	assert.Eq(t, reflects.ToBaseKind(reflect.Slice), reflects.Array)
+	assert.Eq(t, reflects.ToBaseKind(reflect.Complex64), reflects.Complex)
+	assert.Eq(t, reflects.ToBaseKind(reflect.String), reflects.BKind(reflect.String))
 }
 
 func TestTypeOf(t *testing.T) {
 	rt := reflects.TypeOf(int64(23))
 
-	assert.Equal(t, reflect.Int64, rt.Kind())
-	assert.Equal(t, reflects.Int, rt.BaseKind())
+	assert.Eq(t, reflect.Int64, rt.Kind())
+	assert.Eq(t, reflects.Int, rt.BaseKind())
 }

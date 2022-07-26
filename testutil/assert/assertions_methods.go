@@ -153,6 +153,13 @@ func (as *Assertions) Gt(give, min int, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// IsType type equals assert
+func (as *Assertions) IsType(wantType, give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = IsType(as.t, wantType, give, fmtAndArgs...)
+	return as
+}
+
 func (as *Assertions) Fail(failMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Fail(as.t, failMsg, fmtAndArgs...)

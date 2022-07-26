@@ -4,43 +4,43 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 // StringEqualComparer tests
 func TestStringEqualComparerShouldEquals(t *testing.T) {
-	assert.Equal(t, 0, arrutil.StringEqualsComparer("a", "a"))
+	assert.Eq(t, 0, arrutil.StringEqualsComparer("a", "a"))
 }
 
 func TestStringEqualComparerShouldNotEquals(t *testing.T) {
-	assert.NotEqual(t, 0, arrutil.StringEqualsComparer("a", "b"))
+	assert.NotEq(t, 0, arrutil.StringEqualsComparer("a", "b"))
 }
 
 func TestStringEqualComparerElementNotString(t *testing.T) {
-	assert.Equal(t, -1, arrutil.StringEqualsComparer(1, "a"))
+	assert.Eq(t, -1, arrutil.StringEqualsComparer(1, "a"))
 }
 
 func TestStringEqualComparerPtr(t *testing.T) {
 	ptrVal := "a"
-	assert.Equal(t, 0, arrutil.StringEqualsComparer(&ptrVal, "a"))
+	assert.Eq(t, 0, arrutil.StringEqualsComparer(&ptrVal, "a"))
 }
 
 // ReferenceEqualsComparer tests
 func TestReferenceEqualsComparerShouldEquals(t *testing.T) {
-	assert.Equal(t, 0, arrutil.ReferenceEqualsComparer(1, 1))
+	assert.Eq(t, 0, arrutil.ReferenceEqualsComparer(1, 1))
 }
 
 func TestReferenceEqualsComparerShouldNotEquals(t *testing.T) {
-	assert.NotEqual(t, 0, arrutil.ReferenceEqualsComparer(1, 2))
+	assert.NotEq(t, 0, arrutil.ReferenceEqualsComparer(1, 2))
 }
 
 // ElemTypeEqualCompareFunc
 func TestElemTypeEqualCompareFuncShouldEquals(t *testing.T) {
-	assert.Equal(t, 0, arrutil.ElemTypeEqualsComparer(1, 2))
+	assert.Eq(t, 0, arrutil.ElemTypeEqualsComparer(1, 2))
 }
 
 func TestElemTypeEqualCompareFuncShouldNotEquals(t *testing.T) {
-	assert.NotEqual(t, 0, arrutil.ElemTypeEqualsComparer(1, "2"))
+	assert.NotEq(t, 0, arrutil.ElemTypeEqualsComparer(1, "2"))
 }
 
 func TestExceptsShouldPassed(t *testing.T) {
@@ -50,7 +50,7 @@ func TestExceptsShouldPassed(t *testing.T) {
 		"c",
 	}
 	result := arrutil.Excepts(data, []string{"a", "b"}, arrutil.StringEqualsComparer)
-	assert.Equal(t, []string{"c"}, result.([]string))
+	assert.Eq(t, []string{"c"}, result.([]string))
 }
 
 func TestExceptsFirstNotSliceShouldPanic(t *testing.T) {
@@ -78,18 +78,18 @@ func TestExceptsSecondNotSliceShouldPanic(t *testing.T) {
 func TestExceptsFirstEmptyShouldReturnsEmpty(t *testing.T) {
 	data := []string{}
 	result := arrutil.Excepts(data, []string{"a", "b"}, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, []string{}, result)
+	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
 
 func TestExceptsSecondEmptyShouldReturnsFirst(t *testing.T) {
 	data := []string{"a", "b"}
 	result := arrutil.Excepts(data, []string{}, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, data, result)
+	assert.Eq(t, data, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
 
-//Intersects tests
+// Intersects tests
 func TestIntersectsShouldPassed(t *testing.T) {
 	data := []string{
 		"a",
@@ -97,7 +97,7 @@ func TestIntersectsShouldPassed(t *testing.T) {
 		"c",
 	}
 	result := arrutil.Intersects(data, []string{"a", "b"}, arrutil.StringEqualsComparer)
-	assert.Equal(t, []string{"a", "b"}, result.([]string))
+	assert.Eq(t, []string{"a", "b"}, result.([]string))
 }
 
 func TestIntersectsFirstNotSliceShouldPanic(t *testing.T) {
@@ -126,7 +126,7 @@ func TestIntersectsFirstEmptyShouldReturnsEmpty(t *testing.T) {
 	data := []string{}
 	second := []string{"a", "b"}
 	result := arrutil.Intersects(data, second, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, []string{}, result)
+	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &second, &result, "should always returns new slice")
 }
 
@@ -134,7 +134,7 @@ func TestIntersectsSecondEmptyShouldReturnsEmpty(t *testing.T) {
 	data := []string{"a", "b"}
 	second := []string{}
 	result := arrutil.Intersects(data, second, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, []string{}, result)
+	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
 
@@ -147,7 +147,7 @@ func TestUnionShouldPassed(t *testing.T) {
 		"c",
 	}
 	result := arrutil.Union(data, []string{"a", "b", "d"}, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, []string{"a", "b", "c", "d"}, result)
+	assert.Eq(t, []string{"a", "b", "c", "d"}, result)
 }
 
 func TestUnionFirstNotSliceShouldPanic(t *testing.T) {
@@ -177,7 +177,7 @@ func TestUnionFirstEmptyShouldReturnsSecond(t *testing.T) {
 	data := []string{}
 	second := []string{"a", "b"}
 	result := arrutil.Union(data, second, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, []string{"a", "b"}, result)
+	assert.Eq(t, []string{"a", "b"}, result)
 	assert.NotSame(t, &second, &result, "should always returns new slice")
 }
 
@@ -185,7 +185,7 @@ func TestUnionSecondEmptyShouldReturnsFirst(t *testing.T) {
 	data := []string{"a", "b"}
 	second := []string{}
 	result := arrutil.Union(data, second, arrutil.StringEqualsComparer).([]string)
-	assert.Equal(t, data, result)
+	assert.Eq(t, data, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
 
@@ -199,31 +199,25 @@ func TestFindShouldPassed(t *testing.T) {
 
 	result, err := arrutil.Find(data, func(a interface{}) bool { return a == "b" })
 	assert.Nil(t, err)
-	assert.Equal(t, "b", result)
+	assert.Eq(t, "b", result)
 
 	_, err = arrutil.Find(data, func(a interface{}) bool { return a == "d" })
 	assert.NotNil(t, err)
-	assert.Equal(t, arrutil.ErrElementNotFound, err.Error())
+	assert.Eq(t, arrutil.ErrElementNotFound, err.Error())
 
 }
 
 func TestFindNotSliceShouldPanic(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			return
-		} else {
-			t.Fail()
-		}
-	}()
-
-	arrutil.Find([1]string{"a"}, func(a interface{}) bool { return a == "b" })
+	assert.Panics(t, func() {
+		_, _ = arrutil.Find([1]string{"a"}, func(a interface{}) bool { return a == "b" })
+	})
 }
 
 func TestFindEmptyReturnsErrElementNotFound(t *testing.T) {
 	data := []string{}
 	_, err := arrutil.Find(data, func(a interface{}) bool { return a == "b" })
 	assert.NotNil(t, err)
-	assert.Equal(t, arrutil.ErrElementNotFound, err.Error())
+	assert.Eq(t, arrutil.ErrElementNotFound, err.Error())
 }
 
 // FindOrDefault tests
@@ -235,10 +229,10 @@ func TestFindOrDefaultShouldPassed(t *testing.T) {
 	}
 
 	result := arrutil.FindOrDefault(data, func(a interface{}) bool { return a == "b" }, "d").(string)
-	assert.Equal(t, "b", result)
+	assert.Eq(t, "b", result)
 
 	result = arrutil.FindOrDefault(data, func(a interface{}) bool { return a == "d" }, "d").(string)
-	assert.Equal(t, "d", result)
+	assert.Eq(t, "d", result)
 }
 
 // TakeWhile tests
@@ -250,25 +244,19 @@ func TestTakeWhileShouldPassed(t *testing.T) {
 	}
 
 	result := arrutil.TakeWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
-	assert.Equal(t, []string{"b", "c"}, result)
+	assert.Eq(t, []string{"b", "c"}, result)
 }
 
 func TestTakeWhileNotSliceShouldPanic(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			return
-		} else {
-			t.Fail()
-		}
-	}()
-
-	arrutil.TakeWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+	assert.Panics(t, func() {
+		arrutil.TakeWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+	})
 }
 
 func TestTakeWhileEmptyReturnsEmpty(t *testing.T) {
-	data := []string{}
+	var data []string
 	result := arrutil.TakeWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
-	assert.Equal(t, []string{}, result)
+	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
 
@@ -282,24 +270,19 @@ func TestExceptWhileShouldPassed(t *testing.T) {
 	}
 
 	result := arrutil.ExceptWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
-	assert.Equal(t, []string{"a"}, result)
+	assert.Eq(t, []string{"a"}, result)
 }
 
 func TestExceptWhileNotSliceShouldPanic(t *testing.T) {
-	defer func() {
-		if r := recover(); r != nil {
-			return
-		} else {
-			t.Fail()
-		}
-	}()
-
-	arrutil.ExceptWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+	assert.Panics(t, func() {
+		arrutil.ExceptWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+	})
 }
 
 func TestExceptWhileEmptyReturnsEmpty(t *testing.T) {
-	data := []string{}
+	var data []string
 	result := arrutil.ExceptWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
-	assert.Equal(t, []string{}, result)
+
+	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }

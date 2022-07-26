@@ -216,7 +216,11 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 	if !maputil.HasKey(mp, key) {
 		t.Helper()
 		return fail(t,
-			fmt.Sprintf("Map data should contains the key: %#v\nMap data: %#v", key, mp),
+			fmt.Sprintf(
+				"Map should contains the key: %#v\nMap data:\n%v",
+				key,
+				maputil.FormatIndent(mp, "  "),
+			),
 			fmtAndArgs,
 		)
 	}
@@ -225,12 +229,31 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 }
 
 // ContainsKeys asserts that the map is contains all given keys
-func ContainsKeys(t TestingT, mp any, keys []interface{}, fmtAndArgs ...any) bool {
-	ok, noKey := maputil.HasAllKeys(mp, keys...)
+//
+// Usage:
+// 	ContainsKeys(t, map[string]any{...}, []string{"key1", "key2"})
+//
+func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
+	rfKeys := reflect.ValueOf(keys)
+	if rfKeys.Kind() != reflect.Slice {
+		t.Helper()
+		return fail(t, "input keys must be slice for ContainsKeys()", fmtAndArgs)
+	}
+
+	var anyKeys []any
+	for i := 0; i < rfKeys.Len(); i++ {
+		anyKeys = append(anyKeys, rfKeys.Index(i).Interface())
+	}
+
+	ok, noKey := maputil.HasAllKeys(mp, anyKeys...)
 	if !ok {
 		t.Helper()
 		return fail(t,
-			fmt.Sprintf("Map data should contains the key: %#v\nMap data: %#v", noKey, mp),
+			fmt.Sprintf(
+				"Map should contains the key: %#v\nMap data:\n%v",
+				noKey,
+				maputil.FormatIndent(mp, "  "),
+			),
 			fmtAndArgs,
 		)
 	}
@@ -393,8 +416,8 @@ func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
 		return true
 	}
 
+	t.Helper()
 	return fail(t, fmt.Sprintf("Given should later than or equal %d(but was %d)", max, gInt), fmtAndArgs)
-
 }
 
 func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
@@ -403,7 +426,72 @@ func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 		return true
 	}
 
+	t.Helper()
 	return fail(t, fmt.Sprintf("Given should gater than or equal %d(but was %d)", min, gInt), fmtAndArgs)
+}
+
+// IsType assert data type equals
+//
+// Usage:
+// 	assert.IsType(t, 0, val) // assert type is int
+func IsType(t TestingT, wantType, give any, fmtAndArgs ...any) bool {
+	if reflects.IsEqual(reflect.TypeOf(wantType), reflect.TypeOf(give)) {
+		return true
+	}
+
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("Expected to be of type %v, but was %v", reflect.TypeOf(wantType), reflect.TypeOf(give)),
+		fmtAndArgs,
+	)
+}
+
+// Same asserts that two pointers reference the same object.
+//
+//    assert.Same(t, ptr1, ptr2)
+//
+// Both arguments must be pointer variables. Pointer variable sameness is
+// determined based on the equality of both type and value.
+func Same(t TestingT, wanted, actual any, fmtAndArgs ...any) bool {
+	if samePointers(wanted, actual) {
+		return true
+	}
+
+	return fail(t, fmt.Sprintf("Not same: \n"+
+		"wanted: %p %#v\n"+
+		"actual: %p %#v", wanted, wanted, actual, actual), fmtAndArgs)
+}
+
+// NotSame asserts that two pointers do not reference the same object.
+//
+//    assert.NotSame(t, ptr1, ptr2)
+//
+// Both arguments must be pointer variables. Pointer variable sameness is
+// determined based on the equality of both type and value.
+func NotSame(t TestingT, want, actual any, fmtAndArgs ...any) bool {
+	if !samePointers(want, actual) {
+		return true
+	}
+
+	t.Helper()
+	return fail(t, fmt.Sprintf("Expect and actual point to the same object: %p %#v", want, want), fmtAndArgs)
+}
+
+// samePointers compares two generic interface objects and returns whether
+// they point to the same object
+func samePointers(first, second interface{}) bool {
+	firstPtr, secondPtr := reflect.ValueOf(first), reflect.ValueOf(second)
+	if firstPtr.Kind() != reflect.Ptr || secondPtr.Kind() != reflect.Ptr {
+		return false
+	}
+
+	firstType, secondType := reflect.TypeOf(first), reflect.TypeOf(second)
+	if firstType != secondType {
+		return false
+	}
+
+	// compare pointer addresses
+	return first == second
 }
 
 //

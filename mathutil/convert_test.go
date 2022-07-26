@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestToInt(t *testing.T) {
@@ -29,65 +29,65 @@ func TestToInt(t *testing.T) {
 	// To int
 	intVal, err := Int("2")
 	is.Nil(err)
-	is.Equal(2, intVal)
+	is.Eq(2, intVal)
 
 	intVal, err = ToInt("-2")
 	is.Nil(err)
-	is.Equal(-2, intVal)
+	is.Eq(-2, intVal)
 
 	intVal, err = IntOrErr("-2")
 	is.Nil(err)
-	is.Equal(-2, intVal)
+	is.Eq(-2, intVal)
 
-	is.Equal(-2, MustInt("-2"))
+	is.Eq(-2, MustInt("-2"))
 	for _, in := range tests {
-		is.Equal(2, MustInt(in))
-		is.Equal(2, QuietInt(in))
+		is.Eq(2, MustInt(in))
+		is.Eq(2, QuietInt(in))
 	}
 	for _, in := range errTests {
-		is.Equal(0, MustInt(in))
+		is.Eq(0, MustInt(in))
 	}
 
 	// To uint
 	uintVal, err := Uint("2")
 	is.Nil(err)
-	is.Equal(uint64(2), uintVal)
+	is.Eq(uint64(2), uintVal)
 
 	uintVal, err = UintOrErr("2")
 	is.Nil(err)
-	is.Equal(uint64(2), uintVal)
+	is.Eq(uint64(2), uintVal)
 
 	_, err = ToUint("-2")
-	is.Error(err)
+	is.Err(err)
 
-	is.Equal(uint64(0), MustUint("-2"))
+	is.Eq(uint64(0), MustUint("-2"))
 	for _, in := range tests {
-		is.Equal(uint64(2), MustUint(in))
+		is.Eq(uint64(2), MustUint(in))
 	}
 	for _, in := range errTests {
-		is.Equal(uint64(0), QuietUint(in))
-		is.Equal(uint64(0), MustUint(in))
+		is.Eq(uint64(0), QuietUint(in))
+		is.Eq(uint64(0), MustUint(in))
 	}
 
 	// To int64
 	i64Val, err := ToInt64("2")
 	is.Nil(err)
-	is.Equal(int64(2), i64Val)
+	is.Eq(int64(2), i64Val)
 
 	i64Val, err = Int64("-2")
 	is.Nil(err)
-	is.Equal(int64(-2), i64Val)
+	is.Eq(int64(-2), i64Val)
 
 	i64Val, err = Int64OrErr("-2")
 	is.Nil(err)
-	is.Equal(int64(-2), i64Val)
+	is.Eq(int64(-2), i64Val)
 
 	for _, in := range tests {
-		is.Equal(int64(2), MustInt64(in))
+		is.Eq(int64(2), MustInt64(in))
 	}
 	for _, in := range errTests {
-		is.Equal(int64(0), MustInt64(in))
-		is.Equal(int64(0), QuietInt64(in))
+		is.Eq(int64(0), MustInt64(in))
+		is.Eq(int64(0), QuietInt64(in))
 	}
 }
 
@@ -105,17 +105,17 @@ func TestToString(t *testing.T) {
 	}
 
 	for _, in := range tests {
-		is.Equal("2", String(in))
-		is.Equal("2", QuietString(in))
-		is.Equal("2", MustString(in))
+		is.Eq("2", String(in))
+		is.Eq("2", QuietString(in))
+		is.Eq("2", MustString(in))
 		val, err := ToString(in)
-		is.NoError(err)
-		is.Equal("2", val)
+		is.NoErr(err)
+		is.Eq("2", val)
 	}
 
 	val, err := StringOrErr(2)
-	is.NoError(err)
-	is.Equal("2", val)
+	is.NoErr(err)
+	is.Eq("2", val)
 
 	is.Panics(func() {
 		MustString("2")
@@ -135,23 +135,23 @@ func TestToFloat(t *testing.T) {
 		json.Number("2"),
 	}
 	for _, in := range tests {
-		is.Equal(float64(2), MustFloat(in))
+		is.Eq(float64(2), MustFloat(in))
 	}
 
-	is.Equal(123.5, MustFloat("123.5"))
-	is.Equal(123.5, QuietFloat("123.5"))
-	is.Equal(float64(0), MustFloat("invalid"))
-	is.Equal(float64(0), QuietFloat("invalid"))
+	is.Eq(123.5, MustFloat("123.5"))
+	is.Eq(123.5, QuietFloat("123.5"))
+	is.Eq(float64(0), MustFloat("invalid"))
+	is.Eq(float64(0), QuietFloat("invalid"))
 
 	fltVal, err := ToFloat("123.5")
 	is.Nil(err)
-	is.Equal(123.5, fltVal)
+	is.Eq(123.5, fltVal)
 
 	fltVal, err = Float("-123.5")
 	is.Nil(err)
-	is.Equal(-123.5, fltVal)
+	is.Eq(-123.5, fltVal)
 
 	fltVal, err = FloatOrErr("-123.5")
 	is.Nil(err)
-	is.Equal(-123.5, fltVal)
+	is.Eq(-123.5, fltVal)
 }
