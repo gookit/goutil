@@ -37,20 +37,18 @@ func (m SMap) Value(key string) (string, bool) {
 
 // Int value get
 func (m SMap) Int(key string) int {
-	val, ok := m[key]
-	if !ok {
-		return 0
+	if val, ok := m[key]; ok {
+		return mathutil.QuietInt(val)
 	}
-	return mathutil.QuietInt(val)
+	return 0
 }
 
 // Int64 value get
 func (m SMap) Int64(key string) int64 {
-	val, ok := m[key]
-	if !ok {
-		return 0
+	if val, ok := m[key]; ok {
+		return mathutil.QuietInt64(val)
 	}
-	return mathutil.QuietInt64(val)
+	return 0
 }
 
 // Get value by key
@@ -65,29 +63,26 @@ func (m SMap) Str(key string) string {
 
 // Bool value get
 func (m SMap) Bool(key string) bool {
-	val, ok := m[key]
-	if !ok {
-		return false
+	if val, ok := m[key]; ok {
+		return strutil.QuietBool(val)
 	}
-	return strutil.QuietBool(val)
+	return false
 }
 
 // Ints value to []int
 func (m SMap) Ints(key string) []int {
-	val, ok := m[key]
-	if !ok {
-		return nil
+	if val, ok := m[key]; ok {
+		return strutil.Ints(val, ",")
 	}
-	return strutil.Ints(val, ",")
+	return nil
 }
 
 // Strings value to []string
 func (m SMap) Strings(key string) (ss []string) {
-	val, ok := m[key]
-	if !ok {
-		return
+	if val, ok := m[key]; ok {
+		return strutil.ToSlice(val, ",")
 	}
-	return strutil.ToSlice(val, ",")
+	return
 }
 
 // String data to string

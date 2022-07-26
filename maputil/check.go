@@ -7,7 +7,7 @@ import (
 )
 
 // HasKey check of the given map.
-func HasKey(mp, key interface{}) (ok bool) {
+func HasKey(mp, key any) (ok bool) {
 	rftVal := reflect.Indirect(reflect.ValueOf(mp))
 	if rftVal.Kind() != reflect.Map {
 		return
@@ -22,7 +22,7 @@ func HasKey(mp, key interface{}) (ok bool) {
 }
 
 // HasAllKeys check of the given map.
-func HasAllKeys(mp interface{}, keys ...interface{}) (ok bool, noKey interface{}) {
+func HasAllKeys(mp any, keys ...any) (ok bool, noKey interface{}) {
 	rftVal := reflect.Indirect(reflect.ValueOf(mp))
 	if rftVal.Kind() != reflect.Map {
 		return

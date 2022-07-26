@@ -22,7 +22,7 @@ type MapFormatter struct {
 }
 
 // NewFormatter instance
-func NewFormatter(mp interface{}) *MapFormatter {
+func NewFormatter(mp any) *MapFormatter {
 	f := &MapFormatter{}
 	f.Src = mp
 
@@ -121,9 +121,4 @@ func (f *MapFormatter) doFormat() {
 	}
 
 	buf.WriteByte('}')
-}
-
-// FormatIndent map data to string.
-func FormatIndent(mp interface{}, indent string) string {
-	return NewFormatter(mp).WithIndent(indent).Format()
 }

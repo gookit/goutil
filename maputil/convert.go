@@ -17,8 +17,8 @@ func KeyToLower(src map[string]string) map[string]string {
 	return newMp
 }
 
-// ToStringMap convert map[string]interface{} to map[string]string
-func ToStringMap(src map[string]interface{}) map[string]string {
+// ToStringMap convert map[string]any to map[string]string
+func ToStringMap(src map[string]any) map[string]string {
 	newMp := make(map[string]string, len(src))
 	for k, v := range src {
 		newMp[k] = strutil.MustString(v)
@@ -27,8 +27,8 @@ func ToStringMap(src map[string]interface{}) map[string]string {
 	return newMp
 }
 
-// HttpQueryString convert map[string]interface{} data to http query string.
-func HttpQueryString(data map[string]interface{}) string {
+// HttpQueryString convert map[string]any data to http query string.
+func HttpQueryString(data map[string]any) string {
 	ss := make([]string, 0, len(data))
 	for k, v := range data {
 		ss = append(ss, k+"="+strutil.QuietString(v))
@@ -37,8 +37,8 @@ func HttpQueryString(data map[string]interface{}) string {
 	return strings.Join(ss, "&")
 }
 
-// ToString simple and quickly convert map[string]interface{} to string.
-func ToString(mp map[string]interface{}) string {
+// ToString simple and quickly convert map[string]any to string.
+func ToString(mp map[string]any) string {
 	if mp == nil {
 		return ""
 	}
@@ -64,6 +64,11 @@ func ToString(mp map[string]interface{}) string {
 }
 
 // ToString2 simple and quickly convert a map to string.
-func ToString2(mp interface{}) string {
+func ToString2(mp any) string {
 	return NewFormatter(mp).Format()
+}
+
+// FormatIndent map data to string.
+func FormatIndent(mp any, indent string) string {
+	return NewFormatter(mp).WithIndent(indent).Format()
 }
