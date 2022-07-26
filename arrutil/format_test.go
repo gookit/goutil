@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestNewFormatter(t *testing.T) {
@@ -16,9 +16,9 @@ func TestNewFormatter(t *testing.T) {
 
 	str = arrutil.FormatIndent(arr, "")
 	assert.NotContains(t, str, "\n  ")
-	assert.Equal(t, "[a, b]", str)
+	assert.Eq(t, "[a, b]", str)
 	fmt.Println(str)
 
-	assert.Equal(t, "", arrutil.FormatIndent("invalid", ""))
-	assert.Equal(t, "[]", arrutil.FormatIndent([]string{}, ""))
+	assert.Eq(t, "", arrutil.FormatIndent("invalid", ""))
+	assert.Eq(t, "[]", arrutil.FormatIndent([]string{}, ""))
 }

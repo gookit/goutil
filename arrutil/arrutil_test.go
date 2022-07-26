@@ -5,14 +5,14 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestReverse(t *testing.T) {
 	ss := []string{"a", "b", "c"}
 
 	arrutil.Reverse(ss)
-	assert.Equal(t, []string{"c", "b", "a"}, ss)
+	assert.Eq(t, []string{"c", "b", "a"}, ss)
 }
 
 func TestStringsRemove(t *testing.T) {
@@ -28,7 +28,7 @@ func TestStringsFilter(t *testing.T) {
 	is := assert.New(t)
 
 	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
-	is.Equal([]string{"a", "b"}, ss)
+	is.Eq([]string{"a", "b"}, ss)
 }
 
 func TestTrimStrings(t *testing.T) {
@@ -36,11 +36,11 @@ func TestTrimStrings(t *testing.T) {
 
 	// TrimStrings
 	ss := arrutil.TrimStrings([]string{" a", "b ", " c "})
-	is.Equal("[a b c]", fmt.Sprint(ss))
+	is.Eq("[a b c]", fmt.Sprint(ss))
 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
-	is.Equal("[a b c]", fmt.Sprint(ss))
+	is.Eq("[a b c]", fmt.Sprint(ss))
 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",", ".")
-	is.Equal("[a b c]", fmt.Sprint(ss))
+	is.Eq("[a b c]", fmt.Sprint(ss))
 }
 
 func TestGetRandomOne(t *testing.T) {
@@ -52,11 +52,12 @@ func TestGetRandomOne(t *testing.T) {
 	for intVal == intVal1 {
 		intVal1 = arrutil.GetRandomOne(intSlice)
 	}
+
 	assert.IsType(t, 0, intVal)
 	is.True(arrutil.HasValue(intSlice, intVal))
 	assert.IsType(t, 0, intVal1)
 	is.True(arrutil.HasValue(intSlice, intVal1))
-	assert.NotEqual(t, intVal, intVal1)
+	assert.NotEq(t, intVal, intVal1)
 
 	// int array
 	intArray := [6]int{1, 2, 3, 4, 5, 6}
@@ -69,7 +70,7 @@ func TestGetRandomOne(t *testing.T) {
 	is.True(arrutil.Contains(intArray, intReturned))
 	assert.IsType(t, 0, intReturned1)
 	is.True(arrutil.Contains(intArray, intReturned1))
-	assert.NotEqual(t, intReturned, intReturned1)
+	assert.NotEq(t, intReturned, intReturned1)
 
 	// string slice
 	strSlice := []string{"aa", "bb", "cc", "dd"}
@@ -78,11 +79,12 @@ func TestGetRandomOne(t *testing.T) {
 	for strVal == strVal1 {
 		strVal1 = arrutil.GetRandomOne(strSlice)
 	}
+
 	assert.IsType(t, string(""), strVal)
 	is.True(arrutil.Contains(strSlice, strVal))
 	assert.IsType(t, string(""), strVal1)
 	is.True(arrutil.Contains(strSlice, strVal1))
-	assert.NotEqual(t, strVal, strVal1)
+	assert.NotEq(t, strVal, strVal1)
 
 	// string array
 	strArray := [4]string{"aa", "bb", "cc", "dd"}
@@ -95,7 +97,7 @@ func TestGetRandomOne(t *testing.T) {
 	is.True(arrutil.Contains(strArray, strReturned))
 	assert.IsType(t, "", strReturned1)
 	is.True(arrutil.Contains(strArray, strReturned1))
-	assert.NotEqual(t, strReturned, strReturned1)
+	assert.NotEq(t, strReturned, strReturned1)
 
 	// byte slice
 	byteSlice := []byte("abcdefg")
@@ -108,7 +110,7 @@ func TestGetRandomOne(t *testing.T) {
 	is.True(arrutil.Contains(byteSlice, byteVal))
 	assert.IsType(t, byte('a'), byteVal1)
 	is.True(arrutil.Contains(byteSlice, byteVal1))
-	assert.NotEqual(t, byteVal, byteVal1)
+	assert.NotEq(t, byteVal, byteVal1)
 
 	// int
 	invalidIntData := int(404)

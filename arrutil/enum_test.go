@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestInts_Has_String(t *testing.T) {
@@ -24,7 +24,7 @@ func TestInts_Has_String(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.True(t, tt.want, tt.is.Has(tt.val))
-		assert.Equal(t, tt.want2, tt.is.String())
+		assert.Eq(t, tt.want2, tt.is.String())
 	}
 }
 
@@ -45,6 +45,6 @@ func TestStrings_Has_String(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.True(t, tt.want, tt.ss.Has(tt.val))
-		assert.Equal(t, tt.want2, tt.ss.String())
+		assert.Eq(t, tt.want2, tt.ss.String())
 	}
 }

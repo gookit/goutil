@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestIntsHas(t *testing.T) {
