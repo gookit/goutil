@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestMockRequest(t *testing.T) {
@@ -22,11 +22,11 @@ func TestMockRequest(t *testing.T) {
 	}))
 
 	w := testutil.MockRequest(r, "GET", "/", nil)
-	assert.Equal(t, "hello!", w.Body.String())
+	assert.Eq(t, "hello!", w.Body.String())
 
 	w = testutil.MockRequest(r, "POST", "/", &testutil.MD{BodyString: "body"})
-	assert.Equal(t, "hello!body", w.Body.String())
+	assert.Eq(t, "hello!body", w.Body.String())
 
 	w = testutil.MockRequest(r, "POST", "/", &testutil.MD{Body: strings.NewReader("BODY")})
-	assert.Equal(t, "hello!BODY", w.Body.String())
+	assert.Eq(t, "hello!BODY", w.Body.String())
 }

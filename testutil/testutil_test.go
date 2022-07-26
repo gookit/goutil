@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestDiscardStdout(t *testing.T) {
@@ -14,27 +14,27 @@ func TestDiscardStdout(t *testing.T) {
 	fmt.Println("Hello, playground")
 	str := testutil.RestoreStdout()
 
-	assert.NoError(t, err)
-	assert.Equal(t, "", str)
+	assert.NoErr(t, err)
+	assert.Eq(t, "", str)
 }
 
 func TestRewriteStdout(t *testing.T) {
-	assert.Equal(t, "", testutil.RestoreStdout())
+	assert.Eq(t, "", testutil.RestoreStdout())
 
 	testutil.RewriteStdout()
 	fmt.Println("Hello, playground")
 	msg := testutil.RestoreStdout()
 
-	assert.Equal(t, "Hello, playground\n", msg)
+	assert.Eq(t, "Hello, playground\n", msg)
 }
 
 func TestRewriteStderr(t *testing.T) {
-	assert.Equal(t, "", testutil.RestoreStderr())
+	assert.Eq(t, "", testutil.RestoreStderr())
 
 	testutil.RewriteStderr()
 	_, err := fmt.Fprint(os.Stderr, "Hello, playground")
 	msg := testutil.RestoreStderr()
 
-	assert.NoError(t, err)
-	assert.Equal(t, "Hello, playground", msg)
+	assert.NoErr(t, err)
+	assert.Eq(t, "Hello, playground", msg)
 }

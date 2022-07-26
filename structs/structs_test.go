@@ -5,13 +5,13 @@ import (
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestTryToMap(t *testing.T) {
 	mp, err := structs.TryToMap(nil)
 	assert.Empty(t, mp)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	type User struct {
 		Name string
@@ -26,18 +26,18 @@ func TestTryToMap(t *testing.T) {
 	}
 
 	mp, err = structs.TryToMap(u)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	dump.P(mp)
 	assert.Contains(t, mp, "Name")
 	assert.Contains(t, mp, "Age")
 	assert.NotContains(t, mp, "city")
 
 	mp, err = structs.TryToMap(&u)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	dump.P(mp)
 
 	mp = structs.ToMap(&u)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	dump.P(mp)
 
 	assert.Panics(t, func() {

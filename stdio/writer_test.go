@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/stdio"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestNewWriteWrapper(t *testing.T) {
@@ -13,13 +13,13 @@ func TestNewWriteWrapper(t *testing.T) {
 
 	w := stdio.NewWriteWrapper(buf)
 	_, err := w.WriteString("inhere")
-	assert.NoError(t, err)
-	assert.Equal(t, "inhere", w.String())
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", w.String())
 
 	err = w.WriteByte(',')
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	_, err = w.Write([]byte("hi"))
-	assert.NoError(t, err)
-	assert.Equal(t, "inhere,hi", w.String())
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere,hi", w.String())
 }
