@@ -1,10 +1,11 @@
-package mathutil
+package mathutil_test
 
 import (
 	"encoding/json"
 	"testing"
 	"time"
 
+	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -27,67 +28,67 @@ func TestToInt(t *testing.T) {
 	}
 
 	// To int
-	intVal, err := Int("2")
+	intVal, err := mathutil.Int("2")
 	is.Nil(err)
 	is.Eq(2, intVal)
 
-	intVal, err = ToInt("-2")
+	intVal, err = mathutil.ToInt("-2")
 	is.Nil(err)
 	is.Eq(-2, intVal)
 
-	intVal, err = IntOrErr("-2")
+	intVal, err = mathutil.IntOrErr("-2")
 	is.Nil(err)
 	is.Eq(-2, intVal)
 
-	is.Eq(-2, MustInt("-2"))
+	is.Eq(-2, mathutil.MustInt("-2"))
 	for _, in := range tests {
-		is.Eq(2, MustInt(in))
-		is.Eq(2, QuietInt(in))
+		is.Eq(2, mathutil.MustInt(in))
+		is.Eq(2, mathutil.QuietInt(in))
 	}
 	for _, in := range errTests {
-		is.Eq(0, MustInt(in))
+		is.Eq(0, mathutil.MustInt(in))
 	}
 
 	// To uint
-	uintVal, err := Uint("2")
+	uintVal, err := mathutil.Uint("2")
 	is.Nil(err)
 	is.Eq(uint64(2), uintVal)
 
-	uintVal, err = UintOrErr("2")
+	uintVal, err = mathutil.UintOrErr("2")
 	is.Nil(err)
 	is.Eq(uint64(2), uintVal)
 
-	_, err = ToUint("-2")
+	_, err = mathutil.ToUint("-2")
 	is.Err(err)
 
-	is.Eq(uint64(0), MustUint("-2"))
+	is.Eq(uint64(0), mathutil.MustUint("-2"))
 	for _, in := range tests {
-		is.Eq(uint64(2), MustUint(in))
+		is.Eq(uint64(2), mathutil.MustUint(in))
 	}
 	for _, in := range errTests {
-		is.Eq(uint64(0), QuietUint(in))
-		is.Eq(uint64(0), MustUint(in))
+		is.Eq(uint64(0), mathutil.QuietUint(in))
+		is.Eq(uint64(0), mathutil.MustUint(in))
 	}
 
 	// To int64
-	i64Val, err := ToInt64("2")
+	i64Val, err := mathutil.ToInt64("2")
 	is.Nil(err)
 	is.Eq(int64(2), i64Val)
 
-	i64Val, err = Int64("-2")
+	i64Val, err = mathutil.Int64("-2")
 	is.Nil(err)
 	is.Eq(int64(-2), i64Val)
 
-	i64Val, err = Int64OrErr("-2")
+	i64Val, err = mathutil.Int64OrErr("-2")
 	is.Nil(err)
 	is.Eq(int64(-2), i64Val)
 
 	for _, in := range tests {
-		is.Eq(int64(2), MustInt64(in))
+		is.Eq(int64(2), mathutil.MustInt64(in))
 	}
 	for _, in := range errTests {
-		is.Eq(int64(0), MustInt64(in))
-		is.Eq(int64(0), QuietInt64(in))
+		is.Eq(int64(0), mathutil.MustInt64(in))
+		is.Eq(int64(0), mathutil.QuietInt64(in))
 	}
 }
 
@@ -105,20 +106,20 @@ func TestToString(t *testing.T) {
 	}
 
 	for _, in := range tests {
-		is.Eq("2", String(in))
-		is.Eq("2", QuietString(in))
-		is.Eq("2", MustString(in))
-		val, err := ToString(in)
+		is.Eq("2", mathutil.String(in))
+		is.Eq("2", mathutil.QuietString(in))
+		is.Eq("2", mathutil.MustString(in))
+		val, err := mathutil.ToString(in)
 		is.NoErr(err)
 		is.Eq("2", val)
 	}
 
-	val, err := StringOrErr(2)
+	val, err := mathutil.StringOrErr(2)
 	is.NoErr(err)
 	is.Eq("2", val)
 
 	is.Panics(func() {
-		MustString("2")
+		mathutil.MustString("2")
 	})
 }
 
@@ -135,23 +136,23 @@ func TestToFloat(t *testing.T) {
 		json.Number("2"),
 	}
 	for _, in := range tests {
-		is.Eq(float64(2), MustFloat(in))
+		is.Eq(float64(2), mathutil.MustFloat(in))
 	}
 
-	is.Eq(123.5, MustFloat("123.5"))
-	is.Eq(123.5, QuietFloat("123.5"))
-	is.Eq(float64(0), MustFloat("invalid"))
-	is.Eq(float64(0), QuietFloat("invalid"))
+	is.Eq(123.5, mathutil.MustFloat("123.5"))
+	is.Eq(123.5, mathutil.QuietFloat("123.5"))
+	is.Eq(float64(0), mathutil.MustFloat("invalid"))
+	is.Eq(float64(0), mathutil.QuietFloat("invalid"))
 
-	fltVal, err := ToFloat("123.5")
+	fltVal, err := mathutil.ToFloat("123.5")
 	is.Nil(err)
 	is.Eq(123.5, fltVal)
 
-	fltVal, err = Float("-123.5")
+	fltVal, err = mathutil.Float("-123.5")
 	is.Nil(err)
 	is.Eq(-123.5, fltVal)
 
-	fltVal, err = FloatOrErr("-123.5")
+	fltVal, err = mathutil.FloatOrErr("-123.5")
 	is.Nil(err)
 	is.Eq(-123.5, fltVal)
 }
