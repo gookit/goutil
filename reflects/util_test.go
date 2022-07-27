@@ -44,3 +44,29 @@ func TestLen(t *testing.T) {
 
 	is.Eq(-1, reflects.Len(reflect.ValueOf(nil)))
 }
+
+func TestSliceSubKind(t *testing.T) {
+	noErrTests := []struct {
+		val  interface{}
+		want reflect.Kind
+	}{
+		{"invalid", reflect.Invalid},
+		{[]int{1, 2}, reflect.Int},
+		{[]int8{1, 2}, reflect.Int8},
+		{[]int16{1, 2}, reflect.Int16},
+		{[]int32{1, 2}, reflect.Int32},
+		{[]int64{1, 2}, reflect.Int64},
+		{[]uint{1, 2}, reflect.Uint},
+		{[]uint8{1, 2}, reflect.Uint8},
+		{[]uint16{1, 2}, reflect.Uint16},
+		{[]uint32{1, 2}, reflect.Uint32},
+		{[]uint64{1, 2}, reflect.Uint64},
+		{[]string{"a", "b"}, reflect.String},
+		{[]interface{}{"a", "b"}, reflect.Interface},
+	}
+
+	for _, item := range noErrTests {
+		eleType := reflects.SliceSubKind(reflect.TypeOf(item.val))
+		assert.Eq(t, item.want, eleType)
+	}
+}

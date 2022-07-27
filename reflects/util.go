@@ -114,3 +114,37 @@ func Len(v reflect.Value) int {
 	// cannot get length
 	return -1
 }
+
+// SliceSubKind get sub-elem kind of the array, slice, variadic-var.
+//
+// Usage:
+// 	SliceSubKind(reflect.TypeOf([]string{"abc"})) // reflect.String
+func SliceSubKind(typ reflect.Type) reflect.Kind {
+	switch typ.String() {
+	case "[]int":
+		return reflect.Int
+	case "[]int8":
+		return reflect.Int8
+	case "[]int16":
+		return reflect.Int16
+	case "[]int32":
+		return reflect.Int32
+	case "[]int64":
+		return reflect.Int64
+	case "[]uint":
+		return reflect.Uint
+	case "[]uint8":
+		return reflect.Uint8
+	case "[]uint16":
+		return reflect.Uint16
+	case "[]uint32":
+		return reflect.Uint32
+	case "[]uint64":
+		return reflect.Uint64
+	case "[]string":
+		return reflect.String
+	case "[]interface {}": // args ...interface{}
+		return reflect.Interface
+	}
+	return reflect.Invalid
+}
