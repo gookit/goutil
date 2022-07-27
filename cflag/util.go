@@ -92,7 +92,10 @@ func IsFlagHelpErr(err error) bool {
 const ParseStopMark = "--"
 
 // ReplaceShorts replace shorts to full option. will stop on ParseStopMark
-// eg: '-f' -> '--file'.
+//
+// For example:
+// 	eg: '-f' -> '--file'.
+// 	eg: '-n=tom' -> '--name=tom'.
 func ReplaceShorts(args []string, shortsMap map[string]string) []string {
 	if len(args) == 0 {
 		return args
@@ -101,7 +104,7 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string {
 	fmtArgs := make([]string, 0, len(args))
 
 	for i, arg := range args {
-		if arg == "" || arg[0] != '-' || len(arg) > 48 {
+		if arg == "" || arg[0] != '-' || len(arg) > 64 {
 			fmtArgs = append(fmtArgs, arg)
 			continue
 		}
@@ -113,10 +116,19 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string {
 
 		var handled bool
 		for short, name := range shortsMap {
-			// is short name, replace to full opt
-			if arg == AddPrefix(short) {
+			sOpt := AddPrefix(short)
+			// is short name, replace to full opt. eg: '-f' -> '--file'
+			if arg == sOpt {
 				handled = true
 				fmtArgs = append(fmtArgs, AddPrefix(name))
+				break
+			}
+
+			// special, use '=' split value. eg: '-n=tom' -> '--name=tom'
+			if strings.HasPrefix(arg, sOpt+"=") {
+				handled = true
+				fullOpt := AddPrefix(name)
+				fmtArgs = append(fmtArgs, fullOpt+arg[len(sOpt):])
 				break
 			}
 		}

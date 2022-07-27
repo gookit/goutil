@@ -53,4 +53,11 @@ func TestReplaceShorts(t *testing.T) {
 			"n": "number",
 		}),
 	)
+	assert.Eq(t,
+		[]string{"--file=./config.ini", "-e", "--", "-n", "23"},
+		cflag.ReplaceShorts([]string{"-f=./config.ini", "-e", "--", "-n", "23"}, map[string]string{
+			"f": "file",
+			"n": "number",
+		}),
+	)
 }
