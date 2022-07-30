@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestSimilarity(t *testing.T) {
@@ -14,11 +14,11 @@ func TestSimilarity(t *testing.T) {
 }
 
 func TestRepeat(t *testing.T) {
-	assert.Equal(t, "aaa", strutil.Repeat("a", 3))
-	assert.Equal(t, "DD", strutil.Repeat("D", 2))
-	assert.Equal(t, "D", strutil.Repeat("D", 1))
-	assert.Equal(t, "", strutil.Repeat("0", 0))
-	assert.Equal(t, "", strutil.Repeat("D", -3))
+	assert.Eq(t, "aaa", strutil.Repeat("a", 3))
+	assert.Eq(t, "DD", strutil.Repeat("D", 2))
+	assert.Eq(t, "D", strutil.Repeat("D", 1))
+	assert.Eq(t, "", strutil.Repeat("0", 0))
+	assert.Eq(t, "", strutil.Repeat("D", -3))
 }
 
 func TestRepeatRune(t *testing.T) {
@@ -33,12 +33,12 @@ func TestRepeatRune(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, strutil.RepeatRune(tt.give, tt.times))
+		assert.Eq(t, tt.want, strutil.RepeatRune(tt.give, tt.times))
 	}
 }
 
 func TestReplaces(t *testing.T) {
-	assert.Equal(t, "tom age is 20", strutil.Replaces(
+	assert.Eq(t, "tom age is 20", strutil.Replaces(
 		"{name} age is {age}",
 		map[string]string{
 			"{name}": "tom",
@@ -60,14 +60,17 @@ func TestPadding(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, strutil.Padding(tt.give, tt.pad, tt.len, tt.pos))
+		assert.Eq(t, tt.want, strutil.Padding(tt.give, tt.pad, tt.len, tt.pos))
 
 		if tt.pos == strutil.PosRight {
-			assert.Equal(t, tt.want, strutil.PadRight(tt.give, tt.pad, tt.len))
+			assert.Eq(t, tt.want, strutil.PadRight(tt.give, tt.pad, tt.len))
 		} else {
-			assert.Equal(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
+			assert.Eq(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
 		}
 	}
+}
+
+func TestWrapTag(t *testing.T) {
 }
 
 func TestPrettyJSON(t *testing.T) {
@@ -82,7 +85,7 @@ func TestPrettyJSON(t *testing.T) {
 }`
 	for _, sample := range tests {
 		got, err := strutil.PrettyJSON(sample)
-		assert.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.NoErr(t, err)
+		assert.Eq(t, want, got)
 	}
 }

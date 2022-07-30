@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestRandomChars(t *testing.T) {
@@ -54,13 +54,13 @@ func TestRandomBytes(t *testing.T) {
 	fmt.Println(base64.URLEncoding.EncodeToString(b))
 	fmt.Println(base64.StdEncoding.EncodeToString(b))
 	fmt.Println(hex.EncodeToString(b))
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 }
 
 func TestRandomString(t *testing.T) {
 	s, err := strutil.RandomString(3)
 
 	fmt.Println(s)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	assert.True(t, len(s) > 3)
 }

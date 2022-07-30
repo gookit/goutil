@@ -4,12 +4,12 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestIsAlphabet(t *testing.T) {
-	assert.True(t, strutil.IsNumeric('9'))
-	assert.False(t, strutil.IsNumeric('A'))
+	assert.True(t, strutil.IsNumChar('9'))
+	assert.False(t, strutil.IsNumChar('A'))
 
 	assert.False(t, strutil.IsAlphabet('9'))
 	assert.False(t, strutil.IsAlphabet('+'))
@@ -38,31 +38,31 @@ func TestEquals(t *testing.T) {
 func TestLen(t *testing.T) {
 	str := "Hello, 世界"
 
-	assert.Equal(t, 7, strutil.Len("Hello, "))
-	assert.Equal(t, 13, strutil.Len(str))
-	assert.Equal(t, 9, strutil.RuneLen(str))
-	assert.Equal(t, 9, strutil.Utf8len(str))
-	assert.Equal(t, 9, strutil.Utf8Len(str))
+	assert.Eq(t, 7, strutil.Len("Hello, "))
+	assert.Eq(t, 13, strutil.Len(str))
+	assert.Eq(t, 9, strutil.RuneLen(str))
+	assert.Eq(t, 9, strutil.Utf8len(str))
+	assert.Eq(t, 9, strutil.Utf8Len(str))
 	assert.True(t, strutil.IsValidUtf8(str))
 }
 
 func TestStrPos(t *testing.T) {
 	// StrPos
-	assert.Equal(t, -1, strutil.StrPos("xyz", "a"))
-	assert.Equal(t, 0, strutil.StrPos("xyz", "x"))
-	assert.Equal(t, 2, strutil.StrPos("xyz", "z"))
+	assert.Eq(t, -1, strutil.StrPos("xyz", "a"))
+	assert.Eq(t, 0, strutil.StrPos("xyz", "x"))
+	assert.Eq(t, 2, strutil.StrPos("xyz", "z"))
 
 	// RunePos
-	assert.Equal(t, -1, strutil.RunePos("xyz", 'a'))
-	assert.Equal(t, 0, strutil.RunePos("xyz", 'x'))
-	assert.Equal(t, 2, strutil.RunePos("xyz", 'z'))
-	assert.Equal(t, 5, strutil.RunePos("hi时间", '间'))
+	assert.Eq(t, -1, strutil.RunePos("xyz", 'a'))
+	assert.Eq(t, 0, strutil.RunePos("xyz", 'x'))
+	assert.Eq(t, 2, strutil.RunePos("xyz", 'z'))
+	assert.Eq(t, 5, strutil.RunePos("hi时间", '间'))
 
 	// BytePos
-	assert.Equal(t, -1, strutil.BytePos("xyz", 'a'))
-	assert.Equal(t, 0, strutil.BytePos("xyz", 'x'))
-	assert.Equal(t, 2, strutil.BytePos("xyz", 'z'))
-	// assert.Equal(t, 2, strutil.BytePos("hi时间", '间')) // will build error
+	assert.Eq(t, -1, strutil.BytePos("xyz", 'a'))
+	assert.Eq(t, 0, strutil.BytePos("xyz", 'x'))
+	assert.Eq(t, 2, strutil.BytePos("xyz", 'z'))
+	// assert.Eq(t, 2, strutil.BytePos("hi时间", '间')) // will build error
 }
 
 func TestIsStartOf(t *testing.T) {
@@ -76,8 +76,8 @@ func TestIsStartOf(t *testing.T) {
 	}
 
 	for _, item := range tests {
-		assert.Equal(t, item.want, strutil.HasPrefix(item.give, item.sub))
-		assert.Equal(t, item.want, strutil.IsStartOf(item.give, item.sub))
+		assert.Eq(t, item.want, strutil.HasPrefix(item.give, item.sub))
+		assert.Eq(t, item.want, strutil.IsStartOf(item.give, item.sub))
 	}
 
 	assert.True(t, strutil.IsStartsOf("abc", []string{"a", "b"}))
@@ -96,8 +96,8 @@ func TestIsEndOf(t *testing.T) {
 	}
 
 	for _, item := range tests {
-		assert.Equal(t, item.want, strutil.HasSuffix(item.give, item.sub))
-		assert.Equal(t, item.want, strutil.IsEndOf(item.give, item.sub))
+		assert.Eq(t, item.want, strutil.HasSuffix(item.give, item.sub))
+		assert.Eq(t, item.want, strutil.IsEndOf(item.give, item.sub))
 	}
 }
 

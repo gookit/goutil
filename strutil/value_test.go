@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestValue_usage(t *testing.T) {
@@ -14,8 +14,8 @@ func TestValue_usage(t *testing.T) {
 	assert.True(t, s.IsEndWith("123"))
 	assert.True(t, s.HasSuffix("123"))
 
-	assert.Equal(t, "abc-123", s.Val())
-	assert.Equal(t, "abc-123", s.String())
+	assert.Eq(t, "abc-123", s.Val())
+	assert.Eq(t, "abc-123", s.String())
 
 	s1 := strutil.StrVal("abc-123")
 	assert.NotEmpty(t, s1.Val())
