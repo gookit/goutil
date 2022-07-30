@@ -118,7 +118,7 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
 		}
 	}
 
-	return os.OpenFile(fpath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, filePerm)
+	return os.OpenFile(fpath, writeFileFlags, filePerm)
 }
 
 // MustCreateFile create file, will panic on error
@@ -144,6 +144,20 @@ func PutContents(filePath string, contents string) (int, error) {
 
 	defer dstFile.Close()
 	return dstFile.WriteString(contents)
+}
+
+// WriteFile create file and write contents to file
+func WriteFile(filePath string, data []byte, perm os.FileMode) error {
+	f, err := os.OpenFile(filePath, writeFileFlags, perm)
+	if err != nil {
+		return err
+	}
+
+	_, err = f.Write(data)
+	if err1 := f.Close(); err1 != nil && err == nil {
+		err = err1
+	}
+	return err
 }
 
 // CopyFile copy a file to another file path.
