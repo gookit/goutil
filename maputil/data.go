@@ -8,10 +8,11 @@ import (
 )
 
 // Data an map data type
-type Data map[string]interface{}
+type Data map[string]any
+type Map = Data
 
 // Set value to the data map
-func (d Data) Set(key string, val interface{}) {
+func (d Data) Set(key string, val any) {
 	d[key] = val
 }
 
@@ -21,8 +22,8 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
-// Emtpy if the data map
-func (d Data) Emtpy() bool {
+// IsEmtpy if the data map
+func (d Data) IsEmtpy() bool {
 	return len(d) == 0
 }
 
@@ -38,14 +39,32 @@ func (d Data) Value(key string) (interface{}, bool) {
 }
 
 // GetByPath get value from the data map by path. eg: top.sub
+// Supports dot syntax to get deep values.
 func (d Data) GetByPath(path string) (interface{}, bool) {
 	return GetByPath(path, d)
 }
 
+// SetByPath sets a value in the map.
+// Supports dot syntax to set deep values.
+//
+// For example:
+//
+//     m.SetByPath("name.first", "Mat")
+//
+// The above code sets the 'first' field on the 'name' object in the m Data.
+//
+// refer from: github.com/stretchr/stew
+func (d *Data) SetByPath(path string, value any) error {
+	nmp, err := SetByPath(*d, path, value)
+	if err == nil {
+		*d = nmp
+	}
+	return err
+}
+
 // Default get value from the data map with default value
-func (d Data) Default(key string, def interface{}) interface{} {
-	val, ok := d[key]
-	if ok {
+func (d Data) Default(key string, def any) interface{} {
+	if val, ok := d[key]; ok {
 		return val
 	}
 	return def
@@ -53,31 +72,26 @@ func (d Data) Default(key string, def interface{}) interface{} {
 
 // Int value get
 func (d Data) Int(key string) int {
-	val, ok := d[key]
-	if !ok {
-		return 0
+	if val, ok := d[key]; ok {
+		return mathutil.QuietInt(val)
 	}
-
-	return mathutil.QuietInt(val)
+	return 0
 }
 
 // Int64 value get
 func (d Data) Int64(key string) int64 {
-	val, ok := d[key]
-	if !ok {
-		return 0
+	if val, ok := d[key]; ok {
+		return mathutil.QuietInt64(val)
 	}
-
-	return mathutil.QuietInt64(val)
+	return 0
 }
 
 // Str value get by key
 func (d Data) Str(key string) string {
-	val, ok := d[key]
-	if !ok {
-		return ""
+	if val, ok := d[key]; ok {
+		return strutil.QuietString(val)
 	}
-	return strutil.QuietString(val)
+	return ""
 }
 
 // Bool value get
@@ -111,13 +125,10 @@ func (d Data) Strings(key string) []string {
 
 // StringsByStr value get by key
 func (d Data) StringsByStr(key string) []string {
-	val, ok := d[key]
-	if !ok {
-		return nil
+	if val, ok := d[key]; ok {
+		return strings.Split(strutil.QuietString(val), ",")
 	}
-
-	str := strutil.QuietString(val)
-	return strings.Split(str, ",")
+	return nil
 }
 
 // StringMap get map[string]string value
