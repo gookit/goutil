@@ -5,18 +5,18 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestErrStackOpt(t *testing.T) {
 	defer ResetStdOpt()
 
-	assert.Equal(t, 3, stdOpt.SkipDepth)
-	assert.Equal(t, 8, stdOpt.TraceDepth)
+	assert.Eq(t, 3, stdOpt.SkipDepth)
+	assert.Eq(t, 8, stdOpt.TraceDepth)
 
 	Config(SkipDepth(5), TraceDepth(12))
-	assert.Equal(t, 5, stdOpt.SkipDepth)
-	assert.Equal(t, 12, stdOpt.TraceDepth)
+	assert.Eq(t, 5, stdOpt.SkipDepth)
+	assert.Eq(t, 12, stdOpt.TraceDepth)
 
 }
 
@@ -29,7 +29,7 @@ func TestFuncForPC(t *testing.T) {
 	assert.Contains(t, fn.String(), "goutil/errorx/stack.go")
 
 	bs, err := fn.MarshalText()
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	str := string(bs)
 	assert.Contains(t, str, "gookit/goutil/errorx.Config()")
 	assert.Contains(t, str, "goutil/errorx/stack.go")
@@ -37,13 +37,13 @@ func TestFuncForPC(t *testing.T) {
 
 func TestStack_Format(t *testing.T) {
 	st := new(stack)
-	assert.Equal(t, 0, st.StackLen())
+	assert.Eq(t, 0, st.StackLen())
 
 	buf := new(bytes.Buffer)
 	_, err := st.WriteTo(buf)
-	assert.NoError(t, err)
-	assert.Equal(t, "", buf.String())
-	assert.Equal(t, uintptr(0), st.CallerPC())
+	assert.NoErr(t, err)
+	assert.Eq(t, "", buf.String())
+	assert.Eq(t, uintptr(0), st.CallerPC())
 
 	st = callersStack(1, 5)
 	assert.True(t, st.StackLen() > 0)

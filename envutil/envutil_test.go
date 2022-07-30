@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestParseEnvValue(t *testing.T) {
-	ris := assert.New(t)
+	is := assert.New(t)
 	tests := []struct {
 		eKey, eVal, rVal, nVal string
 	}{
@@ -29,36 +29,36 @@ func TestParseEnvValue(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ris.Equal("", Getenv(tt.eKey))
+		is.Eq("", Getenv(tt.eKey))
 
 		testutil.MockEnvValue(tt.eKey, tt.eVal, func(eVal string) {
-			ris.Equal(tt.eVal, eVal)
-			ris.Equal(tt.nVal, ParseEnvValue(tt.rVal))
+			is.Eq(tt.eVal, eVal)
+			is.Eq(tt.nVal, ParseEnvValue(tt.rVal))
 		})
 	}
 
 	// test multi ENV key
 	rVal := "${FirstEnv}/${ SecondEnv }"
-	ris.Equal("", Getenv("FirstEnv"))
-	ris.Equal("", Getenv("SecondEnv"))
-	ris.Equal(rVal, ParseEnvValue(rVal))
-	ris.Equal(rVal, VarParse(rVal))
+	is.Eq("", Getenv("FirstEnv"))
+	is.Eq("", Getenv("SecondEnv"))
+	is.Eq(rVal, ParseEnvValue(rVal))
+	is.Eq(rVal, VarParse(rVal))
 
 	testutil.MockEnvValues(map[string]string{
 		"FirstEnv":  "abc",
 		"SecondEnv": "def",
 	}, func() {
-		ris.Equal("abc", Getenv("FirstEnv"))
-		ris.Equal("def", Getenv("SecondEnv"))
-		ris.Equal("abc/def", ParseEnvValue(rVal))
-		ris.Equal("abc string", VarReplace("${FirstEnv} string"))
+		is.Eq("abc", Getenv("FirstEnv"))
+		is.Eq("def", Getenv("SecondEnv"))
+		is.Eq("abc/def", ParseEnvValue(rVal))
+		is.Eq("abc string", VarReplace("${FirstEnv} string"))
 	})
 
 	testutil.MockEnvValues(map[string]string{
 		"FirstEnv": "abc",
 	}, func() {
-		ris.Equal("abc", Getenv("FirstEnv"))
-		ris.Equal("", Getenv("SecondEnv"))
-		ris.Equal("abc/${ SecondEnv }", ParseEnvValue(rVal))
+		is.Eq("abc", Getenv("FirstEnv"))
+		is.Eq("", Getenv("SecondEnv"))
+		is.Eq("abc/${ SecondEnv }", ParseEnvValue(rVal))
 	})
 }

@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 const (
@@ -21,13 +21,13 @@ func TestGetenv(t *testing.T) {
 		TestEnvName: TestEnvValue,
 	}, func() {
 		envValue := Getenv(TestEnvName)
-		assert.Equal(t, TestEnvValue, envValue, "env value not equals")
+		assert.Eq(t, TestEnvValue, envValue, "env value not equals")
 		envValue = Getenv(TestNoEnvName, defTestEnvValue)
-		assert.Equal(t, defTestEnvValue, envValue, "env value not default")
+		assert.Eq(t, defTestEnvValue, envValue, "env value not default")
 
-		assert.Equal(t, 1, GetInt(TestEnvName), "int env value not equals")
-		assert.Equal(t, 0, GetInt(TestNoEnvName))
-		assert.Equal(t, 2, GetInt(TestNoEnvName, 2))
+		assert.Eq(t, 1, GetInt(TestEnvName), "int env value not equals")
+		assert.Eq(t, 0, GetInt(TestNoEnvName))
+		assert.Eq(t, 2, GetInt(TestNoEnvName, 2))
 	})
 }
 
@@ -46,7 +46,7 @@ func TestEnviron(t *testing.T) {
 		TestEnvName: TestEnvValue,
 	}, func() {
 		envValue := Getenv("not_exist")
-		assert.Equal(t, "", envValue)
+		assert.Eq(t, "", envValue)
 
 		fmt.Println("os.Environ:", os.Environ())
 		fmt.Println("new Environ:", Environ())

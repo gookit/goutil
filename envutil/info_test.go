@@ -7,7 +7,7 @@ import (
 
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/testutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestOS(t *testing.T) {
@@ -59,7 +59,7 @@ func TestIsSupportColor(t *testing.T) {
 
 	// ConEmuANSI
 	testutil.MockEnvValue("ConEmuANSI", "ON", func(nv string) {
-		is.Equal("ON", nv)
+		is.Eq("ON", nv)
 		is.True(envutil.IsSupportColor())
 	})
 
@@ -83,12 +83,12 @@ func TestIsSupportColor(t *testing.T) {
 		is.False(envutil.IsSupportColor())
 	})
 
-	is.NoError(os.Setenv("TERM", "xterm-vt220"))
+	is.NoErr(os.Setenv("TERM", "xterm-vt220"))
 	is.True(envutil.IsSupportColor())
 	// revert
 	if oldVal != "" {
-		is.NoError(os.Setenv("TERM", oldVal))
+		is.NoErr(os.Setenv("TERM", oldVal))
 	} else {
-		is.NoError(os.Unsetenv("TERM"))
+		is.NoErr(os.Unsetenv("TERM"))
 	}
 }
