@@ -12,3 +12,13 @@ const (
 	// DefaultSep comma string
 	DefaultSep = ","
 )
+
+// consts for compare operation
+const (
+	OpEq  = "="
+	OpNeq = "!="
+	OpLt  = "<"
+	OpLte = "<="
+	OpGt  = ">"
+	OpGte = ">="
+)
