@@ -1,6 +1,7 @@
 package strutil
 
 import (
+	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -9,9 +10,16 @@ import (
 // Equal check
 var Equal = strings.EqualFold
 
-// IsNumeric returns true if the given character is a numeric, otherwise false.
-func IsNumeric(c byte) bool {
+// IsNumChar returns true if the given character is a numeric, otherwise false.
+func IsNumChar(c byte) bool {
 	return c >= '0' && c <= '9'
+}
+
+var numReg = regexp.MustCompile("^\\d+$")
+
+// IsNumeric returns true if the given string is a numeric, otherwise false.
+func IsNumeric(s string) bool {
+	return numReg.MatchString(s)
 }
 
 // IsAlphabet char
@@ -25,7 +33,6 @@ func IsAlphabet(char uint8) bool {
 	if char >= 'a' && char <= 'z' {
 		return true
 	}
-
 	return false
 }
 

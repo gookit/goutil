@@ -20,6 +20,12 @@ func MustCut(s, sep string) (before string, after string) {
 	return
 }
 
+// TrimCut always returns two substring and trim space for items.
+func TrimCut(s, sep string) (string, string) {
+	before, after, _ := Cut(s, sep)
+	return strings.TrimSpace(before), strings.TrimSpace(after)
+}
+
 // SplitValid string to slice. will trim each item and filter empty string node.
 func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 

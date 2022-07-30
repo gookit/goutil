@@ -162,3 +162,11 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 
 	return buf.String()
 }
+
+// WrapTag for given string.
+func WrapTag(s, tag string) string {
+	if s == "" {
+		return s
+	}
+	return fmt.Sprintf("<%s>%s</%s>", tag, s, tag)
+}
