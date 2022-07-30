@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/jsonutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 type user struct {
@@ -27,42 +27,42 @@ func TestPretty(t *testing.T) {
 }`
 	for _, sample := range tests {
 		got, err := jsonutil.Pretty(sample)
-		assert.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.NoErr(t, err)
+		assert.Eq(t, want, got)
 	}
 
 	bts, err := jsonutil.EncodePretty(map[string]int{"a": 1})
-	assert.NoError(t, err)
-	assert.Equal(t, want, string(bts))
+	assert.NoErr(t, err)
+	assert.Eq(t, want, string(bts))
 }
 
 func TestEncode(t *testing.T) {
 	bts, err := jsonutil.Encode(testUser)
-	assert.NoError(t, err)
-	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+	assert.NoErr(t, err)
+	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
 
 	bts, err = jsonutil.Encode(&testUser)
-	assert.NoError(t, err)
-	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+	assert.NoErr(t, err)
+	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
 
 	bts, err = jsonutil.EncodeUnescapeHTML(&testUser)
-	assert.NoError(t, err)
-	assert.Equal(t, `{"name":"inhere","age":200}
+	assert.NoErr(t, err)
+	assert.Eq(t, `{"name":"inhere","age":200}
 `, string(bts))
 }
 
 func TestEncodeUnescapeHTML(t *testing.T) {
 	bts, err := jsonutil.Encode(&testUser)
-	assert.NoError(t, err)
-	assert.Equal(t, `{"name":"inhere","age":200}`, string(bts))
+	assert.NoErr(t, err)
+	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
 }
 
 func TestEncodeToWriter(t *testing.T) {
 	buf := &bytes.Buffer{}
 
 	err := jsonutil.EncodeToWriter(testUser, buf)
-	assert.NoError(t, err)
-	assert.Equal(t, `{"name":"inhere","age":200}
+	assert.NoErr(t, err)
+	assert.Eq(t, `{"name":"inhere","age":200}
 `, buf.String())
 }
 
@@ -71,9 +71,9 @@ func TestDecode(t *testing.T) {
 	usr := &user{}
 	err := jsonutil.Decode([]byte(str), usr)
 
-	assert.NoError(t, err)
-	assert.Equal(t, "inhere", usr.Name)
-	assert.Equal(t, 200, usr.Age)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", usr.Name)
+	assert.Eq(t, 200, usr.Age)
 }
 
 func TestDecodeString(t *testing.T) {
@@ -81,9 +81,9 @@ func TestDecodeString(t *testing.T) {
 	usr := &user{}
 	err := jsonutil.DecodeString(str, usr)
 
-	assert.NoError(t, err)
-	assert.Equal(t, "inhere", usr.Name)
-	assert.Equal(t, 200, usr.Age)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", usr.Name)
+	assert.Eq(t, 200, usr.Age)
 }
 
 func TestWriteReadFile(t *testing.T) {
@@ -93,20 +93,20 @@ func TestWriteReadFile(t *testing.T) {
 	}{"inhere", 200}
 
 	err := jsonutil.WriteFile("testdata/test.json", &user)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	err = jsonutil.ReadFile("testdata/test.json", &user)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
-	assert.Equal(t, "inhere", user.Name)
-	assert.Equal(t, 200, user.Age)
+	assert.Eq(t, "inhere", user.Name)
+	assert.Eq(t, 200, user.Age)
 }
 
 func TestStripComments(t *testing.T) {
 	is := assert.New(t)
 
 	str := jsonutil.StripComments(`{"name":"app"}`)
-	is.Equal(`{"name":"app"}`, str)
+	is.Eq(`{"name":"app"}`, str)
 
 	givens := []string{
 		// single line comments
@@ -169,26 +169,26 @@ comments
 	}
 
 	for i, s := range givens {
-		is.Equal(wants[i], jsonutil.StripComments(s))
+		is.Eq(wants[i], jsonutil.StripComments(s))
 	}
 
 	str = jsonutil.StripComments(`{"name":"app"} // comments`)
-	is.Equal(`{"name":"app"}`, str)
+	is.Eq(`{"name":"app"}`, str)
 
 	// fix https://github.com/gookit/config/issues/2
 	str = jsonutil.StripComments(`{"name":"http://abc.com"} // comments`)
-	is.Equal(`{"name":"http://abc.com"}`, str)
+	is.Eq(`{"name":"http://abc.com"}`, str)
 
 	str = jsonutil.StripComments(`{
 "address": [
 	"http://192.168.1.XXX:2379"
 ]
 } // comments`)
-	is.Equal(`{"address":["http://192.168.1.XXX:2379"]}`, str)
+	is.Eq(`{"address":["http://192.168.1.XXX:2379"]}`, str)
 
 	s := `{"name":"http://abc.com"} // comments`
 	s = jsonutil.StripComments(s)
-	assert.Equal(t, `{"name":"http://abc.com"}`, s)
+	assert.Eq(t, `{"name":"http://abc.com"}`, s)
 
 	s = `
 {// comments
@@ -227,5 +227,5 @@ comments
 }`
 	ep := `{"name":"app","debug":false,"baseKey":"value","age":123,"envKey1":"${NotExist|defValue}","map1":{"key":"val","key1":"val1","key2":"val2"},"arr1":["val","val1","val2","http://a.com"],"lang":{"dir":"res/lang","allowed":{"en":"val","zh-CN":"val2"}}}`
 	s = jsonutil.StripComments(s)
-	assert.Equal(t, ep, s)
+	assert.Eq(t, ep, s)
 }

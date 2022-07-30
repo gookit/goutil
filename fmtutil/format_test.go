@@ -5,8 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fmtutil"
-	assert2 "github.com/gookit/goutil/testutil/assert"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestDataSize(t *testing.T) {
@@ -22,9 +21,9 @@ func TestDataSize(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, fmtutil.DataSize(tt.args))
+		assert.Eq(t, tt.want, fmtutil.DataSize(tt.args))
 	}
-	assert.Equal(t, "1.12G", fmtutil.SizeToString(1200346778))
+	assert.Eq(t, "1.12G", fmtutil.SizeToString(1200346778))
 }
 
 func TestParseByte(t *testing.T) {
@@ -40,7 +39,7 @@ func TestParseByte(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert2.Eq(t, tt.bytes, fmtutil.StringToByte(tt.sizeS))
+		assert.Eq(t, tt.bytes, fmtutil.StringToByte(tt.sizeS))
 	}
 }
 
@@ -56,16 +55,16 @@ func TestPrettyJSON(t *testing.T) {
 }`
 	for _, sample := range tests {
 		got, err := fmtutil.PrettyJSON(sample)
-		assert.NoError(t, err)
-		assert.Equal(t, want, got)
+		assert.NoErr(t, err)
+		assert.Eq(t, want, got)
 	}
 }
 
 func TestArgsWithSpaces(t *testing.T) {
-	assert.Equal(t, "", fmtutil.ArgsWithSpaces(nil))
-	assert.Equal(t, "", fmtutil.ArgsWithSpaces([]interface{}{}))
-	assert.Equal(t, "abc", fmtutil.ArgsWithSpaces([]interface{}{"abc"}))
-	assert.Equal(t, "23 abc", fmtutil.ArgsWithSpaces([]interface{}{23, "abc"}))
+	assert.Eq(t, "", fmtutil.ArgsWithSpaces(nil))
+	assert.Eq(t, "", fmtutil.ArgsWithSpaces([]interface{}{}))
+	assert.Eq(t, "abc", fmtutil.ArgsWithSpaces([]interface{}{"abc"}))
+	assert.Eq(t, "23 abc", fmtutil.ArgsWithSpaces([]interface{}{23, "abc"}))
 }
 
 func TestStringsToInts(t *testing.T) {
@@ -73,8 +72,8 @@ func TestStringsToInts(t *testing.T) {
 
 	ints, err := fmtutil.StringsToInts([]string{"1", "2"})
 	is.Nil(err)
-	is.Equal("[]int{1, 2}", fmt.Sprintf("%#v", ints))
+	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", ints))
 
 	_, err = fmtutil.StringsToInts([]string{"a", "b"})
-	is.Error(err)
+	is.Err(err)
 }

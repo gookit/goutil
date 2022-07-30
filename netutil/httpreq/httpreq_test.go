@@ -7,7 +7,7 @@ import (
 	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/netutil/httpctype"
 	"github.com/gookit/goutil/netutil/httpreq"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestHttpReq_Send(t *testing.T) {
@@ -16,7 +16,7 @@ func TestHttpReq_Send(t *testing.T) {
 		ContentType(httpctype.JSON).
 		Send("/get")
 
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	sc := resp.StatusCode
 	assert.True(t, httpreq.IsOK(sc))
 	assert.True(t, httpreq.IsSuccessful(sc))
@@ -28,7 +28,7 @@ func TestHttpReq_Send(t *testing.T) {
 
 	retMp := make(map[string]interface{})
 	err = jsonutil.DecodeReader(resp.Body, &retMp)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	dump.P(retMp)
 }
 

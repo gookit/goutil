@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fmtutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestHowLongAgo(t *testing.T) {
@@ -21,6 +21,6 @@ func TestHowLongAgo(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.want, fmtutil.HowLongAgo(tt.args))
+		assert.Eq(t, tt.want, fmtutil.HowLongAgo(tt.args))
 	}
 }

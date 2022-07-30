@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/netutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestInternalIP(t *testing.T) {
