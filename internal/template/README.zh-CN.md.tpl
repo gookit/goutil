@@ -54,6 +54,10 @@ golint ./...
 go test ./...
 ```
 
+## Related
+
+- https://github.com/duke-git/lancet
+
 ## Gookit packages
 
   - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
