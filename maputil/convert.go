@@ -68,7 +68,7 @@ func ToString2(mp any) string {
 	return NewFormatter(mp).Format()
 }
 
-// FormatIndent map data to string.
+// FormatIndent format map data to string with newline and indent.
 func FormatIndent(mp any, indent string) string {
 	return NewFormatter(mp).WithIndent(indent).Format()
 }

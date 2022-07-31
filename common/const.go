@@ -22,3 +22,6 @@ const (
 	OpGt  = ">"
 	OpGte = ">="
 )
+
+// NoIdx invalid index or length
+const NoIdx = -1
