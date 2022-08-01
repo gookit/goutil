@@ -2,6 +2,7 @@ package assert
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime"
@@ -10,7 +11,6 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/common"
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
@@ -24,7 +24,7 @@ func checkEqualArgs(expected, actual any) error {
 	}
 
 	if reflects.IsFunc(expected) || reflects.IsFunc(actual) {
-		return errorx.New("cannot take func type as argument")
+		return errors.New("cannot take func type as argument")
 	}
 	return nil
 }
@@ -37,8 +37,9 @@ func checkEqualArgs(expected, actual any) error {
 // to a type conversion in the Go grammar.
 func formatUnequalValues(expected, actual any) (e string, a string) {
 	if reflect.TypeOf(expected) != reflect.TypeOf(actual) {
-		return fmt.Sprintf("%T(%s)", expected, truncatingFormat(expected)),
-			fmt.Sprintf("%T(%s)", actual, truncatingFormat(actual))
+		return truncatingFormat(expected), truncatingFormat(actual)
+		// return fmt.Sprintf("%T(%s)", expected, truncatingFormat(expected)),
+		// 	fmt.Sprintf("%T(%s)", actual, truncatingFormat(actual))
 	}
 
 	switch expected.(type) {

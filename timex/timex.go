@@ -13,11 +13,13 @@ import (
 
 // provide some commonly time consts
 const (
+	OneSecond  = 1
 	OneMinSec  = 60
 	OneHourSec = 3600
 	OneDaySec  = 86400
 	OneWeekSec = 7 * 86400
 
+	Second  = time.Second
 	OneMin  = time.Minute
 	OneHour = time.Hour
 	OneDay  = 24 * time.Hour

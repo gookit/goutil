@@ -86,11 +86,12 @@ var (
 	}
 )
 
-// TwowaySearch Find specialized element in a slice forward and backward in the same time, should be more quicker.
-// data: the slice to search in. MUST BE A SLICE.
-// item: the element to search.
-// fn: the comparer function.
-// return: the index of the element, or -1 if not found.
+// TwowaySearch Find specialized element in a slice forward and backward in the same time, should be more quickly.
+//
+// 	data: the slice to search in. MUST BE A SLICE.
+// 	item: the element to search.
+// 	fn: the comparer function.
+// 	return: the index of the element, or -1 if not found.
 func TwowaySearch(data interface{}, item interface{}, fn Comparer) (int, error) {
 	if data == nil {
 		return -1, errors.New("collections.TwowaySearch: data is nil")
@@ -139,6 +140,7 @@ func TwowaySearch(data interface{}, item interface{}, fn Comparer) (int, error) 
 }
 
 // MakeEmptySlice Create a new slice with the elements of the source that satisfy the predicate.
+//
 // itemType: the type of the elements in the source.
 // returns: the new slice.
 func MakeEmptySlice(itemType reflect.Type) interface{} {
@@ -147,8 +149,9 @@ func MakeEmptySlice(itemType reflect.Type) interface{} {
 }
 
 // CloneSlice Clone a slice.
-// data: the slice to clone.
-// returns: the cloned slice.
+//
+// 	data: the slice to clone.
+// 	returns: the cloned slice.
 func CloneSlice(data interface{}) interface{} {
 	typeOfData := reflect.TypeOf(data)
 	if typeOfData.Kind() != reflect.Slice {
@@ -158,10 +161,11 @@ func CloneSlice(data interface{}) interface{} {
 }
 
 // Excepts Produces the set difference of two slice according to a comparer function.
-// first: the first slice. MUST BE A SLICE.
-// second: the second slice. MUST BE A SLICE.
-// fn: the comparer function.
-// returns: the difference of the two slices.
+//
+// 	first: the first slice. MUST BE A SLICE.
+// 	second: the second slice. MUST BE A SLICE.
+// 	fn: the comparer function.
+// 	returns: the difference of the two slices.
 func Excepts(first interface{}, second interface{}, fn Comparer) interface{} {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
@@ -193,11 +197,12 @@ func Excepts(first interface{}, second interface{}, fn Comparer) interface{} {
 	return result.Interface()
 }
 
-// Intersects Produces the intersect of two slice according to a comparer function.
-// first: the first slice. MUST BE A SLICE.
-// second: the second slice. MUST BE A SLICE.
-// fn: the comparer function.
-// returns: the intersect of the two slices.
+// Intersects Produces to intersect of two slice according to a comparer function.
+//
+// 	first: the first slice. MUST BE A SLICE.
+// 	second: the second slice. MUST BE A SLICE.
+// 	fn: the comparer function.
+// 	returns: the intersect of the two slices.
 func Intersects(first interface{}, second interface{}, fn Comparer) interface{} {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
@@ -230,10 +235,11 @@ func Intersects(first interface{}, second interface{}, fn Comparer) interface{} 
 }
 
 // Union Produces the set union of two slice according to a comparer function
-// first: the first slice. MUST BE A SLICE.
-// second: the second slice. MUST BE A SLICE.
-// fn: the comparer function.
-// returns: the union of the two slices.
+//
+// 	first: the first slice. MUST BE A SLICE.
+// 	second: the second slice. MUST BE A SLICE.
+// 	fn: the comparer function.
+// 	returns: the union of the two slices.
 func Union(first interface{}, second interface{}, fn Comparer) interface{} {
 	excepts := Excepts(second, first, fn)
 
@@ -252,6 +258,7 @@ func Union(first interface{}, second interface{}, fn Comparer) interface{} {
 }
 
 // Find Produces the struct/value of a slice according to a predicate function.
+//
 //  source: the slice. MUST BE A SLICE.
 //  fn: the predicate function.
 //  returns: the struct/value of the slice.
@@ -277,10 +284,11 @@ func Find(source interface{}, fn Predicate) (interface{}, error) {
 
 // FindOrDefault Produce the struct/value f a slice to a predicate function,
 // Produce default value when predicate function not found.
-// source: the slice. MUST BE A SLICE.
-// fn: the predicate function.
-// defaultValue: the default value.
-// returns: the struct/value of the slice.
+//
+// 	source: the slice. MUST BE A SLICE.
+// 	fn: the predicate function.
+// 	defaultValue: the default value.
+// 	returns: the struct/value of the slice.
 func FindOrDefault(source interface{}, fn Predicate, defaultValue interface{}) interface{} {
 	item, err := Find(source, fn)
 	if err != nil {
@@ -293,9 +301,10 @@ func FindOrDefault(source interface{}, fn Predicate, defaultValue interface{}) i
 
 // TakeWhile Produce the set of a slice according to a predicate function,
 // Produce empty slice when predicate function not matched.
-// data: the slice. MUST BE A SLICE.
-// fn: the predicate function.
-// returns: the set of the slice.
+//
+// 	data: the slice. MUST BE A SLICE.
+// 	fn: the predicate function.
+// 	returns: the set of the slice.
 func TakeWhile(data interface{}, fn Predicate) interface{} {
 	aType := reflect.TypeOf(data)
 	if aType.Kind() != reflect.Slice {
@@ -317,9 +326,10 @@ func TakeWhile(data interface{}, fn Predicate) interface{} {
 
 // ExceptWhile Produce the set of a slice except with a predicate function,
 // Produce original slice when predicate function not match.
-// data: the slice. MUST BE A SLICE.
-// fn: the predicate function.
-// returns: the set of the slice.
+//
+// 	data: the slice. MUST BE A SLICE.
+// 	fn: the predicate function.
+// 	returns: the set of the slice.
 func ExceptWhile(data interface{}, fn Predicate) interface{} {
 	aType := reflect.TypeOf(data)
 	if aType.Kind() != reflect.Slice {
