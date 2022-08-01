@@ -10,12 +10,16 @@ import (
 )
 
 func makMapForSetByPath() map[string]interface{} {
-	return map[string]interface{}{
+	return map[string]any{
 		"key0": "v0",
 		"key2": 34,
-		"key3": map[string]interface{}{
+		"key3": map[string]any{
 			"k301": "v301",
 			"k303": []string{"v303-1", "v303-2"},
+			"k304": map[string]any{
+				"k3041": "v3041",
+				"k3042": []string{"k3042-1", "k3042-2"},
+			},
 		},
 		"key4": map[string]string{
 			"k401": "v401",
@@ -33,11 +37,18 @@ func TestSetByPath2_map_add_item(t *testing.T) {
 	assert.ContainsKey(t, mp, "key5")
 	assert.Eq(t, val, maputil.QuietGet(mp, "key5"))
 
+	// set to map[string]any
 	keys2 := []string{"key3", "k302"} // ok
 	err2 := maputil.SetByKeys2(mp, keys2, val)
 	assert.NoErr(t, err2)
 	assert.Eq(t, val, maputil.QuietGet(mp, "key3.k302"))
+	// more deep
+	keys3 := []string{"key3", "k304", "k3043"} // ok
+	err3 := maputil.SetByKeys2(mp, keys3, val)
+	assert.NoErr(t, err3)
+	assert.Eq(t, val, maputil.QuietGet(mp, "key3.k304.k3043"))
 
+	// set to map[string]string
 	keys4 := []string{"key4", "k402"} // ok
 	err4 := maputil.SetByKeys2(mp, keys4, val)
 	assert.NoErr(t, err4)
@@ -66,18 +77,38 @@ func TestSetByPath2_map_up_val(t *testing.T) {
 	dump.Println(mp)
 }
 
-func TestSetByPath2_slice_val(t *testing.T) {
+func TestSetByPath2_slice_val1(t *testing.T) {
 	mp := makMapForSetByPath()
 
-	keys3 := []string{"key3", "k303[2]"} // ok
-	err3 := maputil.SetByKeys2(mp, keys3, "new-value")
-	assert.NoErr(t, err3)
+	// nVal := "new-value"
+	// keys3 := []string{"key3", "k303", "1"} // ok
+	// err3 := maputil.SetByKeys2(mp, keys3, nVal)
+	// assert.NoErr(t, err3)
+	// assert.Eq(t, nVal, maputil.QuietGet(mp, "key3.k303.1"))
+
+	nItem := "a-new-item"
+	keys4 := []string{"key3", "k303", "2"} // ok
+	err4 := maputil.SetByKeys2(mp, keys4, nItem)
+	assert.NoErr(t, err4)
+	assert.Eq(t, nItem, maputil.QuietGet(mp, "key3.k303.2"))
+	dump.Println(mp)
+}
+
+func TestSetByPath2_slice_val2(t *testing.T) {
+	mp := makMapForSetByPath()
+	nVal := "new-value"
+
+	keys2 := []string{"key3", "k303[1]"} // ok
+	err2 := maputil.SetByKeys2(mp, keys2, nVal)
+	assert.NoErr(t, err2)
+	assert.Eq(t, nVal, maputil.QuietGet(mp, "key3.k303.1"))
 	dump.Println(mp)
 
-	keys4 := []string{"key3", "k303.3"} // ok
-	err4 := maputil.SetByKeys2(mp, keys4, "new-value")
-	assert.NoErr(t, err4)
-	dump.Println(mp)
+	// keys3 := []string{"key3", "k303[2]"} // ok
+	// err3 := maputil.SetByKeys2(mp, keys3, "new-item")
+	// assert.NoErr(t, err3)
+	// assert.Len(t, mp["key3"], 3)
+	// dump.Println(mp)
 }
 
 func TestSliceItemType(t *testing.T) {
