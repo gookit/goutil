@@ -43,6 +43,7 @@ func TestLen(t *testing.T) {
 	assert.Eq(t, 9, strutil.RuneLen(str))
 	assert.Eq(t, 9, strutil.Utf8len(str))
 	assert.Eq(t, 9, strutil.Utf8Len(str))
+	assert.Eq(t, 11, strutil.Utf8Width(str))
 	assert.True(t, strutil.IsValidUtf8(str))
 }
 

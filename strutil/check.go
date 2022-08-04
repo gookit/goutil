@@ -5,6 +5,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"golang.org/x/text/width"
 )
 
 // Equal check
@@ -117,6 +119,31 @@ func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 
 // IsValidUtf8 valid utf8 string check
 func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
+
+// Utf8Width utf8 String width.
+//
+//	str := "hi,你好"
+//	strutil.Utf8Width(str)	=> 7
+//	len(str) => 9
+//	len([]rune(str)) = utf8.RuneCountInString(s) => 5
+func Utf8Width(s string) int {
+	size := 0
+	for _, runeVal := range s {
+		p := width.LookupRune(runeVal)
+		switch p.Kind() {
+		case width.EastAsianWide:
+			size += 2
+		case width.EastAsianFullwidth:
+			size += 2
+		case width.EastAsianNarrow:
+			size += 1
+		default:
+			size += 1
+			// dump.P(p.Kind().String())
+		}
+	}
+	return size
+}
 
 // ----- refer from github.com/yuin/goldmark/util
 
