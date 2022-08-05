@@ -9,16 +9,14 @@ import (
 )
 
 // RunePos alias of the strings.IndexRune
-func RunePos(s string, ru rune) int {
-	return strings.IndexRune(s, ru)
-}
+func RunePos(s string, ru rune) int { return strings.IndexRune(s, ru) }
 
 // IsSpaceRune returns true if the given rune is a space, otherwise false.
 func IsSpaceRune(r rune) bool {
 	return r <= 256 && IsSpace(byte(r)) || unicode.IsSpace(r)
 }
 
-// Utf8Len of the string
+// Utf8Len count of the string
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 
 // Utf8len of the string
@@ -58,6 +56,10 @@ func TextWidth(s string) int { return Utf8Width(s) }
 //	len(str) => 9
 //	len([]rune(str)) = utf8.RuneCountInString(s) => 5
 func Utf8Width(s string) (size int) {
+	if len(s) == 0 {
+		return
+	}
+
 	for _, runeVal := range []rune(s) {
 		size += RuneWidth(runeVal)
 	}
@@ -92,13 +94,16 @@ func Utf8Truncate(s string, w int, tail string) string {
 func TextSplit(s string, w int) []string { return Utf8Split(s, w) }
 
 // Utf8Split split a string by width.
-func Utf8Split(s string, w int) (ss []string) {
-	if sw := Utf8Width(s); sw <= w {
+func Utf8Split(s string, w int) []string {
+	sw := Utf8Width(s)
+	if sw <= w {
 		return []string{s}
 	}
 
 	tmpW := 0
 	tmpS := ""
+
+	ss := make([]string, 0, sw/w+1)
 	for _, r := range []rune(s) {
 		rw := RuneWidth(r)
 		if tmpW+rw == w {
@@ -124,7 +129,7 @@ func Utf8Split(s string, w int) (ss []string) {
 	if tmpW > 0 {
 		ss = append(ss, tmpS)
 	}
-	return
+	return ss
 }
 
 // TextWrap a string by "\n"

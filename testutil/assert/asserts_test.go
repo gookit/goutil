@@ -1,15 +1,15 @@
 package assert_test
 
 import (
+	"errors"
 	"testing"
 
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/testutil/assert"
 	assert2 "github.com/stretchr/testify/assert"
 )
 
 func TestErr(t *testing.T) {
-	err := errorx.Raw("this is a error")
+	err := errors.New("this is a error")
 	// assert2.EqualError(t, err, "user custom message")
 	assert.Err(t, err, "user custom message")
 	assert.ErrMsg(t, err, "this is a error")

@@ -15,7 +15,7 @@ func TestRuneWidth(t *testing.T) {
 	assert.Eq(t, 0, strutil.RuneWidth('\n'))
 }
 
-func TestRuneLen(t *testing.T) {
+func TestUtf8Len(t *testing.T) {
 	str := "Hello, 世界"
 
 	assert.Eq(t, 7, len("Hello, "))
@@ -26,6 +26,10 @@ func TestRuneLen(t *testing.T) {
 	assert.Eq(t, 11, strutil.TextWidth(str))
 	assert.Eq(t, 11, strutil.Utf8Width(str))
 	assert.True(t, strutil.IsValidUtf8(str))
+}
+
+func TestUtf8Width(t *testing.T) {
+	assert.Eq(t, 0, strutil.TextWidth(""))
 }
 
 func TestUtf8Truncate(t *testing.T) {
