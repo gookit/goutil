@@ -5,8 +5,6 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
-
-	"golang.org/x/text/width"
 )
 
 // Equal check
@@ -51,11 +49,6 @@ func StrPos(s, sub string) int {
 // BytePos alias of the strings.IndexByte
 func BytePos(s string, bt byte) int {
 	return strings.IndexByte(s, bt)
-}
-
-// RunePos alias of the strings.IndexRune
-func RunePos(s string, ru rune) int {
-	return strings.IndexRune(s, ru)
 }
 
 // HasOneSub substr in the given string.
@@ -105,45 +98,8 @@ func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffi
 // IsEndOf alias of the strings.HasSuffix
 func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
 
-// Len of the string
-func Len(s string) int { return len(s) }
-
-// RuneLen of the string
-func RuneLen(s string) int { return len([]rune(s)) }
-
-// Utf8Len of the string
-func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
-
-// Utf8len of the string
-func Utf8len(s string) int { return utf8.RuneCountInString(s) }
-
 // IsValidUtf8 valid utf8 string check
 func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
-
-// Utf8Width utf8 String width.
-//
-//	str := "hi,你好"
-//	strutil.Utf8Width(str)	=> 7
-//	len(str) => 9
-//	len([]rune(str)) = utf8.RuneCountInString(s) => 5
-func Utf8Width(s string) int {
-	size := 0
-	for _, runeVal := range s {
-		p := width.LookupRune(runeVal)
-		switch p.Kind() {
-		case width.EastAsianWide:
-			size += 2
-		case width.EastAsianFullwidth:
-			size += 2
-		case width.EastAsianNarrow:
-			size += 1
-		default:
-			size += 1
-			// dump.P(p.Kind().String())
-		}
-	}
-	return size
-}
 
 // ----- refer from github.com/yuin/goldmark/util
 
@@ -153,11 +109,6 @@ var spaceTable = [256]int8{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0,
 // IsSpace returns true if the given character is a space, otherwise false.
 func IsSpace(c byte) bool {
 	return spaceTable[c] == 1
-}
-
-// IsSpaceRune returns true if the given rune is a space, otherwise false.
-func IsSpaceRune(r rune) bool {
-	return r <= 256 && IsSpace(byte(r)) || unicode.IsSpace(r)
 }
 
 // IsEmpty returns true if the given string is empty.

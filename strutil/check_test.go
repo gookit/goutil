@@ -35,18 +35,6 @@ func TestEquals(t *testing.T) {
 	assert.False(t, strutil.Equal("a", "b"))
 }
 
-func TestLen(t *testing.T) {
-	str := "Hello, 世界"
-
-	assert.Eq(t, 7, strutil.Len("Hello, "))
-	assert.Eq(t, 13, strutil.Len(str))
-	assert.Eq(t, 9, strutil.RuneLen(str))
-	assert.Eq(t, 9, strutil.Utf8len(str))
-	assert.Eq(t, 9, strutil.Utf8Len(str))
-	assert.Eq(t, 11, strutil.Utf8Width(str))
-	assert.True(t, strutil.IsValidUtf8(str))
-}
-
 func TestStrPos(t *testing.T) {
 	// StrPos
 	assert.Eq(t, -1, strutil.StrPos("xyz", "a"))
