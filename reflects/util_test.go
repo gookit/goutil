@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -69,4 +70,66 @@ func TestSliceSubKind(t *testing.T) {
 		eleType := reflects.SliceSubKind(reflect.TypeOf(item.val))
 		assert.Eq(t, item.want, eleType)
 	}
+}
+
+func TestSliceItemType(t *testing.T) {
+	sl := []string{"abc"}
+	ty := reflect.TypeOf(sl)
+
+	assert.Eq(t, reflect.Slice, ty.Kind())
+	assert.Eq(t, reflect.String, ty.Elem().Kind())
+}
+
+func TestSliceAddItem_fail1(t *testing.T) {
+	sl := []string{"abc"}
+
+	rv := reflect.ValueOf(sl)
+	ty := reflect.TypeOf(sl)
+
+	assert.Eq(t, reflect.Slice, ty.Kind())
+	assert.Eq(t, reflect.String, ty.Elem().Kind())
+
+	// rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+	rv.Set(reflect.Append(rv, reflect.New(ty.Elem()).Elem()))
+
+	dump.P(sl, rv.CanAddr(), rv.Interface())
+}
+
+func TestSliceAddItem_fail2(t *testing.T) {
+	sl := []string{"abc"}
+
+	ty := reflect.TypeOf(sl)
+	rv := reflect.ValueOf(&sl)
+	ret := rv
+	if rv.Kind() == reflect.Ptr {
+		rv = rv.Elem()
+	}
+
+	assert.Eq(t, reflect.Slice, ty.Kind())
+	assert.Eq(t, reflect.String, ty.Elem().Kind())
+
+	rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+
+	dump.P(sl, rv.CanAddr(), rv.Interface(), ret.CanAddr())
+}
+
+func TestSliceAddItem_3(t *testing.T) {
+	var sl interface{}
+	sl = []string{"abc"}
+
+	ty := reflect.TypeOf(sl)
+	rv := reflect.ValueOf(sl)
+	ret := rv
+	dump.P(ret.CanAddr())
+	// if rv.Kind() == reflect.Ptr {
+	// 	rv = rv.Elem()
+	// }
+
+	assert.Eq(t, reflect.Slice, ty.Kind())
+	assert.Eq(t, reflect.String, ty.Elem().Kind())
+
+	rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+
+	// ret.Set(rv)
+	dump.P(sl, rv.CanAddr(), rv.Interface())
 }

@@ -55,8 +55,10 @@ go get github.com/gookit/goutil
 // source at arrutil/arrutil.go
 func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
+func StringsFilter(ss []string, filter ...func(s string) bool) []string
 func TrimStrings(ss []string, cutSet ...string) (ns []string)
-func GetRandomOne(arr interface{}) interface{}
+func GetRandomOne(arr interface{}) interface{} { return RandomOne(arr) }
+func RandomOne(arr interface{}) interface{}
 // source at arrutil/check.go
 func IntsHas(ints []int, val int) bool
 func Int64sHas(ints []int64, val int64) bool
@@ -135,7 +137,8 @@ func IsZeroValue(opt *flag.Flag, value string) (bool, bool)
 func AddPrefix(name string) string
 func AddPrefixes(name string, shorts []string) string
 func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string
-func SplitShortcut(shortcut string) (shorts []string)
+func SplitShortcut(shortcut string) []string
+func FilterNames(names []string) []string
 func IsFlagHelpErr(err error) bool
 func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
@@ -563,6 +566,7 @@ func OpenReadFile(filepath string) (*os.File, error)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
 func PutContents(filePath string, contents string) (int, error)
+func WriteFile(filePath string, data []byte, perm os.FileMode) error
 func CopyFile(srcPath string, dstPath string) error
 func MustCopyFile(srcPath string, dstPath string)
 func Remove(fPath string) error
@@ -637,20 +641,33 @@ func StripComments(src string) string
 > Package `github.com/gookit/goutil/maputil`
 
 ```go
+// source at maputil/check.go
+func HasKey(mp, key any) (ok bool)
+func HasAllKeys(mp any, keys ...any) (ok bool, noKey interface{})
 // source at maputil/convert.go
 func KeyToLower(src map[string]string) map[string]string
-func ToStringMap(src map[string]interface{}) map[string]string
-func HttpQueryString(data map[string]interface{}) string
-func ToString(mp map[string]interface{}) string
-func ToString2(mp interface{}) string
+func ToStringMap(src map[string]any) map[string]string
+func HttpQueryString(data map[string]any) string
+func ToString(mp map[string]any) string
+func ToString2(mp any) string
+func FormatIndent(mp any, indent string) string
 // source at maputil/format.go
-func NewFormatter(mp interface{}) *MapFormatter
-func FormatIndent(mp interface{}, indent string) string
+func NewFormatter(mp any) *MapFormatter
+// source at maputil/get.go
+func DeepGet(mp map[string]any, path string) (val interface{})
+func QuietGet(mp map[string]any, path string) (val interface{})
+func GetByPath(path string, mp map[string]any) (val interface{}, ok bool)
+func Keys(mp any) (keys []string)
+func Values(mp any) (values []interface{})
 // source at maputil/maputil.go
+func MergeSMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
-func GetByPath(key string, mp map[string]interface{}) (val interface{}, ok bool)
-func Keys(mp interface{}) (keys []string)
-func Values(mp interface{}) (values []interface{})
+func MakeByPath(path string, val interface{}) (mp map[string]interface{})
+func MakeByKeys(keys []string, val any) (mp map[string]interface{})
+// source at maputil/setval.go
+func SetByPath(mp map[string]any, path string, val any) (map[string]interface{}, error)
+func SetByKeys(mp map[string]any, keys []string, val any) (map[string]interface{}, error)
+func SetByKeys2(mp map[string]any, keys []string, val any) (err error)
 ```
 
 ### Math/Number
@@ -694,6 +711,9 @@ func MaxInt(x, y int) int
 func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64
 func SwapMaxI64(x, y int64) (int64, int64)
+func Compare(srcVal, dstVal interface{}, op string) (ok bool)
+func CompInt64(srcI64, dstI64 int64, op string) (ok bool)
+func CompFloat(srcF64, dstF64 float64, op string) (ok bool)
 // source at mathutil/number.go
 func IsNumeric(c byte) bool
 func Percent(val, total int) float64
@@ -724,6 +744,7 @@ func IsFunc(val interface{}) bool
 func IsEqual(src, dst interface{}) bool
 func IsEmpty(v reflect.Value) bool
 func Len(v reflect.Value) int
+func SliceSubKind(typ reflect.Type) reflect.Kind
 // source at reflects/value.go
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
@@ -757,6 +778,10 @@ func Go(f func() error) error
 func IsNil(v interface{}) bool
 func IsEmpty(v interface{}) bool
 func IsFunc(val interface{}) bool
+func IsEqual(src, dst interface{}) bool
+func Contains(data, elem interface{}) bool
+func IsContains(data, elem interface{}) bool
+func CheckContains(data, elem interface{}) (valid, found bool)
 func ValueIsEmpty(v reflect.Value) bool
 func ValueLen(v reflect.Value) int
 // source at stdutil/convert.go
@@ -814,12 +839,12 @@ func NewEmptyBuffer() *Buffer
 // source at strutil/bytes_pool.go
 func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool
 // source at strutil/check.go
-func IsNumeric(c byte) bool
+func IsNumChar(c byte) bool
+func IsNumeric(s string) bool
 func IsAlphabet(char uint8) bool
 func IsAlphaNum(c uint8) bool
 func StrPos(s, sub string) int
 func BytePos(s string, bt byte) int
-func RunePos(s string, ru rune) int
 func HasOneSub(s string, subs []string) bool
 func HasAllSubs(s string, subs []string) bool
 func IsStartsOf(s string, prefixes []string) bool
@@ -828,13 +853,8 @@ func HasPrefix(s string, prefix string) bool { return strings.HasPrefix(s, prefi
 func IsStartOf(s, prefix string) bool { return strings.HasPrefix(s, prefix) }
 func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffix) }
 func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
-func Len(s string) int { return len(s) }
-func RuneLen(s string) int { return len([]rune(s)) }
-func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
-func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
 func IsSpace(c byte) bool
-func IsSpaceRune(r rune) bool
 func IsEmpty(s string) bool { return len(s) == 0 }
 func IsBlank(s string) bool
 func IsNotBlank(s string) bool
@@ -924,12 +944,28 @@ func RandomCharsV2(ln int) string
 func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
+// source at strutil/runes.go
+func RunePos(s string, ru rune) int
+func IsSpaceRune(r rune) bool
+func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
+func Utf8len(s string) int { return utf8.RuneCountInString(s) }
+func RuneCount(s string) int { return len([]rune(s)) }
+func RuneWidth(r rune) int
+func TextWidth(s string) int { return Utf8Width(s) }
+func Utf8Width(s string) (size int)
+func TextTruncate(s string, w int, tail string) string { return Utf8Truncate(s, w, tail) }
+func Utf8Truncate(s string, w int, tail string) string
+func TextSplit(s string, w int) []string { return Utf8Split(s, w) }
+func Utf8Split(s string, w int) (ss []string)
+func TextWrap(s string, w int) string { return WidthWrap(s, w) }
+func WidthWrap(s string, w int) string
 // source at strutil/similar_find.go
 func NewComparator(src, dst string) *SimilarComparator
 func Similarity(s, t string, rate float32) (float32, bool)
 // source at strutil/split.go
 func Cut(s, sep string) (before string, after string, found bool)
 func MustCut(s, sep string) (before string, after string)
+func TrimCut(s, sep string) (string, string)
 func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 func Split(s, sep string) (ss []string)
 func SplitNValid(s, sep string, n int) (ss []string) { return SplitN(s, sep, n) }
@@ -948,6 +984,7 @@ func Replaces(str string, pairs map[string]string) string
 func PrettyJSON(v interface{}) (string, error)
 func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
 func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...bool) string
+func WrapTag(s, tag string) string
 ```
 
 ### System
@@ -1212,6 +1249,10 @@ cd goutil
 docker run -ti -v $(pwd):/go/work golang:1.18
 root@xx:/go/work# go test ./...
 ```
+
+## Related
+
+- https://github.com/duke-git/lancet
 
 ## Gookit packages
 

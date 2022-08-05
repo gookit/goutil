@@ -1,7 +1,6 @@
 package maputil_test
 
 import (
-	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -109,12 +108,4 @@ func TestSetByPath2_slice_val2(t *testing.T) {
 	// assert.NoErr(t, err3)
 	// assert.Len(t, mp["key3"], 3)
 	// dump.Println(mp)
-}
-
-func TestSliceItemType(t *testing.T) {
-	sl := []string{"abc"}
-	ty := reflect.TypeOf(sl)
-
-	assert.Eq(t, reflect.Slice, ty.Kind())
-	assert.Eq(t, reflect.String, ty.Elem().Kind())
 }
