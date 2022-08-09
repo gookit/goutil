@@ -32,7 +32,7 @@ jobs:
         go-version: ${{ matrix.go_version }}
 
     - name: Revive check
-      uses: morphy2k/revive-action@v2.3.1
+      uses: morphy2k/revive-action@v2.4.0
       if: ${{ matrix.os == 'ubuntu-latest' }}
       with:
         # Exclude patterns, separated by semicolons (optional)
