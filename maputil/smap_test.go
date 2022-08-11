@@ -20,6 +20,8 @@ func TestSMap_usage(t *testing.T) {
 	assert.True(t, mp.Bool("k3"))
 	assert.False(t, mp.IsEmpty())
 	assert.False(t, mp.HasValue("not-exist"))
+	assert.Len(t, mp.Keys(), 4)
+	assert.Len(t, mp.Values(), 4)
 
 	val, ok := mp.Value("k2")
 	assert.True(t, ok)

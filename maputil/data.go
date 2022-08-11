@@ -27,15 +27,15 @@ func (d Data) IsEmtpy() bool {
 	return len(d) == 0
 }
 
-// Get value from the data map
-func (d Data) Get(key string) interface{} {
-	return d[key]
-}
-
 // Value get from the data map
 func (d Data) Value(key string) (interface{}, bool) {
 	val, ok := d[key]
 	return val, ok
+}
+
+// Get value from the data map
+func (d Data) Get(key string) interface{} {
+	return d[key]
 }
 
 // GetByPath get value from the data map by path. eg: top.sub
@@ -54,10 +54,10 @@ func (d Data) GetByPath(path string) (interface{}, bool) {
 // The above code sets the 'first' field on the 'name' object in the m Data.
 //
 // refer from: github.com/stretchr/stew
-func (d *Data) SetByPath(path string, value any) error {
-	nmp, err := SetByPath(*d, path, value)
+func (d Data) SetByPath(path string, value any) error {
+	nmp, err := SetByPath(d, path, value)
 	if err == nil {
-		*d = nmp
+		d = nmp
 	}
 	return err
 }
@@ -123,6 +123,14 @@ func (d Data) Strings(key string) []string {
 	return nil
 }
 
+// StrSplit get strings by split key value
+func (d Data) StrSplit(key, sep string) []string {
+	if val, ok := d[key]; ok {
+		return strings.Split(strutil.QuietString(val), sep)
+	}
+	return nil
+}
+
 // StringsByStr value get by key
 func (d Data) StringsByStr(key string) []string {
 	if val, ok := d[key]; ok {
@@ -142,6 +150,25 @@ func (d Data) StringMap(key string) map[string]string {
 		return smp
 	}
 	return nil
+}
+
+// Sub get sub value as new Data
+func (d Data) Sub(key string) Data {
+	if val, ok := d[key]; ok {
+		if sub, ok := val.(map[string]interface{}); ok {
+			return sub
+		}
+	}
+	return nil
+}
+
+// Keys of the data map
+func (d Data) Keys() []string {
+	keys := make([]string, 0, len(d))
+	for k := range d {
+		keys = append(keys, k)
+	}
+	return keys
 }
 
 // ToStringMap convert to map[string]string

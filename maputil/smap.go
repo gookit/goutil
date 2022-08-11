@@ -13,7 +13,7 @@ func (m SMap) IsEmpty() bool {
 	return len(m) == 0
 }
 
-// Has kay on the data map
+// Has key on the data map
 func (m SMap) Has(key string) bool {
 	_, ok := m[key]
 	return ok
@@ -35,6 +35,11 @@ func (m SMap) Value(key string) (string, bool) {
 	return val, ok
 }
 
+// Get value by key
+func (m SMap) Get(key string) string {
+	return m[key]
+}
+
 // Int value get
 func (m SMap) Int(key string) int {
 	if val, ok := m[key]; ok {
@@ -49,11 +54,6 @@ func (m SMap) Int64(key string) int64 {
 		return mathutil.QuietInt64(val)
 	}
 	return 0
-}
-
-// Get value by key
-func (m SMap) Get(key string) string {
-	return m[key]
 }
 
 // Str value get
@@ -72,7 +72,7 @@ func (m SMap) Bool(key string) bool {
 // Ints value to []int
 func (m SMap) Ints(key string) []int {
 	if val, ok := m[key]; ok {
-		return strutil.Ints(val, ",")
+		return strutil.Ints(val, ValSepStr)
 	}
 	return nil
 }
@@ -80,9 +80,27 @@ func (m SMap) Ints(key string) []int {
 // Strings value to []string
 func (m SMap) Strings(key string) (ss []string) {
 	if val, ok := m[key]; ok {
-		return strutil.ToSlice(val, ",")
+		return strutil.ToSlice(val, ValSepStr)
 	}
 	return
+}
+
+// Keys of the string-map
+func (m SMap) Keys() []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
+// Values of the string-map
+func (m SMap) Values() []string {
+	ss := make([]string, 0, len(m))
+	for _, v := range m {
+		ss = append(ss, v)
+	}
+	return ss
 }
 
 // String data to string
