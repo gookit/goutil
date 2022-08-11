@@ -90,10 +90,11 @@ func TestSliceAddItem_fail1(t *testing.T) {
 	assert.Eq(t, reflect.Slice, ty.Kind())
 	assert.Eq(t, reflect.String, ty.Elem().Kind())
 
-	// rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
-	rv.Set(reflect.Append(rv, reflect.New(ty.Elem()).Elem()))
-
+	rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+	// rv.Set(reflect.Append(rv, reflect.New(ty.Elem()).Elem()))
 	dump.P(sl, rv.CanAddr(), rv.Interface())
+
+	assert.Eq(t, rv.Len(), 2)
 }
 
 func TestSliceAddItem_ok(t *testing.T) {

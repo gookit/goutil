@@ -562,17 +562,17 @@ func MustReadReader(r io.Reader) []byte
 func GetContents(in interface{}) []byte
 func ReadExistFile(filePath string) []byte
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error)
-func QuickOpenFile(filepath string) (*os.File, error)
+func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error)
 func OpenReadFile(filepath string) (*os.File, error)
-func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error)
+func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*os.File, error)
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
-func PutContents(filePath string, contents string) (int, error)
-func WriteFile(filePath string, data []byte, perm os.FileMode) error
-func CopyFile(srcPath string, dstPath string) error
-func MustCopyFile(srcPath string, dstPath string)
+func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error)
+func WriteFile(filePath string, data interface{}, perm os.FileMode, fileFlag ...int) error
+func CopyFile(srcPath, dstPath string) error
+func MustCopyFile(srcPath, dstPath string)
 func Remove(fPath string) error
 func MustRemove(fPath string)
-func QuietRemove(fPath string)
+func QuietRemove(fPath string) { _ = os.Remove(fPath) }
 func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }
 func DeleteIfExist(fPath string) error
 func RmFileIfExist(fPath string) error { return DeleteIfFileExist(fPath) }
@@ -666,9 +666,8 @@ func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]stri
 func MakeByPath(path string, val interface{}) (mp map[string]interface{})
 func MakeByKeys(keys []string, val any) (mp map[string]interface{})
 // source at maputil/setval.go
-func SetByPath(mp map[string]any, path string, val any) (map[string]interface{}, error)
-func SetByKeys(mp map[string]any, keys []string, val any) (map[string]interface{}, error)
-func SetByKeys2(mp map[string]any, keys []string, val any) (err error)
+func SetByPath(mp *map[string]any, path string, val any) error
+func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```
 
 ### Math/Number
@@ -744,6 +743,7 @@ func IsNil(v reflect.Value) bool
 func IsFunc(val interface{}) bool
 func IsEqual(src, dst interface{}) bool
 func IsEmpty(v reflect.Value) bool
+func IsEmptyValue(v reflect.Value) bool
 func Len(v reflect.Value) int
 func SliceSubKind(typ reflect.Type) reflect.Kind
 // source at reflects/value.go
@@ -946,7 +946,7 @@ func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
 // source at strutil/runes.go
-func RunePos(s string, ru rune) int
+func RunePos(s string, ru rune) int { return strings.IndexRune(s, ru) }
 func IsSpaceRune(r rune) bool
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 func Utf8len(s string) int { return utf8.RuneCountInString(s) }
@@ -957,7 +957,7 @@ func Utf8Width(s string) (size int)
 func TextTruncate(s string, w int, tail string) string { return Utf8Truncate(s, w, tail) }
 func Utf8Truncate(s string, w int, tail string) string
 func TextSplit(s string, w int) []string { return Utf8Split(s, w) }
-func Utf8Split(s string, w int) (ss []string)
+func Utf8Split(s string, w int) []string
 func TextWrap(s string, w int) string { return WidthWrap(s, w) }
 func WidthWrap(s string, w int) string
 // source at strutil/similar_find.go
