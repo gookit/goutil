@@ -77,11 +77,17 @@ func ReadExistFile(filePath string) []byte {
 //	open/create files
 // ************************************************************
 
+// some flag consts for open file
+const (
+	FsCWAFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND // create, append write-only
+	FsCWTFlags = os.O_CREATE | os.O_WRONLY | os.O_TRUNC  // create, override write-only
+	FsCWFlags  = os.O_CREATE | os.O_WRONLY               // create, write-only
+	FsRFlags   = os.O_RDONLY                             // read-only
+)
+
 // OpenFile like os.OpenFile, but will auto create dir.
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	fileDir := path.Dir(filepath)
-
-	// if err := os.Mkdir(dir, 0775); err != nil {
 	if err := os.MkdirAll(fileDir, DefaultDirPerm); err != nil {
 		return nil, err
 	}
@@ -96,20 +102,27 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 /* TODO MustOpenFile() */
 
 // QuickOpenFile like os.OpenFile, open for write, if not exists, will create it.
-func QuickOpenFile(filepath string) (*os.File, error) {
-	return OpenFile(filepath, DefaultFileFlags, DefaultFilePerm)
+//
+// Tip: file flag default is FsCWAFlags
+func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) {
+	flag := FsCWAFlags
+	if len(fileFlag) > 0 {
+		flag = fileFlag[0]
+	}
+
+	return OpenFile(filepath, flag, DefaultFilePerm)
 }
 
 // OpenReadFile like os.OpenFile, open file for read contents
 func OpenReadFile(filepath string) (*os.File, error) {
-	return os.OpenFile(filepath, OnlyReadFileFlags, OnlyReadFilePerm)
+	return os.OpenFile(filepath, FsRFlags, OnlyReadFilePerm)
 }
 
 // CreateFile create file if not exists
 //
 // Usage:
 // 	CreateFile("path/to/file.txt", 0664, 0666)
-func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
+func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*os.File, error) {
 	dirPath := path.Dir(fpath)
 	if !IsDir(dirPath) {
 		err := os.MkdirAll(dirPath, dirPerm)
@@ -118,7 +131,12 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode) (*os.File, error) {
 		}
 	}
 
-	return os.OpenFile(fpath, writeFileFlags, filePerm)
+	flag := FsCWTFlags
+	if len(fileFlag) > 0 {
+		flag = fileFlag[0]
+	}
+
+	return os.OpenFile(fpath, flag, filePerm)
 }
 
 // MustCreateFile create file, will panic on error
@@ -134,26 +152,58 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
 //	write, copy files
 // ************************************************************
 
-// PutContents to file
-func PutContents(filePath string, contents string) (int, error) {
+// PutContents create file and write contents to file at once.
+//
+// data type allow: string, []byte, io.Reader
+func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error) {
 	// create and open file
-	dstFile, err := QuickOpenFile(filePath)
+	dstFile, err := QuickOpenFile(filePath, fileFlag...)
 	if err != nil {
 		return 0, err
 	}
 
 	defer dstFile.Close()
-	return dstFile.WriteString(contents)
+	switch typData := data.(type) {
+	case []byte:
+		return dstFile.Write(typData)
+	case string:
+		return dstFile.WriteString(typData)
+	case io.Reader: // eg: buffer
+		n, err := io.Copy(dstFile, typData)
+		return int(n), err
+	default:
+		panic("PutContents: data type only allow: []byte, string, io.Reader")
+	}
 }
 
-// WriteFile create file and write contents to file
-func WriteFile(filePath string, data []byte, perm os.FileMode) error {
-	f, err := os.OpenFile(filePath, writeFileFlags, perm)
+// WriteFile create file and write contents to file, can set perm for file.
+//
+// data type allow: string, []byte, io.Reader
+//
+// Tip: file flag default is FsCWTFlags
+func WriteFile(filePath string, data interface{}, perm os.FileMode, fileFlag ...int) error {
+	flag := FsCWTFlags
+	if len(fileFlag) > 0 {
+		flag = fileFlag[0]
+	}
+
+	f, err := os.OpenFile(filePath, flag, perm)
 	if err != nil {
 		return err
 	}
 
-	_, err = f.Write(data)
+	switch typData := data.(type) {
+	case []byte:
+		_, err = f.Write(typData)
+	case string:
+		_, err = f.WriteString(typData)
+	case io.Reader: // eg: buffer
+		_, err = io.Copy(f, typData)
+	default:
+		_ = f.Close()
+		panic("WriteFile: data type only allow: []byte, string, io.Reader")
+	}
+
 	if err1 := f.Close(); err1 != nil && err == nil {
 		err = err1
 	}
@@ -161,15 +211,15 @@ func WriteFile(filePath string, data []byte, perm os.FileMode) error {
 }
 
 // CopyFile copy a file to another file path.
-func CopyFile(srcPath string, dstPath string) error {
-	srcFile, err := os.OpenFile(srcPath, os.O_RDONLY, 0)
+func CopyFile(srcPath, dstPath string) error {
+	srcFile, err := os.OpenFile(srcPath, FsRFlags, 0)
 	if err != nil {
 		return err
 	}
 	defer srcFile.Close()
 
 	// create and open file
-	dstFile, err := QuickOpenFile(dstPath)
+	dstFile, err := QuickOpenFile(dstPath, FsCWTFlags)
 	if err != nil {
 		return err
 	}
@@ -180,7 +230,7 @@ func CopyFile(srcPath string, dstPath string) error {
 }
 
 // MustCopyFile copy file to another path.
-func MustCopyFile(srcPath string, dstPath string) {
+func MustCopyFile(srcPath, dstPath string) {
 	err := CopyFile(srcPath, dstPath)
 	if err != nil {
 		panic(err)
@@ -213,10 +263,9 @@ func MustRemove(fPath string) {
 }
 
 // QuietRemove removes the named file or (empty) directory.
+//
 // NOTICE: will ignore error
-func QuietRemove(fPath string) {
-	_ = os.Remove(fPath)
-}
+func QuietRemove(fPath string) { _ = os.Remove(fPath) }
 
 // RmIfExist removes the named file or (empty) directory on exists.
 func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }

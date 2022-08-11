@@ -18,9 +18,6 @@ var (
 	OnlyReadFileFlags = os.O_RDONLY
 )
 
-// writeFileFlags some consts for op file
-const writeFileFlags = os.O_WRONLY | os.O_CREATE | os.O_TRUNC
-
 // alias methods
 var (
 	DirExist  = IsDir
