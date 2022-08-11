@@ -6,8 +6,10 @@ import (
 	"github.com/gookit/goutil/arrutil"
 )
 
-// Key sep char consts
+// Key, value sep char consts
 const (
+	ValSepStr  = ","
+	ValSepChar = ','
 	KeySepStr  = "."
 	KeySepChar = '.'
 )
