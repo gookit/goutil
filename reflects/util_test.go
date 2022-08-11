@@ -83,8 +83,9 @@ func TestSliceItemType(t *testing.T) {
 func TestSliceAddItem_fail1(t *testing.T) {
 	sl := []string{"abc"}
 
-	rv := reflect.ValueOf(sl)
 	ty := reflect.TypeOf(sl)
+	rv := reflect.ValueOf(sl)
+	assert.False(t, rv.CanAddr())
 
 	assert.Eq(t, reflect.Slice, ty.Kind())
 	assert.Eq(t, reflect.String, ty.Elem().Kind())
@@ -95,41 +96,78 @@ func TestSliceAddItem_fail1(t *testing.T) {
 	dump.P(sl, rv.CanAddr(), rv.Interface())
 }
 
-func TestSliceAddItem_fail2(t *testing.T) {
+func TestSliceAddItem_ok(t *testing.T) {
 	sl := []string{"abc"}
+	assert.Len(t, sl, 1)
 
 	ty := reflect.TypeOf(sl)
 	rv := reflect.ValueOf(&sl)
-	ret := rv
+	assert.False(t, rv.CanAddr())
+
 	if rv.Kind() == reflect.Ptr {
 		rv = rv.Elem()
 	}
 
+	assert.True(t, rv.CanAddr())
 	assert.Eq(t, reflect.Slice, ty.Kind())
 	assert.Eq(t, reflect.String, ty.Elem().Kind())
 
-	rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+	// rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+	rv.Set(reflect.Append(rv, reflect.New(ty.Elem()).Elem()))
+	assert.Len(t, sl, 2)
 
-	dump.P(sl, rv.CanAddr(), rv.Interface(), ret.CanAddr())
+	rv.Index(1).Set(reflect.ValueOf("def"))
+
+	dump.P(sl)
 }
 
-func TestSliceAddItem_3(t *testing.T) {
-	var sl interface{}
-	sl = []string{"abc"}
+func TestSlice_subMap_addItem(t *testing.T) {
+	d := []interface{}{
+		map[string]string{
+			"k3051": "v3051",
+		},
+	}
 
-	ty := reflect.TypeOf(sl)
-	rv := reflect.ValueOf(sl)
-	ret := rv
-	dump.P(ret.CanAddr())
-	// if rv.Kind() == reflect.Ptr {
-	// 	rv = rv.Elem()
-	// }
+	rv := reflect.ValueOf(d)
 
-	assert.Eq(t, reflect.Slice, ty.Kind())
-	assert.Eq(t, reflect.String, ty.Elem().Kind())
+	vv := rv.Index(0).Elem()
+	dump.P(rv.CanAddr(), vv.CanAddr())
+	vv.SetMapIndex(reflect.ValueOf("newKey"), reflect.ValueOf("newVal"))
+	dump.P(d)
+}
 
-	rv = reflect.Append(rv, reflect.New(ty.Elem()).Elem())
+func TestMap_subSlice_addItem(t *testing.T) {
+	mp := map[string]interface{}{
+		"sl": []string{"abc"},
+	}
+
+	// ty := reflect.TypeOf(mp)
+	rv := reflect.ValueOf(mp)
+	dump.P(rv.CanAddr())
+
+	rv.SetMapIndex(reflect.ValueOf("k2"), reflect.ValueOf("v2"))
+	dump.P(mp)
+
+	slk := reflect.ValueOf("sl")
+	srv := rv.MapIndex(slk)
+	if srv.Kind() == reflect.Interface {
+		srv = srv.Elem()
+	}
+	sty := srv.Type()
+
+	dump.P(srv.CanAddr())
+	assert.Eq(t, reflect.Slice, sty.Kind())
+	assert.Eq(t, reflect.String, sty.Elem().Kind())
+
+	msl := reflect.MakeSlice(sty, 0, srv.Cap())
+	dump.P(msl.CanAddr())
+
+	srv = reflect.Append(srv, reflect.New(sty.Elem()).Elem())
+	// srv.Set(srv)
+	srv.Index(1).Set(reflect.ValueOf("def"))
+
+	rv.SetMapIndex(slk, srv)
 
 	// ret.Set(rv)
-	dump.P(sl, rv.CanAddr(), rv.Interface())
+	dump.P(mp, srv.Interface())
 }
