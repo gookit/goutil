@@ -49,17 +49,11 @@ func (d Data) GetByPath(path string) (interface{}, bool) {
 //
 // For example:
 //
-//     m.SetByPath("name.first", "Mat")
+//	m.SetByPath("name.first", "Mat")
 //
 // The above code sets the 'first' field on the 'name' object in the m Data.
-//
-// refer from: github.com/stretchr/stew
 func (d Data) SetByPath(path string, value any) error {
-	nmp, err := SetByPath(d, path, value)
-	if err == nil {
-		d = nmp
-	}
-	return err
+	return SetByPath((*map[string]any)(&d), path, value)
 }
 
 // Default get value from the data map with default value

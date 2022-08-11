@@ -1,12 +1,12 @@
 package maputil
 
 import (
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -15,19 +15,8 @@ import (
 //
 // For example:
 //
-//     SetByPath("name.first", "Mat")
-func SetByPath(mp map[string]any, path string, val any) (map[string]interface{}, error) {
-	if len(mp) == 0 {
-		return MakeByPath(path, val), nil
-	}
-
-	_, ok := mp[path]
-	// is top key OR no sub key
-	if ok || !strings.ContainsRune(path, KeySepChar) {
-		mp[path] = val
-		return mp, nil
-	}
-
+//	SetByPath("name.first", "Mat")
+func SetByPath(mp *map[string]any, path string, val any) error {
 	return SetByKeys(mp, strings.Split(path, KeySepStr), val)
 }
 
@@ -36,63 +25,8 @@ func SetByPath(mp map[string]any, path string, val any) (map[string]interface{},
 //
 // For example:
 //
-//     SetByKeys([]string{"name", "first"}, "Mat")
-func SetByKeys(mp map[string]any, keys []string, val any) (map[string]interface{}, error) {
-	kln := len(keys)
-	if kln == 0 {
-		return mp, nil
-	}
-
-	if len(mp) == 0 {
-		return MakeByKeys(keys, val), nil
-	}
-
-	topK := keys[0]
-	if kln == 1 {
-		mp[topK] = val
-		return mp, nil
-	}
-
-	if _, ok := mp[topK]; !ok {
-		mp[topK] = MakeByKeys(keys[1:], val)
-		return mp, nil
-	}
-
-	// reflect.MapOf()
-
-	obj := mp
-	max := len(keys) - 1
-
-	for index, field := range keys {
-		if index == max {
-			obj[field] = val
-		}
-
-		if _, exists := obj[field]; !exists {
-			obj[field] = make(Data)
-			obj = obj[field].(Data)
-		} else {
-			switch typData := obj[field].(type) {
-			case Data:
-				// obj = obj[field].(Data)
-				obj = typData
-			case map[string]any:
-				// obj = obj[field].(map[string]any)
-				obj = typData
-			}
-		}
-	}
-
-	return mp, nil
-}
-
-// SetByKeys2 set sub-map value by sub-keys.
-// Supports dot syntax to set deep values.
-//
-// For example:
-//
-//     SetByKeys2(mp, []string{"name", "first"}, "Mat")
-func SetByKeys2(mp *map[string]any, keys []string, val any) (err error) {
+//	SetByKeys([]string{"name", "first"}, "Mat")
+func SetByKeys(mp *map[string]any, keys []string, val any) (err error) {
 	kln := len(keys)
 	if kln == 0 {
 		return nil
@@ -122,6 +56,11 @@ func SetByKeys2(mp *map[string]any, keys []string, val any) (err error) {
 
 func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error) {
 
+	if rv.Kind() != reflect.Map {
+		return fmt.Errorf("input rv value type must be Map, but was %s", rv.Kind())
+	}
+
+	maxI := len(keys) - 1
 	for i, key := range keys {
 		idx := -1
 		isPtr := false
@@ -134,14 +73,14 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 		if pos := strings.IndexRune(key, '['); pos > 0 {
 			idx, err = strconv.Atoi(key[pos+1 : len(key)-1])
 			if err != nil {
-				err = errorx.Wrapf(err, "invalid array index on key: %s", key)
+				err = fmt.Errorf("invalid array index on key: %s", key)
 				break
 			}
 			key = key[:pos]
 
 			// update value
 			if !isMap {
-				err = errorx.Rawf(
+				err = fmt.Errorf(
 					"current value#%s type is %s, cannot get sub-value by key: %s",
 					strings.Join(keys[i:], "."),
 					rv.Kind(),
@@ -165,7 +104,7 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 			}
 
 			if tmpV.Kind() != reflect.Slice {
-				err = errorx.Rawf(
+				err = fmt.Errorf(
 					"current value#%s type is %s, cannot set sub by index: %d",
 					strings.Join(keys[i:], "."),
 					tmpV.Kind(),
@@ -174,28 +113,40 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 				break
 			}
 
-			if !isLast {
-				err = errorx.Rawf(
-					"key %s[%d] must be at end on set slice item. but was remaining path: %s",
-					key,
-					idx,
-					strings.Join(keys[i:], "."),
-				)
-			} else {
-				wantLen := idx + 1
-				sliLen := tmpV.Len()
+			wantLen := idx + 1
+			sliLen := tmpV.Len()
+			elemTyp := tmpV.Type().Elem()
 
-				if wantLen > sliLen {
-					elemTyp := tmpV.Type().Elem()
-					newAdd := reflect.MakeSlice(tmpV.Type(), 0, wantLen-sliLen)
+			if wantLen > sliLen {
+				newAdd := reflect.MakeSlice(tmpV.Type(), 0, wantLen-sliLen)
 
-					for i := 0; i < wantLen-sliLen; i++ {
-						newAdd = reflect.Append(newAdd, reflect.New(elemTyp).Elem())
-					}
-
-					tmpV = reflect.AppendSlice(tmpV, newAdd)
+				for i := 0; i < wantLen-sliLen; i++ {
+					newAdd = reflect.Append(newAdd, reflect.New(elemTyp).Elem())
 				}
 
+				tmpV = reflect.AppendSlice(tmpV, newAdd)
+			}
+
+			if !isLast {
+				if elemTyp.Kind() == reflect.Map {
+					err := setMapByKeys(tmpV.Index(idx), keys[i:], nv)
+					if err != nil {
+						return err
+					}
+
+					// tmpV.Index(idx).Set(elemV)
+					rv.SetMapIndex(rftK, tmpV)
+				} else {
+					err = fmt.Errorf(
+						"key %s[%d] elem must be map for set sub-value by remain path: %s",
+						key,
+						idx,
+						strings.Join(keys[i:], "."),
+					)
+				}
+
+			} else {
+				// last - set value
 				tmpV.Index(idx).Set(nv)
 				rv.SetMapIndex(rftK, tmpV)
 			}
@@ -228,17 +179,22 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 							newAdd = reflect.Append(newAdd, reflect.New(elemTyp).Elem())
 						}
 
+						if !rv.CanAddr() {
+							err = fmt.Errorf("cannot set value to a cannot addr slice, key: %s", key)
+							break
+						}
+
 						rv.Set(reflect.AppendSlice(rv, newAdd))
 					}
 
 					rv.Index(idx).Set(nv)
 				} else {
-					err = errorx.Rawf("cannot set slice value by named key %q", key)
+					err = fmt.Errorf("cannot set slice value by named key %q", key)
 				}
 				break
 			}
 
-			err = errorx.Rawf(
+			err = fmt.Errorf(
 				"cannot set sub-value for type %q(path %q, key %q)",
 				rv.Kind(),
 				strings.Join(keys[:i], "."),
@@ -251,10 +207,63 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 			rftK := reflect.ValueOf(key)
 			if tmpV := rv.MapIndex(rftK); tmpV.IsValid() {
 				// get real type: any -> map
-				rv, isPtr = getRealVal(tmpV)
+				tmpV, isPtr = getRealVal(tmpV)
+				if tmpV.Kind() == reflect.Map {
+					rv = tmpV
+					continue
+				}
 
-				if !isPtr && rv.Kind() == reflect.Slice {
+				// sub is slice and is not ptr
+				if tmpV.Kind() == reflect.Slice {
+					if isPtr {
+						rv = tmpV
+						continue // to (E)
+					}
+
+					// next key is index number.
+					nxtKey := keys[i+1]
+					if strutil.IsNumeric(nxtKey) {
+						idx, _ = strconv.Atoi(nxtKey)
+						sliLen := tmpV.Len()
+						wantLen := idx + 1
+
+						if wantLen > sliLen {
+							elemTyp := tmpV.Type().Elem()
+							newAdd := reflect.MakeSlice(tmpV.Type(), 0, wantLen-sliLen)
+							for i := 0; i < wantLen-sliLen; i++ {
+								newAdd = reflect.Append(newAdd, reflect.New(elemTyp).Elem())
+							}
+
+							tmpV = reflect.AppendSlice(tmpV, newAdd)
+						}
+
+						// rv = tmpV.Index(idx) // TODO
+						if i+1 == maxI {
+							tmpV.Index(idx).Set(nv)
+						} else {
+							err := setMapByKeys(tmpV.Index(idx), keys[i+1:], nv)
+							if err != nil {
+								return err
+							}
+						}
+
+						rv.SetMapIndex(rftK, tmpV)
+						break
+
+					} else {
+						err = fmt.Errorf("cannot set slice value by named key %s(parent: %s)", nxtKey, key)
+						break
+					}
+
 					// reflect.MakeSlice() // TODO
+				} else {
+
+					err = fmt.Errorf(
+						"map item type is %s, cannot set sub-value by path %q",
+						rv.Kind(),
+						strings.Join(keys[i:], "."),
+					)
+					break
 				}
 
 				// rv = tmpV
@@ -264,7 +273,7 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 				rv.SetMapIndex(rftK, reflect.ValueOf(newVal))
 				break
 			}
-		} else if isSlice && strutil.IsNumeric(key) { // slice
+		} else if isSlice && strutil.IsNumeric(key) { // (E). slice from ptr slice
 			idx, _ = strconv.Atoi(key)
 			sliLen := rv.Len()
 			wantLen := idx + 1
@@ -273,7 +282,7 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 				elemTyp := rv.Type().Elem()
 				newAdd := reflect.MakeSlice(rv.Type(), 0, wantLen-sliLen)
 				for i := 0; i < wantLen-sliLen; i++ {
-					newAdd = reflect.Append(newAdd, reflect.New(elemTyp))
+					newAdd = reflect.Append(newAdd, reflect.New(elemTyp).Elem())
 				}
 
 				rv = reflect.AppendSlice(rv, newAdd)
@@ -281,7 +290,7 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 
 			rv = rv.Index(idx)
 		} else {
-			err = errorx.Rawf(
+			err = fmt.Errorf(
 				"map item type is %s, cannot set sub-value by path %q",
 				rv.Kind(),
 				strings.Join(keys[i:], "."),

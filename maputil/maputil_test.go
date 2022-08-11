@@ -33,34 +33,35 @@ func TestSetByPath(t *testing.T) {
 		"key2": 34,
 	}
 
-	nmp, err := maputil.SetByPath(mp, "key0", "v00")
+	err := maputil.SetByPath(&mp, "key0", "v00")
 	assert.NoErr(t, err)
-	assert.ContainsKey(t, nmp, "key0")
-	assert.Eq(t, "v00", nmp["key0"])
+	assert.ContainsKey(t, mp, "key0")
+	assert.Eq(t, "v00", mp["key0"])
 
-	nmp, err = maputil.SetByPath(mp, "key3", map[string]interface{}{
+	err = maputil.SetByPath(&mp, "key3", map[string]interface{}{
 		"k301": "v301",
 		"k302": 234,
 		"k303": []string{"v303-1", "v303-2"},
 		"k304": nil,
 	})
 
+	// dump.P(mp)
 	assert.NoErr(t, err)
-	// dump.P(nmp, mp)
-	assert.ContainsKeys(t, nmp, []string{"key3"})
-	assert.ContainsKeys(t, nmp["key3"], []string{"k301", "k302", "k303", "k304"})
+	assert.ContainsKeys(t, mp, []string{"key3"})
+	assert.ContainsKeys(t, mp["key3"], []string{"k301", "k302", "k303", "k304"})
 
-	nmp, err = maputil.SetByPath(mp, "key4", map[string]string{
+	err = maputil.SetByPath(&mp, "key4", map[string]string{
 		"k401": "v401",
 	})
 	assert.NoErr(t, err)
-	assert.ContainsKey(t, nmp, "key3")
+	assert.ContainsKey(t, mp, "key3")
 
-	val, ok := maputil.GetByPath("key4.k401", nmp)
+	val, ok := maputil.GetByPath("key4.k401", mp)
 	assert.True(t, ok)
 	assert.Eq(t, "v401", val)
 
-	nmp, err = maputil.SetByPath(mp, "key4.k402", "v402")
+	err = maputil.SetByPath(&mp, "key4.k402", "v402")
 	assert.NoErr(t, err)
-	dump.P(nmp, mp)
+
+	dump.P(mp)
 }
