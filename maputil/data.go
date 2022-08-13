@@ -49,11 +49,19 @@ func (d Data) GetByPath(path string) (interface{}, bool) {
 //
 // For example:
 //
-//	m.SetByPath("name.first", "Mat")
-//
-// The above code sets the 'first' field on the 'name' object in the m Data.
+//	d.SetByPath("name.first", "Mat")
 func (d Data) SetByPath(path string, value any) error {
 	return SetByPath((*map[string]any)(&d), path, value)
+}
+
+// SetByKeys sets a value in the map by path keys.
+// Supports dot syntax to set deep values.
+//
+// For example:
+//
+//	d.SetByKeys([]string{"name", "first"}, "Mat")
+func (d Data) SetByKeys(keys []string, value any) error {
+	return SetByKeys((*map[string]any)(&d), keys, value)
 }
 
 // Default get value from the data map with default value
