@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gookit/color"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func ExamplePrint() {
@@ -63,8 +63,8 @@ func ExamplePrint() {
 }
 
 func TestStd(t *testing.T) {
-	assert.Equal(t, Std().NoColor, false)
-	assert.Equal(t, Std().IndentLen, 2)
+	assert.Eq(t, Std().NoColor, false)
+	assert.Eq(t, Std().IndentLen, 2)
 }
 
 func TestConfig(t *testing.T) {
@@ -108,7 +108,7 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, "abc")
-	is.Equal(`string("abc"), #len=3
+	is.Eq(`string("abc"), #len=3
 `, buf.String())
 
 	buf.Reset()
@@ -117,7 +117,7 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
-	is.Equal(`[]int [ #len=11
+	is.Eq(`[]int [ #len=11
   int(1),
   int(2),
   int(3),
@@ -139,7 +139,7 @@ func TestPrint(t *testing.T) {
 	}{
 		"ab", 23,
 	})
-	is.Equal(`struct { ab string; Cd int } {
+	is.Eq(`struct { ab string; Cd int } {
   ab: string("ab"), #len=2
   Cd: int(23),
 },
@@ -169,17 +169,17 @@ func TestPrintNil(t *testing.T) {
 	defer Reset()
 
 	Print(nil)
-	is.Equal("<nil>,\n", buf.String())
+	is.Eq("<nil>,\n", buf.String())
 	buf.Reset()
 
 	var i int
 	Println(i)
-	is.Equal("int(0),\n", buf.String())
+	is.Eq("int(0),\n", buf.String())
 	buf.Reset()
 
 	var f interface{}
 	V(f)
-	is.Equal("<nil>,\n", buf.String())
+	is.Eq("<nil>,\n", buf.String())
 	buf.Reset()
 }
 

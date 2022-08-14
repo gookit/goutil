@@ -9,7 +9,6 @@ import (
 
 func TestNewMapData(t *testing.T) {
 	md := structs.NewMapData()
-
 	assert.Eq(t, 0, md.Len())
 
 	md.SetData(map[string]interface{}{
@@ -27,7 +26,7 @@ func TestNewMapData(t *testing.T) {
 	md.SetValue("bol", true)
 	assert.True(t, md.BoolVal("bol"))
 
-	md.Clear()
+	md.Reset()
 	assert.Eq(t, 0, md.Len())
 }
 

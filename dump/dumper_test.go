@@ -9,7 +9,7 @@ import (
 	"unsafe"
 
 	"github.com/gookit/color"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 // func newBufDumper(buf *bytes.Buffer) *Dumper {
@@ -33,7 +33,7 @@ func newStd() *Dumper {
 func TestNewDefaultOptions(t *testing.T) {
 	opts := NewDefaultOptions(nil, 2)
 
-	assert.Equal(t, "<normal>text value</>", opts.ColorTheme.value("text value"))
+	assert.Eq(t, "<normal>text value</>", opts.ColorTheme.value("text value"))
 }
 
 func TestDumper_Fprint(t *testing.T) {
