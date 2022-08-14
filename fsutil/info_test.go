@@ -8,25 +8,25 @@ import (
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestExpandPath(t *testing.T) {
 	path := "~/.kite"
 
-	assert.NotEqual(t, path, fsutil.Expand(path))
-	assert.NotEqual(t, path, fsutil.ExpandPath(path))
+	assert.NotEq(t, path, fsutil.Expand(path))
+	assert.NotEq(t, path, fsutil.ExpandPath(path))
 
-	assert.Equal(t, "", fsutil.Expand(""))
-	assert.Equal(t, "/path/to", fsutil.Expand("/path/to"))
+	assert.Eq(t, "", fsutil.Expand(""))
+	assert.Eq(t, "/path/to", fsutil.Expand("/path/to"))
 }
 
 func TestFindInDir(t *testing.T) {
 	err := fsutil.FindInDir("path-not-exist", nil)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	err = fsutil.FindInDir("testdata/test.jpg", nil)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	files := make([]string, 0, 8)
 	err = fsutil.FindInDir("testdata", func(fPath string, fi os.FileInfo) error {
@@ -35,7 +35,7 @@ func TestFindInDir(t *testing.T) {
 	})
 
 	dump.P(files)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	assert.True(t, len(files) > 0)
 
 	files = files[:0]
@@ -45,11 +45,11 @@ func TestFindInDir(t *testing.T) {
 	}, func(fPath string, fi os.FileInfo) bool {
 		return !strings.HasPrefix(fi.Name(), ".")
 	})
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 	assert.True(t, len(files) > 0)
 
 	err = fsutil.FindInDir("testdata", func(fPath string, fi os.FileInfo) error {
 		return errorx.Raw("handle error")
 	})
-	assert.Error(t, err)
+	assert.Err(t, err)
 }

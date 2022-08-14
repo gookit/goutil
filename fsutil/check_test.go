@@ -5,24 +5,24 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 //goland:noinspection GoBoolExpressions
-func TestCommon(t *testing.T) {
-	assert.Equal(t, "", fsutil.FileExt("testdata/testjpg"))
-	assert.Equal(t, ".jpg", fsutil.Suffix("testdata/test.jpg"))
+func TestFsUtil_common(t *testing.T) {
+	assert.Eq(t, "", fsutil.FileExt("testdata/testjpg"))
+	assert.Eq(t, ".jpg", fsutil.Suffix("testdata/test.jpg"))
 
 	// IsZipFile
 	assert.False(t, fsutil.IsZipFile("testdata/test.jpg"))
-	assert.Equal(t, "test.jpg", fsutil.PathName("testdata/test.jpg"))
+	assert.Eq(t, "test.jpg", fsutil.PathName("testdata/test.jpg"))
 
-	assert.Equal(t, "test.jpg", fsutil.Name("path/to/test.jpg"))
+	assert.Eq(t, "test.jpg", fsutil.Name("path/to/test.jpg"))
 
 	if runtime.GOOS == "windows" {
-		assert.Equal(t, "path\\to", fsutil.Dir("path/to/test.jpg"))
+		assert.Eq(t, "path\\to", fsutil.Dir("path/to/test.jpg"))
 	} else {
-		assert.Equal(t, "path/to", fsutil.Dir("path/to/test.jpg"))
+		assert.Eq(t, "path/to", fsutil.Dir("path/to/test.jpg"))
 	}
 }
 
@@ -53,6 +53,5 @@ func TestIsDir(t *testing.T) {
 
 func TestIsAbsPath(t *testing.T) {
 	assert.True(t, fsutil.IsAbsPath("/data/some.txt"))
-
-	assert.NoError(t, fsutil.DeleteIfFileExist("/not-exist"))
+	assert.NoErr(t, fsutil.DeleteIfFileExist("/not-exist"))
 }

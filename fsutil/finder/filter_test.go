@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil/finder"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestFilterFunc(t *testing.T) {
