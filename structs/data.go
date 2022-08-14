@@ -8,8 +8,8 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// MapDataStore struct
-type MapDataStore struct {
+// DataStore struct TODO
+type DataStore struct {
 	sync.RWMutex
 	enableLock bool
 	// data store
@@ -17,99 +17,99 @@ type MapDataStore struct {
 }
 
 // NewMapData create
-func NewMapData() *MapDataStore {
-	return &MapDataStore{
+func NewMapData() *DataStore {
+	return &DataStore{
 		data: make(map[string]interface{}),
 	}
 }
 
 // EnableLock for operate data
-func (md *MapDataStore) EnableLock() *MapDataStore {
-	md.enableLock = true
-	return md
+func (d *DataStore) EnableLock() *DataStore {
+	d.enableLock = true
+	return d
 }
 
 // Data get all
-func (md *MapDataStore) Data() map[string]interface{} {
-	return md.data
+func (d *DataStore) Data() map[string]interface{} {
+	return d.data
 }
 
 // SetData set all data
-func (md *MapDataStore) SetData(data map[string]interface{}) {
-	if !md.enableLock {
-		md.data = data
+func (d *DataStore) SetData(data map[string]interface{}) {
+	if !d.enableLock {
+		d.data = data
 		return
 	}
 
-	md.RLock()
-	md.data = data
-	md.RUnlock()
+	d.RLock()
+	d.data = data
+	d.RUnlock()
 }
 
 // Set value to data
-func (md *MapDataStore) Set(key string, val interface{}) {
-	md.SetValue(key, val)
+func (d *DataStore) Set(key string, val interface{}) {
+	d.SetValue(key, val)
 }
 
 // SetValue to data
-func (md *MapDataStore) SetValue(key string, val interface{}) {
-	if md.enableLock {
-		md.Lock()
-		defer md.Unlock()
+func (d *DataStore) SetValue(key string, val interface{}) {
+	if d.enableLock {
+		d.Lock()
+		defer d.Unlock()
 	}
 
-	md.data[key] = val
+	d.data[key] = val
 }
 
 // Len of data
-func (md *MapDataStore) Len() int {
-	return len(md.data)
+func (d *DataStore) Len() int {
+	return len(d.data)
 }
 
-// Clear all data
-func (md *MapDataStore) Clear() {
-	md.data = make(map[string]interface{})
+// Reset all data
+func (d *DataStore) Reset() {
+	d.data = make(map[string]interface{})
 }
 
 // Value get from data
-func (md *MapDataStore) Value(key string) (val interface{}, ok bool) {
-	if md.enableLock {
-		md.RLock()
-		defer md.RUnlock()
+func (d *DataStore) Value(key string) (val interface{}, ok bool) {
+	if d.enableLock {
+		d.RLock()
+		defer d.RUnlock()
 	}
 
-	val, ok = md.data[key]
+	val, ok = d.data[key]
 	return
 }
 
 // Get val from data
-func (md *MapDataStore) Get(key string) interface{} {
-	return md.GetVal(key)
+func (d *DataStore) Get(key string) interface{} {
+	return d.GetVal(key)
 }
 
 // GetVal get from data
-func (md *MapDataStore) GetVal(key string) interface{} {
-	if md.enableLock {
-		md.RLock()
-		defer md.RUnlock()
+func (d *DataStore) GetVal(key string) interface{} {
+	if d.enableLock {
+		d.RLock()
+		defer d.RUnlock()
 	}
 
-	return md.data[key]
+	return d.data[key]
 }
 
 // StrVal get from data
-func (md *MapDataStore) StrVal(key string) string {
-	return strutil.QuietString(md.GetVal(key))
+func (d *DataStore) StrVal(key string) string {
+	return strutil.QuietString(d.GetVal(key))
 }
 
 // IntVal get from data
-func (md *MapDataStore) IntVal(key string) int {
-	return mathutil.QuietInt(md.GetVal(key))
+func (d *DataStore) IntVal(key string) int {
+	return mathutil.QuietInt(d.GetVal(key))
 }
 
 // BoolVal get from data
-func (md *MapDataStore) BoolVal(key string) bool {
-	val, ok := md.Value(key)
+func (d *DataStore) BoolVal(key string) bool {
+	val, ok := d.Value(key)
 	if !ok {
 		return false
 	}
@@ -125,6 +125,6 @@ func (md *MapDataStore) BoolVal(key string) bool {
 }
 
 // String format data
-func (md *MapDataStore) String() string {
-	return maputil.ToString(md.data)
+func (d *DataStore) String() string {
+	return maputil.ToString(d.data)
 }

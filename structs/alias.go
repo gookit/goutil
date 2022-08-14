@@ -2,7 +2,7 @@ package structs
 
 import "fmt"
 
-// Aliases implemented an simple string alias map.
+// Aliases implemented a simple string alias map.
 type Aliases struct {
 	mapping map[string]string
 	// Checker custom add alias name checker func
