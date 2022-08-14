@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/netutil/httpreq"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestBuildBasicAuth(t *testing.T) {
@@ -16,11 +16,11 @@ func TestBuildBasicAuth(t *testing.T) {
 
 func TestAddHeadersToRequest(t *testing.T) {
 	req, err := http.NewRequest("GET", "abc.xyz", nil)
-	assert.NoError(t, err)
+	assert.NoErr(t, err)
 
 	httpreq.AddHeadersToRequest(req, http.Header{
 		"key0": []string{"val0"},
 	})
 
-	assert.Equal(t, "val0", req.Header.Get("key0"))
+	assert.Eq(t, "val0", req.Header.Get("key0"))
 }

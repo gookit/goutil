@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/sysutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestProcessExists(t *testing.T) {

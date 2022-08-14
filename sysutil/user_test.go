@@ -5,7 +5,7 @@ import (
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/sysutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestUserDir(t *testing.T) {
@@ -36,5 +36,5 @@ func TestLoginUser(t *testing.T) {
 
 	fu := sysutil.MustFindUser(cu.Username)
 	assert.NotEmpty(t, fu)
-	assert.Equal(t, cu.Uid, fu.Uid)
+	assert.Eq(t, cu.Uid, fu.Uid)
 }
