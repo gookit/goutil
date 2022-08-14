@@ -28,26 +28,22 @@ var (
 )
 
 // Internal func refers:
-// strconv.Quote()
 // strconv.QuoteRune()
 // strconv.QuoteToASCII()
 // strconv.AppendQuote()
 // strconv.AppendQuoteRune()
 
+// Quote alias of strings.Quote
+func Quote(s string) string { return strconv.Quote(s) }
+
 // Join alias of strings.Join
-func Join(sep string, ss ...string) string {
-	return strings.Join(ss, sep)
-}
+func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
 
 // JoinSubs alias of strings.Join
-func JoinSubs(sep string, ss []string) string {
-	return strings.Join(ss, sep)
-}
+func JoinSubs(sep string, ss []string) string { return strings.Join(ss, sep) }
 
 // Implode alias of strings.Join
-func Implode(sep string, ss ...string) string {
-	return strings.Join(ss, sep)
-}
+func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
 
 /*************************************************************
  * convert value to string

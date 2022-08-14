@@ -6,14 +6,12 @@ import (
 	"unicode"
 )
 
-// Title Some alias methods.
-var (
-	Title = strings.ToTitle
-)
-
 /*************************************************************
  * change string case
  *************************************************************/
+
+// Title alias of the strings.ToTitle()
+func Title(s string) string { return strings.ToTitle(s) }
 
 // Lower alias of the strings.ToLower()
 func Lower(s string) string { return strings.ToLower(s) }
@@ -42,25 +40,25 @@ func UpperWord(s string) string {
 
 	i := 0
 	rs := []rune(s)
-	if runeIsLowerChar(rs[i]) {
+	if RuneIsLower(rs[i]) {
 		buf = append(buf, []byte(string(unicode.ToUpper(rs[i])))...)
 	} else {
 		buf = append(buf, []byte(string(rs[i]))...)
 	}
 
 	for j := i + 1; j < len(rs); j++ {
-		if !runeIsWord(rs[i]) && runeIsWord(rs[j]) {
+		if !RuneIsWord(rs[i]) && RuneIsWord(rs[j]) {
 			inWord = false
 		}
 
-		if runeIsLowerChar(rs[j]) && !inWord {
+		if RuneIsLower(rs[j]) && !inWord {
 			buf = append(buf, []byte(string(unicode.ToUpper(rs[j])))...)
 			inWord = true
 		} else {
 			buf = append(buf, []byte(string(rs[j]))...)
 		}
 
-		if runeIsWord(rs[j]) {
+		if RuneIsWord(rs[j]) {
 			inWord = true
 		}
 
@@ -78,10 +76,10 @@ func LowerFirst(s string) string {
 
 	rs := []rune(s)
 	f := rs[0]
+
 	if 'A' <= f && f <= 'Z' {
 		return string(unicode.ToLower(f)) + string(rs[1:])
 	}
-
 	return s
 }
 
@@ -93,10 +91,10 @@ func UpperFirst(s string) string {
 
 	rs := []rune(s)
 	f := rs[0]
+
 	if 'a' <= f && f <= 'z' {
 		return string(unicode.ToUpper(f)) + string(rs[1:])
 	}
-
 	return s
 }
 
@@ -112,11 +110,11 @@ func SnakeCase(s string, sep ...string) string {
 		sepChar = sep[0]
 	}
 
-	newStr := toSnakeReg.ReplaceAllStringFunc(s, func(s string) string {
+	str := toSnakeReg.ReplaceAllStringFunc(s, func(s string) string {
 		return sepChar + LowerFirst(s)
 	})
 
-	return strings.TrimLeft(newStr, sepChar)
+	return strings.TrimLeft(str, sepChar)
 }
 
 // Camel alias of the CamelCase
@@ -127,9 +125,10 @@ func Camel(s string, sep ...string) string {
 // CamelCase convert string to camel case.
 //
 // Support:
-// 	"range_price" -> "rangePrice"
-// 	"range price" -> "rangePrice"
-// 	"range-price" -> "rangePrice"
+//
+//	"range_price" -> "rangePrice"
+//	"range price" -> "rangePrice"
+//	"range-price" -> "rangePrice"
 func CamelCase(s string, sep ...string) string {
 	sepChar := "_"
 	if len(sep) > 0 {
@@ -153,14 +152,28 @@ func CamelCase(s string, sep ...string) string {
 	})
 }
 
-func runeIsWord(c rune) bool {
-	return runeIsLowerChar(c) || runeIsUpperChar(c)
+//
+// Indent format, from package: github.com/kr/text
+//
+
+// Indent inserts prefix at the beginning of each non-empty line of s. The
+// end-of-line marker is NL.
+func Indent(s, prefix string) string {
+	return string(IndentBytes([]byte(s), []byte(prefix)))
 }
 
-func runeIsLowerChar(c rune) bool {
-	return 'a' <= c && c <= 'z'
-}
+// IndentBytes inserts prefix at the beginning of each non-empty line of b.
+// The end-of-line marker is NL.
+func IndentBytes(b, prefix []byte) []byte {
+	bol := true
+	res := make([]byte, 0, len(b)+len(prefix)*4)
 
-func runeIsUpperChar(c rune) bool {
-	return 'A' <= c && c <= 'Z'
+	for _, c := range b {
+		if bol && c != '\n' {
+			res = append(res, prefix...)
+		}
+		res = append(res, c)
+		bol = c == '\n'
+	}
+	return res
 }

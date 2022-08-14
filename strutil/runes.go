@@ -8,6 +8,21 @@ import (
 	"golang.org/x/text/width"
 )
 
+// RuneIsWord char: a-zA-Z
+func RuneIsWord(c rune) bool {
+	return RuneIsLower(c) || RuneIsUpper(c)
+}
+
+// RuneIsLower char
+func RuneIsLower(c rune) bool {
+	return 'a' <= c && c <= 'z'
+}
+
+// RuneIsUpper char
+func RuneIsUpper(c rune) bool {
+	return 'A' <= c && c <= 'Z'
+}
+
 // RunePos alias of the strings.IndexRune
 func RunePos(s string, ru rune) int { return strings.IndexRune(s, ru) }
 
@@ -28,9 +43,10 @@ func RuneCount(s string) int { return len([]rune(s)) }
 // RuneWidth of the rune.
 //
 // Example:
-// 	RuneWidth('你') // 2
-// 	RuneWidth('a') // 1
-// 	RuneWidth('\n') // 0
+//
+//	RuneWidth('你') // 2
+//	RuneWidth('a') // 1
+//	RuneWidth('\n') // 0
 func RuneWidth(r rune) int {
 	p := width.LookupRune(r)
 	k := p.Kind()
