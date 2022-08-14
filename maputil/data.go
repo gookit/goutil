@@ -11,11 +11,6 @@ import (
 type Data map[string]any
 type Map = Data
 
-// Set value to the data map
-func (d Data) Set(key string, val any) {
-	d[key] = val
-}
-
 // Has value on the data map
 func (d Data) Has(key string) bool {
 	_, ok := d[key]
@@ -33,15 +28,32 @@ func (d Data) Value(key string) (interface{}, bool) {
 	return val, ok
 }
 
-// Get value from the data map
+// Get value from the data map.
+// Supports dot syntax to get deep values. eg: top.sub
 func (d Data) Get(key string) interface{} {
-	return d[key]
+	if val, ok := d[key]; ok {
+		return val
+	}
+
+	// is key path.
+	if strings.ContainsRune(key, '.') {
+		val, ok := d.GetByPath(key)
+		if ok {
+			return val
+		}
+	}
+	return nil
 }
 
 // GetByPath get value from the data map by path. eg: top.sub
 // Supports dot syntax to get deep values.
 func (d Data) GetByPath(path string) (interface{}, bool) {
 	return GetByPath(path, d)
+}
+
+// Set value to the data map
+func (d Data) Set(key string, val any) {
+	d[key] = val
 }
 
 // SetByPath sets a value in the map.
@@ -51,7 +63,10 @@ func (d Data) GetByPath(path string) (interface{}, bool) {
 //
 //	d.SetByPath("name.first", "Mat")
 func (d Data) SetByPath(path string, value any) error {
-	return SetByPath((*map[string]any)(&d), path, value)
+	if path == "" {
+		return nil
+	}
+	return d.SetByKeys(strings.Split(path, KeySepStr), value)
 }
 
 // SetByKeys sets a value in the map by path keys.
@@ -61,7 +76,24 @@ func (d Data) SetByPath(path string, value any) error {
 //
 //	d.SetByKeys([]string{"name", "first"}, "Mat")
 func (d Data) SetByKeys(keys []string, value any) error {
+	kln := len(keys)
+	if kln == 0 {
+		return nil
+	}
+
+	// special handle d is empty.
+	if len(d) == 0 {
+		if kln == 1 {
+			d.Set(keys[0], value)
+		} else {
+			d.Set(keys[0], MakeByKeys(keys[1:], value))
+		}
+		return nil
+	}
+
 	return SetByKeys((*map[string]any)(&d), keys, value)
+	// It's ok, but use `func (d *Data)`
+	// return SetByKeys((*map[string]any)(d), keys, value)
 }
 
 // Default get value from the data map with default value

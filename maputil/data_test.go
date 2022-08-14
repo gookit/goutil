@@ -58,9 +58,47 @@ func TestData_SetByPath(t *testing.T) {
 		"k2": "ab",
 		"k5": map[string]any{"a": "v0"},
 	}
+	assert.Nil(t, mp.Get("k5.b"))
 
 	err := mp.SetByPath("k5.b", "v2")
 	assert.NoErr(t, err)
+	// dump.P(mp)
+	assert.Eq(t, "v2", mp.Get("k5.b"))
+}
 
+func TestData_SetByKeys_emptyData(t *testing.T) {
+	// one level
+	mp := make(maputil.Data)
+	err := mp.SetByKeys([]string{"k3"}, "v3")
+	assert.NoErr(t, err)
 	dump.P(mp)
+
+	assert.Eq(t, "v3", mp.Str("k3"))
+
+	// two level
+	mp1 := make(maputil.Data)
+	err = mp1.SetByKeys([]string{"k5", "b"}, "v2")
+	assert.NoErr(t, err)
+	dump.P(mp1)
+
+	assert.Eq(t, "v2", mp1.Get("k5.b"))
+}
+
+func TestData_SetByKeys(t *testing.T) {
+	mp := maputil.Data{
+		"k2": "ab",
+		"k5": map[string]any{"a": "v0"},
+	}
+	assert.Nil(t, mp.Get("k3"))
+	assert.Nil(t, mp.Get("k5.b"))
+
+	err := mp.SetByKeys([]string{"k3"}, "v3")
+	assert.NoErr(t, err)
+	assert.Eq(t, "v3", mp.Str("k3"))
+
+	err = mp.SetByKeys([]string{"k5", "b"}, "v2")
+	assert.NoErr(t, err)
+
+	// dump.P(mp)
+	assert.Eq(t, "v2", mp.Get("k5.b"))
 }
