@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -297,7 +296,7 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 		}
 
 		// TODO remove it
-		dump.P(key, isPtr, rv.CanAddr())
+		// dump.P(key, isPtr, rv.CanAddr())
 	}
 	return
 }

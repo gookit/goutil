@@ -1,6 +1,6 @@
 module dump_example
 
-go 1.14
+go 1.16
 
 require (
 	github.com/gookit/color v1.5.0
