@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -21,47 +22,43 @@ func TestMergeStringMap(t *testing.T) {
 
 func TestMakeByPath(t *testing.T) {
 	mp := maputil.MakeByPath("top.sub", "val")
+
 	assert.NotEmpty(t, mp)
 	assert.ContainsKey(t, mp, "top")
+	assert.IsKind(t, reflect.Map, mp["top"])
+	assert.Eq(t, "val", maputil.DeepGet(mp, "top.sub"))
+
+	mp = maputil.MakeByPath("top.arr[1]", "val")
+	dump.P(mp)
+	assert.NotEmpty(t, mp)
 	assert.ContainsKey(t, mp, "top")
+	assert.Eq(t, "{top:map[arr:[ val]]}", maputil.ToString(mp))
+	assert.Eq(t, []string{"", "val"}, maputil.DeepGet(mp, "top.arr"))
+	assert.Eq(t, "val", maputil.DeepGet(mp, "top.arr.1"))
 }
 
-func TestSetByPath(t *testing.T) {
-	mp := map[string]interface{}{
-		"key0": "v0",
-		"key1": "v1",
-		"key2": 34,
-	}
+func TestMakeByKeys(t *testing.T) {
+	mp := maputil.MakeByKeys([]string{"top"}, "val")
+	assert.NotEmpty(t, mp)
+	assert.ContainsKey(t, mp, "top")
+	assert.Eq(t, "val", mp["top"])
 
-	err := maputil.SetByPath(&mp, "key0", "v00")
-	assert.NoErr(t, err)
-	assert.ContainsKey(t, mp, "key0")
-	assert.Eq(t, "v00", mp["key0"])
+	mp = maputil.MakeByKeys([]string{"top", "sub"}, "val")
+	assert.NotEmpty(t, mp)
+	assert.ContainsKey(t, mp, "top")
+	assert.IsKind(t, reflect.Map, mp["top"])
 
-	err = maputil.SetByPath(&mp, "key3", map[string]interface{}{
-		"k301": "v301",
-		"k302": 234,
-		"k303": []string{"v303-1", "v303-2"},
-		"k304": nil,
-	})
-
+	mp = maputil.MakeByKeys([]string{"top_arr[]"}, 234)
 	// dump.P(mp)
-	assert.NoErr(t, err)
-	assert.ContainsKeys(t, mp, []string{"key3"})
-	assert.ContainsKeys(t, mp["key3"], []string{"k301", "k302", "k303", "k304"})
+	assert.NotEmpty(t, mp)
+	assert.IsKind(t, reflect.Slice, mp["top_arr"])
+	assert.Eq(t, 234, maputil.DeepGet(mp, "top_arr.0"))
 
-	err = maputil.SetByPath(&mp, "key4", map[string]string{
-		"k401": "v401",
-	})
-	assert.NoErr(t, err)
-	assert.ContainsKey(t, mp, "key3")
-
-	val, ok := maputil.GetByPath("key4.k401", mp)
-	assert.True(t, ok)
-	assert.Eq(t, "v401", val)
-
-	err = maputil.SetByPath(&mp, "key4.k402", "v402")
-	assert.NoErr(t, err)
-
+	mp = maputil.MakeByKeys([]string{"top", "arr[1]"}, "val")
 	dump.P(mp)
+	assert.NotEmpty(t, mp)
+	assert.ContainsKey(t, mp, "top")
+	assert.Eq(t, "{top:map[arr:[ val]]}", maputil.ToString(mp))
+	assert.Eq(t, []string{"", "val"}, maputil.DeepGet(mp, "top.arr"))
+	assert.Eq(t, "val", maputil.DeepGet(mp, "top.arr.1"))
 }
