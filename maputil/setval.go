@@ -20,7 +20,7 @@ func SetByPath(mp *map[string]any, path string, val any) error {
 	return SetByKeys(mp, strings.Split(path, KeySepStr), val)
 }
 
-// SetByKeys set sub-map value by sub-keys.
+// SetByKeys set sub-map value by path keys.
 // Supports dot syntax to set deep values.
 //
 // For example:
@@ -50,7 +50,6 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error) {
 	}
 
 	rv := reflect.ValueOf(mp).Elem()
-
 	return setMapByKeys(rv, keys, reflect.ValueOf(val))
 }
 
@@ -144,7 +143,6 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 						strings.Join(keys[i:], "."),
 					)
 				}
-
 			} else {
 				// last - set value
 				tmpV.Index(idx).Set(nv)
@@ -317,4 +315,26 @@ func getRealVal(rv reflect.Value) (reflect.Value, bool) {
 	}
 
 	return rv, isPtr
+}
+
+// "arr[2]" => "arr", 2, true
+func parseArrKeyIndex(key string) (string, int, bool) {
+	pos := strings.IndexRune(key, '[')
+	if pos < 1 || !strings.HasSuffix(key, "]") {
+		return key, 0, false
+	}
+
+	var idx int
+	var err error
+
+	idxStr := key[pos+1 : len(key)-1]
+	if idxStr != "" {
+		idx, err = strconv.Atoi(idxStr)
+		if err != nil {
+			return key, 0, false
+		}
+	}
+
+	key = key[:pos]
+	return key, idx, true
 }
