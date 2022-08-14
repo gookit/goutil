@@ -7,30 +7,30 @@ import (
 
 	"github.com/gookit/goutil/stdutil"
 	"github.com/gookit/goutil/strutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestMustString(t *testing.T) {
-	assert.Equal(t, "23", stdutil.MustString(23))
+	assert.Eq(t, "23", stdutil.MustString(23))
 
-	assert.PanicsWithError(t, "convert data type is failure", func() {
+	assert.PanicsErrMsg(t, func() {
 		stdutil.MustString([]string{"a", "b"})
-	})
+	}, "convert data type is failure")
 }
 
 func TestToString(t *testing.T) {
-	assert.Equal(t, "23", stdutil.ToString(23))
-	assert.Equal(t, "[a b]", stdutil.ToString([]string{"a", "b"}))
+	assert.Eq(t, "23", stdutil.ToString(23))
+	assert.Eq(t, "[a b]", stdutil.ToString([]string{"a", "b"}))
 }
 
 func TestTryString(t *testing.T) {
 	s, err := stdutil.TryString(23)
-	assert.NoError(t, err)
-	assert.Equal(t, "23", s)
+	assert.NoErr(t, err)
+	assert.Eq(t, "23", s)
 
 	s, err = stdutil.TryString([]string{"a", "b"})
-	assert.ErrorIs(t, err, strutil.ErrConvertFail)
-	assert.Equal(t, "", s)
+	assert.Eq(t, err, strutil.ErrConvertFail)
+	assert.Eq(t, "", s)
 }
 
 func TestBaseTypeVal(t *testing.T) {
@@ -42,8 +42,8 @@ func TestBaseTypeVal(t *testing.T) {
 	}
 	for _, el := range tests {
 		val, err := stdutil.BaseTypeVal(el)
-		assert.NoError(t, err)
-		assert.Equal(t, int64(2), val)
+		assert.NoErr(t, err)
+		assert.Eq(t, int64(2), val)
 	}
 
 	tests3 := []struct{ in, out interface{} }{
@@ -53,14 +53,14 @@ func TestBaseTypeVal(t *testing.T) {
 	}
 	for _, el := range tests3 {
 		val, err := stdutil.BaseTypeVal(el.in)
-		assert.NoError(t, err)
-		assert.Equal(t, el.out, val)
+		assert.NoErr(t, err)
+		assert.Eq(t, el.out, val)
 	}
 
 	val, err := stdutil.BaseTypeVal(float32(2))
-	assert.NoError(t, err)
-	assert.Equal(t, float64(2), val)
+	assert.NoErr(t, err)
+	assert.Eq(t, float64(2), val)
 
 	_, err = stdutil.BaseTypeVal([]int{2})
-	assert.Error(t, err)
+	assert.Err(t, err)
 }

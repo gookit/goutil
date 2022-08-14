@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/stdutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestGetCallersInfo(t *testing.T) {

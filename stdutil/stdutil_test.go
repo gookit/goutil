@@ -6,7 +6,7 @@ import (
 
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/stdutil"
-	"github.com/stretchr/testify/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestPanicIfErr(t *testing.T) {
