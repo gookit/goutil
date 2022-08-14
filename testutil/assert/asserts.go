@@ -168,9 +168,10 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 // Contains asserts that the given data(string,slice,map) should contain element
 //
 // TIP: only support types: string, map, array, slice
-// 	map         - check key exists
-// 	string      - check sub-string exists
-// 	array,slice - check sub-element exists
+//
+//	map         - check key exists
+//	string      - check sub-string exists
+//	array,slice - check sub-element exists
 func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 	valid, found := stdutil.CheckContains(src, elem)
 	if valid && found {
@@ -191,9 +192,10 @@ func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 // NotContains asserts that the given data(string,slice,map) should not contain element
 //
 // TIP: only support types: string, map, array, slice
-// 	map         - check key exists
-// 	string      - check sub-string exists
-// 	array,slice - check sub-element exists
+//
+//	map         - check key exists
+//	string      - check sub-string exists
+//	array,slice - check sub-element exists
 func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 	valid, found := stdutil.CheckContains(src, elem)
 	if valid && !found {
@@ -231,8 +233,8 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 // ContainsKeys asserts that the map is contains all given keys
 //
 // Usage:
-// 	ContainsKeys(t, map[string]any{...}, []string{"key1", "key2"})
 //
+//	ContainsKeys(t, map[string]any{...}, []string{"key1", "key2"})
 func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 	rfKeys := reflect.ValueOf(keys)
 	if rfKeys.Kind() != reflect.Slice {
@@ -263,15 +265,15 @@ func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 
 // StrContains asserts that the given strings is contains sub-string
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
-	if !strings.Contains(s, sub) {
-		t.Helper()
-		return fail(t,
-			fmt.Sprintf("String value check fail:\nGiven string: %#v\nNot contains: %#v", s, sub),
-			fmtAndArgs,
-		)
+	if strings.Contains(s, sub) {
+		return true
 	}
 
-	return true
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("String value check fail:\nGiven string: %#v\nNot contains: %#v", s, sub),
+		fmtAndArgs,
+	)
 }
 
 //
@@ -373,8 +375,10 @@ func Eq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
 
 	if err := checkEqualArgs(want, give); err != nil {
-		return fail(t, fmt.Sprintf("Cannot compare: %#v == %#v (%s)",
-			want, give, err), fmtAndArgs)
+		return fail(t,
+			fmt.Sprintf("Cannot compare: %#v == %#v (%s)", want, give, err),
+			fmtAndArgs,
+		)
 	}
 
 	if !reflects.IsEqual(want, give) {
@@ -400,8 +404,10 @@ func NotEq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
 
 	if err := checkEqualArgs(want, give); err != nil {
-		return fail(t, fmt.Sprintf("Cannot compare: %#v == %#v (%s)",
-			want, give, err), fmtAndArgs)
+		return fail(t,
+			fmt.Sprintf("Cannot compare: %#v == %#v (%s)", want, give, err),
+			fmtAndArgs,
+		)
 	}
 
 	if reflects.IsEqual(want, give) {
@@ -433,7 +439,8 @@ func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 // IsType assert data type equals
 //
 // Usage:
-// 	assert.IsType(t, 0, val) // assert type is int
+//
+//	assert.IsType(t, 0, val) // assert type is int
 func IsType(t TestingT, wantType, give any, fmtAndArgs ...any) bool {
 	if reflects.IsEqual(reflect.TypeOf(wantType), reflect.TypeOf(give)) {
 		return true
@@ -446,9 +453,28 @@ func IsType(t TestingT, wantType, give any, fmtAndArgs ...any) bool {
 	)
 }
 
+// IsKind assert data reflect.Kind equals.
+// If `give` is ptr or interface, will get real kind.
+//
+// Usage:
+//
+//	assert.IsKind(t, reflect.Int, val) // assert type is int kind.
+func IsKind(t TestingT, wantKind reflect.Kind, give any, fmtAndArgs ...any) bool {
+	giveKind := reflects.Elem(reflect.ValueOf(give)).Kind()
+	if wantKind == giveKind {
+		return true
+	}
+
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("Expected to be of kind %v, but was %v", wantKind, giveKind),
+		fmtAndArgs,
+	)
+}
+
 // Same asserts that two pointers reference the same object.
 //
-//    assert.Same(t, ptr1, ptr2)
+//	assert.Same(t, ptr1, ptr2)
 //
 // Both arguments must be pointer variables. Pointer variable sameness is
 // determined based on the equality of both type and value.
@@ -464,7 +490,7 @@ func Same(t TestingT, wanted, actual any, fmtAndArgs ...any) bool {
 
 // NotSame asserts that two pointers do not reference the same object.
 //
-//    assert.NotSame(t, ptr1, ptr2)
+//	assert.NotSame(t, ptr1, ptr2)
 //
 // Both arguments must be pointer variables. Pointer variable sameness is
 // determined based on the equality of both type and value.
