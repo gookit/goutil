@@ -9,13 +9,13 @@
 
 💪 Useful utils package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
-- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting
+- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
 - [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
-- [`cliutil`](./cliutil) Command-line util functions. eg: read input, exec command, cmdline parse/build
-- [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
-- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
+- [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command, cmdline parse/build
+- [`dump`](./dump):  Simple variable printing tool, print slice, map will automatically wrap each element and display the call location
+- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
-- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size
+- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size, time
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 - [`jsonutil`](./jsonutil) some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
@@ -52,7 +52,11 @@ go get github.com/gookit/goutil
 ```bash
 gofmt -w -l ./
 golint ./...
-go test ./...
+
+# testing
+go test -v ./...
+go test -v -run ^TestErr$
+go test -v -run ^TestErr$ ./testutil/assert/...
 ```
 
 Testing in docker:

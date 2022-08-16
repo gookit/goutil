@@ -1,5 +1,9 @@
 # Test Utils
 
+- `assert` go tests helper
+- env variable mocks
+- http request mock 
+
 ## Install
 
 ```bash

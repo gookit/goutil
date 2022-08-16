@@ -9,13 +9,13 @@
 
 💪 Useful utils package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
-- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting
+- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
 - [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
-- [`cliutil`](./cliutil) Command-line util functions. eg: read input, exec command, cmdline parse/build
-- [`dump`](./dump):  Simple variable printing tool, printing slice, map will automatically wrap each element and display the call location
-- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktraces and wrap another error.
+- [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command, cmdline parse/build
+- [`dump`](./dump):  Simple variable printing tool, print slice, map will automatically wrap each element and display the call location
+- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
-- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size
+- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size, time
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 - [`jsonutil`](./jsonutil) some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
@@ -815,7 +815,7 @@ func GoVersion() string
 // source at structs/alias.go
 func NewAliases(checker func(alias string)) *Aliases
 // source at structs/data.go
-func NewMapData() *MapDataStore
+func NewMapData() *DataStore
 // source at structs/structs.go
 func ToMap(st interface{}) map[string]interface{}
 func TryToMap(st interface{}) (map[string]interface{}, error)
@@ -862,9 +862,10 @@ func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
 func VersionCompare(v1, v2, op string) bool
 // source at strutil/convert.go
-func Join(sep string, ss ...string) string
-func JoinSubs(sep string, ss []string) string
-func Implode(sep string, ss ...string) string
+func Quote(s string) string { return strconv.Quote(s) }
+func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
+func JoinSubs(sep string, ss []string) string { return strings.Join(ss, sep) }
+func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
 func String(val interface{}) (string, error)
 func QuietString(in interface{}) string
 func MustString(in interface{}) string
@@ -924,6 +925,7 @@ func RTrim(s string, cutSet ...string) string { return TrimRight(s, cutSet...) }
 func TrimRight(s string, cutSet ...string) string
 func FilterEmail(s string) string
 // source at strutil/format.go
+func Title(s string) string { return strings.ToTitle(s) }
 func Lower(s string) string { return strings.ToLower(s) }
 func Lowercase(s string) string { return strings.ToLower(s) }
 func Upper(s string) string { return strings.ToUpper(s) }
@@ -935,6 +937,8 @@ func Snake(s string, sep ...string) string
 func SnakeCase(s string, sep ...string) string
 func Camel(s string, sep ...string) string
 func CamelCase(s string, sep ...string) string
+func Indent(s, prefix string) string
+func IndentBytes(b, prefix []byte) []byte
 // source at strutil/id.go
 func MicroTimeID() string
 func MicroTimeHexID() string
@@ -945,6 +949,9 @@ func RandomCharsV3(ln int) string
 func RandomBytes(length int) ([]byte, error)
 func RandomString(length int) (string, error)
 // source at strutil/runes.go
+func RuneIsWord(c rune) bool
+func RuneIsLower(c rune) bool
+func RuneIsUpper(c rune) bool
 func RunePos(s string, ru rune) int { return strings.IndexRune(s, ru) }
 func IsSpaceRune(r rune) bool
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
@@ -1239,7 +1246,11 @@ date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```bash
 gofmt -w -l ./
 golint ./...
-go test ./...
+
+# testing
+go test -v ./...
+go test -v -run ^TestErr$
+go test -v -run ^TestErr$ ./testutil/assert/...
 ```
 
 Testing in docker:
