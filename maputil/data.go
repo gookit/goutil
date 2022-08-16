@@ -31,16 +31,8 @@ func (d Data) Value(key string) (interface{}, bool) {
 // Get value from the data map.
 // Supports dot syntax to get deep values. eg: top.sub
 func (d Data) Get(key string) interface{} {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return val
-	}
-
-	// is key path.
-	if strings.ContainsRune(key, '.') {
-		val, ok := d.GetByPath(key)
-		if ok {
-			return val
-		}
 	}
 	return nil
 }
@@ -48,7 +40,18 @@ func (d Data) Get(key string) interface{} {
 // GetByPath get value from the data map by path. eg: top.sub
 // Supports dot syntax to get deep values.
 func (d Data) GetByPath(path string) (interface{}, bool) {
-	return GetByPath(path, d)
+	if val, ok := d[path]; ok {
+		return val, true
+	}
+
+	// is key path.
+	if strings.ContainsRune(path, '.') {
+		val, ok := GetByPath(path, d)
+		if ok {
+			return val, true
+		}
+	}
+	return nil, false
 }
 
 // Set value to the data map
@@ -130,7 +133,7 @@ func (d Data) Str(key string) string {
 
 // Bool value get
 func (d Data) Bool(key string) bool {
-	val, ok := d[key]
+	val, ok := d.GetByPath(key)
 	if !ok {
 		return false
 	}

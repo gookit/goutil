@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -64,6 +65,66 @@ func TestData_SetByPath(t *testing.T) {
 	assert.NoErr(t, err)
 	// dump.P(mp)
 	assert.Eq(t, "v2", mp.Get("k5.b"))
+}
+
+func TestData_SetByPath_case2(t *testing.T) {
+	mp := maputil.Data{}
+	assert.Eq(t, 0, len(mp))
+
+	err := mp.SetByPath("top2.inline.list.ids", []int{234, 345, 456})
+	assert.NoErr(t, err)
+	assert.Eq(t, []int{234, 345, 456}, mp.Get("top2.inline.list.ids"))
+
+	err = mp.SetByPath("top2.sub.var-refer", "val1")
+	assert.NoErr(t, err)
+	assert.Eq(t, "val1", mp.Get("top2.sub.var-refer"))
+
+	err = mp.SetByPath("top2.sub.key2-other", "val2")
+	assert.NoErr(t, err)
+	assert.Eq(t, "val2", mp.Get("top2.sub.key2-other"))
+	// dump.P(mp)
+}
+
+func TestData_SetByPath_case3(t *testing.T) {
+	mp := maputil.Data{}
+	assert.Eq(t, 0, len(mp))
+
+	err := mp.SetByPath("top.sub.key3", "false")
+	assert.NoErr(t, err)
+	assert.Eq(t, "false", mp.Get("top.sub.key3"))
+	assert.False(t, mp.Bool("top.sub.key3"))
+
+	err = mp.SetByPath("top.sub.key4[0]", "abc")
+	assert.NoErr(t, err)
+
+	err = mp.SetByPath("top.sub.key4[1]", "def")
+	assert.NoErr(t, err)
+	sli := mp.Get("top.sub.key4")
+	assert.IsKind(t, reflect.Slice, sli)
+	assert.Len(t, sli, 2)
+	// dump.P(mp, sli)
+}
+
+// top.sub.key5[0].f1 = ab
+// top.sub.key5[1].f2 = de
+func TestData_SetByPath_case4(t *testing.T) {
+	mp := maputil.Data{}
+	assert.Eq(t, 0, len(mp))
+
+	err := mp.SetByPath("top.sub.key3", "false")
+	assert.NoErr(t, err)
+	assert.Eq(t, "false", mp.Get("top.sub.key3"))
+
+	err = mp.SetByPath("top.sub.key5[0].f1", "val1")
+	assert.NoErr(t, err)
+	// dump.P(mp)
+
+	err = mp.SetByPath("top.sub.key5[1].f2", "val2")
+	assert.NoErr(t, err)
+	dump.P(mp)
+	sli := mp.Get("top.sub.key5")
+	assert.IsKind(t, reflect.Slice, sli)
+	assert.Len(t, sli, 2)
 }
 
 func TestData_SetByKeys_emptyData(t *testing.T) {
