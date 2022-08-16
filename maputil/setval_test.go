@@ -33,6 +33,7 @@ func makMapForSetByPath() map[string]interface{} {
 				"k3051": "v3051",
 			},
 		},
+		"key7": nil,
 	}
 }
 
@@ -101,7 +102,7 @@ func TestSetByKeys_map_up_val(t *testing.T) {
 	dump.Println(mp)
 }
 
-func TestSetByKeys_slice_val1(t *testing.T) {
+func TestSetByKeys_slice_upAdd_method1(t *testing.T) {
 	mp := makMapForSetByPath()
 
 	nVal := "set-new-value"
@@ -118,7 +119,7 @@ func TestSetByKeys_slice_val1(t *testing.T) {
 	dump.Println(mp)
 }
 
-func TestSetByKeys_slice_val2(t *testing.T) {
+func TestSetByKeys_slice_upAdd_method2(t *testing.T) {
 	mp := makMapForSetByPath()
 	nVal := "new-value"
 
