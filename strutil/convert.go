@@ -36,6 +36,32 @@ var (
 // Quote alias of strings.Quote
 func Quote(s string) string { return strconv.Quote(s) }
 
+// Unquote remove start and end quotes by single-quote or double-quote
+func Unquote(s string) string {
+	ln := len(s)
+	if ln < 2 {
+		return s
+	}
+
+	qs, qe := s[0], s[ln-1]
+
+	var valid bool
+	if qs == '"' && qe == '"' {
+		valid = true
+	} else if qs == '\'' && qe == '\'' {
+		valid = true
+	}
+
+	if valid {
+		s = s[1 : ln-1] // exclude quotes
+	}
+	// strconv.Unquote cannot unquote single-quote
+	// if ns, err := strconv.Unquote(s); err == nil {
+	// 	return ns
+	// }
+	return s
+}
+
 // Join alias of strings.Join
 func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
 

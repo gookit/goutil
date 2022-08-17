@@ -228,10 +228,18 @@ func TestToTime(t *testing.T) {
 	})
 }
 
-// func TestToOSArgs(t *testing.T) {
-// 	args := strutil.ToOSArgs(`./app top sub -a ddd --xx "abc
+//	func TestToOSArgs(t *testing.T) {
+//		args := strutil.ToOSArgs(`./app top sub -a ddd --xx "abc
+//
 // def ghi"`)
 //
-// 	assert.Len(t, args, 7)
-// 	assert.Eq(t, "abc\ndef ghi", args[6])
-// }
+//		assert.Len(t, args, 7)
+//		assert.Eq(t, "abc\ndef ghi", args[6])
+//	}
+func TestQuote(t *testing.T) {
+	is := assert.New(t)
+
+	is.Eq("", strutil.Unquote("''"))
+	is.Eq("a single-quoted string", strutil.Unquote("'a single-quoted string'"))
+	is.Eq("a double-quoted string", strutil.Unquote(`"a double-quoted string"`))
+}
