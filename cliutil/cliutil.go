@@ -49,7 +49,8 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 // ExecCmd a CLI bin file and return output.
 //
 // Usage:
-// 	ExecCmd("ls", []string{"-al"})
+//
+//	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	return comfunc.ExecCmd(binName, args, workDir...)
 }
@@ -75,8 +76,9 @@ func CurrentShell(onlyName bool) (path string) {
 // HasShellEnv has shell env check.
 //
 // Usage:
-// 	HasShellEnv("sh")
-// 	HasShellEnv("bash")
+//
+//	HasShellEnv("sh")
+//	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	return comfunc.HasShellEnv(shell)
 }
@@ -119,4 +121,28 @@ func BuildOptionHelpName(names []string) string {
 		}
 	}
 	return sb.String()
+}
+
+// ShellQuote quote a string on contains ', ", SPACE
+func ShellQuote(s string) string {
+	var quote byte
+	if strings.ContainsRune(s, '"') {
+		quote = '\''
+	} else if s == "" || strings.ContainsRune(s, '\'') || strings.ContainsRune(s, ' ') {
+		quote = '"'
+	}
+
+	if quote > 0 {
+		ln := len(s) + 2
+		bs := make([]byte, ln, ln)
+
+		bs[0] = quote
+		bs[ln-1] = quote
+		if ln > 2 {
+			copy(bs[1:ln-1], s)
+		}
+
+		s = string(bs)
+	}
+	return s
 }

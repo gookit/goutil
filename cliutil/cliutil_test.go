@@ -128,3 +128,13 @@ func TestColorPrint(t *testing.T) {
 	cliutil.Errorf("f:%s color message, ", "error")
 	cliutil.Errorln("ln:error color message print in cli.")
 }
+
+func TestShellQuote(t *testing.T) {
+	assert.Eq(t, `"'"`, cliutil.ShellQuote("'"))
+	assert.Eq(t, `""`, cliutil.ShellQuote(""))
+	assert.Eq(t, `" "`, cliutil.ShellQuote(" "))
+	assert.Eq(t, `"ab s"`, cliutil.ShellQuote("ab s"))
+	assert.Eq(t, `"ab's"`, cliutil.ShellQuote("ab's"))
+	assert.Eq(t, `'ab"s'`, cliutil.ShellQuote(`ab"s`))
+	assert.Eq(t, "abs", cliutil.ShellQuote("abs"))
+}

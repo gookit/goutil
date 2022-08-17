@@ -23,5 +23,16 @@ const (
 	OpGte = ">="
 )
 
+// consts quote chars
+const (
+	SingleQuote = '\''
+	DoubleQuote = '"'
+	SlashQuote  = '\\'
+
+	SingleQuoteStr = "'"
+	DoubleQuoteStr = `"`
+	SlashQuoteStr  = "\\"
+)
+
 // NoIdx invalid index or length
 const NoIdx = -1
