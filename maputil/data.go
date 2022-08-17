@@ -13,7 +13,7 @@ type Map = Data
 
 // Has value on the data map
 func (d Data) Has(key string) bool {
-	_, ok := d[key]
+	_, ok := d.GetByPath(key)
 	return ok
 }
 
@@ -24,7 +24,7 @@ func (d Data) IsEmtpy() bool {
 
 // Value get from the data map
 func (d Data) Value(key string) (interface{}, bool) {
-	val, ok := d[key]
+	val, ok := d.GetByPath(key)
 	return val, ok
 }
 
@@ -101,7 +101,7 @@ func (d Data) SetByKeys(keys []string, value any) error {
 
 // Default get value from the data map with default value
 func (d Data) Default(key string, def any) interface{} {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return val
 	}
 	return def
@@ -109,7 +109,7 @@ func (d Data) Default(key string, def any) interface{} {
 
 // Int value get
 func (d Data) Int(key string) int {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return mathutil.QuietInt(val)
 	}
 	return 0
@@ -117,7 +117,7 @@ func (d Data) Int(key string) int {
 
 // Int64 value get
 func (d Data) Int64(key string) int64 {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return mathutil.QuietInt64(val)
 	}
 	return 0
@@ -125,7 +125,7 @@ func (d Data) Int64(key string) int64 {
 
 // Str value get by key
 func (d Data) Str(key string) string {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return strutil.QuietString(val)
 	}
 	return ""
@@ -149,7 +149,7 @@ func (d Data) Bool(key string) bool {
 
 // Strings get []string value
 func (d Data) Strings(key string) []string {
-	val, ok := d[key]
+	val, ok := d.GetByPath(key)
 	if !ok {
 		return nil
 	}
@@ -162,7 +162,7 @@ func (d Data) Strings(key string) []string {
 
 // StrSplit get strings by split key value
 func (d Data) StrSplit(key, sep string) []string {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return strings.Split(strutil.QuietString(val), sep)
 	}
 	return nil
@@ -170,7 +170,7 @@ func (d Data) StrSplit(key, sep string) []string {
 
 // StringsByStr value get by key
 func (d Data) StringsByStr(key string) []string {
-	if val, ok := d[key]; ok {
+	if val, ok := d.GetByPath(key); ok {
 		return strings.Split(strutil.QuietString(val), ",")
 	}
 	return nil
@@ -178,7 +178,7 @@ func (d Data) StringsByStr(key string) []string {
 
 // StringMap get map[string]string value
 func (d Data) StringMap(key string) map[string]string {
-	val, ok := d[key]
+	val, ok := d.GetByPath(key)
 	if !ok {
 		return nil
 	}
@@ -191,8 +191,8 @@ func (d Data) StringMap(key string) map[string]string {
 
 // Sub get sub value as new Data
 func (d Data) Sub(key string) Data {
-	if val, ok := d[key]; ok {
-		if sub, ok := val.(map[string]interface{}); ok {
+	if val, ok := d.GetByPath(key); ok {
+		if sub, ok := val.(map[string]any); ok {
 			return sub
 		}
 	}

@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        go_version: [1.15, 1.16, 1.17, 1.18]
+        go_version: [1.16, 1.17, 1.18, 1.19]
 
     steps:
     - name: Check out code
