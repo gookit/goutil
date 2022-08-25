@@ -1,6 +1,7 @@
 package assert
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"runtime/debug"
@@ -298,6 +299,21 @@ func Err(t TestingT, err error, fmtAndArgs ...any) bool {
 	return true
 }
 
+// ErrIs asserts that the given error is equals wantErr
+func ErrIs(t TestingT, err, wantErr error, fmtAndArgs ...any) bool {
+	if err == nil {
+		t.Helper()
+		return fail(t, "An error is expected but got nil.", fmtAndArgs)
+	}
+
+	if !errors.Is(err, wantErr) {
+		t.Helper()
+		return fail(t, fmt.Sprintf("Expect given err is equals %#v.", wantErr), fmtAndArgs)
+	}
+
+	return true
+}
+
 // ErrMsg asserts that the given is a not nil error and error message equals wantMsg
 func ErrMsg(t TestingT, err error, wantMsg string, fmtAndArgs ...any) bool {
 	if err == nil {
@@ -338,6 +354,7 @@ func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
 // -------------------- Len --------------------
 //
 
+// Len assert given length is equals to wantLn
 func Len(t TestingT, give any, wantLn int, fmtAndArgs ...any) bool {
 	gln := reflects.Len(reflect.ValueOf(give))
 	if gln < 0 {
@@ -352,6 +369,7 @@ func Len(t TestingT, give any, wantLn int, fmtAndArgs ...any) bool {
 	return false
 }
 
+// LenGt assert given length is greater than to minLn
 func LenGt(t TestingT, give any, minLn int, fmtAndArgs ...any) bool {
 	gln := reflects.Len(reflect.ValueOf(give))
 	if gln < 0 {
@@ -416,6 +434,7 @@ func NotEq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	return true
 }
 
+// Lt asserts that the give(intX) should not be less than max
 func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
 	gInt, err := mathutil.ToInt(give)
 	if err == nil && gInt <= max {
@@ -426,6 +445,7 @@ func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
 	return fail(t, fmt.Sprintf("Given should later than or equal %d(but was %d)", max, gInt), fmtAndArgs)
 }
 
+// Gt asserts that the give(intX) should not be greater than max
 func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 	gInt, err := mathutil.ToInt(give)
 	if err == nil && gInt >= min {

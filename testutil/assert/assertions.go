@@ -12,11 +12,11 @@ func New(t TestingT) *Assertions {
 }
 
 // IsOk for last check
-func (as Assertions) IsOk() bool {
+func (as *Assertions) IsOk() bool {
 	return as.ok
 }
 
 // IsFail for last check
-func (as Assertions) IsFail() bool {
+func (as *Assertions) IsFail() bool {
 	return !as.ok
 }
