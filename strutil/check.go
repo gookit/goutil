@@ -7,8 +7,13 @@ import (
 	"unicode/utf8"
 )
 
-// Equal check
+// Equal check, alias of strings.EqualFold
 var Equal = strings.EqualFold
+
+// NoCaseEq check two strings is equals and case-insensitivity
+func NoCaseEq(s, t string) bool {
+	return strings.EqualFold(s, t)
+}
 
 // IsNumChar returns true if the given character is a numeric, otherwise false.
 func IsNumChar(c byte) bool {
@@ -137,6 +142,11 @@ func IsBlankBytes(bs []byte) bool {
 // IsSymbol reports whether the rune is a symbolic character.
 func IsSymbol(r rune) bool {
 	return unicode.IsSymbol(r)
+}
+
+// Compare for two string.
+func Compare(s1, s2, op string) bool {
+	return VersionCompare(s1, s2, op)
 }
 
 // VersionCompare for two version string.

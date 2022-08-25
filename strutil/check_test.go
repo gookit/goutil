@@ -30,8 +30,10 @@ func TestIsAlphaNum(t *testing.T) {
 	assert.True(t, strutil.IsAlphaNum('z'))
 }
 
-func TestEquals(t *testing.T) {
+func TestNoCaseEq(t *testing.T) {
 	assert.True(t, strutil.Equal("a", "a"))
+	assert.True(t, strutil.NoCaseEq("A", "a"))
+	assert.True(t, strutil.NoCaseEq("Ab", "aB"))
 	assert.False(t, strutil.Equal("a", "b"))
 }
 
@@ -144,4 +146,6 @@ func TestVersionCompare(t *testing.T) {
 
 	assert.True(t, strutil.VersionCompare("1.0", "1.0", ""))
 	assert.True(t, strutil.VersionCompare("1.0", "1.0", "="))
+
+	assert.False(t, strutil.Compare("2020-12-16", "2021-12-17", ">="))
 }
