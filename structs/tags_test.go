@@ -1,18 +1,105 @@
 package structs_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/gookit/goutil"
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func ExampleTagParser_Parse() {
+	type User struct {
+		Age   int    `json:"age" yaml:"age" default:"23"`
+		Name  string `json:"name,omitempty" yaml:"name" default:"inhere"`
+		inner string
+	}
+
+	u := &User{}
+	p := structs.NewTagParser("json", "yaml", "default")
+	goutil.MustOK(p.Parse(u))
+
+	tags := p.Tags()
+	dump.P(tags)
+	/*tags:
+	map[string]maputil.SMap { #len=2
+	  "Age": maputil.SMap { #len=3
+	    "json": string("age"), #len=3
+	    "yaml": string("age"), #len=3
+	    "default": string("23"), #len=2
+	  },
+	  "Name": maputil.SMap { #len=3
+	    "default": string("inhere"), #len=6
+	    "json": string("name,omitempty"), #len=14
+	    "yaml": string("name"), #len=4
+	  },
+	},
+	*/
+
+	dump.P(p.Info("name", "json"))
+	/*info:
+	maputil.SMap { #len=2
+	  "name": string("name"), #len=4
+	  "omitempty": string("true"), #len=4
+	},
+	*/
+
+	fmt.Println(
+		tags["Age"].Get("json"),
+		tags["Age"].Get("default"),
+	)
+
+	// Output:
+	// age 23
+}
+
+func ExampleTagParser_Parse_parseTagValueDefine() {
+	// eg: "desc;required;default;shorts"
+	type MyCmd struct {
+		Name string `flag:"set your name;false;INHERE;n"`
+	}
+
+	c := &MyCmd{}
+	p := structs.NewTagParser("flag")
+
+	sepStr := ";"
+	defines := []string{"desc", "required", "default", "shorts"}
+	p.ValueFunc = structs.ParseTagValueDefine(sepStr, defines)
+
+	goutil.MustOK(p.Parse(c))
+	// dump.P(p.Tags())
+	/*
+		map[string]maputil.SMap { #len=1
+		  "Name": maputil.SMap { #len=1
+		    "flag": string("set your name;false;INHERE;n"), #len=28
+		  },
+		},
+	*/
+	fmt.Println("tags:", p.Tags())
+
+	info, _ := p.Info("Name", "flag")
+	dump.P(info)
+	/*
+		maputil.SMap { #len=4
+		  "desc": string("set your name"), #len=13
+		  "required": string("false"), #len=5
+		  "default": string("INHERE"), #len=6
+		  "shorts": string("n"), #len=1
+		},
+	*/
+
+	// Output:
+	// tags: map[Name:{flag:set your name;false;INHERE;n}]
+}
+
 func TestParseTagValueINI(t *testing.T) {
-	mp, err := structs.ParseTagValueINI("name", "")
+	mp, err := structs.ParseTagValueNamed("name", "")
 	assert.NoErr(t, err)
 	assert.Empty(t, mp)
 
-	mp, err = structs.ParseTagValueINI("name", "default=inhere")
+	mp, err = structs.ParseTagValueNamed("name", "default=inhere")
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, mp)
 	assert.Eq(t, "inhere", mp.Str("default"))
