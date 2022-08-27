@@ -3,44 +3,36 @@ package structs_test
 import (
 	"testing"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestTryToMap(t *testing.T) {
-	mp, err := structs.TryToMap(nil)
-	assert.Empty(t, mp)
-	assert.NoErr(t, err)
-
+func TestInitDefaults(t *testing.T) {
 	type User struct {
-		Name string
-		Age  int
-		city string
+		Name string `default:"inhere"`
+		Age  int    `default:""`
+		city string `default:""`
 	}
 
-	u := User{
-		Name: "inhere",
-		Age:  34,
-		city: "somewhere",
+	u := &User{}
+	err := structs.InitDefaults(u, nil)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 0, u.Age)
+	// dump.P(u)
+
+	type User1 struct {
+		Name string `default:"inhere"`
+		Age  int32  `default:"30"`
+		city string `default:"val0"`
 	}
 
-	mp, err = structs.TryToMap(u)
+	u1 := &User1{}
+	err = structs.InitDefaults(u1, nil)
 	assert.NoErr(t, err)
-	dump.P(mp)
-	assert.Contains(t, mp, "Name")
-	assert.Contains(t, mp, "Age")
-	assert.NotContains(t, mp, "city")
-
-	mp, err = structs.TryToMap(&u)
-	assert.NoErr(t, err)
-	dump.P(mp)
-
-	mp = structs.ToMap(&u)
-	assert.NoErr(t, err)
-	dump.P(mp)
-
-	assert.Panics(t, func() {
-		structs.MustToMap("abc")
-	})
+	assert.Eq(t, "inhere", u1.Name)
+	assert.Eq(t, int32(30), u1.Age)
+	assert.Eq(t, "", u1.city)
+	// dump.P(u1)
+	// fmt.Printf("%+v\n", u1)
 }
