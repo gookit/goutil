@@ -14,6 +14,9 @@ import (
 
 const defaultInitTag = "default"
 
+// InitOptFunc define
+type InitOptFunc func(opt *InitOptions)
+
 // InitOptions struct
 type InitOptions struct {
 	TagName string
@@ -32,7 +35,7 @@ type InitOptions struct {
 //	err = structs.InitDefaults(u1, nil)
 //	fmt.Printf("%+v\n", u1)
 //	// Output: {Name:inhere Age:30}
-func InitDefaults(ptr interface{}, opt *InitOptions) error {
+func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error {
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("must be provider an pointer value")
@@ -43,10 +46,9 @@ func InitDefaults(ptr interface{}, opt *InitOptions) error {
 		return errors.New("must be provider an struct value")
 	}
 
-	if opt == nil {
-		opt = &InitOptions{TagName: defaultInitTag}
-	} else if opt.TagName == "" {
-		opt.TagName = defaultInitTag
+	opt := &InitOptions{TagName: defaultInitTag}
+	for _, fn := range optFns {
+		fn(opt)
 	}
 
 	return initDefaults(rv, opt.TagName)
@@ -71,8 +73,22 @@ func initDefaults(rv reflect.Value, tagName string) error {
 			continue
 		}
 
+		// skip set on field has value
+		if !fv.IsZero() {
+			continue
+		}
+
 		tagVal, ok := ft.Tag.Lookup(tagName)
+
 		if ok && tagVal != "" && fv.CanSet() {
+			// get real type of the ptr value
+			if fv.Kind() == reflect.Ptr {
+				elemTyp := fv.Type().Elem()
+				fv.Set(reflect.New(elemTyp))
+				// use elem for set value
+				fv = reflect.Indirect(fv)
+			}
+
 			val, err := reflects.ValueByKind(tagVal, fv.Kind())
 			if err != nil {
 				return err
