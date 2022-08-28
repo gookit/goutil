@@ -169,6 +169,7 @@ func BinDir() string
 func BinFile() string
 func BinName() string
 func BuildOptionHelpName(names []string) string
+func ShellQuote(s string) string
 // source at cliutil/color_print.go
 func Redp(a ...interface{}) { color.Red.Print(a...) }
 func Redf(format string, a ...interface{}) { color.Red.Printf(format, a...) }
@@ -732,18 +733,22 @@ func RandomIntWithSeed(min, max int, seed int64) int
 > Package `github.com/gookit/goutil/reflects`
 
 ```go
-// source at reflects/type.go
-func ToBaseKind(kind reflect.Kind) BKind
-func ToBKind(kind reflect.Kind) BKind
-func TypeOf(v interface{}) Type
-// source at reflects/util.go
-func Elem(v reflect.Value) reflect.Value
+// source at reflects/check.go
 func HasChild(v reflect.Value) bool
 func IsNil(v reflect.Value) bool
 func IsFunc(val interface{}) bool
 func IsEqual(src, dst interface{}) bool
 func IsEmpty(v reflect.Value) bool
 func IsEmptyValue(v reflect.Value) bool
+// source at reflects/conv.go
+func BaseTypeVal(v reflect.Value) (value interface{}, err error)
+func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err error)
+// source at reflects/type.go
+func ToBaseKind(kind reflect.Kind) BKind
+func ToBKind(kind reflect.Kind) BKind
+func TypeOf(v interface{}) Type
+// source at reflects/util.go
+func Elem(v reflect.Value) reflect.Value
 func Len(v reflect.Value) int
 func SliceSubKind(typ reflect.Type) reflect.Kind
 // source at reflects/value.go
@@ -789,8 +794,8 @@ func ValueLen(v reflect.Value) int
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
-func BaseTypeVal2(v reflect.Value) (value interface{}, err error)
 func BaseTypeVal(val interface{}) (value interface{}, err error)
+func BaseTypeVal2(v reflect.Value) (value interface{}, err error)
 // source at stdutil/gofunc.go
 func FuncName(fn interface{}) string
 func CutFuncName(fullFcName string) (pkgPath, shortFnName string)
@@ -815,17 +820,23 @@ func GoVersion() string
 ```go
 // source at structs/alias.go
 func NewAliases(checker func(alias string)) *Aliases
-// source at structs/data.go
-func NewMapData() *DataStore
-// source at structs/structs.go
+// source at structs/convert.go
 func ToMap(st interface{}) map[string]interface{}
 func TryToMap(st interface{}) (map[string]interface{}, error)
 func MustToMap(st interface{}) map[string]interface{}
+func StructToMap(st interface{}, opt *MapOptions) (map[string]interface{}, error)
+// source at structs/data.go
+func NewMapData() *DataStore
+// source at structs/structs.go
 func MapStruct(srcSt, dstSt interface{})
+func InitDefaults(ptr interface{}, opt *InitOptions) error
 // source at structs/tags.go
-func ParseTags(v interface{}, tagNames []string) (map[string]maputil.SMap, error)
+func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error)
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error)
-func ParseTagValueINI(field, tagStr string) (mp maputil.SMap, err error)
+func NewTagParser(tagNames ...string) *TagParser
+func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error)
+func ParseTagValueDefine(sep string, defines []string) TagValFunc
+func ParseTagValueNamed(field, tagVal string) (mp maputil.SMap, err error)
 // source at structs/value.go
 func NewValue(val interface{}) *Value
 ```
@@ -835,11 +846,11 @@ func NewValue(val interface{}) *Value
 > Package `github.com/gookit/goutil/strutil`
 
 ```go
-// source at strutil/bytes_buf.go
-func NewEmptyBuffer() *Buffer
-// source at strutil/bytes_pool.go
+// source at strutil/bytes.go
+func NewBuffer() *Buffer
 func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool
 // source at strutil/check.go
+func NoCaseEq(s, t string) bool
 func IsNumChar(c byte) bool
 func IsNumeric(s string) bool
 func IsAlphabet(char uint8) bool
@@ -861,9 +872,11 @@ func IsBlank(s string) bool
 func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
+func Compare(s1, s2, op string) bool
 func VersionCompare(v1, v2, op string) bool
 // source at strutil/convert.go
 func Quote(s string) string { return strconv.Quote(s) }
+func Unquote(s string) string
 func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
 func JoinSubs(sep string, ss []string) string { return strings.Join(ss, sep) }
 func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
@@ -887,7 +900,9 @@ func MustInt(s string) int
 func IntOrPanic(s string) int
 func Int64(s string) int64
 func QuietInt64(s string) int64
+func ToInt64(s string) (int64, error)
 func Int64OrErr(s string) (int64, error)
+func MustInt64(s string) int64
 func Int64OrPanic(s string) int64
 func Ints(s string, sep ...string) []int
 func ToInts(s string, sep ...string) ([]int, error) { return ToIntSlice(s, sep...) }
@@ -1257,6 +1272,9 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 ## Related
 
 - https://github.com/duke-git/lancet
+- https://github.com/samber/lo
+- https://github.com/zyedidia/generic
+- https://github.com/thoas/go-funk
 
 ## Gookit packages
 
