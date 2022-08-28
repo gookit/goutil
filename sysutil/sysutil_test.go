@@ -8,6 +8,11 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestBasic_usage(t *testing.T) {
+	assert.NotEmpty(t, sysutil.BinDir())
+	assert.NotEmpty(t, sysutil.BinFile())
+}
+
 func TestProcessExists(t *testing.T) {
 	pid := os.Getpid()
 

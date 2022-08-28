@@ -17,7 +17,15 @@ func TestMockEnvValue(t *testing.T) {
 		is.Eq("new val", nv)
 	})
 
+	shellVal := "custom-value"
+	testutil.MockEnvValue("SHELL", shellVal, func(newVal string) {
+		is.Eq(shellVal, newVal)
+	})
+
 	is.Eq("", os.Getenv("APP_COMMAND"))
+	is.Panics(func() {
+		testutil.MockEnvValue("invalid=", "value", nil)
+	})
 }
 
 func TestMockEnvValues(t *testing.T) {

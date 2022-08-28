@@ -13,6 +13,13 @@ func TestUserDir(t *testing.T) {
 	assert.NotEmpty(t, dir)
 	dump.P(dir)
 
+	dir1 := sysutil.HomeDir()
+	assert.NotEmpty(t, dir1)
+
+	dir2 := sysutil.UHomeDir()
+	assert.NotEmpty(t, dir2)
+	assert.Eq(t, dir1, dir2)
+
 	dir = sysutil.UserDir("sub-path")
 	assert.Contains(t, dir, "/sub-path")
 	dump.P(dir)
@@ -24,6 +31,9 @@ func TestUserDir(t *testing.T) {
 	dir = sysutil.UserConfigDir("my-conf")
 	assert.Contains(t, dir, ".config/my-conf")
 	dump.P(dir)
+
+	rawPath := "~/.kite"
+	assert.LenGt(t, sysutil.ExpandPath(rawPath), len(rawPath))
 }
 
 func TestWorkdir(t *testing.T) {

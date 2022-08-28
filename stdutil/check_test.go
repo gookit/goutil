@@ -8,6 +8,25 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestIsNil(t *testing.T) {
+	is := assert.New(t)
+
+	is.True(stdutil.IsNil(nil))
+}
+
+func TestIsEmpty(t *testing.T) {
+	is := assert.New(t)
+
+	is.True(stdutil.IsEmpty(nil))
+	is.False(stdutil.IsEmpty("abc"))
+}
+
+func TestIsFunc(t *testing.T) {
+	is := assert.New(t)
+
+	is.False(stdutil.IsFunc(nil))
+}
+
 func TestIsEqual(t *testing.T) {
 	is := assert.New(t)
 

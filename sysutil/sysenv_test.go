@@ -21,6 +21,11 @@ func TestCurrentShell(t *testing.T) {
 		path = sysutil.CurrentShell(false)
 		assert.NotEmpty(t, path)
 	}
+
+	assert.NotEmpty(t, sysutil.Hostname())
+	assert.True(t, sysutil.IsShellSpecialVar('$'))
+	assert.True(t, sysutil.IsShellSpecialVar('@'))
+	assert.False(t, sysutil.IsShellSpecialVar('a'))
 }
 
 func TestOS(t *testing.T) {

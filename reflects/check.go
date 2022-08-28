@@ -73,7 +73,7 @@ func IsEmpty(v reflect.Value) bool {
 		return v.Uint() == 0
 	case reflect.Float32, reflect.Float64:
 		return v.Float() == 0
-	case reflect.Interface, reflect.Ptr:
+	case reflect.Interface, reflect.Ptr, reflect.Func:
 		return v.IsNil()
 	}
 
@@ -81,6 +81,7 @@ func IsEmpty(v reflect.Value) bool {
 }
 
 // IsEmptyValue reflect value check.
+// Difference the IsEmpty(), if value is ptr, will check real elem.
 //
 // From src/pkg/encoding/json/encode.go.
 func IsEmptyValue(v reflect.Value) bool {

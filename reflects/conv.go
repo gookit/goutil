@@ -19,6 +19,8 @@ var ErrConvertFail = errors.New("convert value type is failure")
 //
 // returns int64,string,float or error
 func BaseTypeVal(v reflect.Value) (value interface{}, err error) {
+	v = reflect.Indirect(v)
+
 	switch v.Kind() {
 	case reflect.String:
 		value = v.String()
@@ -75,6 +77,14 @@ func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err erro
 		}
 	case reflect.Uint64:
 		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+			rv = reflect.ValueOf(dstV)
+		}
+	case reflect.Float32:
+		if dstV, err1 := mathutil.ToFloat(val); err1 == nil {
+			rv = reflect.ValueOf(float32(dstV))
+		}
+	case reflect.Float64:
+		if dstV, err1 := mathutil.ToFloat(val); err1 == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.String:

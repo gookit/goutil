@@ -19,6 +19,8 @@ func TestDiscardStdout(t *testing.T) {
 }
 
 func TestRewriteStdout(t *testing.T) {
+	testutil.RewriteStdout()
+
 	assert.Eq(t, "", testutil.RestoreStdout())
 
 	testutil.RewriteStdout()
@@ -29,6 +31,7 @@ func TestRewriteStdout(t *testing.T) {
 }
 
 func TestRewriteStderr(t *testing.T) {
+	testutil.RewriteStderr()
 	assert.Eq(t, "", testutil.RestoreStderr())
 
 	testutil.RewriteStderr()

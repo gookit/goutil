@@ -2,6 +2,7 @@ package sysutil
 
 import (
 	"runtime"
+	"strconv"
 )
 
 // CallerInfo struct
@@ -12,16 +13,21 @@ type CallerInfo struct {
 	Line int
 }
 
+// String convert
+func (ci *CallerInfo) String() string {
+	return ci.File + ":" + strconv.Itoa(ci.Line)
+}
+
 // CallersInfos returns an array of the CallerInfo.
 //
 // Usage:
-// 	cs := sysutil.CallersInfos(3, 2)
-//  for _, ci := range cs {
-// 		fc := runtime.FuncForPC(pc)
-// 		// maybe need check fc = nil
-// 		fnName = fc.Name()
-//	}
 //
+//		cs := sysutil.CallersInfos(3, 2)
+//	 for _, ci := range cs {
+//			fc := runtime.FuncForPC(pc)
+//			// maybe need check fc = nil
+//			fnName = fc.Name()
+//		}
 func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo {
 	filterLn := len(filters)
 	callers := make([]*CallerInfo, 0, num)

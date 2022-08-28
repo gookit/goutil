@@ -7,6 +7,12 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestCommon(t *testing.T) {
+	assert.Nil(t, nil)
+	assert.False(t, false)
+	assert.True(t, true)
+}
+
 func TestErr(t *testing.T) {
 	err := errors.New("this is a error")
 	// assert2.EqualError(t, err, "user custom message")
