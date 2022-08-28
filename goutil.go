@@ -1,11 +1,10 @@
-// Package goutil 💪 Useful utils for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem,
+// Package goutil 💪 Useful utils for Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem,
 // system, testing, debug and more.
 package goutil
 
 import (
 	"fmt"
 
-	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/stdutil"
 )
 
@@ -20,13 +19,6 @@ func Go(f func() error) error {
 		ch <- f()
 	}()
 	return <-ch
-}
-
-// Filling src data(map,struct) to dst struct
-//
-// Deprecated: remove
-func Filling(src, dst interface{}) error {
-	return jsonutil.Mapping(src, dst)
 }
 
 // PanicIfErr if error is not empty, will panic
@@ -68,17 +60,4 @@ func FuncName(f interface{}) string {
 //	pgkName := goutil.PkgName(funcName)
 func PkgName(funcName string) string {
 	return stdutil.PkgName(funcName)
-}
-
-// GetCallStacks stacks is a wrapper for runtime.
-// Stack that attempts to recover the data for all goroutines.
-// from glog package
-func GetCallStacks(all bool) []byte {
-	return stdutil.GetCallStacks(all)
-}
-
-// GetCallersInfo returns an array of strings containing the file and line number
-// of each stack frame leading
-func GetCallersInfo(skip, max int) (callers []string) {
-	return stdutil.GetCallersInfo(skip, max)
 }

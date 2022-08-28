@@ -1,7 +1,6 @@
 package goutil_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil"
@@ -31,15 +30,4 @@ func TestPanicf(t *testing.T) {
 	assert.Panics(t, func() {
 		goutil.Panicf("hi %s", "inhere")
 	})
-}
-
-func TestGetCallStacks(t *testing.T) {
-	msg := goutil.GetCallStacks(false)
-	fmt.Println(string(msg))
-
-	fmt.Println("-------------full stacks-------------")
-	msg = goutil.GetCallStacks(true)
-	fmt.Println(string(msg))
-
-	assert.NotEmpty(t, goutil.GetCallersInfo(1, 3))
 }
