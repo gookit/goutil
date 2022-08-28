@@ -104,7 +104,10 @@ func ToString(val interface{}) (string, error) {
 
 // AnyToString convert value to string.
 //
-// if defaultAsErr is False, will use fmt.Sprint convert complex type
+// if defaultAsErr:
+//
+//	False will use fmt.Sprint convert complex type
+//	True  will return error on fail.
 func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 	if val == nil {
 		return
