@@ -32,7 +32,7 @@ type InitOptions struct {
 //	}
 //
 //	u1 := &User1{}
-//	err = structs.InitDefaults(u1, nil)
+//	err = structs.InitDefaults(u1)
 //	fmt.Printf("%+v\n", u1)
 //	// Output: {Name:inhere Age:30}
 func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error {

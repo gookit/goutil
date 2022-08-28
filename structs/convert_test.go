@@ -66,6 +66,32 @@ func TestToMap_useTag(t *testing.T) {
 	assert.NotContains(t, mp, "city")
 }
 
+func TestToMap_nestStruct(t *testing.T) {
+	type Extra struct {
+		City   string `json:"city"`
+		Github string `json:"github"`
+	}
+	type User struct {
+		Name  string `json:"name"`
+		Age   int    `json:"age"`
+		Extra Extra  `json:"extra"`
+	}
+
+	u := &User{
+		Name: "inhere",
+		Age:  30,
+		Extra: Extra{
+			City:   "chengdu",
+			Github: "https://github.com/inhere",
+		},
+	}
+
+	mp := structs.MustToMap(u)
+	dump.P(mp)
+	assert.ContainsKeys(t, mp, []string{"name", "age", "extra"})
+	assert.ContainsKeys(t, mp["extra"], []string{"city", "github"})
+}
+
 func TestTryToMap_customTag(t *testing.T) {
 	type User struct {
 		Name     string `export:"name"`
