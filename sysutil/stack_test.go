@@ -12,5 +12,5 @@ func TestCallersInfo(t *testing.T) {
 	// dump.P(cs)
 	assert.NotEmpty(t, cs)
 	assert.Len(t, cs, 2)
-	assert.StrContains(t, cs[0].String(), "gookit/goutil/sysutil/stack.go")
+	assert.StrContains(t, cs[0].String(), "goutil/sysutil/stack.go")
 }
