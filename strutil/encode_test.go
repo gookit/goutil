@@ -33,6 +33,7 @@ func TestAddSlashes(t *testing.T) {
 
 	assert.Eq(t, `{\"key\": 123}`, strutil.AddSlashes(`{"key": 123}`))
 	assert.Eq(t, `{"key": 123}`, strutil.StripSlashes(`{\"key\": 123}`))
+	assert.Eq(t, `path\to`, strutil.StripSlashes(`path\\to`))
 }
 
 func TestURLEnDecode(t *testing.T) {
@@ -42,4 +43,15 @@ func TestURLEnDecode(t *testing.T) {
 	is.Eq("a.com/?name=你好", strutil.URLDecode("a.com/?name%3D%E4%BD%A0%E5%A5%BD"))
 	is.Eq("a.com", strutil.URLEncode("a.com"))
 	is.Eq("a.com", strutil.URLDecode("a.com"))
+}
+
+func TestBaseDecode(t *testing.T) {
+	is := assert.New(t)
+
+	is.Eq("MFRGG===", strutil.B32Encode("abc"))
+	is.Eq("abc", strutil.B32Decode("MFRGG==="))
+
+	is.Eq("YWJj", strutil.Base64("abc"))
+	is.Eq("YWJj", strutil.B64Encode("abc"))
+	is.Eq("abc", strutil.B64Decode("YWJj"))
 }

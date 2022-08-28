@@ -228,7 +228,7 @@ func Int(s string) (int, error) {
 	return strconv.Atoi(strings.TrimSpace(s))
 }
 
-// ToInt convert string to int
+// ToInt convert string to int, return error on fail
 func ToInt(s string) (int, error) {
 	return strconv.Atoi(strings.TrimSpace(s))
 }
@@ -266,9 +266,19 @@ func QuietInt64(s string) int64 {
 	return val
 }
 
-// Int64OrErr convert string to int
+// ToInt64 convert string to int, return error on fail
+func ToInt64(s string) (int64, error) {
+	return strconv.ParseInt(s, 10, 0)
+}
+
+// Int64OrErr convert string to int, return error on fail
 func Int64OrErr(s string) (int64, error) {
 	return strconv.ParseInt(s, 10, 0)
+}
+
+// MustInt64 convert value to int, will panic on error
+func MustInt64(s string) int64 {
+	return Int64OrPanic(s)
 }
 
 // Int64OrPanic convert value to int, will panic on error
@@ -284,16 +294,18 @@ func Int64OrPanic(s string) int64 {
  * convert string value to int/string slice, time.Time
  *************************************************************/
 
-// Ints alias of the ToIntSlice()
+// Ints alias of the ToIntSlice(). default sep is comma(,)
 func Ints(s string, sep ...string) []int {
 	ints, _ := ToIntSlice(s, sep...)
 	return ints
 }
 
-// ToInts alias of the ToIntSlice()
+// ToInts alias of the ToIntSlice(). default sep is comma(,)
 func ToInts(s string, sep ...string) ([]int, error) { return ToIntSlice(s, sep...) }
 
 // ToIntSlice split string to slice and convert item to int.
+//
+// Default sep is comma(,)
 func ToIntSlice(s string, sep ...string) (ints []int, err error) {
 	ss := ToSlice(s, sep...)
 	for _, item := range ss {
@@ -321,7 +333,6 @@ func ToSlice(s string, sep ...string) []string {
 	if len(sep) > 0 {
 		return Split(s, sep[0])
 	}
-
 	return Split(s, ",")
 }
 

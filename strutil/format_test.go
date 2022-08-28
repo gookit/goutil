@@ -8,6 +8,9 @@ import (
 )
 
 func TestUpperOrLowerCase(t *testing.T) {
+	// Title
+	assert.Eq(t, "HI WELCOME", strutil.Title("hi welcome"))
+
 	// Uppercase, Lowercase
 	assert.Eq(t, "ABC", strutil.Upper("abc"))
 	assert.Eq(t, "ABC", strutil.Uppercase("abc"))
@@ -115,4 +118,12 @@ func TestCamelCase(t *testing.T) {
 	// custom sep char
 	is.Eq("rangePrice", strutil.CamelCase("range+price", "+"))
 	is.Eq("rangePrice", strutil.CamelCase("range*price", "*"))
+}
+
+func TestIndent(t *testing.T) {
+	is := assert.New(t)
+
+	is.Eq("", strutil.Indent("", ".."))
+	is.Eq("\n", strutil.Indent("\n", ".."))
+	is.Eq("..abc\n..def", strutil.Indent("abc\ndef", ".."))
 }

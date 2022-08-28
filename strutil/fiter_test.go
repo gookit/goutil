@@ -38,6 +38,7 @@ func TestTrim(t *testing.T) {
 	is.Eq(" abc", strutil.RTrim(" abc "))
 	is.Eq(", abc", strutil.TrimRight(", abc ,", ", "))
 	is.Eq(", abc ", strutil.TrimRight(", abc ,", ","))
+	is.Eq(", abc", strutil.TrimRight(", abc ,", ",", " "))
 }
 
 func TestFilterEmail(t *testing.T) {

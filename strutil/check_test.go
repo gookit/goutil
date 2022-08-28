@@ -18,6 +18,9 @@ func TestIsAlphabet(t *testing.T) {
 	assert.True(t, strutil.IsAlphabet('a'))
 	assert.True(t, strutil.IsAlphabet('Z'))
 	assert.True(t, strutil.IsAlphabet('z'))
+
+	assert.True(t, strutil.IsNumeric("234"))
+	assert.False(t, strutil.IsNumeric("a34"))
 }
 
 func TestIsAlphaNum(t *testing.T) {

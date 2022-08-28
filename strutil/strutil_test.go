@@ -37,6 +37,18 @@ func TestRepeatRune(t *testing.T) {
 	}
 }
 
+func TestRepeatBytes(t *testing.T) {
+	assert.Eq(t, []byte("aaa"), strutil.RepeatBytes('a', 3))
+}
+
+func TestRenderTemplate(t *testing.T) {
+	tpl := "hi, My name is {{ .name | upFirst }}, age is {{ .age }}"
+	assert.Eq(t, "hi, My name is Inhere, age is 2000", strutil.RenderTemplate(tpl, map[string]interface{}{
+		"name": "inhere",
+		"age":  2000,
+	}, nil))
+}
+
 func TestReplaces(t *testing.T) {
 	assert.Eq(t, "tom age is 20", strutil.Replaces(
 		"{name} age is {age}",

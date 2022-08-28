@@ -29,6 +29,7 @@ func TestStringToBool(t *testing.T) {
 	}
 
 	for str, want := range tests1 {
+		is.Eq(want, strutil.QuietBool(str))
 		is.Eq(want, strutil.MustBool(str))
 	}
 
@@ -136,12 +137,41 @@ func TestStrToInt(t *testing.T) {
 	is.Nil(err)
 	is.Eq(-23, iVal)
 
+	iVal = strutil.QuietInt("-23")
+	is.Eq(-23, iVal)
+
 	iVal = strutil.MustInt("-23")
 	is.Eq(-23, iVal)
 
 	is.PanicsErrMsg(func() {
 		strutil.IntOrPanic("abc")
 	}, "strconv.Atoi: parsing \"abc\": invalid syntax")
+}
+
+func TestStrToInt64(t *testing.T) {
+	is := assert.New(t)
+
+	iVal, err := strutil.ToInt64("-23")
+	is.Nil(err)
+	is.Eq(int64(-23), iVal)
+
+	iVal, err = strutil.Int64OrErr("-23")
+	is.Nil(err)
+	is.Eq(int64(-23), iVal)
+
+	iVal = strutil.Int64("23")
+	is.Nil(err)
+	is.Eq(int64(23), iVal)
+
+	iVal = strutil.QuietInt64("-23")
+	is.Eq(int64(-23), iVal)
+
+	iVal = strutil.MustInt64("-23")
+	is.Eq(int64(-23), iVal)
+
+	is.Panics(func() {
+		strutil.MustInt64("abc")
+	})
 }
 
 func TestStrToInts(t *testing.T) {
@@ -226,6 +256,10 @@ func TestToTime(t *testing.T) {
 	is.Panics(func() {
 		strutil.MustToTime("invalid")
 	})
+
+	dur, err1 := strutil.ToDuration("3s")
+	is.NoErr(err1)
+	is.Eq(3*timex.Second, dur)
 }
 
 //	func TestToOSArgs(t *testing.T) {

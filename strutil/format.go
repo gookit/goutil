@@ -165,6 +165,10 @@ func Indent(s, prefix string) string {
 // IndentBytes inserts prefix at the beginning of each non-empty line of b.
 // The end-of-line marker is NL.
 func IndentBytes(b, prefix []byte) []byte {
+	if len(b) == 0 {
+		return b
+	}
+
 	bol := true
 	res := make([]byte, 0, len(b)+len(prefix)*4)
 

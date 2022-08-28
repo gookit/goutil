@@ -93,10 +93,11 @@ func RepeatBytes(char byte, times int) (chars []byte) {
 
 // Replaces replace multi strings
 //
-// 	pairs: {old1: new1, old2: new2, ...}
+//	pairs: {old1: new1, old2: new2, ...}
 //
 // Can also use:
-// 	strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
+//
+//	strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
 func Replaces(str string, pairs map[string]string) string {
 	ss := make([]string, len(pairs)*2)
 	for old, newVal := range pairs {
@@ -143,7 +144,7 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 		},
 	})
 
-	// custom add template functions
+	// add custom template functions
 	if len(fns) > 0 {
 		t.Funcs(fns)
 	}
