@@ -24,8 +24,11 @@ filters:
 # not matched will use 'Other' group.
 rules:
   - name: Refactor
-    start_withs: [refactor, break]
-    contains: ['refactor:']
+    start_withs: [refactor]
+    contains: ['refactor:', refactoring]
+  - name: Breaking
+    start_withs: [breaking, break]
+    contains: ['breaking:', 'break:']
   - name: Fixed
     start_withs: [fix]
     contains: ['fix:']

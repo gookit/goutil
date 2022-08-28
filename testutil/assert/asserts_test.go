@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil/assert"
-	assert2 "github.com/stretchr/testify/assert"
 )
 
 func TestErr(t *testing.T) {
@@ -22,13 +21,6 @@ func TestContains(t *testing.T) {
 
 func TestEq(t *testing.T) {
 	str := "abc"
-
-	assert2.Equal(t, "abc", str)
-	assert2.NotEmpty(t, str)
-	assert2.NotPanics(t, func() {})
-	assert2.Len(t, str, 3)
-	assert2.NotEqual(t, "def", str)
-	assert2.Contains(t, str, "a")
 
 	assert.Eq(t, "abc", str)
 	assert.Panics(t, func() {
