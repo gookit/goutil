@@ -23,6 +23,8 @@ func TestPkgName(t *testing.T) {
 
 func TestPanicIfErr(t *testing.T) {
 	goutil.PanicIfErr(nil)
+	goutil.PanicErr(nil)
+	goutil.MustOK(nil)
 }
 
 func TestPanicf(t *testing.T) {

@@ -23,12 +23,28 @@ func Go(f func() error) error {
 }
 
 // Filling src data(map,struct) to dst struct
+//
+// Deprecated: remove
 func Filling(src, dst interface{}) error {
 	return jsonutil.Mapping(src, dst)
 }
 
-// PanicIfErr if error is not empty
+// PanicIfErr if error is not empty, will panic
 func PanicIfErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// PanicErr if error is not empty, will panic
+func PanicErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// MustOK if error is not empty, will panic
+func MustOK(err error) {
 	if err != nil {
 		panic(err)
 	}
@@ -47,6 +63,7 @@ func FuncName(f interface{}) string {
 // PkgName get current package name. alias of stdutil.PkgName()
 //
 // Usage:
+//
 //	funcName := goutil.FuncName(fn)
 //	pgkName := goutil.PkgName(funcName)
 func PkgName(funcName string) string {
