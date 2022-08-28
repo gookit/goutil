@@ -11,6 +11,10 @@
 go get github.com/gookit/goutil/dump
 ```
 
+## Go docs
+
+- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/dump)
+
 ## Usage
 
 run demo: `go run ./dump/_examples/demo1.go`

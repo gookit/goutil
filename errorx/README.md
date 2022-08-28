@@ -8,6 +8,10 @@
 go get github.com/gookit/goutil/errorx
 ```
 
+## Go docs
+
+- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/errorx)
+
 ## Usage
 
 ### Create error with call stack info

@@ -12,6 +12,10 @@
 go get github.com/gookit/goutil/cliutil
 ```
 
+## Go docs
+
+- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/cliutil)
+
 ## Helper functions
 
 ```go

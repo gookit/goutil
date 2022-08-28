@@ -17,6 +17,10 @@
 go get github.com/gookit/goutil/cflag
 ```
 
+## Go docs
+
+- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/cflag)
+
 ## 使用
 
 例子，代码请看 [_example/cmd.go](_example/cmd.go)

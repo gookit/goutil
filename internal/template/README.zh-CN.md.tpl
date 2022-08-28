@@ -61,6 +61,9 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 ## Related
 
 - https://github.com/duke-git/lancet
+- https://github.com/samber/lo
+- https://github.com/zyedidia/generic
+- https://github.com/thoas/go-funk
 
 ## Gookit packages
 

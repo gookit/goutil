@@ -4,7 +4,7 @@
 
 - Supports auto-rendering of pretty help messages
 - Allows adding short options to flag options, and multiples
-- Allows binding named parameters
+- Allows binding named arguments
 - Allows setting arguments or options as required
 - Allows setting validators for arguments or options
 
@@ -15,6 +15,10 @@
 ```shell
 go get github.com/gookit/goutil/cflag
 ```
+
+## Go docs
+
+- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/cflag)
 
 ## Usage
 
