@@ -34,16 +34,20 @@ func TestTryToMap(t *testing.T) {
 
 	mp, err = structs.TryToMap(&u)
 	assert.NoErr(t, err)
+	assert.NotEmpty(t, mp)
 	// dump.P(mp)
 
-	mp = structs.ToMap(&u)
-	assert.NoErr(t, err)
+	mp = structs.MustToMap(&u)
+	assert.NotEmpty(t, mp)
 	// dump.P(mp)
 
 	assert.Panics(t, func() {
 		structs.MustToMap("abc")
 	})
 
+}
+
+func TestToMap_useTag(t *testing.T) {
 	type User1 struct {
 		Name string `json:"name"`
 		Age  int    `json:"age"`
@@ -55,7 +59,31 @@ func TestTryToMap(t *testing.T) {
 		Age:  34,
 		city: "somewhere",
 	}
-	mp = structs.ToMap(u1)
-	assert.NoErr(t, err)
+
+	mp := structs.ToMap(u1)
 	dump.P(mp)
+	assert.ContainsKeys(t, mp, []string{"name", "age"})
+	assert.NotContains(t, mp, "city")
+}
+
+func TestTryToMap_customTag(t *testing.T) {
+	type User struct {
+		Name     string `export:"name"`
+		Age      int    `export:"age"`
+		FullName string `export:"full_name"`
+	}
+
+	u1 := User{
+		Name:     "inhere",
+		Age:      34,
+		FullName: "inhere xyz",
+	}
+
+	mp, err := structs.TryToMap(u1, func(opt *structs.MapOptions) {
+		opt.TagName = "export"
+	})
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, mp)
+
+	assert.ContainsKeys(t, mp, []string{"name", "age", "full_name"})
 }

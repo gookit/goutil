@@ -5,24 +5,24 @@ import (
 	"reflect"
 )
 
-// ToMap simple convert structs to map by reflect
-func ToMap(st interface{}) map[string]interface{} {
-	mp, _ := StructToMap(st, nil)
+// ToMap quickly convert structs to map by reflect
+func ToMap(st interface{}, optFns ...MapOpFunc) map[string]interface{} {
+	mp, _ := StructToMap(st, optFns...)
 	return mp
 }
 
-// TryToMap simple convert structs to map by reflect
-func TryToMap(st interface{}) (map[string]interface{}, error) {
-	return StructToMap(st, nil)
-}
-
 // MustToMap alis of TryToMap, but will panic on error
-func MustToMap(st interface{}) map[string]interface{} {
-	mp, err := StructToMap(st, nil)
+func MustToMap(st interface{}, optFns ...MapOpFunc) map[string]interface{} {
+	mp, err := StructToMap(st, optFns...)
 	if err != nil {
 		panic(err)
 	}
 	return mp
+}
+
+// TryToMap simple convert structs to map by reflect
+func TryToMap(st interface{}, optFns ...MapOpFunc) (map[string]interface{}, error) {
+	return StructToMap(st, optFns...)
 }
 
 const defaultFieldTag = "json"
@@ -32,8 +32,12 @@ type MapOptions struct {
 	TagName string
 }
 
-// StructToMap simple convert structs to map by reflect
-func StructToMap(st interface{}, opt *MapOptions) (map[string]interface{}, error) {
+// MapOpFunc define
+type MapOpFunc func(opt *MapOptions)
+
+// StructToMap quickly convert structs to map[string]interface{} by reflect.
+// Can custom export field name by tag `json` or custom tag
+func StructToMap(st interface{}, optFns ...MapOpFunc) (map[string]interface{}, error) {
 	mp := make(map[string]interface{})
 	if st == nil {
 		return mp, nil
@@ -48,10 +52,9 @@ func StructToMap(st interface{}, opt *MapOptions) (map[string]interface{}, error
 		return mp, errors.New("must be an struct")
 	}
 
-	if opt == nil {
-		opt = &MapOptions{TagName: defaultFieldTag}
-	} else if opt.TagName == "" {
-		opt.TagName = defaultFieldTag
+	opt := &MapOptions{TagName: defaultFieldTag}
+	for _, fn := range optFns {
+		fn(opt)
 	}
 
 	mp, err := structToMap(obj, opt.TagName)
