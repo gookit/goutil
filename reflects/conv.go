@@ -4,7 +4,6 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -94,7 +93,7 @@ func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err erro
 	}
 
 	if !rv.IsValid() {
-		err = errorx.Rawf("cannot convert value to give kind: %s", kind)
+		err = ErrConvertFail
 	}
 	return
 }

@@ -6,13 +6,13 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 )
 
+// ErrNotAnStruct error
 // var emptyStringMap = make(maputil.SMap)
-var errNotAnStruct = errors.New("must input an struct value")
+var ErrNotAnStruct = errors.New("must input an struct value")
 
 // ParseTags for parse struct tags.
 func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error) {
@@ -79,7 +79,7 @@ func (p *TagParser) Parse(st interface{}) error {
 // ParseType parse a struct type value
 func (p *TagParser) ParseType(rt reflect.Type) error {
 	if rt.Kind() != reflect.Struct {
-		return errNotAnStruct
+		return ErrNotAnStruct
 	}
 
 	// key is field name.
@@ -141,7 +141,7 @@ func (p *TagParser) Info(field, tag string) (maputil.SMap, error) {
 	field = strutil.UpperFirst(field)
 	fTags, ok := p.tags[field]
 	if !ok {
-		return nil, errorx.Rawf("field %q not found", field)
+		return nil, fmt.Errorf("field %q not found", field)
 	}
 
 	val, ok := fTags.Value(tag)

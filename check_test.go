@@ -10,6 +10,9 @@ import (
 func TestIsEqual(t *testing.T) {
 	is := assert.New(t)
 
+	is.True(goutil.IsNil(nil))
+	is.False(goutil.IsNil("abc"))
+
 	is.True(goutil.IsEqual("a", "a"))
 	is.True(goutil.IsEqual([]string{"a"}, []string{"a"}))
 	is.True(goutil.IsEqual(23, 23))
@@ -21,7 +24,7 @@ func TestIsEqual(t *testing.T) {
 	is.False(goutil.IsEqual(goutil.IsEmpty, 23))
 }
 
-func TestContains(t *testing.T) {
+func TestIsContains(t *testing.T) {
 	is := assert.New(t)
 
 	is.True(goutil.Contains("abc", "a"))
