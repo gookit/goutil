@@ -35,12 +35,12 @@ type InitOptions struct {
 func InitDefaults(ptr interface{}, opt *InitOptions) error {
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr {
-		return errors.New("must be provider an pointer")
+		return errors.New("must be provider an pointer value")
 	}
 
 	rv = rv.Elem()
 	if rv.Kind() != reflect.Struct {
-		return errors.New("must be provider an struct")
+		return errors.New("must be provider an struct value")
 	}
 
 	if opt == nil {

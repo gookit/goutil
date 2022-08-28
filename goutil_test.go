@@ -13,6 +13,11 @@ func TestFuncName(t *testing.T) {
 
 	name = goutil.FuncName(goutil.PanicIfErr)
 	assert.Eq(t, "github.com/gookit/goutil.PanicIfErr", name)
+
+	err := goutil.Go(func() error {
+		return nil
+	})
+	assert.NoErr(t, err)
 }
 
 func TestPkgName(t *testing.T) {

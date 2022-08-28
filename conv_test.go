@@ -7,6 +7,31 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestToBool(t *testing.T) {
+	is := assert.New(t)
+
+	blVal, err := goutil.ToBool("1")
+	is.Nil(err)
+	is.True(blVal)
+
+	blVal = goutil.Bool("1")
+	is.True(blVal)
+
+	is.False(goutil.Bool(false))
+	is.False(goutil.Bool(1))
+}
+
+func TestToString(t *testing.T) {
+	is := assert.New(t)
+
+	str, err := goutil.ToString(23)
+	is.Nil(err)
+	is.Eq("23", str)
+
+	str = goutil.String(23)
+	is.Eq("23", str)
+}
+
 func TestToInt(t *testing.T) {
 	is := assert.New(t)
 

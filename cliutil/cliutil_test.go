@@ -129,6 +129,11 @@ func TestColorPrint(t *testing.T) {
 	cliutil.Errorln("ln:error color message print in cli.")
 }
 
+func TestBuildOptionHelpName(t *testing.T) {
+	assert.Eq(t, "-a, -b", cliutil.BuildOptionHelpName([]string{"a", "b"}))
+	assert.Eq(t, "-h, --help", cliutil.BuildOptionHelpName([]string{"h", "help"}))
+}
+
 func TestShellQuote(t *testing.T) {
 	assert.Eq(t, `"'"`, cliutil.ShellQuote("'"))
 	assert.Eq(t, `""`, cliutil.ShellQuote(""))

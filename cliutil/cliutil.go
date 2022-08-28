@@ -113,9 +113,9 @@ func BuildOptionHelpName(names []string) string {
 		sb.WriteByte('-')
 		if len(name) > 1 {
 			sb.WriteByte('-')
-			sb.WriteString(name)
 		}
 
+		sb.WriteString(name)
 		if i < size {
 			sb.WriteString(", ")
 		}

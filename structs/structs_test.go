@@ -35,4 +35,11 @@ func TestInitDefaults(t *testing.T) {
 	assert.Eq(t, "", u1.city)
 	// dump.P(u1)
 	// fmt.Printf("%+v\n", u1)
+
+	err = structs.InitDefaults([]string{"invalid"}, nil)
+	assert.ErrMsg(t, err, "must be provider an pointer value")
+
+	arr := []string{"invalid"}
+	err = structs.InitDefaults(&arr, nil)
+	assert.ErrMsg(t, err, "must be provider an struct value")
 }

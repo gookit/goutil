@@ -20,7 +20,5 @@ func InternalIP() (ip string) {
 			}
 		}
 	}
-
-	// os.Exit(0)
 	return
 }

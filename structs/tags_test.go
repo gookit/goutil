@@ -2,6 +2,7 @@ package structs_test
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil"
@@ -113,6 +114,28 @@ func TestParseTags(t *testing.T) {
 	}
 
 	tags, err := structs.ParseTags(user{}, []string{"json", "default"})
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, tags)
+	assert.NotContains(t, tags, "inner")
+
+	assert.Contains(t, tags, "Age")
+	assert.Eq(t, "age", tags["Age"].Str("json"))
+	assert.Eq(t, 23, tags["Age"].Int("default"))
+
+	assert.Contains(t, tags, "Name")
+	assert.Eq(t, "name", tags["Name"].Str("json"))
+	assert.Eq(t, 0, tags["Name"].Int("default"))
+}
+
+func TestParseReflectTags(t *testing.T) {
+	type user struct {
+		Age   int    `json:"age" default:"23"`
+		Name  string `json:"name" default:"inhere"`
+		inner string
+	}
+
+	rt := reflect.TypeOf(user{})
+	tags, err := structs.ParseReflectTags(rt, []string{"json", "default"})
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, tags)
 	assert.NotContains(t, tags, "inner")
