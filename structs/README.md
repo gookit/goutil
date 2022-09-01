@@ -1,7 +1,12 @@
 # Structs
 
+Provide some extends util functions for struct. eg: convert, tag parse, struct data init
+
 - `structs.Aliases` - implemented a simple string alias map.
-- convert struct to map data
+- Convert a struct to `map[string]any` data
+- Quickly init struct default value by field "default" tag.
+- Parse a struct and collect tags, and parse tag value
+- And more util functions ...
 
 ## Install
 
@@ -16,6 +21,10 @@ go get github.com/gookit/goutil/structs
 ## Usage
 
 ### Convert to map
+
+`structs.ToMap()` can be quickly convert a `struct` value to `map[string]any`
+
+**Examples**:
 
 ```go
 	type User1 struct {
@@ -45,7 +54,9 @@ map[string]interface {} { #len=2
 
 ### Init defaults
 
-Quickly init struct default value by field "default" tag.
+`structs.InitDefaults` Quickly init struct default value by field "default" tag.
+
+**Examples**:
 
 ```go
 	type Extra struct {
@@ -61,24 +72,65 @@ Quickly init struct default value by field "default" tag.
 	u := &User{}
 	_ = structs.InitDefaults(u, &structs.InitOptions{})
 	dump.P(u)
-
-	/*dump:
-	&structs_test.User {
-	  Name: string("inhere"), #len=6
-	  Age: int(30),
-	  Extra: structs_test.Extra {
-	    City: string("chengdu"), #len=7
-	    Github: string("https://github.com/inhere"), #len=25
-	  },
-	},
-	*/
 ```
 
+**Output**:
 
+```shell
+&structs_test.User {
+  Name: string("inhere"), #len=6
+  Age: int(30),
+  Extra: structs_test.Extra {
+    City: string("chengdu"), #len=7
+    Github: string("https://github.com/inhere"), #len=25
+  },
+},
+```
 
 ### Tags collect and parse
 
+Parse a struct for collect tags, and parse tag value
 
+**Examples**:
+
+```go
+	// eg: "desc;required;default;shorts"
+	type MyCmd struct {
+		Name string `flag:"set your name;false;INHERE;n"`
+	}
+
+	c := &MyCmd{}
+	p := structs.NewTagParser("flag")
+
+	sepStr := ";"
+	defines := []string{"desc", "required", "default", "shorts"}
+	p.ValueFunc = structs.ParseTagValueDefine(sepStr, defines)
+
+	goutil.MustOK(p.Parse(c))
+	// dump.P(p.Tags())
+	/*
+		map[string]maputil.SMap { #len=1
+		  "Name": maputil.SMap { #len=1
+		    "flag": string("set your name;false;INHERE;n"), #len=28
+		  },
+		},
+	*/
+	fmt.Println("tags:", p.Tags())
+
+	info, _ := p.Info("Name", "flag")
+	dump.P(info)
+	/*
+		maputil.SMap { #len=4
+		  "desc": string("set your name"), #len=13
+		  "required": string("false"), #len=5
+		  "default": string("INHERE"), #len=6
+		  "shorts": string("n"), #len=1
+		},
+	*/
+
+	// Output:
+	// tags: map[Name:{flag:set your name;false;INHERE;n}]
+```
 
 ## Testings
 

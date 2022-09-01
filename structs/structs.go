@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 
+	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/reflects"
 )
 
@@ -19,7 +20,8 @@ type InitOptFunc func(opt *InitOptions)
 
 // InitOptions struct
 type InitOptions struct {
-	TagName string
+	TagName  string
+	ParseEnv bool
 }
 
 // InitDefaults init struct default value by field "default" tag.
@@ -51,10 +53,10 @@ func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error {
 		fn(opt)
 	}
 
-	return initDefaults(rv, opt.TagName)
+	return initDefaults(rv, opt)
 }
 
-func initDefaults(rv reflect.Value, tagName string) error {
+func initDefaults(rv reflect.Value, opt *InitOptions) error {
 	rt := rv.Type()
 
 	for i := 0; i < rt.NumField(); i++ {
@@ -66,8 +68,7 @@ func initDefaults(rv reflect.Value, tagName string) error {
 
 		fv := rv.Field(i)
 		if fv.Kind() == reflect.Struct {
-			err := initDefaults(fv, tagName)
-			if err != nil {
+			if err := initDefaults(fv, opt); err != nil {
 				return err
 			}
 			continue
@@ -78,24 +79,29 @@ func initDefaults(rv reflect.Value, tagName string) error {
 			continue
 		}
 
-		tagVal, ok := ft.Tag.Lookup(tagName)
-
-		if ok && tagVal != "" && fv.CanSet() {
-			// get real type of the ptr value
-			if fv.Kind() == reflect.Ptr {
-				elemTyp := fv.Type().Elem()
-				fv.Set(reflect.New(elemTyp))
-				// use elem for set value
-				fv = reflect.Indirect(fv)
-			}
-
-			val, err := reflects.ValueByKind(tagVal, fv.Kind())
-			if err != nil {
-				return err
-			}
-
-			fv.Set(val)
+		tagVal, ok := ft.Tag.Lookup(opt.TagName)
+		if !ok || tagVal == "" || !fv.CanSet() {
+			continue
 		}
+
+		// get real type of the ptr value
+		if fv.Kind() == reflect.Ptr {
+			elemTyp := fv.Type().Elem()
+			fv.Set(reflect.New(elemTyp))
+			// use elem for set value
+			fv = reflect.Indirect(fv)
+		}
+
+		if opt.ParseEnv {
+			tagVal = envutil.ParseValue(tagVal)
+		}
+
+		val, err := reflects.ValueByKind(tagVal, fv.Kind())
+		if err != nil {
+			return err
+		}
+
+		fv.Set(val)
 	}
 
 	return nil
