@@ -6,40 +6,45 @@ import (
 	"strings"
 )
 
-// VarReplace replaces ${var} or $var in the string according to the values.
-// is alias of the os.ExpandEnv()
-func VarReplace(s string) string {
-	return os.ExpandEnv(s)
-}
-
 // ValueGetter Env value provider func.
+//
 // TIPS: you can custom provide data.
 var ValueGetter = os.Getenv
 
+// VarReplace replaces ${var} or $var in the string according to the values.
+//
+// is alias of the os.ExpandEnv()
+func VarReplace(s string) string { return os.ExpandEnv(s) }
+
 // parse env value, allow:
-// 	only key 	 - "${SHELL}"
-// 	with default - "${NotExist|defValue}"
+//
+//	only key 	 - "${SHELL}"
+//	with default - "${NotExist | defValue}"
 //	multi key 	 - "${GOPATH}/${APP_ENV | prod}/dir"
+//
 // Notice:
-//  must add "?" - To ensure that there is no greedy match
-//  var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
+//
+//	must add "?" - To ensure that there is no greedy match
+//	var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
 var envRegex = regexp.MustCompile(`\${.+?}`)
 
 // VarParse alias of the ParseValue
-func VarParse(str string) string {
-	return ParseEnvValue(str)
-}
+func VarParse(str string) string { return ParseValue(str) }
 
 // ParseEnvValue alias of the ParseValue
-func ParseEnvValue(str string) string {
-	return ParseValue(str)
-}
+func ParseEnvValue(str string) string { return ParseValue(str) }
 
 // ParseValue parse ENV var value from input string, support default value.
-// vars like ${var}, ${var| default}
+//
+// Format:
+//
+//	${var_name}            Only var name
+//	${var_name | default}  With default value
 //
 // Usage:
-// 	envutil.ParseValue()
+//
+//	envutil.ParseValue("${ APP_NAME }")
+//	envutil.ParseValue("${ APP_ENV | dev }")
 func ParseValue(val string) (newVal string) {
 	if !strings.Contains(val, "${") {
 		return val

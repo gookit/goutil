@@ -13,6 +13,20 @@ func TestNewValue(t *testing.T) {
 
 	v.Set("false")
 	assert.False(t, v.Bool())
+
+	// string
+	v.Set("12, 34")
+	assert.Eq(t, "12, 34", v.Val())
+	assert.Eq(t, "12, 34", v.String())
+	assert.Eq(t, []string{"12", "34"}, v.Strings())
+	assert.Eq(t, []string{"12", "34"}, v.SplitToStrings())
+	assert.Eq(t, []int{12, 34}, v.SplitToInts())
+
+	// nil
+	v.Set(nil)
+	assert.Empty(t, v.Strings())
+	assert.Empty(t, v.SplitToInts())
+	assert.Empty(t, v.SplitToStrings())
 }
 
 func TestValue_Val(t *testing.T) {

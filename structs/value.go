@@ -31,12 +31,12 @@ func (v *Value) Reset() {
 }
 
 // Val get
-func (v Value) Val() interface{} {
+func (v *Value) Val() interface{} {
 	return v.V
 }
 
 // Int value get
-func (v Value) Int() int {
+func (v *Value) Int() int {
 	if v.V == nil {
 		return 0
 	}
@@ -44,7 +44,7 @@ func (v Value) Int() int {
 }
 
 // Int64 value
-func (v Value) Int64() int64 {
+func (v *Value) Int64() int64 {
 	if v.V == nil {
 		return 0
 	}
@@ -52,7 +52,7 @@ func (v Value) Int64() int64 {
 }
 
 // Bool value
-func (v Value) Bool() bool {
+func (v *Value) Bool() bool {
 	if v.V == nil {
 		return false
 	}
@@ -68,7 +68,7 @@ func (v Value) Bool() bool {
 }
 
 // Float64 value
-func (v Value) Float64() float64 {
+func (v *Value) Float64() float64 {
 	if v.V == nil {
 		return 0
 	}
@@ -76,7 +76,7 @@ func (v Value) Float64() float64 {
 }
 
 // String value
-func (v Value) String() string {
+func (v *Value) String() string {
 	if v.V == nil {
 		return ""
 	}
@@ -88,7 +88,7 @@ func (v Value) String() string {
 }
 
 // Strings value
-func (v Value) Strings() (ss []string) {
+func (v *Value) Strings() (ss []string) {
 	if v.V == nil {
 		return
 	}
@@ -103,7 +103,7 @@ func (v Value) Strings() (ss []string) {
 }
 
 // SplitToStrings split string value to strings
-func (v Value) SplitToStrings(sep ...string) (ss []string) {
+func (v *Value) SplitToStrings(sep ...string) (ss []string) {
 	if v.V == nil {
 		return
 	}
@@ -115,7 +115,7 @@ func (v Value) SplitToStrings(sep ...string) (ss []string) {
 }
 
 // SplitToInts split string value to []int
-func (v Value) SplitToInts(sep ...string) (ss []int) {
+func (v *Value) SplitToInts(sep ...string) (ss []int) {
 	if v.V == nil {
 		return
 	}
@@ -130,7 +130,7 @@ func (v Value) SplitToInts(sep ...string) (ss []int) {
 }
 
 // IsEmpty value
-func (v Value) IsEmpty() bool {
+func (v *Value) IsEmpty() bool {
 	return v.V == nil
 }
 
