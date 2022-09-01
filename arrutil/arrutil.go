@@ -31,8 +31,9 @@ func StringsRemove(ss []string, s string) []string {
 // StringsFilter given strings, default will filter emtpy string.
 //
 // Usage:
+//
 //	// output: [a, b]
-// 	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
+//	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
 func StringsFilter(ss []string, filter ...func(s string) bool) []string {
 	var fn func(s string) bool
 	if len(filter) > 0 && filter[0] != nil {
@@ -52,11 +53,21 @@ func StringsFilter(ss []string, filter ...func(s string) bool) []string {
 	return ns
 }
 
+// StringsMap handle each string item, map to new strings
+func StringsMap(ss []string, mapFn func(s string) string) []string {
+	ns := make([]string, 0, len(ss))
+	for _, s := range ss {
+		ns = append(ns, mapFn(s))
+	}
+	return ns
+}
+
 // TrimStrings trim string slice item.
 //
 // Usage:
+//
 //	// output: [a, b, c]
-// 	ss := arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
+//	ss := arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
 func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 	cutSetLn := len(cutSet)
 	hasCutSet := cutSetLn > 0 && cutSet[0] != ""
