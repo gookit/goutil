@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/sysutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -17,4 +18,13 @@ func TestProcessExists(t *testing.T) {
 	pid := os.Getpid()
 
 	assert.True(t, sysutil.ProcessExists(pid))
+}
+
+func TestGoVersion(t *testing.T) {
+	assert.NotEmpty(t, sysutil.GoVersion())
+
+	info, err := sysutil.OsGoInfo()
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, info)
+	dump.P(info)
 }
