@@ -277,3 +277,32 @@ func (t TimeX) Timestamp() int64 {
 func (t TimeX) HowLongAgo(before time.Time) string {
 	return fmtutil.HowLongAgo(t.Unix() - before.Unix())
 }
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+//
+// Tip: will auto match a format by strutil.ToTime()
+func (t *TimeX) UnmarshalJSON(data []byte) error {
+	// Ignore null, like in the main JSON package.
+	if string(data) == "null" {
+		return nil
+	}
+
+	// Fractional seconds are handled implicitly by Parse.
+	tt, err := strutil.ToTime(string(data[1 : len(data)-1]))
+	if err == nil {
+		t.Time = tt
+	}
+	return err
+}
+
+// UnmarshalText implements the encoding.TextUnmarshaler interface.
+//
+// Tip: will auto match a format by strutil.ToTime()
+func (t *TimeX) UnmarshalText(data []byte) error {
+	// Fractional seconds are handled implicitly by Parse.
+	tt, err := strutil.ToTime(string(data))
+	if err == nil {
+		t.Time = tt
+	}
+	return err
+}

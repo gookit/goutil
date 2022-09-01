@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/dump"
+	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
 )
@@ -110,4 +111,18 @@ func TestTimeX_HourStart(t *testing.T) {
 func TestTimeX_CustomHMS(t *testing.T) {
 	tx := timex.Now()
 	assert.Eq(t, "12:23:34", tx.CustomHMS(12, 23, 34).TplFormat("H:I:S"))
+}
+
+// https://github.com/gookit/goutil/issues/60
+func TestTimeX_UnmarshalJSON(t *testing.T) {
+	type User struct {
+		Time timex.TimeX `json:"time"`
+	}
+
+	req := &User{}
+	err := jsonutil.DecodeString(`{
+    "time": "2018-10-16 12:34:01"
+}`, req)
+	assert.NoErr(t, err)
+	assert.Eq(t, "2018-10-16 12:34", req.Time.TplFormat("Y-m-d H:i"))
 }
