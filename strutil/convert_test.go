@@ -234,15 +234,20 @@ func TestToTime(t *testing.T) {
 		"2018-09-27T12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
 		"2018/09/27 12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
 		"2018/09/27T12:34:45Z": "2018-09-27 12:34:45 +0000 UTC",
+		"2018-10-16 12:34:01":  "2018-10-16 12:34:01 +0000 UTC",
 	}
 
 	for sample, want := range tests {
 		tm, err := strutil.ToTime(sample)
-		is.Nil(err)
+		is.Nil(err, "sample %s => want %s", sample, want)
 		is.Eq(want, tm.String())
 	}
 
 	tm, err := strutil.ToTime("invalid")
+	is.Err(err)
+	is.True(tm.IsZero())
+
+	tm, err = strutil.ToTime("invalid", "")
 	is.Err(err)
 	is.True(tm.IsZero())
 
@@ -270,10 +275,14 @@ func TestToTime(t *testing.T) {
 //		assert.Len(t, args, 7)
 //		assert.Eq(t, "abc\ndef ghi", args[6])
 //	}
+
 func TestQuote(t *testing.T) {
 	is := assert.New(t)
 
+	is.Eq("", strutil.Quote("it's ok"))
+
 	is.Eq("", strutil.Unquote("''"))
+	is.Eq("a", strutil.Unquote("a"))
 	is.Eq("a single-quoted string", strutil.Unquote("'a single-quoted string'"))
 	is.Eq("a double-quoted string", strutil.Unquote(`"a double-quoted string"`))
 }
