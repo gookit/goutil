@@ -27,13 +27,14 @@ func ExpandPath(pathStr string) string {
 		return pathStr
 	}
 
-	return homeDir + string(os.PathSeparator) + pathStr[1:]
+	return homeDir + pathStr[1:]
 }
 
 // ExecCmd an command and return output.
 //
 // Usage:
-// 	ExecCmd("ls", []string{"-al"})
+//
+//	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	// create a new Cmd instance
 	cmd := exec.Command(binName, args...)
@@ -96,8 +97,9 @@ func CurrentShell(onlyName bool) (path string) {
 // HasShellEnv has shell env check.
 //
 // Usage:
-// 	HasShellEnv("sh")
-// 	HasShellEnv("bash")
+//
+//	HasShellEnv("sh")
+//	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	// can also use: "echo $0"
 	out, err := ShellExec("echo OK", shell)

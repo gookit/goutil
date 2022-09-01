@@ -28,7 +28,7 @@ func Panicf(format string, v ...interface{}) {
 	panic(fmt.Sprintf(format, v...))
 }
 
-// GoVersion number get. eg: "1.18.2"
+// GoVersion get go runtime version. eg: "1.18.2"
 func GoVersion() string {
 	return runtime.Version()[2:]
 }

@@ -121,7 +121,8 @@ func OpenReadFile(filepath string) (*os.File, error) {
 // CreateFile create file if not exists
 //
 // Usage:
-// 	CreateFile("path/to/file.txt", 0664, 0666)
+//
+//	CreateFile("path/to/file.txt", 0664, 0666)
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*os.File, error) {
 	dirPath := path.Dir(fpath)
 	if !IsDir(dirPath) {
@@ -155,6 +156,12 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
 // PutContents create file and write contents to file at once.
 //
 // data type allow: string, []byte, io.Reader
+//
+// Tip: file flag default is FsCWAFlags
+//
+// Usage:
+//
+//	fsutil.PutContents(filePath, contents, fsutil.FsCWTFlags)
 func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error) {
 	// create and open file
 	dstFile, err := QuickOpenFile(filePath, fileFlag...)
@@ -181,6 +188,10 @@ func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error
 // data type allow: string, []byte, io.Reader
 //
 // Tip: file flag default is FsCWTFlags
+//
+// Usage:
+//
+//	fsutil.WriteFile(filePath, contents, 0666, fsutil.FsCWAFlags)
 func WriteFile(filePath string, data interface{}, perm os.FileMode, fileFlag ...int) error {
 	flag := FsCWTFlags
 	if len(fileFlag) > 0 {
