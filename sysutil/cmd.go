@@ -5,9 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-	"syscall"
-
-	"github.com/gookit/goutil/errorx"
 )
 
 // Cmd struct
@@ -26,10 +23,13 @@ func NewCmd(bin string, args ...string) *Cmd {
 // Cmdline to command line
 func (c *Cmd) Cmdline() string {
 	b := new(strings.Builder)
-	b.WriteString(c.Path)
+	// b.WriteString(c.Path)
 
-	for _, a := range c.Args {
-		b.WriteByte(' ')
+	for i, a := range c.Args {
+		if i > 0 {
+			b.WriteByte(' ')
+		}
+
 		if strings.ContainsRune(a, '"') {
 			b.WriteString(fmt.Sprintf(`'%s'`, a))
 		} else if a == "" || strings.ContainsRune(a, '\'') || strings.ContainsRune(a, ' ') {
@@ -204,36 +204,41 @@ func (c *Cmd) MustRun() {
 // Run runs command with `Exec` on platforms except Windows
 // which only supports `Spawn`
 func (c *Cmd) Run() error {
-	if IsWindows() {
-		return c.Spawn()
-	}
-	return c.Exec()
-}
-
-// Spawn runs command with spawn(3)
-func (c *Cmd) Spawn() error {
-	return c.Cmd.Run()
-}
-
-// Exec runs command with exec(3)
-// Note that Windows doesn't support exec(3): http://golang.org/src/pkg/syscall/exec_windows.go#L339
-func (c *Cmd) Exec() error {
-	binary, err := exec.LookPath(c.Path)
-	if err != nil {
-		return &exec.Error{
-			Name: c.Path,
-			Err:  errorx.Newf("%s not found in the system", c.Path),
-		}
-	}
-
-	args := []string{binary}
-	args = append(args, c.Args...)
-
 	if c.BeforeExec != nil {
 		c.BeforeExec(c)
 	}
-	return syscall.Exec(binary, args, os.Environ())
+	return c.Cmd.Run()
+
+	// if IsWindows() {
+	// 	return c.Spawn()
+	// }
+	// return c.Exec()
 }
+
+// Spawn runs command with spawn(3)
+// func (c *Cmd) Spawn() error {
+// 	return c.Cmd.Run()
+// }
+//
+// // Exec runs command with exec(3)
+// // Note that Windows doesn't support exec(3): http://golang.org/src/pkg/syscall/exec_windows.go#L339
+// func (c *Cmd) Exec() error {
+// 	binary, err := exec.LookPath(c.Path)
+// 	if err != nil {
+// 		return &exec.Error{
+// 			Name: c.Path,
+// 			Err:  errorx.Newf("%s not found in the system", c.Path),
+// 		}
+// 	}
+//
+// 	args := []string{binary}
+// 	args = append(args, c.Args...)
+//
+// 	if c.BeforeExec != nil {
+// 		c.BeforeExec(c)
+// 	}
+// 	return syscall.Exec(binary, args, os.Environ())
+// }
 
 // OutputLines split output to lines
 func OutputLines(output string) []string {
