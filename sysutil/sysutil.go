@@ -1,3 +1,4 @@
+// Package sysutil provide some system util functions. eg: sysenv, exec, user, process
 package sysutil
 
 import (
@@ -44,7 +45,7 @@ type GoInfo struct {
 }
 
 // match "go version go1.19 darwin/amd64"
-var goVerRegex = regexp.MustCompile(`\sgo(\d.\d+)\s(\w+)/(\w+)`)
+var goVerRegex = regexp.MustCompile(`\sgo([\d.]+)\s(\w+)/(\w+)`)
 
 // ParseGoVersion get info by parse `go version` results.
 //
@@ -56,7 +57,7 @@ var goVerRegex = regexp.MustCompile(`\sgo(\d.\d+)\s(\w+)/(\w+)`)
 //		}
 //
 //		info, err := sysutil.ParseGoVersion()
-//	 dump.P(info)
+//	 	dump.P(info)
 func ParseGoVersion(line string) (*GoInfo, error) {
 	// eg: [" go1.19 darwin/amd64", "1.19", "darwin", "amd64"]
 	lines := goVerRegex.FindStringSubmatch(line)

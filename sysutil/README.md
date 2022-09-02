@@ -1,5 +1,7 @@
 # System Utils
 
+Provide some system util functions. eg: sysenv, exec, user, process
+
 - quick exec a command line string.
 
 ## Install

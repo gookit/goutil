@@ -14,6 +14,7 @@ type Cmd struct {
 	BeforeExec func(c *Cmd)
 }
 
+// NewCmd instance
 func NewCmd(bin string, args ...string) *Cmd {
 	return &Cmd{
 		Cmd: exec.Command(bin, args...),
