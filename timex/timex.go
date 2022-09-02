@@ -101,17 +101,6 @@ func LocalByName(tzName string) *TimeX {
 	return New(time.Now().In(loc))
 }
 
-// SetLocalByName set local by tz name. eg: UTC, PRC
-func SetLocalByName(tzName string) error {
-	location, err := time.LoadLocation(tzName)
-	if err != nil {
-		return err
-	}
-
-	time.Local = location
-	return nil
-}
-
 /*************************************************************
  * timex usage
  *************************************************************/

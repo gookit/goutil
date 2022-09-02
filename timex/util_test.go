@@ -4,12 +4,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
 )
 
-func TestBasic(t *testing.T) {
+func TestUtil_basic(t *testing.T) {
 	sec := timex.NowUnix()
 
 	assert.NotEmpty(t, timex.FormatUnix(sec))
@@ -26,6 +25,23 @@ func TestBasic(t *testing.T) {
 
 	tt = timex.NowHourEnd()
 	assert.Eq(t, "59:59", timex.DateFormat(tt, "I:S"))
+
+	dur, err1 := timex.ToDuration("3s")
+	assert.NoErr(t, err1)
+	assert.Eq(t, 3*timex.Second, dur)
+}
+
+func TestNowAddDay(t *testing.T) {
+	now := timex.Now()
+	tt := timex.NowAddDay(1)
+	assert.Eq(t, 1, tt.Day()-now.Day())
+
+	tt = timex.NowAddHour(-3)
+	assert.Eq(t, -3, tt.Hour()-now.Hour())
+	assert.Eq(t, "3 hrs", timex.HowLongAgo(int64(now.DiffSec(tt)+2)))
+
+	tt = timex.NowAddMinutes(5)
+	assert.Eq(t, 5, tt.Minute()-now.Minute())
 }
 
 func TestDateFormat(t *testing.T) {
@@ -58,7 +74,10 @@ func TestFormatUnix(t *testing.T) {
 	assert.Eq(t, want, timex.FormatUnix(now.Unix()))
 	assert.Eq(t, want, timex.FormatUnixBy(now.Unix(), timex.DefaultLayout))
 	assert.Eq(t, want, timex.FormatUnixByTpl(now.Unix(), "Y-m-d H:I:S"))
-	dump.P(want)
+	// dump.P(want)
+
+	assert.Eq(t, want, timex.Format(now))
+	assert.Eq(t, want, timex.FormatBy(now, timex.DefaultLayout))
 }
 
 func TestToLayout(t *testing.T) {

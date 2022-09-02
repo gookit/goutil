@@ -11,6 +11,17 @@ func NowUnix() int64 {
 	return time.Now().Unix()
 }
 
+// SetLocalByName set local by tz name. eg: UTC, PRC
+func SetLocalByName(tzName string) error {
+	location, err := time.LoadLocation(tzName)
+	if err != nil {
+		return err
+	}
+
+	time.Local = location
+	return nil
+}
+
 // Format use default layout
 func Format(t time.Time) string {
 	return t.Format(DefaultLayout)

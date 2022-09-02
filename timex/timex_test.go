@@ -33,6 +33,10 @@ func TestFromDate(t *testing.T) {
 	tx, err = timex.FromDate("2022-04-20 19:40:34", "Y-m-d H:I:S")
 	assert.NoErr(t, err)
 	assert.Eq(t, "2022-04-20 19:40:34", tx.Datetime())
+	assert.Eq(t, tx.Unix(), tx.Timestamp())
+
+	tx, err = timex.FromDate("invalid")
+	assert.Err(t, err)
 }
 
 func TestTimeX_basic(t *testing.T) {
@@ -75,6 +79,8 @@ func TestTimeX_AddDay(t *testing.T) {
 	yd1 := tx.AddDay(-1)
 	assert.Eq(t, yd.Unix(), yd1.Unix())
 	assert.Eq(t, yd.Unix(), tx.DayAgo(1).Unix())
+
+	assert.Eq(t, "1 day", tx.HowLongAgo(yd.Time))
 
 	assert.True(t, tx.IsAfter(yd.Time))
 	assert.True(t, tx.IsAfterUnix(yd.Time.Unix()))

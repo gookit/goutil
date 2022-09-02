@@ -8,7 +8,7 @@ Provides an enhanced time.Time implementation, and add more commonly used functi
 go get github.com/gookit/goutil/timex
 ```
 
-## Timex Usage
+## Usage
 
 ### Create timex instance
 
