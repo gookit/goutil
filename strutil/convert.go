@@ -358,7 +358,7 @@ var layoutMap = map[int][]string{
 	22: {time.StampMicro},
 	24: {time.ANSIC},
 	25: {time.RFC3339, time.StampNano},
-	26: {time.Layout},
+	// 26: {time.Layout}, // must go >= 1.19
 	28: {time.UnixDate},
 	29: {time.RFC1123},
 	30: {time.RFC850},
