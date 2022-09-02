@@ -3,13 +3,21 @@ package sysutil_test
 import (
 	"bytes"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/sysutil"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
+
+func TestSysenv_common(t *testing.T) {
+	ss := sysutil.EnvPaths()
+	assert.NotEmpty(t, ss)
+
+	ss = sysutil.SearchPath("go")
+	assert.NotEmpty(t, ss)
+	// dump.P(ss)
+}
 
 func TestCurrentShell(t *testing.T) {
 	path := sysutil.CurrentShell(true)
@@ -73,28 +81,14 @@ func TestIsConsole(t *testing.T) {
 	is.False(sysutil.IsConsole(ff))
 }
 
-func TestExecCmd(t *testing.T) {
-	ret, err := sysutil.ExecCmd("echo", []string{"OK"})
+func TestFindExecutable(t *testing.T) {
+	path, err := sysutil.Executable("echo")
 	assert.NoErr(t, err)
-	// *nix: "OK\n" win: "OK\r\n"
-	assert.Eq(t, "OK", strings.TrimSpace(ret))
+	assert.NotEmpty(t, path)
 
-	ret, err = sysutil.QuickExec("echo OK")
+	path, err = sysutil.FindExecutable("echo")
 	assert.NoErr(t, err)
-	assert.Eq(t, "OK", strings.TrimSpace(ret))
+	assert.NotEmpty(t, path)
 
-	ret, err = sysutil.ExecLine("echo OK1")
-	assert.NoErr(t, err)
-	assert.Eq(t, "OK1", strings.TrimSpace(ret))
-}
-
-func TestShellExec(t *testing.T) {
-	ret, err := sysutil.ShellExec("echo OK")
-	assert.NoErr(t, err)
-	// *nix: "OK\n" win: "OK\r\n"
-	assert.Eq(t, "OK", strings.TrimSpace(ret))
-
-	ret, err = sysutil.ShellExec("echo OK", "bash")
-	assert.NoErr(t, err)
-	assert.Eq(t, "OK", strings.TrimSpace(ret))
+	assert.True(t, sysutil.HasExecutable("echo"))
 }

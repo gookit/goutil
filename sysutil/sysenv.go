@@ -3,6 +3,8 @@ package sysutil
 import (
 	"io"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -19,7 +21,8 @@ func IsMSys() bool {
 // IsConsole check out is in stderr/stdout/stdin
 //
 // Usage:
-// 	sysutil.IsConsole(os.Stdout)
+//
+//	sysutil.IsConsole(os.Stdout)
 func IsConsole(out io.Writer) bool {
 	o, ok := out.(*os.File)
 	if !ok {
@@ -35,7 +38,8 @@ func IsConsole(out io.Writer) bool {
 // IsTerminal isatty check
 //
 // Usage:
-// 	sysutil.IsTerminal(os.Stdout.Fd())
+//
+//	sysutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }
@@ -62,8 +66,9 @@ func CurrentShell(onlyName bool) (path string) {
 // HasShellEnv has shell env check.
 //
 // Usage:
-// 	HasShellEnv("sh")
-// 	HasShellEnv("bash")
+//
+//	HasShellEnv("sh")
+//	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	// can also use: "echo $0"
 	out, err := ShellExec("echo OK", shell)
@@ -82,4 +87,62 @@ func IsShellSpecialVar(c uint8) bool {
 		return true
 	}
 	return false
+}
+
+// EnvPaths get and split $PATH to []string
+func EnvPaths() []string {
+	return filepath.SplitList(os.Getenv("PATH"))
+}
+
+// FindExecutable in the system
+//
+// Usage:
+//
+//	sysutil.FindExecutable("bash")
+func FindExecutable(binName string) (string, error) {
+	return exec.LookPath(binName)
+}
+
+// Executable find in the system
+//
+// Usage:
+//
+//	sysutil.Executable("bash")
+func Executable(binName string) (string, error) {
+	return exec.LookPath(binName)
+}
+
+// HasExecutable in the system
+//
+// Usage:
+//
+//	HasExecutable("bash")
+func HasExecutable(binName string) bool {
+	_, err := exec.LookPath(binName)
+	return err == nil
+}
+
+// SearchPath search executable files in the system $PATH
+//
+// Usage:
+//
+//	sysutil.SearchPath("go")
+func SearchPath(keywords string) []string {
+	path := os.Getenv("PATH")
+	ptn := "*" + keywords + "*"
+
+	list := make([]string, 0)
+	for _, dir := range filepath.SplitList(path) {
+		if dir == "" {
+			// Unix shell semantics: path element "" means "."
+			dir = "."
+		}
+
+		matches, err := filepath.Glob(filepath.Join(dir, ptn))
+		if err == nil && len(matches) > 0 {
+			list = append(list, matches...)
+		}
+	}
+
+	return list
 }
