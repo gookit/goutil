@@ -93,6 +93,12 @@ func ToInt(in interface{}) (iVal int, err error) {
 	return
 }
 
+// StrInt convert.
+func StrInt(s string) int {
+	iVal, _ := strconv.Atoi(strings.TrimSpace(s))
+	return iVal
+}
+
 /*************************************************************
  * convert value to uint
  *************************************************************/

@@ -36,6 +36,8 @@ func TestToInt(t *testing.T) {
 	is.Nil(err)
 	is.Eq(-2, intVal)
 
+	is.Eq(2, mathutil.StrInt("2"))
+
 	intVal, err = mathutil.IntOrErr("-2")
 	is.Nil(err)
 	is.Eq(-2, intVal)
@@ -117,6 +119,10 @@ func TestToString(t *testing.T) {
 	val, err := mathutil.StringOrErr(2)
 	is.NoErr(err)
 	is.Eq("2", val)
+
+	val, err = mathutil.ToString(nil)
+	is.NoErr(err)
+	is.Eq("", val)
 
 	is.Panics(func() {
 		mathutil.MustString("2")

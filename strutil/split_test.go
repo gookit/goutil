@@ -58,6 +58,12 @@ func TestSplitTrimmed(t *testing.T) {
 	ss := strutil.SplitTrimmed("a, , b,c", ",")
 	assert.Eq(t, `[]string{"a", "", "b", "c"}`, fmt.Sprintf("%#v", ss))
 
+	ss = strutil.SplitTrimmed("", ",")
+	assert.Empty(t, ss)
+
+	ss = strutil.SplitTrimmed(",", ",")
+	assert.NotEmpty(t, ss)
+
 	ss = strutil.SplitNTrimmed("a, , b,c", ",", 2)
 	assert.Eq(t, `[]string{"a", ", b,c"}`, fmt.Sprintf("%#v", ss))
 }

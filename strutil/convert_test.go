@@ -279,7 +279,7 @@ func TestToTime(t *testing.T) {
 func TestQuote(t *testing.T) {
 	is := assert.New(t)
 
-	is.Eq("", strutil.Quote("it's ok"))
+	is.Eq(`"\"it's ok\""`, strutil.Quote(`"it's ok"`))
 
 	is.Eq("", strutil.Unquote("''"))
 	is.Eq("a", strutil.Unquote("a"))
