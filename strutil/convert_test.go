@@ -140,6 +140,9 @@ func TestStrToInt(t *testing.T) {
 	iVal = strutil.QuietInt("-23")
 	is.Eq(-23, iVal)
 
+	iVal = strutil.IntOrPanic("-23")
+	is.Eq(-23, iVal)
+
 	iVal = strutil.MustInt("-23")
 	is.Eq(-23, iVal)
 

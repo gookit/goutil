@@ -3,29 +3,31 @@ package comfunc
 import (
 	"fmt"
 	"strings"
+
+	"github.com/gookit/goutil/common"
 )
 
-// Cmdline build
-func Cmdline(args []string, binName ...string) string {
-	b := new(strings.Builder)
-
-	if len(binName) > 0 {
-		b.WriteString(binName[0])
-		b.WriteByte(' ')
+// ToBool try to convert type to bool
+func ToBool(v interface{}) (bool, error) {
+	if bl, ok := v.(bool); ok {
+		return bl, nil
 	}
 
-	for i, a := range args {
-		if i > 0 {
-			b.WriteByte(' ')
-		}
-
-		if strings.ContainsRune(a, '"') {
-			b.WriteString(fmt.Sprintf(`'%s'`, a))
-		} else if a == "" || strings.ContainsRune(a, '\'') || strings.ContainsRune(a, ' ') {
-			b.WriteString(fmt.Sprintf(`"%s"`, a))
-		} else {
-			b.WriteString(a)
-		}
+	if str, ok := v.(string); ok {
+		return StrToBool(str)
 	}
-	return b.String()
+	return false, common.ErrConvType
+}
+
+// StrToBool parse string to bool. like strconv.ParseBool()
+func StrToBool(s string) (bool, error) {
+	lower := strings.ToLower(s)
+	switch lower {
+	case "1", "on", "yes", "true":
+		return true, nil
+	case "0", "off", "no", "false":
+		return false, nil
+	}
+
+	return false, fmt.Errorf("'%s' cannot convert to bool", s)
 }

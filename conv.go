@@ -1,33 +1,23 @@
 package goutil
 
 import (
-	"errors"
 	"reflect"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
 )
 
-// ErrConvType error
-var ErrConvType = errors.New("convert value type error")
-
 // Bool convert value to bool
 func Bool(v interface{}) bool {
-	bl, _ := ToBool(v)
+	bl, _ := comfunc.ToBool(v)
 	return bl
 }
 
 // ToBool try to convert type to bool
 func ToBool(v interface{}) (bool, error) {
-	if bl, ok := v.(bool); ok {
-		return bl, nil
-	}
-
-	if str, ok := v.(string); ok {
-		return strutil.ToBool(str)
-	}
-	return false, ErrConvType
+	return comfunc.ToBool(v)
 }
 
 // String always convert value to string, will ignore error

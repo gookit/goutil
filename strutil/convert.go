@@ -11,6 +11,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 )
 
@@ -191,33 +192,24 @@ func ToBytes(s string) (b []byte) {
 
 // ToBool convert string to bool
 func ToBool(s string) (bool, error) {
-	return Bool(s)
+	return comfunc.StrToBool(s)
 }
 
 // QuietBool convert to bool, will ignore error
 func QuietBool(s string) bool {
-	val, _ := Bool(strings.TrimSpace(s))
+	val, _ := comfunc.StrToBool(strings.TrimSpace(s))
 	return val
 }
 
 // MustBool convert, will panic on error
 func MustBool(s string) bool {
-	val, _ := Bool(strings.TrimSpace(s))
+	val, _ := comfunc.StrToBool(strings.TrimSpace(s))
 	return val
 }
 
-// Bool parse string to bool
+// Bool parse string to bool. like strconv.ParseBool()
 func Bool(s string) (bool, error) {
-	// return strconv.ParseBool(Trim(s))
-	lower := strings.ToLower(s)
-	switch lower {
-	case "1", "on", "yes", "true":
-		return true, nil
-	case "0", "off", "no", "false":
-		return false, nil
-	}
-
-	return false, fmt.Errorf("'%s' cannot convert to bool", s)
+	return comfunc.StrToBool(s)
 }
 
 /*************************************************************
