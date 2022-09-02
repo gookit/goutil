@@ -24,6 +24,9 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 	err := cb.WriteFromFile(srcFile)
 	assert.NoErr(t, err)
 
+	err = cb.WriteFromFile("path/to/not-exists.txt")
+	assert.NoErr(t, err)
+
 	readStr, err := cb.ReadString()
 	assert.NoErr(t, err)
 	assert.Eq(t, srcStr, strutil.Trim(readStr))

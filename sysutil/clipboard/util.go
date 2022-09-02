@@ -34,6 +34,5 @@ func WriteString(s string) error {
 	if _, err := std.WriteString(s); err != nil {
 		return err
 	}
-
 	return std.Flush()
 }

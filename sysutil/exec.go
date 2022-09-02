@@ -5,7 +5,18 @@ import (
 	"os/exec"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
+	"github.com/gookit/goutil/sysutil/cmdr"
 )
+
+// NewCmd instance
+func NewCmd(bin string, args ...string) *cmdr.Cmd {
+	return cmdr.NewCmd(bin, args...)
+}
+
+// FlushExec instance
+func FlushExec(bin string, args ...string) error {
+	return cmdr.NewCmd(bin, args...).FlushRun()
+}
 
 // QuickExec quick exec an simple command line
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
@@ -26,10 +37,11 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 	return string(bs), err
 }
 
-// ExecCmd an command and return output.
+// ExecCmd a command and return output.
 //
 // Usage:
-// 	ExecCmd("ls", []string{"-al"})
+//
+//	ExecCmd("ls", []string{"-al"})
 func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	// create a new Cmd instance
 	cmd := exec.Command(binName, args...)
@@ -41,7 +53,7 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	return string(bs), err
 }
 
-// ShellExec exec command by shell cmdLine. eg. "ls -al"
+// ShellExec exec command by shell cmdLine. eg: "ls -al"
 func ShellExec(cmdLine string, shells ...string) (string, error) {
 	// shell := "/bin/sh"
 	shell := "sh"
@@ -57,29 +69,4 @@ func ShellExec(cmdLine string, shells ...string) (string, error) {
 		return "", err
 	}
 	return out.String(), nil
-}
-
-// FindExecutable in the system
-//
-// Usage:
-// 	sysutil.FindExecutable("bash")
-func FindExecutable(binName string) (string, error) {
-	return exec.LookPath(binName)
-}
-
-// Executable find in the system
-//
-// Usage:
-// 	sysutil.Executable("bash")
-func Executable(binName string) (string, error) {
-	return exec.LookPath(binName)
-}
-
-// HasExecutable in the system
-//
-// Usage:
-// 	HasExecutable("bash")
-func HasExecutable(binName string) bool {
-	_, err := exec.LookPath(binName)
-	return err == nil
 }
