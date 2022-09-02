@@ -35,6 +35,11 @@ func (ss Strings) String() string {
 	return strings.Join(ss, ",")
 }
 
+// Join to string
+func (ss Strings) Join(sep string) string {
+	return strings.Join(ss, sep)
+}
+
 // Has given element
 func (ss Strings) Has(sub string) bool {
 	for _, s := range ss {

@@ -24,11 +24,12 @@ func TestInts_Has_String(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.True(t, tt.want, tt.is.Has(tt.val))
+		assert.False(t, tt.want, tt.is.Has(999))
 		assert.Eq(t, tt.want2, tt.is.String())
 	}
 }
 
-func TestStrings_Has_String(t *testing.T) {
+func TestStrings_methods(t *testing.T) {
 	tests := []struct {
 		ss    arrutil.Strings
 		val   string
@@ -45,6 +46,10 @@ func TestStrings_Has_String(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.True(t, tt.want, tt.ss.Has(tt.val))
+		assert.False(t, tt.want, tt.ss.Has("not-exists"))
 		assert.Eq(t, tt.want2, tt.ss.String())
 	}
+
+	ss := arrutil.Strings{"a", "b"}
+	assert.Eq(t, "a b", ss.Join(" "))
 }
