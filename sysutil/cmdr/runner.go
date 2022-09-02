@@ -1,9 +1,9 @@
 package cmdr
 
 import (
+	"fmt"
 	"strings"
 
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 )
 
@@ -205,5 +205,5 @@ func (r *Runner) Task(id string) (*Task, error) {
 	if idx, ok := r.idMap[id]; ok {
 		return r.tasks[idx], nil
 	}
-	return nil, errorx.Rawf("task %q is not exists", id)
+	return nil, fmt.Errorf("task %q is not exists", id)
 }

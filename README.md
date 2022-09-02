@@ -56,6 +56,7 @@ go get github.com/gookit/goutil
 func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 func StringsFilter(ss []string, filter ...func(s string) bool) []string
+func StringsMap(ss []string, mapFn func(s string) string) []string
 func TrimStrings(ss []string, cutSet ...string) (ns []string)
 func GetRandomOne(arr interface{}) interface{} { return RandomOne(arr) }
 func RandomOne(arr interface{}) interface{}
@@ -171,6 +172,8 @@ func BinFile() string
 func BinName() string
 func BuildOptionHelpName(names []string) string
 func ShellQuote(s string) string
+func OutputLines(output string) []string
+func FirstLine(output string) string
 // source at cliutil/color_print.go
 func Redp(a ...interface{}) { color.Red.Print(a...) }
 func Redf(format string, a ...interface{}) { color.Red.Printf(format, a...) }
@@ -340,9 +343,9 @@ Preview:
 
 ```go
 // source at envutil/envutil.go
-func VarReplace(s string) string
-func VarParse(str string) string
-func ParseEnvValue(str string) string
+func VarReplace(s string) string { return os.ExpandEnv(s) }
+func VarParse(val string) string
+func ParseEnvValue(val string) string
 func ParseValue(val string) (newVal string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
@@ -682,6 +685,7 @@ func MustInt(in interface{}) int
 func IntOrPanic(in interface{}) int
 func IntOrErr(in interface{}) (iVal int, err error)
 func ToInt(in interface{}) (iVal int, err error)
+func StrInt(s string) int
 func Uint(in interface{}) (uint64, error)
 func QuietUint(in interface{}) uint64
 func MustUint(in interface{}) uint64
@@ -820,15 +824,15 @@ func GoVersion() string
 // source at structs/alias.go
 func NewAliases(checker func(alias string)) *Aliases
 // source at structs/convert.go
-func ToMap(st interface{}) map[string]interface{}
-func TryToMap(st interface{}) (map[string]interface{}, error)
-func MustToMap(st interface{}) map[string]interface{}
-func StructToMap(st interface{}, opt *MapOptions) (map[string]interface{}, error)
+func ToMap(st interface{}, optFns ...MapOptFunc) map[string]interface{}
+func MustToMap(st interface{}, optFns ...MapOptFunc) map[string]interface{}
+func TryToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, error)
+func StructToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, error)
 // source at structs/data.go
 func NewMapData() *DataStore
 // source at structs/structs.go
 func MapStruct(srcSt, dstSt interface{})
-func InitDefaults(ptr interface{}, opt *InitOptions) error
+func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error
 // source at structs/tags.go
 func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error)
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error)
@@ -1015,13 +1019,12 @@ func WrapTag(s, tag string) string
 
 ```go
 // source at sysutil/exec.go
+func NewCmd(bin string, args ...string) *cmdr.Cmd
+func FlushExec(bin string, args ...string) error
 func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ExecLine(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
-func FindExecutable(binName string) (string, error)
-func Executable(binName string) (string, error)
-func HasExecutable(binName string) bool
 // source at sysutil/stack.go
 func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
 // source at sysutil/sysenv.go
@@ -1033,10 +1036,18 @@ func Hostname() string
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
 func IsShellSpecialVar(c uint8) bool
+func EnvPaths() []string
+func FindExecutable(binName string) (string, error)
+func Executable(binName string) (string, error)
+func HasExecutable(binName string) bool
+func SearchPath(keywords string) []string
 // source at sysutil/sysutil.go
 func Workdir() string
 func BinDir() string
 func BinFile() string
+func GoVersion() string
+func ParseGoVersion(line string) (*GoInfo, error)
+func OsGoInfo() (*GoInfo, error)
 // source at sysutil/sysutil_nonwin.go
 func IsWin() bool
 func IsWindows() bool
@@ -1107,9 +1118,9 @@ func FromUnix(sec int64) *TimeX
 func FromDate(s string, template ...string) (*TimeX, error)
 func FromString(s string, layouts ...string) (*TimeX, error)
 func LocalByName(tzName string) *TimeX
-func SetLocalByName(tzName string) error
 // source at timex/util.go
 func NowUnix() int64
+func SetLocalByName(tzName string) error
 func Format(t time.Time) string
 func FormatBy(t time.Time, layout string) string
 func Date(t time.Time, template string) string

@@ -37,11 +37,11 @@ func TestNowAddDay(t *testing.T) {
 	assert.Eq(t, 1, tt.Day()-now.Day())
 
 	tt = timex.NowAddHour(-3)
-	assert.Eq(t, -3, tt.Hour()-now.Hour())
+	assert.Neq(t, tt.Hour(), now.Hour())
 	assert.Eq(t, "3 hrs", timex.HowLongAgo(int64(now.DiffSec(tt)+2)))
 
 	tt = timex.NowAddMinutes(5)
-	assert.Eq(t, 5, tt.Minute()-now.Minute())
+	assert.Neq(t, tt.Minute(), now.Minute())
 }
 
 func TestDateFormat(t *testing.T) {
