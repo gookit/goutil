@@ -18,11 +18,9 @@ var ErrNotAnStruct = errors.New("must input an struct value")
 func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error) {
 	p := NewTagParser(tagNames...)
 
-	err := p.Parse(st)
-	if err != nil {
+	if err := p.Parse(st); err != nil {
 		return nil, err
 	}
-
 	return p.Tags(), nil
 }
 
@@ -30,11 +28,9 @@ func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, erro
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error) {
 	p := NewTagParser(tagNames...)
 
-	err := p.ParseType(rt)
-	if err != nil {
+	if err := p.ParseType(rt); err != nil {
 		return nil, err
 	}
-
 	return p.Tags(), nil
 }
 
@@ -114,9 +110,7 @@ func (p *TagParser) parseType(rt reflect.Type, parent string) error {
 			pathKey = parent + "." + name
 		}
 
-		if len(smp) > 0 {
-			p.tags[pathKey] = smp
-		}
+		p.tags[pathKey] = smp
 
 		ft := sf.Type
 		if ft.Kind() == reflect.Ptr {
@@ -137,6 +131,7 @@ func (p *TagParser) parseType(rt reflect.Type, parent string) error {
 // Info parse the give field, returns tag value info.
 //
 //	info, err := p.Info("Name", "json")
+//	exportField := info.Get("name")
 func (p *TagParser) Info(field, tag string) (maputil.SMap, error) {
 	field = strutil.UpperFirst(field)
 	fTags, ok := p.tags[field]
@@ -186,7 +181,7 @@ func (p *TagParser) Info(field, tag string) (maputil.SMap, error) {
 func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error) {
 	ss := strutil.SplitTrimmed(tagVal, ",")
 	ln := len(ss)
-	if ln == 0 {
+	if ln == 0 || tagVal == "," {
 		return maputil.SMap{"name": field}, nil
 	}
 

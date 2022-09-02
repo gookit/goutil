@@ -95,17 +95,6 @@ func ExampleTagParser_Parse_parseTagValueDefine() {
 	// tags: map[Name:{flag:set your name;false;INHERE;n}]
 }
 
-func TestParseTagValueINI(t *testing.T) {
-	mp, err := structs.ParseTagValueNamed("name", "")
-	assert.NoErr(t, err)
-	assert.Empty(t, mp)
-
-	mp, err = structs.ParseTagValueNamed("name", "default=inhere")
-	assert.NoErr(t, err)
-	assert.NotEmpty(t, mp)
-	assert.Eq(t, "inhere", mp.Str("default"))
-}
-
 func TestParseTags(t *testing.T) {
 	type user struct {
 		Age   int    `json:"age" default:"23"`
@@ -125,6 +114,9 @@ func TestParseTags(t *testing.T) {
 	assert.Contains(t, tags, "Name")
 	assert.Eq(t, "name", tags["Name"].Str("json"))
 	assert.Eq(t, 0, tags["Name"].Int("default"))
+
+	_, err = structs.ParseTags("invalid", []string{"json", "default"})
+	assert.ErrMsg(t, err, "must input an struct value")
 }
 
 func TestParseReflectTags(t *testing.T) {
@@ -147,4 +139,55 @@ func TestParseReflectTags(t *testing.T) {
 	assert.Contains(t, tags, "Name")
 	assert.Eq(t, "name", tags["Name"].Str("json"))
 	assert.Eq(t, 0, tags["Name"].Int("default"))
+
+	_, err = structs.ParseReflectTags(reflect.TypeOf("invalid"), []string{"json", "default"})
+	assert.ErrMsg(t, err, "must input an struct value")
+}
+
+func TestTagParser_Parse(t *testing.T) {
+	type user struct {
+		Age  int    `json:"age" default:"23"`
+		Name string `json:"name" default:"inhere"`
+		City string
+	}
+
+	p := structs.NewTagParser("json", "default")
+	err := p.Parse(user{})
+	assert.NoErr(t, err)
+
+	_, err = p.Info("invalid", "json")
+	assert.ErrMsg(t, err, "field \"Invalid\" not found")
+
+	info, err := p.Info("City", "json")
+	assert.NoErr(t, err)
+	assert.Empty(t, info)
+	assert.True(t, info.IsEmpty())
+}
+
+func TestTagParser_Parse_err(t *testing.T) {
+	p := structs.NewTagParser("json")
+	err := p.Parse("invalid")
+
+	assert.ErrMsg(t, err, "must input an struct value")
+}
+
+func TestParseTagValueDefault(t *testing.T) {
+	mp, err := structs.ParseTagValueDefault("Age", "")
+	assert.NoErr(t, err)
+	assert.Eq(t, "Age", mp.Get("name"))
+
+	mp, err = structs.ParseTagValueDefault("Age", ",")
+	assert.NoErr(t, err)
+	assert.Eq(t, "Age", mp.Get("name"))
+}
+
+func TestParseTagValueNamed(t *testing.T) {
+	mp, err := structs.ParseTagValueNamed("name", "")
+	assert.NoErr(t, err)
+	assert.Empty(t, mp)
+
+	mp, err = structs.ParseTagValueNamed("name", "default=inhere")
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, mp)
+	assert.Eq(t, "inhere", mp.Str("default"))
 }

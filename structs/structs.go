@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/gookit/goutil/envutil"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/reflects"
 )
 
@@ -93,7 +93,7 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 		}
 
 		if opt.ParseEnv {
-			tagVal = envutil.ParseValue(tagVal)
+			tagVal = comfunc.ParseValue(tagVal, nil)
 		}
 
 		val, err := reflects.ValueByKind(tagVal, fv.Kind())
