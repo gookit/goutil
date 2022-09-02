@@ -15,12 +15,13 @@ func TestRunner_Run(t *testing.T) {
 
 	rr.Add(&cmdr.Task{
 		ID:  "task1",
-		Cmd: cmdr.NewCmd("id", "-F").WithOutput(buf, buf),
+		Cmd: cmdr.NewCmd("id").WithOutput(buf, buf),
 	})
 	rr.AddCmd(cmdr.NewCmd("ls").AddArgs([]string{"-l", "-h"}).WithOutput(buf, buf))
 
 	task, err := rr.Task("task1")
 	assert.NoErr(t, err)
+	assert.NoErr(t, task.Err())
 
 	ids := rr.TaskIDs()
 	// dump.P(rr.TaskIDs())
@@ -30,6 +31,8 @@ func TestRunner_Run(t *testing.T) {
 
 	err = rr.Run()
 	assert.NoErr(t, err)
+	assert.NoErr(t, rr.Errs.One())
+	assert.True(t, rr.Errs.IsEmpty())
 
 	fmt.Println(buf.String())
 }
