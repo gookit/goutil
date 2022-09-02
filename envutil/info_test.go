@@ -42,8 +42,8 @@ func TestIsConsole(t *testing.T) {
 	is.True(envutil.IsConsole(os.Stdout))
 	is.False(envutil.IsConsole(&bytes.Buffer{}))
 
-	// is.True(envutil.IsTerminal(os.Stdout.Fd()))
-	// is.True(envutil.StdIsTerminal())
+	is.IsType(true, envutil.IsTerminal(os.Stdout.Fd()))
+	is.IsType(true, envutil.StdIsTerminal())
 
 	is.True(envutil.HasShellEnv("sh"))
 }

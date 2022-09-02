@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gookit/goutil/envutil"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -49,8 +49,8 @@ APP_DEBUG = true
 `
 
 	testutil.MockOsEnvByText(envStr, func() {
-		assert.Len(t, envutil.Environ(), 3)
-		assert.True(t, envutil.GetBool("APP_DEBUG"))
-		assert.Eq(t, "login", envutil.Getenv("APP_COMMAND"))
+		assert.Len(t, comfunc.Environ(), 3)
+		assert.Eq(t, "true", os.Getenv("APP_DEBUG"))
+		assert.Eq(t, "login", os.Getenv("APP_COMMAND"))
 	})
 }

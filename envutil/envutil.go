@@ -2,8 +2,8 @@ package envutil
 
 import (
 	"os"
-	"regexp"
-	"strings"
+
+	"github.com/gookit/goutil/internal/comfunc"
 )
 
 // ValueGetter Env value provider func.
@@ -16,23 +16,15 @@ var ValueGetter = os.Getenv
 // is alias of the os.ExpandEnv()
 func VarReplace(s string) string { return os.ExpandEnv(s) }
 
-// parse env value, allow:
-//
-//	only key 	 - "${SHELL}"
-//	with default - "${NotExist | defValue}"
-//	multi key 	 - "${GOPATH}/${APP_ENV | prod}/dir"
-//
-// Notice:
-//
-//	must add "?" - To ensure that there is no greedy match
-//	var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
-var envRegex = regexp.MustCompile(`\${.+?}`)
-
 // VarParse alias of the ParseValue
-func VarParse(str string) string { return ParseValue(str) }
+func VarParse(val string) string {
+	return comfunc.ParseValue(val, ValueGetter)
+}
 
 // ParseEnvValue alias of the ParseValue
-func ParseEnvValue(str string) string { return ParseValue(str) }
+func ParseEnvValue(val string) string {
+	return comfunc.ParseValue(val, ValueGetter)
+}
 
 // ParseValue parse ENV var value from input string, support default value.
 //
@@ -46,28 +38,5 @@ func ParseEnvValue(str string) string { return ParseValue(str) }
 //	envutil.ParseValue("${ APP_NAME }")
 //	envutil.ParseValue("${ APP_ENV | dev }")
 func ParseValue(val string) (newVal string) {
-	if !strings.Contains(val, "${") {
-		return val
-	}
-
-	var name, def string
-	return envRegex.ReplaceAllStringFunc(val, func(eVar string) string {
-		// eVar like "${NotExist|defValue}", first remove "${" and "}", then split it
-		ss := strings.SplitN(eVar[2:len(eVar)-1], "|", 2)
-
-		// with default value. ${NotExist|defValue}
-		if len(ss) == 2 {
-			name, def = strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
-		} else {
-			def = eVar // use raw value
-			name = strings.TrimSpace(ss[0])
-		}
-
-		// get ENV value by name
-		eVal := ValueGetter(name)
-		if eVal == "" {
-			eVal = def
-		}
-		return eVal
-	})
+	return comfunc.ParseValue(val, ValueGetter)
 }
