@@ -748,6 +748,7 @@ func IsEmpty(v reflect.Value) bool
 func IsEmptyValue(v reflect.Value) bool
 // source at reflects/conv.go
 func BaseTypeVal(v reflect.Value) (value interface{}, err error)
+func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error)
 func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err error)
 // source at reflects/type.go
 func ToBaseKind(kind reflect.Kind) BKind
@@ -757,6 +758,7 @@ func TypeOf(v interface{}) Type
 func Elem(v reflect.Value) reflect.Value
 func Len(v reflect.Value) int
 func SliceSubKind(typ reflect.Type) reflect.Kind
+func SetValue(rv reflect.Value, val interface{}) error
 // source at reflects/value.go
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
@@ -833,9 +835,11 @@ func TryToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, err
 func StructToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, error)
 // source at structs/data.go
 func NewMapData() *DataStore
+// source at structs/setval.go
+func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error
+func SetValues(ptr interface{}, data map[string]interface{}, optFns ...SetOptFunc) error
 // source at structs/structs.go
 func MapStruct(srcSt, dstSt interface{})
-func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error
 // source at structs/tags.go
 func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error)
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error)
@@ -885,7 +889,7 @@ func VersionCompare(v1, v2, op string) bool
 func Quote(s string) string { return strconv.Quote(s) }
 func Unquote(s string) string
 func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
-func JoinSubs(sep string, ss []string) string { return strings.Join(ss, sep) }
+func JoinList(sep string, ss []string) string { return strings.Join(ss, sep) }
 func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
 func String(val interface{}) (string, error)
 func QuietString(in interface{}) string
@@ -1300,18 +1304,18 @@ root@xx:/go/work# go test ./...
 
 ## Gookit packages
 
-  - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
-  - [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
-  - [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
-  - [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
-  - [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support
-  - [gookit/event](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
-  - [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
-  - [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
-  - [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
-  - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
-  - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
-  - More, please see https://github.com/gookit
+- [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
+- [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
+- [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
+- [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
+- [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support
+- [gookit/event](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
+- [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
+- [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
+- [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
+- [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
+- [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
+- More, please see https://github.com/gookit
 
 ## License
 
