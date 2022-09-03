@@ -1,15 +1,13 @@
 package reflects
 
 import (
-	"errors"
 	"reflect"
 
+	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
-
-// ErrConvertFail error define
-var ErrConvertFail = errors.New("convert value type is failure")
 
 // BaseTypeVal convert custom type or intX,uintX,floatX to generic base type.
 //
@@ -26,17 +24,37 @@ func BaseTypeVal(v reflect.Value) (value interface{}, err error) {
 		value = v.String()
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		value = v.Int()
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		value = int64(v.Uint()) // always return int64
 	case reflect.Float32, reflect.Float64:
 		value = v.Float()
 	default:
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }
 
-// ValueByKind reflect value create by give kind
+// ValueByType create reflect.Value by give reflect.Type
+func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error) {
+	if typ.Kind() <= reflect.Float64 {
+		return ValueByKind(val, typ.Kind())
+	}
+
+	// check type. like map, slice
+	newRv := reflect.ValueOf(val)
+	if newRv.Type() == typ {
+		return newRv, nil
+	}
+
+	err = common.ErrConvType
+	return
+}
+
+// ValueByKind create reflect.Value by give reflect.Kind
+//
+// TIPs:
+//
+//	Only support kind: string, bool, intX, uintX, floatX
 func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err error) {
 	switch kind {
 	case reflect.Int:
@@ -92,18 +110,13 @@ func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err erro
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Bool:
-		if bl, ok := val.(bool); ok {
+		if bl, err := comfunc.ToBool(val); err == nil {
 			rv = reflect.ValueOf(bl)
-		} else if str, ok := val.(string); ok {
-			if dstV, err1 := strutil.ToBool(str); err1 == nil {
-				rv = reflect.ValueOf(dstV)
-			}
 		}
-		// TODO ... more kind supports: slice
 	}
 
 	if !rv.IsValid() {
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }

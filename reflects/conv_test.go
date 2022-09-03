@@ -28,6 +28,26 @@ func TestBaseTypeVal(t *testing.T) {
 	val, err := reflects.BaseTypeVal(reflect.ValueOf(float32(23.4)))
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, val)
+
+	val, err = reflects.BaseTypeVal(reflect.ValueOf([]int{23}))
+	assert.Err(t, err)
+	assert.Nil(t, val)
+}
+
+func TestValueByType(t *testing.T) {
+	val, err := reflects.ValueByType(true, reflect.TypeOf(false))
+	assert.NoErr(t, err)
+	assert.True(t, val.Bool())
+
+	mp := map[string]string{"key": "val"}
+	val, err = reflects.ValueByType(mp, reflect.TypeOf(map[string]string{}))
+	assert.NoErr(t, err)
+	assert.Eq(t, mp, val.Interface())
+
+	mp = map[string]string{"key": "val"}
+	val, err = reflects.ValueByType(mp, reflect.TypeOf(map[int]string{}))
+	assert.Err(t, err)
+	assert.False(t, val.IsValid())
 }
 
 func TestValueByKind(t *testing.T) {
@@ -36,12 +56,12 @@ func TestValueByKind(t *testing.T) {
 		// want kind
 		kind reflect.Kind
 	}{
+		{23, "23", reflect.Int},
 		{int8(23), 23, reflect.Int8},
 		{int16(23), 23, reflect.Int16},
 		{int32(23), 23, reflect.Int32},
 		{int64(23), 23, reflect.Int64},
 		{"23", 23, reflect.String},
-		{23, uint(23), reflect.Int},
 		{uint(23), 23, reflect.Uint},
 		{uint8(23), 23, reflect.Uint8},
 		{uint16(23), 23, reflect.Uint16},
@@ -59,4 +79,8 @@ func TestValueByKind(t *testing.T) {
 	val, err := reflects.ValueByKind("abc", reflect.Int)
 	assert.Err(t, err)
 	assert.False(t, val.IsValid())
+
+	val, err = reflects.ValueByKind("true", reflect.Bool)
+	assert.NoErr(t, err)
+	assert.True(t, val.Bool())
 }

@@ -157,3 +157,40 @@ func TestMap_subSlice_addItem(t *testing.T) {
 	// ret.Set(rv)
 	dump.P(mp, srv.Interface())
 }
+
+func TestSetValue(t *testing.T) {
+	// string
+	str := "val"
+	rv := reflect.ValueOf(&str)
+	err := reflects.SetValue(rv, "new val")
+	assert.NoErr(t, err)
+	assert.Eq(t, "new val", str)
+
+	// int
+	iVal := 234
+	rv = reflect.ValueOf(&iVal)
+	err = reflects.SetValue(rv, "345")
+	assert.NoErr(t, err)
+	assert.Eq(t, 345, iVal)
+
+	// panic: reflect: reflect.Value.Set using unaddressable value
+	assert.Panics(t, func() {
+		rv := reflect.ValueOf("val")
+		_ = reflects.SetValue(rv, "new val")
+	})
+}
+
+func TestSetValue_map(t *testing.T) {
+	// map
+	mp := map[string]string{}
+	set := map[string]string{"key": "val"}
+
+	rv := reflect.ValueOf(&mp)
+	err := reflects.SetValue(rv, set)
+	assert.NoErr(t, err)
+	assert.Eq(t, set, mp)
+
+	// type error
+	err = reflects.SetValue(rv, map[int]string{2: "abc"})
+	assert.Err(t, err)
+}

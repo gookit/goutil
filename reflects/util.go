@@ -50,3 +50,26 @@ func SliceSubKind(typ reflect.Type) reflect.Kind {
 	}
 	return reflect.Invalid
 }
+
+// SetValue to a reflect.Value
+func SetValue(rv reflect.Value, val interface{}) error {
+	// get real type of the ptr value
+	if rv.Kind() == reflect.Ptr {
+		// init if is nil
+		if rv.IsNil() {
+			elemTyp := rv.Type().Elem()
+			rv.Set(reflect.New(elemTyp))
+		}
+
+		// use elem for set value
+		rv = reflect.Indirect(rv)
+	}
+
+	rv1, err := ValueByType(val, rv.Type())
+	if err != nil {
+		return err
+	}
+
+	rv.Set(rv1)
+	return nil
+}
