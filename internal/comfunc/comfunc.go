@@ -35,7 +35,7 @@ func Environ() map[string]string {
 //	var envRegex = regexp.MustCompile(`\${[\w-| ]+}`)
 var envRegex = regexp.MustCompile(`\${.+?}`)
 
-// ParseValue parse ENV var value from input string, support default value.
+// ParseEnvVar parse ENV var value from input string, support default value.
 //
 // Format:
 //
@@ -44,9 +44,9 @@ var envRegex = regexp.MustCompile(`\${.+?}`)
 //
 // Usage:
 //
-//	comfunc.ParseValue("${ APP_NAME }")
-//	comfunc.ParseValue("${ APP_ENV | dev }")
-func ParseValue(val string, getFn func(string) string) (newVal string) {
+//	comfunc.ParseEnvVar("${ APP_NAME }")
+//	comfunc.ParseEnvVar("${ APP_ENV | dev }")
+func ParseEnvVar(val string, getFn func(string) string) (newVal string) {
 	if !strings.Contains(val, "${") {
 		return val
 	}
