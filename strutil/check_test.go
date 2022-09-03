@@ -118,6 +118,19 @@ func TestIsSymbol(t *testing.T) {
 	assert.True(t, strutil.IsSymbol('●'))
 }
 
+func TestIsVersion(t *testing.T) {
+	assert.False(t, strutil.IsVersion("abc"))
+	assert.False(t, strutil.IsVersion(".2"))
+	assert.False(t, strutil.IsVersion("a.2"))
+
+	assert.True(t, strutil.IsVersion("0.1"))
+	assert.True(t, strutil.IsVersion("0.1.0"))
+	assert.True(t, strutil.IsVersion("1.2.0"))
+	assert.True(t, strutil.IsVersion("1.2.0-beta"))
+	assert.True(t, strutil.IsVersion("1.2.0-beta2"))
+	assert.True(t, strutil.IsVersion("1.2.0-alpha1"))
+}
+
 func TestHasOneSub(t *testing.T) {
 	assert.False(t, strutil.HasOneSub("h3ab2c", []string{"d"}))
 	assert.True(t, strutil.HasOneSub("h3ab2c", []string{"ab"}))

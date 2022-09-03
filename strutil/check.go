@@ -144,6 +144,13 @@ func IsSymbol(r rune) bool {
 	return unicode.IsSymbol(r)
 }
 
+var verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)
+
+// IsVersion number. eg: 1.2.0
+func IsVersion(s string) bool {
+	return verRegex.MatchString(s)
+}
+
 // Compare for two string.
 func Compare(s1, s2, op string) bool {
 	return VersionCompare(s1, s2, op)
