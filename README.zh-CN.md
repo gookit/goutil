@@ -13,7 +13,7 @@ Go一些常用的工具函数实现、增强、收集和整理
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以构建简单的命令行应用程序
 - [`cliutil`](./cliutil) CLI 的一些工具函数包. eg: read input, exec command
   - [cmdline](./cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
-- [`dump`](./dump)  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
+- [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`envutil`](./envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
 - [`fmtutil`](./fmtutil) 格式化数据工具函数 eg：数据size
@@ -260,7 +260,7 @@ func main() {
 
 **output**:
 
-```text
+```shell
 PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)
 []string [ #len=5
   string("./app"), #len=5
@@ -1313,3 +1313,4 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 ## License
 
 [MIT](LICENSE)
+ENSE)

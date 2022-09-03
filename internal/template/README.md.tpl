@@ -13,7 +13,7 @@
 - [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
 - [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command
   - [cmdline](./cliutil/cmdline) Provide cmdline parse, args build to cmdline
-- [`dump`](./dump):  Simple variable printing tool, print slice, map will automatically wrap each element and display the call location
+- [`dump`](./dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
 - [`fmtutil`](./fmtutil) Format data util functions. eg: data, size, time
@@ -38,9 +38,9 @@
 
 > **[中文说明](README.zh-CN.md)**
 
-## GoDoc
+## Go Doc
 
-- [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
+Please see [Go doc](https://pkg.go.dev/github.com/gookit/goutil)
 
 ## Install
 

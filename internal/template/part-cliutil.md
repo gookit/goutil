@@ -39,7 +39,7 @@ func main() {
 
 **output**:
 
-```text
+```shell
 PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go:30)
 []string [ #len=5
   string("./app"), #len=5
