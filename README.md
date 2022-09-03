@@ -11,7 +11,8 @@
 
 - [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
 - [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
-- [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command, cmdline parse/build
+- [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command
+  - [cmdline](./cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`dump`](./dump):  Simple variable printing tool, print slice, map will automatically wrap each element and display the call location
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
@@ -21,13 +22,15 @@
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
-  - `netutil/httpreq` An easier-to-use HTTP client that wraps http.Client
+  - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client
 - [`reflects`](./reflects) Provide extends reflect util functions.
 - [`stdutil`](./stdutil) Provide some commonly std util functions.
-- [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data
+- [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
   - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
+  - [cmdr](./sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
+  - [process](./sysutil/process) Provide some process handle util functions.
 - [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
   - [assert](./testutil/assert) Asserts functions for help testing
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
@@ -875,6 +878,7 @@ func IsBlank(s string) bool
 func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
+func IsVersion(s string) bool
 func Compare(s1, s2, op string) bool
 func VersionCompare(v1, v2, op string) bool
 // source at strutil/convert.go

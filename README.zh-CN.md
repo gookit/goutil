@@ -11,7 +11,8 @@ Go一些常用的工具函数实现、增强、收集和整理
 
 - [`arrutil`](./arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以构建简单的命令行应用程序
-- [`cliutil`](./cliutil) CLI 的一些工具函数包. eg: read input, exec command, cmdline parse/build
+- [`cliutil`](./cliutil) CLI 的一些工具函数包. eg: read input, exec command
+  - [cmdline](./cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
 - [`dump`](./dump)  简单的变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`envutil`](./envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
@@ -26,7 +27,9 @@ Go一些常用的工具函数实现、增强、收集和整理
 - [`structs`](./structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](./strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
-  - [clipboard](./sysutil/clipboard) 提供简单的剪贴板读写操作。
+  - [clipboard](./sysutil/clipboard) 提供简单的剪贴板读写操作工具库
+  - [cmdr](./sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
+  - [process](./sysutil/process) 提供一些进程操作相关的实用功能。
 - [`testutil`](./testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
   - [assert](./testutil/assert) 用于帮助测试的断言函数工具包
 - [`timex`](./timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
@@ -876,6 +879,7 @@ func IsBlank(s string) bool
 func IsNotBlank(s string) bool
 func IsBlankBytes(bs []byte) bool
 func IsSymbol(r rune) bool
+func IsVersion(s string) bool
 func Compare(s1, s2, op string) bool
 func VersionCompare(v1, v2, op string) bool
 // source at strutil/convert.go

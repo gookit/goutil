@@ -1,4 +1,4 @@
-// Package cmdr provide for quick build cmd and batch run tasks
+// Package cmdr Provide for quick build and run a cmd, batch run multi cmd tasks
 package cmdr
 
 import "strings"
