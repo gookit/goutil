@@ -39,9 +39,9 @@ func GoVersion() string {
 //	go env GOVERSION GOOS GOARCH
 //	go version // "go version go1.19 darwin/amd64"
 type GoInfo struct {
+	Version string
 	GoOS    string
 	Arch    string
-	Version string
 }
 
 // match "go version go1.19 darwin/amd64"

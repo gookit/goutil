@@ -5,12 +5,24 @@ const (
 	CommaStr = ","
 	// CommaChar define
 	CommaChar = ','
+
 	// PathStr define const
 	PathStr = "/"
 	// PathChar define
 	PathChar = '/'
+
 	// DefaultSep comma string
 	DefaultSep = ","
+
+	// SpaceChar char
+	SpaceChar = ' '
+	// SpaceStr string
+	SpaceStr = " "
+
+	// NewlineChar char
+	NewlineChar = '\n'
+	// NewlineStr string
+	NewlineStr = "\n"
 )
 
 // consts for compare operation

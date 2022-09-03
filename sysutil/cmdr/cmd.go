@@ -12,10 +12,12 @@ import (
 // Cmd struct
 type Cmd struct {
 	*exec.Cmd
-	// Name define
+	// Name of the command
 	Name string
 	// RunBefore hook
 	RunBefore func(c *Cmd)
+	// RunAfter hook
+	RunAfter func(c *Cmd, err error)
 }
 
 // WrapGoCmd instance
@@ -50,6 +52,12 @@ func (c *Cmd) Cmdline() string {
 // OnBefore exec add hook
 func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
 	c.RunBefore = fn
+	return c
+}
+
+// OnAfter exec add hook
+func (c *Cmd) OnAfter(fn func(c *Cmd, err error)) *Cmd {
+	c.RunAfter = fn
 	return c
 }
 
@@ -183,6 +191,10 @@ func (c *Cmd) Output() (string, error) {
 	}
 
 	output, err := c.Cmd.Output()
+
+	if c.RunAfter != nil {
+		c.RunAfter(c, err)
+	}
 	return string(output), err
 }
 
@@ -193,6 +205,10 @@ func (c *Cmd) CombinedOutput() (string, error) {
 	}
 
 	output, err := c.Cmd.CombinedOutput()
+
+	if c.RunAfter != nil {
+		c.RunAfter(c, err)
+	}
 	return string(output), err
 }
 
@@ -214,7 +230,14 @@ func (c *Cmd) Run() error {
 	if c.RunBefore != nil {
 		c.RunBefore(c)
 	}
-	return c.Cmd.Run()
+
+	// do running
+	err := c.Cmd.Run()
+
+	if c.RunAfter != nil {
+		c.RunAfter(c, err)
+	}
+	return err
 
 	// if IsWindows() {
 	// 	return c.Spawn()
@@ -241,8 +264,5 @@ func (c *Cmd) Run() error {
 // 	args := []string{binary}
 // 	args = append(args, c.Args...)
 //
-// 	if c.RunBefore != nil {
-// 		c.RunBefore(c)
-// 	}
 // 	return syscall.Exec(binary, args, os.Environ())
 // }
