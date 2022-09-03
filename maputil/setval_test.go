@@ -37,6 +37,18 @@ func makMapForSetByPath() map[string]interface{} {
 	}
 }
 
+func TestSetByKeys_basic(t *testing.T) {
+	mp := make(map[string]any)
+	err := maputil.SetByKeys(&mp, []string{}, "val")
+	assert.NoErr(t, err)
+
+	mp["key"] = "val1"
+	err = maputil.SetByKeys(&mp, []string{"key1", "k01"}, "val01")
+	assert.NoErr(t, err)
+
+	assert.Eq(t, "val01", maputil.QuietGet(mp, "key1.k01"))
+}
+
 func TestSetByKeys_emptyMap(t *testing.T) {
 	mp := make(map[string]any)
 	err := maputil.SetByKeys(&mp, []string{"k3"}, "val")
