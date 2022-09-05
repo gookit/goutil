@@ -18,7 +18,7 @@ func TestKeyToLower(t *testing.T) {
 }
 
 func TestToStringMap(t *testing.T) {
-	src := map[string]interface{}{"a": "v0", "b": 23}
+	src := map[string]any{"a": "v0", "b": 23}
 	ret := maputil.ToStringMap(src)
 
 	assert.Eq(t, ret["a"], "v0")
@@ -26,7 +26,7 @@ func TestToStringMap(t *testing.T) {
 }
 
 func TestHttpQueryString(t *testing.T) {
-	src := map[string]interface{}{"a": "v0", "b": 23}
+	src := map[string]any{"a": "v0", "b": 23}
 	str := maputil.HttpQueryString(src)
 
 	fmt.Println(str)
@@ -35,7 +35,7 @@ func TestHttpQueryString(t *testing.T) {
 }
 
 func TestToString2(t *testing.T) {
-	src := map[string]interface{}{"a": "v0", "b": 23}
+	src := map[string]any{"a": "v0", "b": 23}
 
 	s := maputil.ToString2(src)
 	assert.Contains(t, s, "b:23")
@@ -43,7 +43,7 @@ func TestToString2(t *testing.T) {
 }
 
 func TestToString(t *testing.T) {
-	src := map[string]interface{}{"a": "v0", "b": 23}
+	src := map[string]any{"a": "v0", "b": 23}
 
 	s := maputil.ToString(src)
 	dump.P(s)
@@ -53,9 +53,26 @@ func TestToString(t *testing.T) {
 	s = maputil.ToString(nil)
 	assert.Eq(t, "", s)
 
-	s = maputil.ToString(map[string]interface{}{})
+	s = maputil.ToString(map[string]any{})
 	assert.Eq(t, "{}", s)
 
-	s = maputil.ToString(map[string]interface{}{"": nil})
+	s = maputil.ToString(map[string]any{"": nil})
 	assert.Eq(t, "{:}", s)
+}
+
+func TestFlatten(t *testing.T) {
+	data := map[string]any{
+		"name": "inhere",
+		"age":  234,
+		"top": map[string]any{
+			"sub0": "val0",
+			"sub1": []string{"val1-0", "val1-1"},
+		},
+	}
+
+	mp := maputil.Flatten(data)
+	assert.ContainsKeys(t, mp, []string{"age", "name", "top.sub0", "top.sub1[0]", "top.sub1[1]"})
+	assert.Nil(t, maputil.Flatten(nil))
+
+	maputil.FlatWithFunc(nil, nil)
 }

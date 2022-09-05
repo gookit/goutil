@@ -88,8 +88,16 @@ func FormatIndent(mp any, indent string) string {
 //	->
 //	{"top.sub": "value", "top.sub2": "value2" }
 func Flatten(mp map[string]any) map[string]interface{} {
-	// TODO convert
-	return mp
+	if mp == nil {
+		return nil
+	}
+
+	flatMp := make(map[string]any, len(mp))
+	flatMap(reflect.ValueOf(mp), "", func(path string, val reflect.Value) {
+		flatMp[path] = val.Interface()
+	})
+
+	return flatMp
 }
 
 // FlatFunc custom collect handle func
@@ -97,7 +105,7 @@ type FlatFunc func(path string, val reflect.Value)
 
 // FlatWithFunc flat a tree-map with custom collect handle func
 func FlatWithFunc(mp map[string]any, fn FlatFunc) {
-	if mp == nil {
+	if mp == nil || fn == nil {
 		return
 	}
 
