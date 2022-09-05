@@ -74,5 +74,7 @@ func TestFlatten(t *testing.T) {
 	assert.ContainsKeys(t, mp, []string{"age", "name", "top.sub0", "top.sub1[0]", "top.sub1[1]"})
 	assert.Nil(t, maputil.Flatten(nil))
 
-	maputil.FlatWithFunc(nil, nil)
+	assert.NotPanics(t, func() {
+		maputil.FlatWithFunc(nil, nil)
+	})
 }

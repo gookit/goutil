@@ -2,7 +2,6 @@ package maputil
 
 import (
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/reflects"
@@ -92,57 +91,18 @@ func Flatten(mp map[string]any) map[string]interface{} {
 		return nil
 	}
 
-	flatMp := make(map[string]any, len(mp))
-	flatMap(reflect.ValueOf(mp), "", func(path string, val reflect.Value) {
+	flatMp := make(map[string]any, len(mp)*2)
+	reflects.FlatMap(reflect.ValueOf(mp), func(path string, val reflect.Value) {
 		flatMp[path] = val.Interface()
 	})
 
 	return flatMp
 }
 
-// FlatFunc custom collect handle func
-type FlatFunc func(path string, val reflect.Value)
-
 // FlatWithFunc flat a tree-map with custom collect handle func
-func FlatWithFunc(mp map[string]any, fn FlatFunc) {
+func FlatWithFunc(mp map[string]any, fn reflects.FlatFunc) {
 	if mp == nil || fn == nil {
 		return
 	}
-
-	flatMap(reflect.ValueOf(mp), "", fn)
-}
-
-func flatMap(rv reflect.Value, parent string, fn FlatFunc) {
-	for _, key := range rv.MapKeys() {
-		path := reflects.String(key)
-		if parent != "" {
-			path = parent + "." + path
-		}
-
-		fv := reflects.Indirect(rv.MapIndex(key))
-		switch fv.Kind() {
-		case reflect.Map:
-			flatMap(fv, path, fn)
-		case reflect.Array, reflect.Slice:
-			flatSlice(fv, path, fn)
-		default:
-			fn(path, fv)
-		}
-	}
-}
-
-func flatSlice(rv reflect.Value, parent string, fn FlatFunc) {
-	for i := 0; i < rv.Len(); i++ {
-		path := parent + "[" + strconv.Itoa(i) + "]"
-
-		fv := reflects.Indirect(rv.Index(i))
-		switch fv.Kind() {
-		case reflect.Map:
-			flatMap(fv, path, fn)
-		case reflect.Array, reflect.Slice:
-			flatSlice(fv, path, fn)
-		default:
-			fn(path, fv)
-		}
-	}
+	reflects.FlatMap(reflect.ValueOf(mp), fn)
 }
