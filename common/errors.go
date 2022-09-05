@@ -1,6 +1,10 @@
 package common
 
-import "errors"
+import (
+	"github.com/gookit/goutil/comdef"
+)
 
 // ErrConvType error
-var ErrConvType = errors.New("convert value type error")
+//
+// Deprecated: moved to pkg comdef
+var ErrConvType = comdef.ErrConvType

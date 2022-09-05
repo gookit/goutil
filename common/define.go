@@ -1,28 +1,27 @@
 package common
 
 import (
-	"fmt"
-	"io"
+	"github.com/gookit/goutil/comdef"
 )
 
 // ByteStringWriter interface
-type ByteStringWriter interface {
-	io.Writer
-	io.ByteWriter
-	io.StringWriter
-	fmt.Stringer
-}
+//
+// Deprecated: moved to pkg comdef
+type ByteStringWriter = comdef.ByteStringWriter
 
 // StringWriteStringer interface
-type StringWriteStringer interface {
-	io.StringWriter
-	fmt.Stringer
-}
+//
+// Deprecated: moved to pkg comdef
+type StringWriteStringer = comdef.StringWriteStringer
 
 type (
 	// MarshalFunc define
-	MarshalFunc func(v interface{}) ([]byte, error)
+	//
+	// Deprecated: moved to pkg comdef
+	MarshalFunc = comdef.MarshalFunc
 
 	// UnmarshalFunc define
-	UnmarshalFunc func(bts []byte, ptr interface{}) error
+	//
+	// Deprecated: moved to pkg comdef
+	UnmarshalFunc = comdef.UnmarshalFunc
 )
