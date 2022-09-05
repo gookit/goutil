@@ -3,39 +3,92 @@ package structs
 import (
 	"sync"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
 
-// DataStore struct TODO
-type DataStore struct {
+// LiteData simple map[string]any struct. no lock
+type LiteData struct {
+	data map[string]any
+}
+
+// Data get all
+func (d *LiteData) Data() map[string]any {
+	return d.data
+}
+
+// SetData set all data
+func (d *LiteData) SetData(data map[string]any) {
+	d.data = data
+}
+
+// Value get from data
+func (d *LiteData) Value(key string) interface{} {
+	return d.data[key]
+}
+
+// GetVal get from data
+func (d *LiteData) GetVal(key string) interface{} {
+	return d.data[key]
+}
+
+// StrValue get from data
+func (d *LiteData) StrValue(key string) string {
+	return strutil.QuietString(d.data[key])
+}
+
+// IntVal get from data
+func (d *LiteData) IntVal(key string) int {
+	return mathutil.QuietInt(d.data[key])
+}
+
+// SetValue to data
+func (d *LiteData) SetValue(key string, val any) {
+	if d.data == nil {
+		d.data = make(map[string]any)
+	}
+	d.data[key] = val
+}
+
+// ResetData all data
+func (d *LiteData) ResetData() {
+	d.data = nil
+}
+
+/*************************************************************
+ * data struct and allow enable lock
+ *************************************************************/
+
+// Data struct, allow enable lock TODO
+type Data struct {
 	sync.RWMutex
 	enableLock bool
 	// data store
-	data map[string]interface{}
+	data map[string]any
 }
 
-// NewMapData create
-func NewMapData() *DataStore {
-	return &DataStore{
-		data: make(map[string]interface{}),
+// NewData create
+func NewData() *Data {
+	return &Data{
+		data: make(map[string]any),
 	}
 }
 
 // EnableLock for operate data
-func (d *DataStore) EnableLock() *DataStore {
+func (d *Data) EnableLock() *Data {
 	d.enableLock = true
 	return d
 }
 
 // Data get all
-func (d *DataStore) Data() map[string]interface{} {
+func (d *Data) Data() map[string]interface{} {
 	return d.data
 }
 
 // SetData set all data
-func (d *DataStore) SetData(data map[string]interface{}) {
+func (d *Data) SetData(data map[string]any) {
 	if !d.enableLock {
 		d.data = data
 		return
@@ -46,13 +99,23 @@ func (d *DataStore) SetData(data map[string]interface{}) {
 	d.RUnlock()
 }
 
+// DataLen of data
+func (d *Data) DataLen() int {
+	return len(d.data)
+}
+
+// ResetData all data
+func (d *Data) ResetData() {
+	d.data = make(map[string]interface{})
+}
+
 // Set value to data
-func (d *DataStore) Set(key string, val interface{}) {
+func (d *Data) Set(key string, val interface{}) {
 	d.SetValue(key, val)
 }
 
 // SetValue to data
-func (d *DataStore) SetValue(key string, val interface{}) {
+func (d *Data) SetValue(key string, val interface{}) {
 	if d.enableLock {
 		d.Lock()
 		defer d.Unlock()
@@ -61,18 +124,8 @@ func (d *DataStore) SetValue(key string, val interface{}) {
 	d.data[key] = val
 }
 
-// Len of data
-func (d *DataStore) Len() int {
-	return len(d.data)
-}
-
-// Reset all data
-func (d *DataStore) Reset() {
-	d.data = make(map[string]interface{})
-}
-
 // Value get from data
-func (d *DataStore) Value(key string) (val interface{}, ok bool) {
+func (d *Data) Value(key string) (val interface{}, ok bool) {
 	if d.enableLock {
 		d.RLock()
 		defer d.RUnlock()
@@ -83,12 +136,12 @@ func (d *DataStore) Value(key string) (val interface{}, ok bool) {
 }
 
 // Get val from data
-func (d *DataStore) Get(key string) interface{} {
+func (d *Data) Get(key string) interface{} {
 	return d.GetVal(key)
 }
 
 // GetVal get from data
-func (d *DataStore) GetVal(key string) interface{} {
+func (d *Data) GetVal(key string) interface{} {
 	if d.enableLock {
 		d.RLock()
 		defer d.RUnlock()
@@ -98,33 +151,25 @@ func (d *DataStore) GetVal(key string) interface{} {
 }
 
 // StrVal get from data
-func (d *DataStore) StrVal(key string) string {
+func (d *Data) StrVal(key string) string {
 	return strutil.QuietString(d.GetVal(key))
 }
 
 // IntVal get from data
-func (d *DataStore) IntVal(key string) int {
+func (d *Data) IntVal(key string) int {
 	return mathutil.QuietInt(d.GetVal(key))
 }
 
 // BoolVal get from data
-func (d *DataStore) BoolVal(key string) bool {
+func (d *Data) BoolVal(key string) bool {
 	val, ok := d.Value(key)
 	if !ok {
 		return false
 	}
-
-	if bol, ok := val.(bool); ok {
-		return bol
-	}
-
-	if str, ok := val.(string); ok {
-		return strutil.QuietBool(str)
-	}
-	return false
+	return comfunc.Bool(val)
 }
 
 // String format data
-func (d *DataStore) String() string {
+func (d *Data) String() string {
 	return maputil.ToString(d.data)
 }

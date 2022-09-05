@@ -3,7 +3,7 @@ package structs_test
 import (
 	"testing"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/testutil"
@@ -90,7 +90,7 @@ func TestInitDefaults_convTypeError(t *testing.T) {
 
 	u := &User{}
 	err := structs.InitDefaults(u)
-	assert.ErrMsg(t, err, common.ErrConvType.Error())
+	assert.ErrMsg(t, err, comdef.ErrConvType.Error())
 	assert.Eq(t, "inhere", u.Name)
 	assert.Eq(t, 0, u.Age)
 	// dump.P(u)

@@ -7,9 +7,9 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestNewMapData(t *testing.T) {
-	md := structs.NewMapData()
-	assert.Eq(t, 0, md.Len())
+func TestNewData(t *testing.T) {
+	md := structs.NewData()
+	assert.Eq(t, 0, md.DataLen())
 
 	md.SetData(map[string]interface{}{
 		"key0": 234,
@@ -26,12 +26,12 @@ func TestNewMapData(t *testing.T) {
 	md.SetValue("bol", true)
 	assert.True(t, md.BoolVal("bol"))
 
-	md.Reset()
-	assert.Eq(t, 0, md.Len())
+	md.ResetData()
+	assert.Eq(t, 0, md.DataLen())
 }
 
-func TestMapDataStore_EnableLock(t *testing.T) {
-	md := structs.NewMapData()
+func TestDataStore_EnableLock(t *testing.T) {
+	md := structs.NewData()
 	md.EnableLock()
 
 	md.SetData(map[string]interface{}{

@@ -181,6 +181,28 @@ func TestParseTagValueDefault(t *testing.T) {
 	assert.Eq(t, "Age", mp.Get("name"))
 }
 
+func TestParseTagValueDefine(t *testing.T) {
+	sepStr := ";"
+	defines := []string{"desc", "required", "default", "shorts"}
+	handler := structs.ParseTagValueDefine(sepStr, defines)
+
+	info, err := handler("Name", "set your name;true;INHERE;n")
+	assert.NoErr(t, err)
+	assert.Eq(t, "set your name", info.Get("desc"))
+	assert.Eq(t, "true", info.Get("required"))
+	assert.Eq(t, "INHERE", info.Get("default"))
+	assert.Eq(t, "n", info.Get("shorts"))
+	assert.True(t, info.Bool("required"))
+
+	info, err = handler("Name", "set your name;;;n")
+	assert.NoErr(t, err)
+	assert.Eq(t, "set your name", info.Get("desc"))
+	assert.Eq(t, "", info.Get("required"))
+	assert.Eq(t, "", info.Get("default"))
+	assert.Eq(t, "n", info.Get("shorts"))
+	assert.False(t, info.Bool("required"))
+}
+
 func TestParseTagValueNamed(t *testing.T) {
 	mp, err := structs.ParseTagValueNamed("name", "")
 	assert.NoErr(t, err)

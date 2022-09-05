@@ -2,7 +2,7 @@ package structs
 
 import (
 	"github.com/gookit/goutil/arrutil"
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -97,7 +97,7 @@ func (v *Value) Strings() (ss []string) {
 		return ss
 	}
 	if str, ok := v.V.(string); ok {
-		return strutil.Split(str, common.DefaultSep)
+		return strutil.Split(str, comdef.DefaultSep)
 	}
 	return
 }
@@ -138,5 +138,5 @@ func sepStr(seps []string) string {
 	if len(seps) > 0 {
 		return seps[0]
 	}
-	return common.DefaultSep
+	return comdef.DefaultSep
 }
