@@ -2,10 +2,10 @@
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gookit/goutil?style=flat-square)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gookit/goutil)](https://github.com/gookit/goutil)
-[![GoDoc](https://godoc.org/github.com/gookit/goutil?status.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gookit/goutil)](https://goreportcard.com/report/github.com/gookit/goutil)
 [![Unit-Tests](https://github.com/gookit/goutil/workflows/Unit-Tests/badge.svg)](https://github.com/gookit/goutil/actions)
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
+[![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
 Go一些常用的工具函数实现、增强、收集和整理
 
@@ -659,6 +659,8 @@ func HttpQueryString(data map[string]any) string
 func ToString(mp map[string]any) string
 func ToString2(mp any) string
 func FormatIndent(mp any, indent string) string
+func Flatten(mp map[string]any) map[string]interface{}
+func FlatWithFunc(mp map[string]any, fn FlatFunc)
 // source at maputil/format.go
 func NewFormatter(mp any) *MapFormatter
 // source at maputil/get.go
@@ -706,13 +708,13 @@ func MustFloat(in interface{}) float64
 func Float(in interface{}) (float64, error)
 func FloatOrErr(in interface{}) (float64, error)
 func ToFloat(in interface{}) (f64 float64, err error)
-func TryToString(val interface{}, defaultAsErr bool) (str string, err error)
 func StringOrPanic(val interface{}) string
 func MustString(val interface{}) string
 func ToString(val interface{}) (string, error)
 func StringOrErr(val interface{}) (string, error)
 func QuietString(val interface{}) string
 func String(val interface{}) string
+func TryToString(val interface{}, defaultAsErr bool) (str string, err error)
 // source at mathutil/mathutil.go
 func MaxFloat(x, y float64) float64
 func MaxInt(x, y int) int
@@ -751,12 +753,16 @@ func IsEmptyValue(v reflect.Value) bool
 func BaseTypeVal(v reflect.Value) (value interface{}, err error)
 func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error)
 func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err error)
+func String(rv reflect.Value) string
+func ToString(rv reflect.Value) (str string, err error)
+func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error)
 // source at reflects/type.go
 func ToBaseKind(kind reflect.Kind) BKind
 func ToBKind(kind reflect.Kind) BKind
 func TypeOf(v interface{}) Type
 // source at reflects/util.go
 func Elem(v reflect.Value) reflect.Value
+func Indirect(v reflect.Value) reflect.Value
 func Len(v reflect.Value) int
 func SliceSubKind(typ reflect.Type) reflect.Kind
 func SetValue(rv reflect.Value, val interface{}) error
@@ -835,7 +841,7 @@ func MustToMap(st interface{}, optFns ...MapOptFunc) map[string]interface{}
 func TryToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, error)
 func StructToMap(st interface{}, optFns ...MapOptFunc) (map[string]interface{}, error)
 // source at structs/data.go
-func NewMapData() *DataStore
+func NewData() *Data
 // source at structs/setval.go
 func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error
 func SetValues(ptr interface{}, data map[string]interface{}, optFns ...SetOptFunc) error
@@ -1313,4 +1319,3 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 ## License
 
 [MIT](LICENSE)
-ENSE)
