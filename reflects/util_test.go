@@ -194,3 +194,15 @@ func TestSetValue_map(t *testing.T) {
 	err = reflects.SetValue(rv, map[int]string{2: "abc"})
 	assert.Err(t, err)
 }
+
+func TestFlatMap(t *testing.T) {
+	assert.Panics(t, func() {
+		reflects.FlatMap(reflect.ValueOf("abc"), func(_ string, _ reflect.Value) {
+			// nothing
+		})
+	})
+
+	assert.NotPanics(t, func() {
+		reflects.FlatMap(reflect.ValueOf(nil), nil)
+	})
+}
