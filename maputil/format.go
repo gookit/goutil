@@ -4,13 +4,13 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
 )
 
 // MapFormatter struct
 type MapFormatter struct {
-	common.BaseFormatter
+	comdef.BaseFormatter
 	// Prefix string for each element
 	Prefix string
 	// Indent string for each element
@@ -59,6 +59,7 @@ func (f *MapFormatter) Format() string {
 }
 
 // Format map data to string.
+//
 //goland:noinspection GoUnhandledErrorResult
 func (f *MapFormatter) doFormat() {
 	if f.Src == nil {

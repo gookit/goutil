@@ -11,7 +11,7 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 )
@@ -152,7 +152,7 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		str = value.String()
 	default:
 		if defaultAsErr {
-			err = common.ErrConvType
+			err = comdef.ErrConvType
 		} else {
 			str = fmt.Sprint(value)
 		}

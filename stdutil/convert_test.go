@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/stdutil"
-	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -29,7 +29,7 @@ func TestTryString(t *testing.T) {
 	assert.Eq(t, "23", s)
 
 	s, err = stdutil.TryString([]string{"a", "b"})
-	assert.Eq(t, err, strutil.ErrConvertFail)
+	assert.Eq(t, err, comdef.ErrConvType)
 	assert.Eq(t, "", s)
 }
 

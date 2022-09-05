@@ -4,13 +4,13 @@ import (
 	"io"
 	"reflect"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
 )
 
 // ArrFormatter struct
 type ArrFormatter struct {
-	common.BaseFormatter
+	comdef.BaseFormatter
 	// Prefix string for each element
 	Prefix string
 	// Indent string for format each element
@@ -58,6 +58,7 @@ func (f *ArrFormatter) Format() string {
 }
 
 // Format to string
+//
 //goland:noinspection GoUnhandledErrorResult
 func (f *ArrFormatter) doFormat() {
 	if f.Src == nil {

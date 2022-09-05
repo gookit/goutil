@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 )
 
 // Bool try to convert type to bool
@@ -22,7 +22,7 @@ func ToBool(v interface{}) (bool, error) {
 	if str, ok := v.(string); ok {
 		return StrToBool(str)
 	}
-	return false, common.ErrConvType
+	return false, comdef.ErrConvType
 }
 
 // StrToBool parse string to bool. like strconv.ParseBool()

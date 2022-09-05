@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gookit/color"
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
@@ -152,7 +152,7 @@ func formatLabeledTexts(lts []labeledText) string {
 	return sb.String()
 }
 
-func formatMessage(message string, labelWidth int, buf common.StringWriteStringer) string {
+func formatMessage(message string, labelWidth int, buf comdef.StringWriteStringer) string {
 	for i, scanner := 0, bufio.NewScanner(strings.NewReader(message)); scanner.Scan(); i++ {
 		// skip add prefix for first line.
 		if i != 0 {

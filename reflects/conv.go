@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
@@ -31,7 +31,7 @@ func BaseTypeVal(v reflect.Value) (value interface{}, err error) {
 	case reflect.Float32, reflect.Float64:
 		value = v.Float()
 	default:
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -48,7 +48,7 @@ func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error
 		return newRv, nil
 	}
 
-	err = common.ErrConvType
+	err = comdef.ErrConvType
 	return
 }
 
@@ -118,7 +118,7 @@ func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err erro
 	}
 
 	if !rv.IsValid() {
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -152,7 +152,7 @@ func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) {
 		str = strconv.FormatUint(rv.Uint(), 10)
 	default:
 		if defaultAsErr {
-			err = common.ErrConvType
+			err = comdef.ErrConvType
 		} else {
 			str = fmt.Sprint(rv.Interface())
 		}

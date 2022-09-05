@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gookit/goutil/common"
+	"github.com/gookit/goutil/comdef"
 )
 
 /*************************************************************
@@ -83,7 +83,7 @@ func ToInt(in interface{}) (iVal int, err error) {
 		i64, err = tVal.Int64()
 		iVal = int(i64)
 	default:
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -158,7 +158,7 @@ func ToUint(in interface{}) (u64 uint64, err error) {
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -227,7 +227,7 @@ func ToInt64(in interface{}) (i64 int64, err error) {
 	case json.Number:
 		i64, err = tVal.Int64()
 	default:
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -303,7 +303,7 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 	case json.Number:
 		f64, err = tVal.Float64()
 	default:
-		err = common.ErrConvType
+		err = comdef.ErrConvType
 	}
 	return
 }
@@ -387,7 +387,7 @@ func TryToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		str = value.String()
 	default:
 		if defaultAsErr {
-			err = common.ErrConvType
+			err = comdef.ErrConvType
 		} else {
 			str = fmt.Sprint(value)
 		}

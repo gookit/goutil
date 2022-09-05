@@ -1,8 +1,11 @@
 package maputil
 
 import (
+	"reflect"
+	"strconv"
 	"strings"
 
+	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -25,18 +28,6 @@ func ToStringMap(src map[string]any) map[string]string {
 	}
 
 	return newMp
-}
-
-// Flatten convert tree map to flat key-value map.
-//
-// Examples:
-//
-//	{"top": {"sub": "value", "sub2": "value2"} }
-//	->
-//	{"top.sub": "value", "top.sub2": "value2" }
-func Flatten(mp map[string]any) map[string]interface{} {
-	// TODO convert
-	return mp
 }
 
 // HttpQueryString convert map[string]any data to http query string.
@@ -83,4 +74,67 @@ func ToString2(mp any) string {
 // FormatIndent format map data to string with newline and indent.
 func FormatIndent(mp any, indent string) string {
 	return NewFormatter(mp).WithIndent(indent).Format()
+}
+
+/*************************************************************
+ * Flat convert tree map to flatten key-value map.
+ *************************************************************/
+
+// Flatten convert tree map to flat key-value map.
+//
+// Examples:
+//
+//	{"top": {"sub": "value", "sub2": "value2"} }
+//	->
+//	{"top.sub": "value", "top.sub2": "value2" }
+func Flatten(mp map[string]any) map[string]interface{} {
+	// TODO convert
+	return mp
+}
+
+// FlatFunc custom collect handle func
+type FlatFunc func(path string, val reflect.Value)
+
+// FlatWithFunc flat a tree-map with custom collect handle func
+func FlatWithFunc(mp map[string]any, fn FlatFunc) {
+	if mp == nil {
+		return
+	}
+
+	flatMap(reflect.ValueOf(mp), "", fn)
+}
+
+func flatMap(rv reflect.Value, parent string, fn FlatFunc) {
+	for _, key := range rv.MapKeys() {
+		path := reflects.String(key)
+		if parent != "" {
+			path = parent + "." + path
+		}
+
+		fv := reflects.Indirect(rv.MapIndex(key))
+		switch fv.Kind() {
+		case reflect.Map:
+			flatMap(fv, path, fn)
+		case reflect.Array, reflect.Slice:
+			flatSlice(fv, path, fn)
+		default:
+			fn(path, fv)
+		}
+	}
+}
+
+func flatSlice(rv reflect.Value, parent string, fn FlatFunc) {
+	for i := 0; i < rv.Len(); i++ {
+		path := parent + "[" + strconv.Itoa(i) + "]"
+
+		fv := reflects.Indirect(rv.Index(i))
+		switch fv.Kind() {
+		case reflect.Map:
+			flatMap(fv, path, fn)
+		case reflect.Array, reflect.Slice:
+			flatSlice(fv, path, fn)
+		default:
+			fn(path, fv)
+		}
+	}
 }

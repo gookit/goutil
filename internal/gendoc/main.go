@@ -23,6 +23,7 @@ import (
 var (
 	hidden = []string{
 		"netutil",
+		"comdef",
 		"common",
 		"numbers",
 		"internal",
