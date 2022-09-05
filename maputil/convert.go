@@ -27,6 +27,18 @@ func ToStringMap(src map[string]any) map[string]string {
 	return newMp
 }
 
+// Flatten convert tree map to flat key-value map.
+//
+// Examples:
+//
+//	{"top": {"sub": "value", "sub2": "value2"} }
+//	->
+//	{"top.sub": "value", "top.sub2": "value2" }
+func Flatten(mp map[string]any) map[string]interface{} {
+	// TODO convert
+	return mp
+}
+
 // HttpQueryString convert map[string]any data to http query string.
 func HttpQueryString(data map[string]any) string {
 	ss := make([]string, 0, len(data))

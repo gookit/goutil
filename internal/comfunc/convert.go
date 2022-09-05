@@ -7,6 +7,12 @@ import (
 	"github.com/gookit/goutil/common"
 )
 
+// Bool try to convert type to bool
+func Bool(v interface{}) bool {
+	bl, _ := ToBool(v)
+	return bl
+}
+
 // ToBool try to convert type to bool
 func ToBool(v interface{}) (bool, error) {
 	if bl, ok := v.(bool); ok {

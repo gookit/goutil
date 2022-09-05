@@ -2,6 +2,7 @@ package goutil
 
 import (
 	"reflect"
+	"strconv"
 
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
@@ -73,4 +74,9 @@ func ToUint(v interface{}) (uint64, error) {
 // returns int64,string,float or error
 func BaseTypeVal(val interface{}) (value interface{}, err error) {
 	return reflects.BaseTypeVal(reflect.ValueOf(val))
+}
+
+// BoolString convert
+func BoolString(bl bool) string {
+	return strconv.FormatBool(bl)
 }
