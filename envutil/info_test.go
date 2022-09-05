@@ -51,10 +51,11 @@ func TestIsConsole(t *testing.T) {
 func TestIsSupportColor(t *testing.T) {
 	is := assert.New(t)
 
+	// clear all OS env
+	testutil.ClearOSEnv()
+	defer testutil.RevertOSEnv()
+
 	// IsSupport256Color
-	oldVal := os.Getenv("TERM")
-	_ = os.Unsetenv("TERM")
-	// is.False(envutil.IsSupportColor())
 	is.False(envutil.IsSupport256Color())
 
 	// ConEmuANSI
@@ -85,10 +86,4 @@ func TestIsSupportColor(t *testing.T) {
 
 	is.NoErr(os.Setenv("TERM", "xterm-vt220"))
 	is.True(envutil.IsSupportColor())
-	// revert
-	if oldVal != "" {
-		is.NoErr(os.Setenv("TERM", oldVal))
-	} else {
-		is.NoErr(os.Unsetenv("TERM"))
-	}
 }

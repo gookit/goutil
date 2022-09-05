@@ -77,13 +77,32 @@ func MockOsEnv(mp map[string]string, fn func()) {
 	MockCleanOsEnv(mp, fn)
 }
 
+// backup os ENV
+var envBak = os.Environ()
+
+// ClearOSEnv info.
+//
+// Usage:
+//
+//	testutil.ClearOSEnv()
+//	defer testutil.RevertOSEnv()
+//	// do something ...
+func ClearOSEnv() { os.Clearenv() }
+
+// RevertOSEnv info
+func RevertOSEnv() {
+	os.Clearenv()
+	for _, str := range envBak {
+		nodes := strings.SplitN(str, "=", 2)
+		_ = os.Setenv(nodes[0], nodes[1])
+	}
+}
+
 // MockCleanOsEnv by env map data.
 //
 // will clear all old ENV data, use given data map.
 // will recover old ENV after fn run.
 func MockCleanOsEnv(mp map[string]string, fn func()) {
-	envBak := os.Environ()
-
 	os.Clearenv()
 	for key, val := range mp {
 		_ = os.Setenv(key, val)

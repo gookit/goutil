@@ -15,7 +15,7 @@ func TestMustString(t *testing.T) {
 
 	assert.PanicsErrMsg(t, func() {
 		stdutil.MustString([]string{"a", "b"})
-	}, "convert data type is failure")
+	}, comdef.ErrConvType.Error())
 }
 
 func TestToString(t *testing.T) {
