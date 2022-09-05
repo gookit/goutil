@@ -1,7 +1,9 @@
 package reflects
 
 import (
+	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/internal/comfunc"
@@ -117,6 +119,43 @@ func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err erro
 
 	if !rv.IsValid() {
 		err = common.ErrConvType
+	}
+	return
+}
+
+// String convert
+func String(rv reflect.Value) string {
+	s, _ := ValToString(rv, false)
+	return s
+}
+
+// ToString convert
+func ToString(rv reflect.Value) (str string, err error) {
+	return ValToString(rv, true)
+}
+
+// ValToString convert handle
+func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) {
+	rv = Indirect(rv)
+	switch rv.Kind() {
+	case reflect.Invalid:
+		str = ""
+	case reflect.Bool:
+		str = strconv.FormatBool(rv.Bool())
+	case reflect.String:
+		str = rv.String()
+	case reflect.Float32, reflect.Float64:
+		str = strconv.FormatFloat(rv.Float(), 'f', -1, 64)
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		str = strconv.FormatInt(rv.Int(), 10)
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		str = strconv.FormatUint(rv.Uint(), 10)
+	default:
+		if defaultAsErr {
+			err = common.ErrConvType
+		} else {
+			str = fmt.Sprint(rv.Interface())
+		}
 	}
 	return
 }

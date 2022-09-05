@@ -45,10 +45,17 @@ func TestValue_Indirect(t *testing.T) {
 	assert.Eq(t, reflect.Struct, rv1.Kind())
 	assert.True(t, reflects.HasChild(rv1))
 
+	rv1 = reflects.Indirect(rv.Value)
+	assert.Eq(t, reflect.Struct, rv1.Kind())
+	assert.True(t, reflects.HasChild(rv1))
+
 	rv = rv.Indirect()
 	assert.True(t, rv.HasChild())
 	assert.Eq(t, reflects.BKind(reflect.Struct), rv.BKind())
 
 	rv1 = reflects.Elem(reflect.ValueOf("abc"))
+	assert.Eq(t, reflect.String, rv1.Kind())
+
+	rv1 = reflects.Indirect(reflect.ValueOf("abc"))
 	assert.Eq(t, reflect.String, rv1.Kind())
 }

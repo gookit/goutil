@@ -17,6 +17,16 @@ func Elem(v reflect.Value) reflect.Value {
 	return v
 }
 
+// Indirect like reflect.Indirect(), but can also indirect reflect.Interface
+func Indirect(v reflect.Value) reflect.Value {
+	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+		return v.Elem()
+	}
+
+	// otherwise, will return self
+	return v
+}
+
 // Len get reflect value length
 func Len(v reflect.Value) int {
 	v = reflect.Indirect(v)

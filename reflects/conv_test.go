@@ -84,3 +84,39 @@ func TestValueByKind(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.True(t, val.Bool())
 }
+
+func TestToString(t *testing.T) {
+	tests := []struct {
+		give interface{}
+		want string
+	}{
+		{nil, ""},
+		{true, "true"},
+		{23, "23"},
+		{int8(23), "23"},
+		{int16(23), "23"},
+		{int32(23), "23"},
+		{int64(23), "23"},
+		{"23", "23"},
+		{uint(23), "23"},
+		{uint8(23), "23"},
+		{uint16(23), "23"},
+		{uint32(23), "23"},
+		{uint64(23), "23"},
+		{float32(23), "23"},
+		{float64(23), "23"},
+		{[]int{12, 34}, "[12 34]"},
+	}
+	for _, e := range tests {
+		rv := reflect.ValueOf(e.give)
+		assert.Eq(t, e.want, reflects.String(rv))
+	}
+
+	rv := reflect.ValueOf([]int{12, 34})
+	s, err := reflects.ToString(rv)
+	assert.Err(t, err)
+	assert.Eq(t, "", s)
+
+	rv = reflect.Value{}
+	assert.Eq(t, "", reflects.String(rv))
+}
