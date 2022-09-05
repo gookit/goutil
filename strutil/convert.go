@@ -11,12 +11,12 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/gookit/goutil/common"
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 )
 
 var (
-	ErrConvertFail  = errors.New("convert data type is failure")
 	ErrDateLayout   = errors.New("invalid date layout string")
 	ErrInvalidParam = errors.New("invalid input parameter")
 
@@ -125,7 +125,7 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 	case int32: // same as `rune`
 		str = strconv.Itoa(int(value))
 	case int64:
-		str = strconv.Itoa(int(value))
+		str = strconv.FormatInt(value, 10)
 	case uint:
 		str = strconv.FormatUint(uint64(value), 10)
 	case uint8:
@@ -152,7 +152,7 @@ func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		str = value.String()
 	default:
 		if defaultAsErr {
-			err = ErrConvertFail
+			err = common.ErrConvType
 		} else {
 			str = fmt.Sprint(value)
 		}

@@ -2,17 +2,12 @@ package mathutil
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
-)
 
-var (
-	// ErrConvertFail convert error
-	ErrConvertFail = errors.New("convert data type is failure")
-	// ErrConvertFail = errors.New("convert data type is failure")
+	"github.com/gookit/goutil/common"
 )
 
 /*************************************************************
@@ -88,7 +83,7 @@ func ToInt(in interface{}) (iVal int, err error) {
 		i64, err = tVal.Int64()
 		iVal = int(i64)
 	default:
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }
@@ -163,7 +158,7 @@ func ToUint(in interface{}) (u64 uint64, err error) {
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }
@@ -232,7 +227,7 @@ func ToInt64(in interface{}) (i64 int64, err error) {
 	case json.Number:
 		i64, err = tVal.Int64()
 	default:
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }
@@ -308,7 +303,7 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 	case json.Number:
 		f64, err = tVal.Float64()
 	default:
-		err = ErrConvertFail
+		err = common.ErrConvType
 	}
 	return
 }
@@ -316,6 +311,42 @@ func ToFloat(in interface{}) (f64 float64, err error) {
 /*************************************************************
  * convert intX/floatX to string
  *************************************************************/
+
+// StringOrPanic convert intX/floatX value to string, will panic on error
+func StringOrPanic(val interface{}) string {
+	str, err := TryToString(val, true)
+	if err != nil {
+		panic(err)
+	}
+	return str
+}
+
+// MustString convert intX/floatX value to string, will panic on error
+func MustString(val interface{}) string {
+	return StringOrPanic(val)
+}
+
+// ToString convert intX/floatX value to string, return error on failed
+func ToString(val interface{}) (string, error) {
+	return TryToString(val, true)
+}
+
+// StringOrErr convert intX/floatX value to string, return error on failed
+func StringOrErr(val interface{}) (string, error) {
+	return TryToString(val, true)
+}
+
+// QuietString convert intX/floatX value to string, other type convert by fmt.Sprint
+func QuietString(val interface{}) string {
+	str, _ := TryToString(val, false)
+	return str
+}
+
+// String convert intX/floatX value to string, other type convert by fmt.Sprint
+func String(val interface{}) string {
+	str, _ := TryToString(val, false)
+	return str
+}
 
 // TryToString try convert intX/floatX value to string
 //
@@ -356,46 +387,10 @@ func TryToString(val interface{}, defaultAsErr bool) (str string, err error) {
 		str = value.String()
 	default:
 		if defaultAsErr {
-			err = ErrConvertFail
+			err = common.ErrConvType
 		} else {
 			str = fmt.Sprint(value)
 		}
 	}
 	return
-}
-
-// StringOrPanic convert intX/floatX value to string, will panic on error
-func StringOrPanic(val interface{}) string {
-	str, err := TryToString(val, true)
-	if err != nil {
-		panic(err)
-	}
-	return str
-}
-
-// MustString convert intX/floatX value to string, will panic on error
-func MustString(val interface{}) string {
-	return StringOrPanic(val)
-}
-
-// ToString convert intX/floatX value to string, return error on failed
-func ToString(val interface{}) (string, error) {
-	return TryToString(val, true)
-}
-
-// StringOrErr convert intX/floatX value to string, return error on failed
-func StringOrErr(val interface{}) (string, error) {
-	return TryToString(val, true)
-}
-
-// QuietString convert intX/floatX value to string, other type convert by fmt.Sprint
-func QuietString(val interface{}) string {
-	str, _ := TryToString(val, false)
-	return str
-}
-
-// String convert intX/floatX value to string, other type convert by fmt.Sprint
-func String(val interface{}) string {
-	str, _ := TryToString(val, false)
-	return str
 }

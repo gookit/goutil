@@ -160,7 +160,6 @@ func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...
 	if err := t.Execute(buf, data); err != nil {
 		panic(err)
 	}
-
 	return buf.String()
 }
 
