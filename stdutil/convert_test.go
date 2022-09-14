@@ -2,6 +2,7 @@ package stdutil_test
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 	"time"
 
@@ -63,4 +64,7 @@ func TestBaseTypeVal(t *testing.T) {
 
 	_, err = stdutil.BaseTypeVal([]int{2})
 	assert.Err(t, err)
+
+	val, err = stdutil.BaseTypeVal2(reflect.ValueOf(int32(2)))
+	assert.Eq(t, int64(2), val)
 }
