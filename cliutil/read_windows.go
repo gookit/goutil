@@ -14,7 +14,7 @@ func ReadPassword(question ...string) string {
 		print("Enter Password: ")
 	}
 
-	// on windows, must convert 'syscall.Stdin' to int
+	// on Windows, must convert 'syscall.Stdin' to int
 	bs, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
 		return ""

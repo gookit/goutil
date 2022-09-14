@@ -113,10 +113,18 @@ func TestCFlags_Parse(t *testing.T) {
 	})
 	c.IntVar(&opts.int, "int", 0, "this is a int option;false;i")
 
+	assert.PanicsMsg(t, func() {
+		c.AddShortcuts("notExist", "d,e")
+	}, "cflag: option 'notExist' is not registered")
+
+	// assert.PanicsMsg(t, func() {
+	// 	c.AddShortcuts("int", "i,n")
+	// }, "cflag: option 'notExist' is not registered")
+
 	osArgs := os.Args
 	os.Args = []string{"./myapp", "ag1", "ag2"}
 
-	c.MustParse(nil)
+	c.QuickRun()
 	assert.Eq(t, "[ag1 ag2]", fmt.Sprint(c.RemainArgs()))
 
 	os.Args = osArgs

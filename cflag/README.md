@@ -74,7 +74,7 @@ func main() {
 }
 ```
 
-## Bind and get arguments
+### Bind and get arguments
 
 Bind arguments:
 
@@ -90,7 +90,7 @@ Get arguments by name:
 	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
 ```
 
-## Set `required` and short options
+### Set `required` and short options
 
 Options can be set as `required`, and **short** option names can be set.
 
@@ -114,7 +114,7 @@ Options can be set as `required`, and **short** option names can be set.
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
 ```
 
-## Show help
+### Show help
 
 ```shell
 go run ./cflag/_example/cmd.go -h
@@ -124,7 +124,7 @@ go run ./cflag/_example/cmd.go -h
 
 ![cmd-help](_example/cmd-help.png)
 
-## Run command
+### Run command
 
 ```shell
 go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd
@@ -135,7 +135,7 @@ go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd de fg
 
 ![cmd-run](_example/cmd-run.png)
 
-## `required` Check
+### `required` Check
 
 ```shell
 go run ./cflag/_example/cmd.go -a 22
@@ -147,6 +147,8 @@ go run ./cflag/_example/cmd.go --name inhere
 ![cmd-required.png](_example/cmd-required.png)
 
 ## Cli application
+
+Use `cflag` to quickly build a multi-command application.
 
 ```go
 package main
@@ -196,7 +198,7 @@ func main() {
 }
 ```
 
-### App help
+### Show commands
 
 ```shell
 go run ./cflag/_example/app.go -h

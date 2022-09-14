@@ -76,13 +76,13 @@ func main() {
 }
 ```
 
-## 设置必须和短选项
+### 设置必须和短选项
 
 可以设置选项为 `required` 必填项，并且支持设置 **短选项** 名称。
 
 > TIPs: 通过扩展解析了选项的 `usage` 来实现 `required` 和 `shorts`
 
-### `usage` 格式
+#### `usage` 格式
 
 - 默认：`desc`
 - 格式1: `desc;required`
@@ -101,7 +101,7 @@ func main() {
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
 ```
 
-## 绑定和获取参数
+### 绑定和获取参数
 
 绑定参数信息
 
@@ -117,7 +117,7 @@ func main() {
 	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
 ```
 
-## 显示帮助信息
+### 显示帮助信息
 
 ```shell
 go run ./cflag/_example/cmd.go -h
@@ -127,7 +127,7 @@ go run ./cflag/_example/cmd.go -h
 
 ![cmd-help](_example/cmd-help.png)
 
-## 运行命令
+### 运行命令
 
 ```shell
 go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd
@@ -138,7 +138,7 @@ go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd de fg
 
 ![cmd-run](_example/cmd-run.png)
 
-## `required` 检查
+### `required` 检查
 
 ```shell
 go run ./cflag/_example/cmd.go -a 22
@@ -150,7 +150,9 @@ go run ./cflag/_example/cmd.go --name inhere
 ![cmd-required.png](_example/cmd-required.png)
 
 
-## Cli application
+## Cli 应用
+
+使用 `cflag` 可以快速的构建一个支持多命令的应用.
 
 ```go
 package main

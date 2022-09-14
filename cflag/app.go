@@ -3,6 +3,7 @@ package cflag
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path"
 	"sort"
@@ -16,14 +17,14 @@ import (
 
 // App struct
 type App struct {
-	cmds map[string]*Cmd
-	// names
+	cmds  map[string]*Cmd
 	names []string
 
 	Name string
 	Desc string
 	// NameWidth max width for command name
-	NameWidth int
+	NameWidth  int
+	HelpWriter io.Writer
 	// Version for app
 	Version string
 
@@ -35,8 +36,11 @@ type App struct {
 func NewApp(fns ...func(app *App)) *App {
 	app := &App{
 		cmds: make(map[string]*Cmd),
+		// with default version
+		Version: "0.0.1",
 		// NameWidth default value
-		NameWidth: 12,
+		NameWidth:  12,
+		HelpWriter: os.Stdout,
 	}
 
 	for _, fn := range fns {
@@ -66,7 +70,7 @@ func (a *App) addCmd(c *Cmd) {
 	a.cmds[c.Name] = c
 	a.NameWidth = mathutil.MaxInt(a.NameWidth, ln)
 
-	// attach func
+	// attach handle func
 	if c.Func != nil {
 		c.CFlags.Func = func(_ *CFlags) error {
 			return c.Func(c)
@@ -75,12 +79,6 @@ func (a *App) addCmd(c *Cmd) {
 
 	if c.OnAdd != nil {
 		c.OnAdd(c)
-	}
-}
-
-func (a *App) init() {
-	if a.Name == "" {
-		a.Name = path.Base(os.Args[0])
 	}
 }
 
@@ -106,15 +104,21 @@ func (a *App) RunWithArgs(args []string) error {
 	}
 
 	if name[0] == '-' {
-		return fmt.Errorf("provide undefined flag %s", name)
+		return fmt.Errorf("provide undefined flag option %q", name)
 	}
 
 	cmd, ok := a.findCmd(name)
 	if !ok {
-		return fmt.Errorf("input not exists command %s", name)
+		return fmt.Errorf("input not exists command %q", name)
 	}
 
 	return cmd.Parse(args[1:])
+}
+
+func (a *App) init() {
+	if a.Name == "" {
+		a.Name = path.Base(os.Args[0])
+	}
 }
 
 func (a *App) findCmd(name string) (*Cmd, bool) {
@@ -133,9 +137,9 @@ func (a *App) showHelp() error {
 
 	buf.QuietWritef("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)
 
-	buf.QuietWriteln("<comment>Options:</>:")
+	buf.QuietWriteln("<comment>Options:</>")
 	buf.QuietWriteln("  <green>-h, --help</>     Display application help")
-	buf.QuietWriteln("\n<comment>Commands</>:")
+	buf.QuietWriteln("\n<comment>Commands:</>")
 
 	sort.Strings(a.names)
 	for _, name := range a.names {
@@ -152,7 +156,11 @@ func (a *App) showHelp() error {
 		a.AfterHelpBuild(buf)
 	}
 
-	color.Print(buf.ResetAndGet())
+	if a.HelpWriter == nil {
+		a.HelpWriter = os.Stdout
+	}
+
+	color.Fprint(a.HelpWriter, buf.ResetAndGet())
 	return nil
 }
 
@@ -175,4 +183,12 @@ func NewCmd(name, desc string) *Cmd {
 		Name:   name,
 		CFlags: fs,
 	}
+}
+
+// Config the cmd
+func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
+	if fn != nil {
+		fn(c)
+	}
+	return c
 }
