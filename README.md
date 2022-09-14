@@ -128,6 +128,9 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 > Package `github.com/gookit/goutil/cflag`
 
 ```go
+// source at cflag/app.go
+func NewApp(fns ...func(app *App)) *App
+func NewCmd(name, desc string) *Cmd
 // source at cflag/cflag.go
 func SetDebug(open bool)
 func New(fns ...func(c *CFlags)) *CFlags
@@ -659,7 +662,7 @@ func ToString(mp map[string]any) string
 func ToString2(mp any) string
 func FormatIndent(mp any, indent string) string
 func Flatten(mp map[string]any) map[string]interface{}
-func FlatWithFunc(mp map[string]any, fn FlatFunc)
+func FlatWithFunc(mp map[string]any, fn reflects.FlatFunc)
 // source at maputil/format.go
 func NewFormatter(mp any) *MapFormatter
 // source at maputil/get.go
@@ -765,6 +768,7 @@ func Indirect(v reflect.Value) reflect.Value
 func Len(v reflect.Value) int
 func SliceSubKind(typ reflect.Type) reflect.Kind
 func SetValue(rv reflect.Value, val interface{}) error
+func FlatMap(rv reflect.Value, fn FlatFunc)
 // source at reflects/value.go
 func Wrap(rv reflect.Value) Value
 func ValueOf(v interface{}) Value
@@ -1099,6 +1103,8 @@ func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
 func MockOsEnvByText(envText string, fn func())
 func MockOsEnv(mp map[string]string, fn func())
+func ClearOSEnv() { os.Clearenv() }
+func RevertOSEnv()
 func MockCleanOsEnv(mp map[string]string, fn func())
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request
