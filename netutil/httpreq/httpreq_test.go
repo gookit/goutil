@@ -14,6 +14,7 @@ func TestHttpReq_Send(t *testing.T) {
 	resp, err := httpreq.New("https://httpbin.org").
 		StringBody("hi").
 		ContentType(httpctype.JSON).
+		WithHeaders(map[string]string{"coustom1": "value1"}).
 		Send("/get")
 
 	assert.NoErr(t, err)
@@ -33,7 +34,8 @@ func TestHttpReq_Send(t *testing.T) {
 }
 
 func TestHttpReq_MustSend(t *testing.T) {
-	resp := httpreq.New("https://httpbin.org").
+	resp := httpreq.New().
+		BaseURL("https://httpbin.org").
 		BytesBody([]byte("hi")).
 		Method("POST").
 		MustSend("/post")

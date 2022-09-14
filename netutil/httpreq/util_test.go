@@ -1,9 +1,12 @@
 package httpreq_test
 
 import (
+	"io"
 	"net/http"
+	"strings"
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/netutil/httpreq"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -14,13 +17,55 @@ func TestBuildBasicAuth(t *testing.T) {
 	assert.Contains(t, val, "Basic ")
 }
 
-func TestAddHeadersToRequest(t *testing.T) {
-	req, err := http.NewRequest("GET", "abc.xyz", nil)
+func TestAddHeaders(t *testing.T) {
+	req, err := http.NewRequest("GET", "inhere.xyz", nil)
 	assert.NoErr(t, err)
 
-	httpreq.AddHeadersToRequest(req, http.Header{
+	httpreq.AddHeaders(req, http.Header{
 		"key0": []string{"val0"},
 	})
 
 	assert.Eq(t, "val0", req.Header.Get("key0"))
+}
+
+func TestRequestToString(t *testing.T) {
+	req, err := http.NewRequest("GET", "inhere.xyz", nil)
+	assert.NoErr(t, err)
+
+	httpreq.AddHeaders(req, http.Header{
+		"custom-key0": []string{"val0"},
+	})
+
+	vs := httpreq.ToQueryValues(map[string]string{"field1": "value1", "field2": "value2"})
+
+	req.Body = io.NopCloser(strings.NewReader(vs.Encode()))
+
+	str := httpreq.RequestToString(req)
+	dump.P(str)
+
+	assert.StrContains(t, str, "GET inhere.xyz")
+	assert.StrContains(t, str, "Custom-Key0: val0")
+	assert.StrContains(t, str, "field1=value1")
+}
+
+func TestResponseToString(t *testing.T) {
+	res := &http.Response{
+		Status:        "200 OK",
+		StatusCode:    200,
+		Proto:         "HTTP/1.1",
+		ProtoMajor:    1,
+		ProtoMinor:    1,
+		ContentLength: 50,
+		Header: http.Header{
+			"Foo": []string{"Bar"},
+		},
+		Body: io.NopCloser(strings.NewReader("foo...bar")),
+	}
+
+	str := httpreq.ResponseToString(res)
+	dump.P(str)
+
+	assert.StrContains(t, str, "HTTP/1.1 200 OK")
+	assert.StrContains(t, str, "Foo: Bar")
+	assert.StrContains(t, str, "foo...bar")
 }

@@ -53,9 +53,9 @@ func BuildBasicAuth(username, password string) string {
 	return "Basic " + base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
-// AddHeadersToRequest adds the key, value pairs from the given http.Header to the
+// AddHeaders adds the key, value pairs from the given http.Header to the
 // request. Values for existing keys are appended to the keys values.
-func AddHeadersToRequest(req *http.Request, header http.Header) {
+func AddHeaders(req *http.Request, header http.Header) {
 	for key, values := range header {
 		for _, value := range values {
 			req.Header.Add(key, value)
@@ -63,7 +63,7 @@ func AddHeadersToRequest(req *http.Request, header http.Header) {
 	}
 }
 
-// ToQueryValues convert string map to url.Values
+// ToQueryValues convert string-map to url.Values
 func ToQueryValues(data interface{}) url.Values {
 	// use url.Values directly if we have it
 	if uv, ok := data.(url.Values); ok {
