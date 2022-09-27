@@ -212,4 +212,7 @@ func TestParseTagValueNamed(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, mp)
 	assert.Eq(t, "inhere", mp.Str("default"))
+
+	mp, err = structs.ParseTagValueNamed("name", "name=n;default=inhere", "name")
+	assert.ErrSubMsg(t, err, "parse tag error on field 'name'")
 }

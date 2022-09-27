@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -208,7 +209,9 @@ func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error) {
 // Examples:
 //
 //	eg: "desc;required;default;shorts"
-//	type My
+//	type MyStruct {
+//		Age int `flag:"int option message;;a,b"`
+//	}
 //	sepStr := ";"
 //	defines := []string{"desc", "required", "default", "shorts"}
 func ParseTagValueDefine(sep string, defines []string) TagValFunc {
@@ -233,7 +236,7 @@ func ParseTagValueDefine(sep string, defines []string) TagValFunc {
 // ParseTagValueNamed parse k-v tag value string. it's like INI format contents.
 //
 // eg: "name=int0;shorts=i;required=true;desc=int option message"
-func ParseTagValueNamed(field, tagVal string) (mp maputil.SMap, err error) {
+func ParseTagValueNamed(field, tagVal string, keys ...string) (mp maputil.SMap, err error) {
 	ss := strutil.Split(tagVal, ";")
 	ln := len(ss)
 	if ln == 0 {
@@ -249,6 +252,10 @@ func ParseTagValueNamed(field, tagVal string) (mp maputil.SMap, err error) {
 
 		kvNodes := strings.SplitN(s, "=", 2)
 		key, val := kvNodes[0], strings.TrimSpace(kvNodes[1])
+		if len(keys) > 0 && !arrutil.StringsHas(keys, key) {
+			err = fmt.Errorf("parse tag error on field '%s': invalid key name '%s'", field, key)
+			return
+		}
 
 		mp[key] = val
 	}

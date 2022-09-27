@@ -50,7 +50,7 @@ func TestParseEnvValue(t *testing.T) {
 	}, func() {
 		is.Eq("abc", Getenv("FirstEnv"))
 		is.Eq("def", Getenv("SecondEnv"))
-		is.Eq("abc/def", ParseEnvValue(rVal))
+		is.Eq("abc/def", ParseValue(rVal))
 		is.Eq("abc string", VarReplace("${FirstEnv} string"))
 	})
 
