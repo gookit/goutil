@@ -31,6 +31,7 @@ func TestUpperFirst(t *testing.T) {
 		{"support 中文", "Support 中文"},
 	}
 	for _, tt := range tests {
+		assert.Eq(t, tt.want, strutil.UpFirst(tt.give))
 		assert.Eq(t, tt.want, strutil.UpperFirst(tt.give))
 	}
 }
@@ -47,7 +48,9 @@ func TestLowerFirst(t *testing.T) {
 		{"中文 support", "中文 support"},
 		{"Support 中文", "support 中文"},
 	}
+
 	for _, tt := range tests {
+		assert.Eq(t, tt.want, strutil.LoFirst(tt.give))
 		assert.Eq(t, tt.want, strutil.LowerFirst(tt.give))
 	}
 }
@@ -73,9 +76,11 @@ func TestUpperWord(t *testing.T) {
 		{"wo...shi...中文", "Wo...Shi...中文"},
 		{"...", "..."},
 	}
+
 	for _, tt := range tests {
 		assert.Eq(t, tt.want, strutil.UpperWord(tt.give))
 	}
+	assert.Eq(t, "Hi Lo", strutil.UpWords("hi lo"))
 }
 
 func TestSnakeCase(t *testing.T) {

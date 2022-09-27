@@ -10,6 +10,15 @@ import (
  * change string case
  *************************************************************/
 
+// methods aliases
+var (
+	UpWords = UpperWord
+	LoFirst = LowerFirst
+	UpFirst = UpperFirst
+
+	Snake = SnakeCase
+)
+
 // Title alias of the strings.ToTitle()
 func Title(s string) string { return strings.ToTitle(s) }
 
@@ -96,11 +105,6 @@ func UpperFirst(s string) string {
 		return string(unicode.ToUpper(f)) + string(rs[1:])
 	}
 	return s
-}
-
-// Snake alias of the SnakeCase
-func Snake(s string, sep ...string) string {
-	return SnakeCase(s, sep...)
 }
 
 // SnakeCase convert. eg "RangePrice" -> "range_price"
