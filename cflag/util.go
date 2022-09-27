@@ -3,7 +3,10 @@ package cflag
 import (
 	"flag"
 	"reflect"
+	"regexp"
 	"strings"
+
+	"github.com/gookit/color"
 )
 
 // IsZeroValue determines whether the string represents the zero
@@ -88,14 +91,31 @@ func IsFlagHelpErr(err error) bool {
 	return err == flag.ErrHelp
 }
 
+// regex: "`[\w ]+`"
+// regex: "`.+`"
+var codeReg = regexp.MustCompile("`" + `.+` + "`")
+
+// WrapColorForCode WrapColorForCode. convert "hello `keywords`" to "hello <mga>keywords</>"
+func WrapColorForCode(s string) string {
+	if !strings.ContainsRune(s, '`') {
+		return s
+	}
+
+	return codeReg.ReplaceAllStringFunc(s, func(code string) string {
+		code = strings.Trim(code, "`")
+		return color.WrapTag(code, "mga")
+	})
+}
+
 // ParseStopMark string
 const ParseStopMark = "--"
 
 // ReplaceShorts replace shorts to full option. will stop on ParseStopMark
 //
 // For example:
-// 	eg: '-f' -> '--file'.
-// 	eg: '-n=tom' -> '--name=tom'.
+//
+//	eg: '-f' -> '--file'.
+//	eg: '-n=tom' -> '--name=tom'.
 func ReplaceShorts(args []string, shortsMap map[string]string) []string {
 	if len(args) == 0 {
 		return args
