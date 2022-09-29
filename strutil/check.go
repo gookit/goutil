@@ -159,15 +159,17 @@ func Compare(s1, s2, op string) bool {
 // VersionCompare for two version string.
 func VersionCompare(v1, v2, op string) bool {
 	switch op {
-	case ">":
+	case ">", "gt":
 		return v1 > v2
-	case "<":
+	case "<", "lt":
 		return v1 < v2
-	case ">=":
+	case ">=", "gte":
 		return v1 >= v2
-	case "<=":
+	case "<=", "lte":
 		return v1 <= v2
-	default:
+	case "!=", "ne", "neq":
+		return v1 != v2
+	default: // eq
 		return v1 == v2
 	}
 }
