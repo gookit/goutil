@@ -31,8 +31,11 @@ var (
 	DefaultLayout = "2006-01-02 15:04:05"
 )
 
-// TimeX struct
-type TimeX struct {
+// TimeX alias of Time
+type TimeX = Time
+
+// Time an enhanced time.Time implementation.
+type Time struct {
 	time.Time
 	// Layout set the default date format layout. default use DefaultLayout
 	Layout string
@@ -43,37 +46,37 @@ type TimeX struct {
  *************************************************************/
 
 // Now time instance
-func Now() *TimeX {
-	return &TimeX{Time: time.Now(), Layout: DefaultLayout}
+func Now() *Time {
+	return &Time{Time: time.Now(), Layout: DefaultLayout}
 }
 
 // New instance form given time
-func New(t time.Time) *TimeX {
-	return &TimeX{Time: t, Layout: DefaultLayout}
+func New(t time.Time) *Time {
+	return &Time{Time: t, Layout: DefaultLayout}
 }
 
 // Wrap the go time instance. alias of the New()
-func Wrap(t time.Time) *TimeX {
-	return &TimeX{Time: t, Layout: DefaultLayout}
+func Wrap(t time.Time) *Time {
+	return &Time{Time: t, Layout: DefaultLayout}
 }
 
 // FromTime new instance form given time.Time. alias of the New()
-func FromTime(t time.Time) *TimeX {
-	return &TimeX{Time: t, Layout: DefaultLayout}
+func FromTime(t time.Time) *Time {
+	return &Time{Time: t, Layout: DefaultLayout}
 }
 
 // Local time for now
-func Local() *TimeX {
+func Local() *Time {
 	return New(time.Now().In(time.Local))
 }
 
 // FromUnix create from unix time
-func FromUnix(sec int64) *TimeX {
+func FromUnix(sec int64) *Time {
 	return New(time.Unix(sec, 0))
 }
 
 // FromDate create from datetime string.
-func FromDate(s string, template ...string) (*TimeX, error) {
+func FromDate(s string, template ...string) (*Time, error) {
 	if len(template) > 0 && template[0] != "" {
 		return FromString(s, ToLayout(template[0]))
 	}
@@ -82,7 +85,7 @@ func FromDate(s string, template ...string) (*TimeX, error) {
 
 // FromString create from datetime string.
 // see strutil.ToTime()
-func FromString(s string, layouts ...string) (*TimeX, error) {
+func FromString(s string, layouts ...string) (*Time, error) {
 	t, err := strutil.ToTime(s, layouts...)
 	if err != nil {
 		return nil, err
@@ -92,7 +95,7 @@ func FromString(s string, layouts ...string) (*TimeX, error) {
 }
 
 // LocalByName time for now
-func LocalByName(tzName string) *TimeX {
+func LocalByName(tzName string) *Time {
 	loc, err := time.LoadLocation(tzName)
 	if err != nil {
 		panic(err)
@@ -106,14 +109,14 @@ func LocalByName(tzName string) *TimeX {
  *************************************************************/
 
 // T returns the t.Time
-func (t TimeX) T() time.Time {
+func (t Time) T() time.Time {
 	return t.Time
 }
 
 // Format returns a textual representation of the time value formatted according to the layout defined by the argument.
 //
 // see time.Time.Format()
-func (t *TimeX) Format(layout string) string {
+func (t *Time) Format(layout string) string {
 	if layout == "" {
 		layout = t.Layout
 	}
@@ -121,60 +124,60 @@ func (t *TimeX) Format(layout string) string {
 }
 
 // Datetime use DefaultLayout format time to date. see Format()
-func (t *TimeX) Datetime() string {
+func (t *Time) Datetime() string {
 	return t.Format(t.Layout)
 }
 
 // TplFormat use input template format time to date.
-func (t *TimeX) TplFormat(template string) string {
+func (t *Time) TplFormat(template string) string {
 	return t.DateFormat(template)
 }
 
 // DateFormat use input template format time to date.
 // see ToLayout()
-func (t *TimeX) DateFormat(template string) string {
+func (t *Time) DateFormat(template string) string {
 	return t.Format(ToLayout(template))
 }
 
 // Yesterday get day ago time for the time
-func (t *TimeX) Yesterday() *TimeX {
+func (t *Time) Yesterday() *Time {
 	return t.AddSeconds(-OneDaySec)
 }
 
 // DayAgo get some day ago time for the time
-func (t *TimeX) DayAgo(day int) *TimeX {
+func (t *Time) DayAgo(day int) *Time {
 	return t.AddSeconds(-day * OneDaySec)
 }
 
 // AddDay add some day time for the time
-func (t *TimeX) AddDay(day int) *TimeX {
+func (t *Time) AddDay(day int) *Time {
 	return t.AddSeconds(day * OneDaySec)
 }
 
 // Tomorrow time. get tomorrow time for the time
-func (t *TimeX) Tomorrow() *TimeX {
+func (t *Time) Tomorrow() *Time {
 	return t.AddSeconds(OneDaySec)
 }
 
 // DayAfter get some day after time for the time.
-// alias of TimeX.AddDay()
-func (t *TimeX) DayAfter(day int) *TimeX {
+// alias of Time.AddDay()
+func (t *Time) DayAfter(day int) *Time {
 	return t.AddDay(day)
 }
 
 // AddHour add some hour time
-func (t *TimeX) AddHour(hours int) *TimeX {
+func (t *Time) AddHour(hours int) *Time {
 	return t.AddSeconds(hours * OneHourSec)
 }
 
 // AddMinutes add some minutes time for the time
-func (t *TimeX) AddMinutes(minutes int) *TimeX {
+func (t *Time) AddMinutes(minutes int) *Time {
 	return t.AddSeconds(minutes * OneMinSec)
 }
 
 // AddSeconds add some seconds time the time
-func (t *TimeX) AddSeconds(seconds int) *TimeX {
-	return &TimeX{
+func (t *Time) AddSeconds(seconds int) *Time {
+	return &Time{
 		Time: t.Add(time.Duration(seconds) * time.Second),
 		// with layout
 		Layout: DefaultLayout,
@@ -183,22 +186,22 @@ func (t *TimeX) AddSeconds(seconds int) *TimeX {
 
 // Diff calc diff duration for t - u.
 // alias of time.Time.Sub()
-func (t TimeX) Diff(u time.Time) time.Duration {
+func (t Time) Diff(u time.Time) time.Duration {
 	return t.Sub(u)
 }
 
 // DiffSec calc diff seconds for t - u
-func (t TimeX) DiffSec(u time.Time) int {
+func (t Time) DiffSec(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
 // SubUnix calc diff seconds for t - u
-func (t TimeX) SubUnix(u time.Time) int {
+func (t Time) SubUnix(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
 // HourStart time
-func (t *TimeX) HourStart() *TimeX {
+func (t *Time) HourStart() *Time {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
 
@@ -206,7 +209,7 @@ func (t *TimeX) HourStart() *TimeX {
 }
 
 // HourEnd time
-func (t *TimeX) HourEnd() *TimeX {
+func (t *Time) HourEnd() *Time {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, t.Hour(), 59, 59, int(time.Second-time.Nanosecond), t.Location())
 
@@ -214,7 +217,7 @@ func (t *TimeX) HourEnd() *TimeX {
 }
 
 // DayStart get time at 00:00:00
-func (t *TimeX) DayStart() *TimeX {
+func (t *Time) DayStart() *Time {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, 0, 0, 0, 0, t.Location())
 
@@ -222,7 +225,7 @@ func (t *TimeX) DayStart() *TimeX {
 }
 
 // DayEnd get time at 23:59:59
-func (t *TimeX) DayEnd() *TimeX {
+func (t *Time) DayEnd() *Time {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
 
@@ -230,7 +233,7 @@ func (t *TimeX) DayEnd() *TimeX {
 }
 
 // CustomHMS custom change the hour, minute, second for create new time.
-func (t *TimeX) CustomHMS(hour, min, sec int) *TimeX {
+func (t *Time) CustomHMS(hour, min, sec int) *Time {
 	y, m, d := t.Date()
 	newTime := time.Date(y, m, d, hour, min, sec, int(time.Second-time.Nanosecond), t.Location())
 
@@ -238,39 +241,39 @@ func (t *TimeX) CustomHMS(hour, min, sec int) *TimeX {
 }
 
 // IsBefore the given time
-func (t *TimeX) IsBefore(u time.Time) bool {
+func (t *Time) IsBefore(u time.Time) bool {
 	return t.Before(u)
 }
 
 // IsBeforeUnix the given unix timestamp
-func (t *TimeX) IsBeforeUnix(ux int64) bool {
+func (t *Time) IsBeforeUnix(ux int64) bool {
 	return t.Before(time.Unix(ux, 0))
 }
 
 // IsAfter the given time
-func (t *TimeX) IsAfter(u time.Time) bool {
+func (t *Time) IsAfter(u time.Time) bool {
 	return t.After(u)
 }
 
 // IsAfterUnix the given unix timestamp
-func (t *TimeX) IsAfterUnix(ux int64) bool {
+func (t *Time) IsAfterUnix(ux int64) bool {
 	return t.After(time.Unix(ux, 0))
 }
 
 // Timestamp value. alias t.Unix()
-func (t TimeX) Timestamp() int64 {
+func (t Time) Timestamp() int64 {
 	return t.Unix()
 }
 
 // HowLongAgo format diff time to string.
-func (t TimeX) HowLongAgo(before time.Time) string {
+func (t Time) HowLongAgo(before time.Time) string {
 	return fmtutil.HowLongAgo(t.Unix() - before.Unix())
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 //
 // Tip: will auto match a format by strutil.ToTime()
-func (t *TimeX) UnmarshalJSON(data []byte) error {
+func (t *Time) UnmarshalJSON(data []byte) error {
 	// Ignore null, like in the main JSON package.
 	if string(data) == "null" {
 		return nil
@@ -287,7 +290,7 @@ func (t *TimeX) UnmarshalJSON(data []byte) error {
 // UnmarshalText implements the encoding.TextUnmarshaler interface.
 //
 // Tip: will auto match a format by strutil.ToTime()
-func (t *TimeX) UnmarshalText(data []byte) error {
+func (t *Time) UnmarshalText(data []byte) error {
 	// Fractional seconds are handled implicitly by Parse.
 	tt, err := strutil.ToTime(string(data))
 	if err == nil {

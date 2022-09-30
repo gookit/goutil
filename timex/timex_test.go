@@ -122,7 +122,7 @@ func TestTimeX_CustomHMS(t *testing.T) {
 // https://github.com/gookit/goutil/issues/60
 func TestTimeX_UnmarshalJSON(t *testing.T) {
 	type User struct {
-		Time timex.TimeX `json:"time"`
+		Time timex.Time `json:"time"`
 	}
 
 	req := &User{}

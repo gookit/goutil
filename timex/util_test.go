@@ -34,7 +34,7 @@ func TestUtil_basic(t *testing.T) {
 func TestNowAddDay(t *testing.T) {
 	now := timex.Now()
 	tt := timex.NowAddDay(1)
-	assert.Eq(t, 1, tt.Day()-now.Day())
+	assert.True(t, tt.Unix() > now.Unix())
 
 	tt = timex.NowAddHour(-3)
 	assert.Neq(t, tt.Hour(), now.Hour())
