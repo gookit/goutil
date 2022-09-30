@@ -122,9 +122,7 @@ func SnakeCase(s string, sep ...string) string {
 }
 
 // Camel alias of the CamelCase
-func Camel(s string, sep ...string) string {
-	return CamelCase(s, sep...)
-}
+func Camel(s string, sep ...string) string { return CamelCase(s, sep...) }
 
 // CamelCase convert string to camel case.
 //
@@ -157,7 +155,8 @@ func CamelCase(s string, sep ...string) string {
 }
 
 //
-// Indent format, from package: github.com/kr/text
+// Indent format multi line text
+// from package: github.com/kr/text
 //
 
 // Indent inserts prefix at the beginning of each non-empty line of s. The

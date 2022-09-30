@@ -63,5 +63,5 @@ type TextScanner struct {
 }
 
 func (s TextScanner) Next() *tokenItem {
-
+	return nil
 }
