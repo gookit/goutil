@@ -68,7 +68,7 @@ func StringsMap(ss []string, mapFn func(s string) string) []string {
 //
 //	// output: [a, b, c]
 //	ss := arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",.")
-func TrimStrings(ss []string, cutSet ...string) (ns []string) {
+func TrimStrings(ss []string, cutSet ...string) []string {
 	cutSetLn := len(cutSet)
 	hasCutSet := cutSetLn > 0 && cutSet[0] != ""
 
@@ -80,6 +80,7 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 		trimSet = strings.Join(cutSet, "")
 	}
 
+	ns := make([]string, 0, len(ss))
 	for _, str := range ss {
 		if hasCutSet {
 			ns = append(ns, strings.Trim(str, trimSet))
@@ -87,7 +88,7 @@ func TrimStrings(ss []string, cutSet ...string) (ns []string) {
 			ns = append(ns, strings.TrimSpace(str))
 		}
 	}
-	return
+	return ns
 }
 
 // GetRandomOne get random element from an array/slice
@@ -103,4 +104,17 @@ func RandomOne(arr interface{}) interface{} {
 	i := mathutil.RandomInt(0, rv.Len())
 	r := rv.Index(i).Interface()
 	return r
+}
+
+// Unique value in the given array, slice.
+func Unique(arr interface{}) interface{} {
+	rv := reflect.ValueOf(arr)
+	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
+		return arr
+	}
+
+	for i := 0; i < rv.Len(); i++ {
+		// TODO ...
+	}
+	return arr
 }
