@@ -154,6 +154,11 @@ func (t *Time) AddDay(day int) *Time {
 	return t.AddSeconds(day * OneDaySec)
 }
 
+// SubDay add some day time for the time
+func (t *Time) SubDay(day int) *Time {
+	return t.AddSeconds(-day * OneDaySec)
+}
+
 // Tomorrow time. get tomorrow time for the time
 func (t *Time) Tomorrow() *Time {
 	return t.AddSeconds(OneDaySec)
@@ -170,15 +175,34 @@ func (t *Time) AddHour(hours int) *Time {
 	return t.AddSeconds(hours * OneHourSec)
 }
 
+// SubHour add some hour time
+func (t *Time) SubHour(hours int) *Time {
+	return t.AddSeconds(-hours * OneHourSec)
+}
+
 // AddMinutes add some minutes time for the time
 func (t *Time) AddMinutes(minutes int) *Time {
 	return t.AddSeconds(minutes * OneMinSec)
+}
+
+// SubMinutes add some minutes time for the time
+func (t *Time) SubMinutes(minutes int) *Time {
+	return t.AddSeconds(-minutes * OneMinSec)
 }
 
 // AddSeconds add some seconds time the time
 func (t *Time) AddSeconds(seconds int) *Time {
 	return &Time{
 		Time: t.Add(time.Duration(seconds) * time.Second),
+		// with layout
+		Layout: DefaultLayout,
+	}
+}
+
+// SubSeconds add some seconds time the time
+func (t *Time) SubSeconds(seconds int) *Time {
+	return &Time{
+		Time: t.Add(time.Duration(-seconds) * time.Second),
 		// with layout
 		Layout: DefaultLayout,
 	}
