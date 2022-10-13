@@ -19,7 +19,11 @@ func TestNewWriteWrapper(t *testing.T) {
 	err = w.WriteByte(',')
 	assert.NoErr(t, err)
 
-	_, err = w.Write([]byte("hi"))
+	_, err = w.Write([]byte("hi."))
 	assert.NoErr(t, err)
-	assert.Eq(t, "inhere,hi", w.String())
+	assert.Eq(t, "inhere,hi.", w.String())
+
+	_, err = w.Writef(" ok, %s.", "tom")
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere,hi. ok, tom.", w.String())
 }

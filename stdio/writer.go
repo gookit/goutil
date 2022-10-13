@@ -20,6 +20,11 @@ func (w *WriteWrapper) Write(p []byte) (n int, err error) {
 	return w.Out.Write(p)
 }
 
+// Writef data to output
+func (w *WriteWrapper) Writef(tpl string, vs ...interface{}) (n int, err error) {
+	return fmt.Fprintf(w.Out, tpl, vs...)
+}
+
 // WriteByte data
 func (w *WriteWrapper) WriteByte(c byte) error {
 	_, err := w.Out.Write([]byte{c})
