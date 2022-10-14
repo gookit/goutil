@@ -76,3 +76,17 @@ func TestSubstr(t *testing.T) {
 	assert.Eq(t, "cDEF12", strutil.Substr("abcDEF123", 2, -1))
 	assert.Eq(t, "cDEF", strutil.Substr("abcDEF123", 2, -3))
 }
+
+func TestSplitInlineComment(t *testing.T) {
+	val, comment := strutil.SplitInlineComment("value0")
+	assert.Eq(t, "value0", val)
+	assert.Eq(t, "", comment)
+
+	val, comment = strutil.SplitInlineComment("value0 // comments at end")
+	assert.Eq(t, "value0", val)
+	assert.Eq(t, "// comments at end", comment)
+
+	val, comment = strutil.SplitInlineComment("value0 # comments at end")
+	assert.Eq(t, "value0", val)
+	assert.Eq(t, "# comments at end", comment)
+}
