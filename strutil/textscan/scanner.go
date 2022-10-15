@@ -5,11 +5,22 @@ package textscan
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"io"
 	"strings"
-
-	"github.com/gookit/goutil/errorx"
 )
+
+// ErrScan struct
+type ErrScan struct {
+	Msg  string // error message
+	Line int    // error line number, start 1
+	Text string // text contents on error
+}
+
+// Error string
+func (e ErrScan) Error() string {
+	return fmt.Sprintf("%s. line %d: %s", e.Msg, e.Line, e.Text)
+}
 
 // Matcher interface
 type Matcher interface {
@@ -20,12 +31,14 @@ type Matcher interface {
 // TextScanner struct.
 type TextScanner struct {
 	in *bufio.Scanner
+	// ks map[Kind]string
 
 	// token matchers
 	matchers []Matcher
+	prevTok  Token
 
 	line int
-	next string
+	next string // not used
 	tok  Token
 	err  error
 }
@@ -41,7 +54,13 @@ func NewScanner(in interface{}) *TextScanner {
 
 // SetInput for scan and parse
 func (s *TextScanner) SetInput(in interface{}) {
-	s.line = 1 // init
+	// init
+	// if s.ks == nil {
+	// 	s.ks = make(map[Kind]string, len(kinds))
+	// }
+	// for kind, name := range kinds {
+	// 	s.ks[kind] = name
+	// }
 
 	switch typIn := in.(type) {
 	case *bufio.Scanner:
@@ -65,6 +84,13 @@ func (s *TextScanner) SetSplit(fn bufio.SplitFunc) {
 	s.in.Split(fn)
 }
 
+// AddKind register new kind
+func (s *TextScanner) AddKind(k Kind, name string) {
+	if !HasKind(k) {
+		AddKind(k, name)
+	}
+}
+
 // AddMatchers register token matchers
 func (s *TextScanner) AddMatchers(ms ...Matcher) {
 	s.matchers = append(s.matchers, ms...)
@@ -78,13 +104,17 @@ func (s *TextScanner) Each(fn func(t Token)) error {
 	return s.err
 }
 
-// Scan source input and parsing
+// Scan source input and parsing.
+// Can use Token() get current parsed token value
 //
 // Usage:
 //
+//	ts := textscan.NewScanner(`source ...`)
 //	for ts.Scan() {
-//		ts.Token()
+//		tok := ts.Token()
+//		// do something...
 //	}
+//	fmt.Println(ts.Err())
 func (s *TextScanner) Scan() bool {
 	if s.next != "" {
 		return s.matchToken(s.next)
@@ -94,22 +124,23 @@ func (s *TextScanner) Scan() bool {
 		return s.matchToken(text)
 	}
 
-	s.tok = nil
+	s.tok = nil // at end.
 	return false
 }
 
 func (s *TextScanner) matchToken(text string) (ok bool) {
 	for _, m := range s.matchers {
-		tok, err := m.Match(text, s.tok)
+		s.prevTok = s.tok
+		tok, err := m.Match(text, s.prevTok)
 		if err != nil {
-			s.err = errorx.Wrapf(err, "at line %d", s.line)
+			s.err = ErrScan{Msg: err.Error(), Line: s.line, Text: text}
 			return false
 		}
 
 		if tok != nil {
 			if tok.HasMore() {
 				if err := tok.ScanMore(s); err != nil {
-					s.err = errorx.Wrapf(err, "at line %d", s.line)
+					s.err = ErrScan{Msg: err.Error(), Line: s.line, Text: text}
 					return false
 				}
 			}
@@ -128,7 +159,7 @@ func (s *TextScanner) matchToken(text string) (ok bool) {
 		return false // end EOF
 	}
 
-	s.err = errorx.Rawf("match tokens fail. text: %s; at line %d", text, s.line)
+	s.err = ErrScan{Msg: "invalid syntax, no matcher available", Line: s.line, Text: text}
 	return false
 }
 
@@ -146,14 +177,19 @@ func (s *TextScanner) SetNext(text string) {
 	s.next = text
 }
 
-// Token on current
+// Token get of current scan.
 func (s *TextScanner) Token() Token {
 	return s.tok
 }
 
+// PrevToken get of previous scan.
+func (s *TextScanner) PrevToken() Token {
+	return s.prevTok
+}
+
 // Line on current
-func (s *TextScanner) Line() Token {
-	return s.tok
+func (s *TextScanner) Line() int {
+	return s.line
 }
 
 // Err get

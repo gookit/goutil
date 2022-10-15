@@ -1,11 +1,12 @@
 package textscan
 
 import (
+	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/errorx"
 )
 
 // Kind type
-type Kind rune
+type Kind uint8
 
 // String name for kind
 func (k Kind) String() string {
@@ -20,24 +21,31 @@ const (
 	TokComments
 )
 
-var allowKinds = map[Kind]string{
+// global kinds
+var kinds = map[Kind]string{
 	TokInvalid:  "Invalid",
 	TokKey:      "Key",
 	TokValue:    "Value",
 	TokComments: "Comments",
 }
 
-// AddKind to allowKinds
+// AddKind add global kind to kinds
 func AddKind(k Kind, name string) {
-	if _, ok := allowKinds[k]; ok {
-		panic("cannot repeat register exists kind: " + name)
+	if _, ok := kinds[k]; ok {
+		goutil.Panicf("cannot repeat register kind(%d): %s", int(k), name)
 	}
-	allowKinds[k] = name
+	kinds[k] = name
+}
+
+// HasKind check
+func HasKind(k Kind) bool {
+	_, ok := kinds[k]
+	return ok
 }
 
 // KindString name
 func KindString(k Kind) string {
-	if name, ok := allowKinds[k]; ok {
+	if name, ok := kinds[k]; ok {
 		return name
 	}
 	return "Invalid"
@@ -102,27 +110,35 @@ func (t *BaseToken) String() string {
 	return t.value
 }
 
-// EmptyToken struct
-type EmptyToken struct {
+// StringToken struct
+type StringToken struct {
 	BaseToken
 }
 
 // NewEmptyToken instance.
-func NewEmptyToken() *EmptyToken {
-	return &EmptyToken{}
+// Can use for want skip parse some contents
+func NewEmptyToken() *StringToken {
+	return &StringToken{}
+}
+
+// NewStringToken instance.
+func NewStringToken(k Kind, val string) *StringToken {
+	return &StringToken{
+		BaseToken{kind: k, value: val},
+	}
 }
 
 // HasMore is multi line values
-func (t *EmptyToken) HasMore() bool {
+func (t *StringToken) HasMore() bool {
 	return false
 }
 
 // ScanMore implements
-func (t *EmptyToken) ScanMore(ts *TextScanner) error {
+func (t *StringToken) ScanMore(ts *TextScanner) error {
 	return nil
 }
 
 // MergeSame implements
-func (t *EmptyToken) MergeSame(tok Token) error {
+func (t *StringToken) MergeSame(tok Token) error {
 	return errorx.Raw("cannot merge any token to Invalid token")
 }

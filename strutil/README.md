@@ -8,7 +8,7 @@ This is a go string operate util package.
 ## Install
 
 ```bash
-go get github.com/gookit/goutil/dump
+go get github.com/gookit/goutil/strutil
 ```
 
 ## Usage

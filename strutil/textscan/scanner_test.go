@@ -9,6 +9,24 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func ExampleNewScanner() {
+	ts := textscan.NewScanner(`source code`)
+	// add token matcher, can add your custom matcher
+	ts.AddMatchers(
+		&textscan.CommentsMatcher{},
+		&textscan.KeyValueMatcher{},
+	)
+
+	for ts.Scan() {
+		// Custom handle the parsed token
+		fmt.Println(ts.Token())
+	}
+
+	if ts.Err() != nil {
+		fmt.Println("ERROR:", ts.Err())
+	}
+}
+
 func TestTextScanner_kvLine(t *testing.T) {
 	ts := textscan.TextScanner{}
 	ts.AddMatchers(
@@ -35,7 +53,7 @@ line string
 
 	data := make(map[string]string)
 	err := ts.Each(func(t textscan.Token) {
-		fmt.Println("====> Token.String(), kind:", t.Kind())
+		fmt.Println("====> Token kind:", t.Kind())
 		fmt.Println(t.String())
 
 		if t.Kind() == textscan.TokValue {
@@ -44,6 +62,8 @@ line string
 		}
 	})
 
+	fmt.Println("\n==== Collected data:")
+	dump.P(data)
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, data)
 	assert.ContainsKeys(t, data, []string{"age", "name", "desc"})

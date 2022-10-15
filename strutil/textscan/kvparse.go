@@ -14,20 +14,24 @@ import (
 const (
 	MultiLineValMarkS = "'''"
 	MultiLineValMarkD = `"""`
-	MultiLineValMarkH = "<<<" // at start
-	MultiLineValMarkQ = "\\"  // at end
+	MultiLineValMarkH = "<<<" // heredoc at start. <<<TXT ... TXT
+	MultiLineValMarkQ = "\\"  // at end. eg: properties contents
 	MultiLineCmtEnd   = "*/"
 	// VarRefStartChars  = "${"
 )
 
 // KeyValueMatcher match key-value token.
+// Support parse `KEY=VALUE` line text contents.
 type KeyValueMatcher struct {
 	// Separator string for split key and value, default is "="
 	Separator string
 	// MergeComments collect previous comments token to value token.
 	// If set as True, on each s.Scan() please notice skip TokComments
 	MergeComments bool
+	// InlineComment parse and split inline comment
 	InlineComment bool
+	// KeyCheckFn set func check key string is valid
+	KeyCheckFn func(key string) error
 }
 
 // Match text line.
@@ -51,6 +55,13 @@ func (m *KeyValueMatcher) Match(text string, prev Token) (Token, error) {
 	key, val := nodes[0], nodes[1]
 	if len(key) == 0 {
 		return nil, errorx.Rawf("key cannot be empty: %q", str)
+	}
+
+	// check key string.
+	if m.KeyCheckFn != nil {
+		if err := m.KeyCheckFn(key); err != nil {
+			return nil, err
+		}
 	}
 
 	// handle value
@@ -142,7 +153,7 @@ func (m *KeyValueMatcher) DetectEnd(mark, text string) (ok bool, val string) {
 	return
 }
 
-// ValueToken struct
+// ValueToken contains key and value contents
 type ValueToken struct {
 	BaseToken
 	m *KeyValueMatcher
@@ -174,7 +185,7 @@ func (t *ValueToken) Comment() string {
 // Value text string.
 func (t *ValueToken) Value() string {
 	if len(t.values) > 0 {
-		return strings.Join(t.values, "\n")
+		return strings.Join(t.values, "")
 	}
 	return t.value
 }
@@ -182,6 +193,11 @@ func (t *ValueToken) Value() string {
 // HasMore is multi line values
 func (t *ValueToken) HasMore() bool {
 	return t.more
+}
+
+// HasComment for the value
+func (t *ValueToken) HasComment() bool {
+	return t.comment != nil
 }
 
 // MergeSame comments token
@@ -215,8 +231,11 @@ func (t *ValueToken) ScanMore(ts *TextScanner) error {
 	}
 }
 
-// CommentsMatcher struct
+// CommentsMatcher match comments lines.
+// will auto merge prev comments token
 type CommentsMatcher struct {
+	// InlineChars for match inline comments. default is: #
+	InlineChars []byte
 	// MatchFn for comments line
 	// - mark 	useful on multi line comments
 	MatchFn func(text string) (ok, more bool, err error)
@@ -227,7 +246,18 @@ type CommentsMatcher struct {
 // Match comments token
 func (m *CommentsMatcher) Match(text string, prev Token) (Token, error) {
 	if m.MatchFn == nil {
-		m.MatchFn = CommentsDetect
+		if len(m.InlineChars) == 0 {
+			m.InlineChars = []byte{'#'}
+		}
+
+		m.MatchFn = func(text string) (ok, more bool, err error) {
+			return CommentsDetect(text, m.InlineChars)
+		}
+	}
+
+	// skip empty line
+	if text = strings.TrimSpace(text); text == "" {
+		return nil, nil
 	}
 
 	ok, more, err := m.MatchFn(text)
@@ -257,19 +287,28 @@ func (m *CommentsMatcher) Match(text string, prev Token) (Token, error) {
 }
 
 // CommentsDetect check.
-func CommentsDetect(text string) (ok, more bool, err error) {
-	str := strings.TrimSpace(text)
+//
+// - inlineChars: #
+//
+// default match:
+//
+//   - inline #, //
+//   - multi line: /*
+func CommentsDetect(str string, inlineChars []byte) (ok, more bool, err error) {
 	ln := len(str)
 	if ln == 0 {
 		return
 	}
 
-	// a line comments
-	if str[0] == '#' || str[0] == '!' {
-		ok = true
-		return
+	// match inline comments by prefix char.
+	for _, prefix := range inlineChars {
+		if str[0] == prefix {
+			ok = true
+			return
+		}
 	}
 
+	// match start withs // OR /*
 	if str[0] == '/' {
 		if ln < 2 {
 			err = errorx.Rawf("invalid contents %q", str)
