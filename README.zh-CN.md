@@ -59,9 +59,10 @@ func Reverse(ss []string)
 func StringsRemove(ss []string, s string) []string
 func StringsFilter(ss []string, filter ...func(s string) bool) []string
 func StringsMap(ss []string, mapFn func(s string) string) []string
-func TrimStrings(ss []string, cutSet ...string) (ns []string)
+func TrimStrings(ss []string, cutSet ...string) []string
 func GetRandomOne(arr interface{}) interface{} { return RandomOne(arr) }
 func RandomOne(arr interface{}) interface{}
+func Unique(arr interface{}) interface{}
 // source at arrutil/check.go
 func IntsHas(ints []int, val int) bool
 func Int64sHas(ints []int64, val int64) bool
@@ -146,6 +147,7 @@ func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string
 func SplitShortcut(shortcut string) []string
 func FilterNames(names []string) []string
 func IsFlagHelpErr(err error) bool
+func WrapColorForCode(s string) string
 func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
 #### `cflag` Usage
@@ -687,6 +689,10 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 > Package `github.com/gookit/goutil/mathutil`
 
 ```go
+// source at mathutil/check.go
+func Compare(srcVal, dstVal interface{}, op string) (ok bool)
+func CompInt64(srcI64, dstI64 int64, op string) (ok bool)
+func CompFloat(srcF64, dstF64 float64, op string) (ok bool)
 // source at mathutil/convert.go
 func Int(in interface{}) (int, error)
 func QuietInt(in interface{}) int
@@ -724,9 +730,6 @@ func MaxInt(x, y int) int
 func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64
 func SwapMaxI64(x, y int64) (int64, int64)
-func Compare(srcVal, dstVal interface{}, op string) (ok bool)
-func CompInt64(srcI64, dstI64 int64, op string) (ok bool)
-func CompFloat(srcF64, dstF64 float64, op string) (ok bool)
 // source at mathutil/number.go
 func IsNumeric(c byte) bool
 func Percent(val, total int) float64
@@ -809,7 +812,7 @@ func IsContains(data, elem interface{}) bool
 func CheckContains(data, elem interface{}) (valid, found bool)
 func ValueIsEmpty(v reflect.Value) bool
 func ValueLen(v reflect.Value) int
-// source at stdutil/convert.go
+// source at stdutil/conv.go
 func ToString(v interface{}) string
 func MustString(v interface{}) string
 func TryString(v interface{}) (string, error)
@@ -857,7 +860,7 @@ func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SM
 func NewTagParser(tagNames ...string) *TagParser
 func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error)
 func ParseTagValueDefine(sep string, defines []string) TagValFunc
-func ParseTagValueNamed(field, tagVal string) (mp maputil.SMap, err error)
+func ParseTagValueNamed(field, tagVal string, keys ...string) (mp maputil.SMap, err error)
 // source at structs/value.go
 func NewValue(val interface{}) *Value
 ```
@@ -971,9 +974,8 @@ func Uppercase(s string) string { return strings.ToUpper(s) }
 func UpperWord(s string) string
 func LowerFirst(s string) string
 func UpperFirst(s string) string
-func Snake(s string, sep ...string) string
 func SnakeCase(s string, sep ...string) string
-func Camel(s string, sep ...string) string
+func Camel(s string, sep ...string) string { return CamelCase(s, sep...) }
 func CamelCase(s string, sep ...string) string
 func Indent(s, prefix string) string
 func IndentBytes(b, prefix []byte) []byte
@@ -1018,6 +1020,7 @@ func SplitN(s, sep string, n int) (ss []string)
 func SplitTrimmed(s, sep string) (ss []string)
 func SplitNTrimmed(s, sep string, n int) (ss []string)
 func Substr(s string, pos, length int) string
+func SplitInlineComment(val string) (string, string)
 // source at strutil/strutil.go
 func Padding(s, pad string, length int, pos uint8) string
 func PadLeft(s, pad string, length int) string
@@ -1130,15 +1133,15 @@ Provides an enhanced time.Time implementation, and add more commonly used functi
 // source at timex/template.go
 func ToLayout(template string) string
 // source at timex/timex.go
-func Now() *TimeX
-func New(t time.Time) *TimeX
-func Wrap(t time.Time) *TimeX
-func FromTime(t time.Time) *TimeX
-func Local() *TimeX
-func FromUnix(sec int64) *TimeX
-func FromDate(s string, template ...string) (*TimeX, error)
-func FromString(s string, layouts ...string) (*TimeX, error)
-func LocalByName(tzName string) *TimeX
+func Now() *Time
+func New(t time.Time) *Time
+func Wrap(t time.Time) *Time
+func FromTime(t time.Time) *Time
+func Local() *Time
+func FromUnix(sec int64) *Time
+func FromDate(s string, template ...string) (*Time, error)
+func FromString(s string, layouts ...string) (*Time, error)
+func LocalByName(tzName string) *Time
 // source at timex/util.go
 func NowUnix() int64
 func SetLocalByName(tzName string) error
