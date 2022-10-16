@@ -171,3 +171,22 @@ func VersionCompare(v1, v2, op string) bool
 func WidthWrap(s string, w int) string
 func WrapTag(s, tag string) string
 ```
+
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+```
+
+**Testing**:
+
+```shell
+go test -v ./strutil/...
+```
+
+**Test limit by regexp**:
+
+```shell
+go test -v -run ^TestSetByKeys ./strutil/...
+```

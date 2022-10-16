@@ -95,6 +95,31 @@ func TestNewTestWriter(t *testing.T) {
 }
 ```
 
+## Functions API
+
+```go
+func ClearOSEnv()
+func DiscardStdout() error
+func MockCleanOsEnv(mp map[string]string, fn func())
+func MockEnvValue(key, val string, fn func(nv string))
+func MockEnvValues(kvMap map[string]string, fn func())
+func MockOsEnv(mp map[string]string, fn func())
+func MockOsEnvByText(envText string, fn func())
+func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
+func NewHttpRequest(method, path string, data *MD) *http.Request
+func RestoreStderr(printData ...bool) (s string)
+func RestoreStdout(printData ...bool) (s string)
+func RevertOSEnv()
+func RewriteStderr()
+func RewriteStdout()
+type Buffer struct{ ... }
+    func NewBuffer() *Buffer
+type M map[string]string
+type MD struct{ ... }
+type TestWriter struct{ ... }
+    func NewTestWriter() *TestWriter
+```
+
 ## Code Check & Testing
 
 ```bash
