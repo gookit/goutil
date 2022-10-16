@@ -30,6 +30,8 @@ type KeyValueMatcher struct {
 	MergeComments bool
 	// InlineComment parse and split inline comment
 	InlineComment bool
+	// DisableMultiLine value parse
+	DisableMultiLine bool
 	// KeyCheckFn set func check key string is valid
 	KeyCheckFn func(key string) error
 }
@@ -48,13 +50,12 @@ func (m *KeyValueMatcher) Match(text string, prev Token) (Token, error) {
 
 	nodes := strutil.SplitNTrimmed(str, m.Separator, 2)
 	if len(nodes) != 2 {
-		// err := errorx.Rawf("invalid contents %q(should be KEY=VALUE)", str)
 		return nil, nil
 	}
 
 	key, val := nodes[0], nodes[1]
 	if len(key) == 0 {
-		return nil, errorx.Rawf("key cannot be empty: %q", str)
+		return nil, errors.New("key cannot be empty")
 	}
 
 	// check key string.
@@ -78,6 +79,16 @@ func (m *KeyValueMatcher) Match(text string, prev Token) (Token, error) {
 		tok.comment = prev
 	}
 
+	if m.DisableMultiLine {
+		// split inline comments and clear quotes
+		if vln > 1 {
+			val = m.inlineCommentsAndUnquote(tok, val)
+		}
+
+		tok.value = val
+		return tok, nil
+	}
+
 	// multi line value ended by \
 	if vln > 0 && strings.HasSuffix(val, MultiLineValMarkQ) {
 		val = val[:vln-1]
@@ -98,34 +109,42 @@ func (m *KeyValueMatcher) Match(text string, prev Token) (Token, error) {
 				tok.mark = MultiLineValMarkD
 			}
 
-			val = val[3:] + "\n"
+			val = val[3:]
 			tok.value = val
 			tok.values = []string{val}
 			return tok, nil
 		}
 
-		// clear quotes
-		if val[0] == '"' || val[0] == '\'' {
-			val = strutil.Unquote(val)
-		} else if m.InlineComment {
-			// split inline comments
-			var comment string
-			val, comment = strutil.SplitInlineComment(val)
-
-			if len(comment) > 0 {
-				cmt := NewCommentToken(comment)
-				// merge comments token
-				if tok.comment != nil {
-					_ = tok.comment.MergeSame(cmt)
-				} else {
-					tok.comment = cmt
-				}
-			}
-		}
+		// split inline comments and clear quotes
+		val = m.inlineCommentsAndUnquote(tok, val)
 	}
 
 	tok.value = val
 	return tok, nil
+}
+
+func (m *KeyValueMatcher) inlineCommentsAndUnquote(vt *ValueToken, val string) string {
+	if m.InlineComment {
+		// split inline comments
+		var comment string
+		val, comment = strutil.SplitInlineComment(val)
+
+		if len(comment) > 0 {
+			cmt := NewCommentToken(comment)
+			// merge comments token
+			if vt.comment != nil {
+				_ = vt.comment.MergeSame(cmt)
+			} else {
+				vt.comment = cmt
+			}
+		}
+	}
+
+	// clear quotes
+	if val[0] == '"' || val[0] == '\'' {
+		val = strutil.Unquote(val)
+	}
+	return val
 }
 
 // DetectEnd for multi line value
@@ -139,10 +158,10 @@ func (m *KeyValueMatcher) DetectEnd(mark, text string) (ok bool, val string) {
 			val = str[:ln-3]
 			ok = true
 		} else {
-			val = str
+			val = text // goon
 		}
 	} else if mark == MultiLineValMarkQ {
-		if strings.HasSuffix(str, MultiLineValMarkQ) { // go on
+		if strings.HasSuffix(str, MultiLineValMarkQ) { // goon
 			val += str[:ln-1]
 		} else { // end
 			val = str
@@ -174,6 +193,16 @@ func (t *ValueToken) Key() string {
 	return t.key
 }
 
+// Mark for multi line values
+func (t *ValueToken) Mark() string {
+	return t.mark
+}
+
+// Values for multi line values
+func (t *ValueToken) Values() []string {
+	return t.values
+}
+
 // Comment lines string
 func (t *ValueToken) Comment() string {
 	if t.comment != nil {
@@ -185,7 +214,7 @@ func (t *ValueToken) Comment() string {
 // Value text string.
 func (t *ValueToken) Value() string {
 	if len(t.values) > 0 {
-		return strings.Join(t.values, "")
+		return strings.Join(t.values, "\n")
 	}
 	return t.value
 }
@@ -311,7 +340,7 @@ func CommentsDetect(str string, inlineChars []byte) (ok, more bool, err error) {
 	// match start withs // OR /*
 	if str[0] == '/' {
 		if ln < 2 {
-			err = errorx.Rawf("invalid contents %q", str)
+			err = errors.New("invalid contents")
 			return
 		}
 
@@ -362,6 +391,7 @@ func NewCommentToken(val string) *CommentToken {
 	return tok
 }
 
+// Value fo token
 func (t *CommentToken) Value() string {
 	if len(t.comments) > 0 {
 		return strings.Join(t.comments, "\n")
@@ -369,6 +399,7 @@ func (t *CommentToken) Value() string {
 	return t.value
 }
 
+// String for token
 func (t *CommentToken) String() string {
 	return t.Value()
 }
@@ -416,6 +447,7 @@ func (t *CommentToken) ScanMore(ts *TextScanner) error {
 	}
 }
 
+// CommentsDetectEnd multi line comments end
 func CommentsDetectEnd(line string) bool {
 	return strings.HasSuffix(line, MultiLineCmtEnd)
 }

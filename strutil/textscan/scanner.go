@@ -19,7 +19,7 @@ type ErrScan struct {
 
 // Error string
 func (e ErrScan) Error() string {
-	return fmt.Sprintf("%s. line %d: %s", e.Msg, e.Line, e.Text)
+	return fmt.Sprintf("%s. line %d: %q", e.Msg, e.Line, e.Text)
 }
 
 // Matcher interface

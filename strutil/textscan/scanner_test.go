@@ -13,13 +13,27 @@ func ExampleNewScanner() {
 	ts := textscan.NewScanner(`source code`)
 	// add token matcher, can add your custom matcher
 	ts.AddMatchers(
-		&textscan.CommentsMatcher{},
-		&textscan.KeyValueMatcher{},
+		&textscan.CommentsMatcher{
+			InlineChars: []byte{'#'},
+		},
+		&textscan.KeyValueMatcher{
+			MergeComments: true,
+		},
 	)
 
+	// scan and parsing
 	for ts.Scan() {
+		tok := ts.Token()
+
+		if !tok.IsValid() {
+			continue
+		}
+
 		// Custom handle the parsed token
-		fmt.Println(ts.Token())
+		if tok.Kind() == textscan.TokValue {
+			vt := tok.(*textscan.ValueToken)
+			fmt.Println(vt)
+		}
 	}
 
 	if ts.Err() != nil {
