@@ -10,18 +10,18 @@ import (
 // Value data store
 type Value struct {
 	// V value
-	V interface{}
+	V any
 }
 
 // NewValue instance.
-func NewValue(val interface{}) *Value {
+func NewValue(val any) *Value {
 	return &Value{
 		V: val,
 	}
 }
 
 // Set value
-func (v *Value) Set(val interface{}) {
+func (v *Value) Set(val any) {
 	v.V = val
 }
 

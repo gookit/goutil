@@ -92,10 +92,10 @@ func TrimStrings(ss []string, cutSet ...string) []string {
 }
 
 // GetRandomOne get random element from an array/slice
-func GetRandomOne(arr interface{}) interface{} { return RandomOne(arr) }
+func GetRandomOne(arr any) interface{} { return RandomOne(arr) }
 
 // RandomOne get random element from an array/slice
-func RandomOne(arr interface{}) interface{} {
+func RandomOne(arr any) interface{} {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
 		return arr
@@ -107,7 +107,7 @@ func RandomOne(arr interface{}) interface{} {
 }
 
 // Unique value in the given array, slice.
-func Unique(arr interface{}) interface{} {
+func Unique(arr any) interface{} {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
 		return arr

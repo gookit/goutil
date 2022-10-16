@@ -41,12 +41,12 @@ func StringsHas(ss []string, val string) bool {
 }
 
 // HasValue check array(strings, intXs, uintXs) should be contained the given value(int(X),string).
-func HasValue(arr, val interface{}) bool {
+func HasValue(arr, val any) bool {
 	return Contains(arr, val)
 }
 
 // Contains check array(strings, intXs, uintXs) should be contained the given value(int(X),string).
-func Contains(arr, val interface{}) bool {
+func Contains(arr, val any) bool {
 	if val == nil || arr == nil {
 		return false
 	}
@@ -82,6 +82,6 @@ func Contains(arr, val interface{}) bool {
 }
 
 // NotContains check array(strings, ints, uints) should be not contains the given value.
-func NotContains(arr, val interface{}) bool {
+func NotContains(arr, val any) bool {
 	return !Contains(arr, val)
 }

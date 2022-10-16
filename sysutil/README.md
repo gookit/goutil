@@ -85,3 +85,56 @@ rr.AddCmd(cmdr.NewCmd("ls").AddArgs([]string{"-l", "-h"}).WithOutput(buf, buf))
 
 err = rr.Run()
 ```
+
+### Functions API
+
+```go
+func BinDir() string
+func BinFile() string
+func ChangeUserByName(newUname string) (err error)
+func ChangeUserUidGid(newUid int, newGid int) (err error)
+func CurrentShell(onlyName bool) (path string)
+func CurrentUser() *user.User
+func EnvPaths() []string
+func ExecCmd(binName string, args []string, workDir ...string) (string, error)
+func ExecLine(cmdLine string, workDir ...string) (string, error)
+func Executable(binName string) (string, error)
+func ExpandPath(path string) string
+func FindExecutable(binName string) (string, error)
+func FlushExec(bin string, args ...string) error
+func GoVersion() string
+func HasExecutable(binName string) bool
+func HasShellEnv(shell string) bool
+func HomeDir() string
+func Hostname() string
+func IsConsole(out io.Writer) bool
+func IsDarwin() bool
+func IsLinux() bool
+func IsMSys() bool
+func IsMac() bool
+func IsShellSpecialVar(c uint8) bool
+func IsTerminal(fd uintptr) bool
+func IsWin() bool
+func IsWindows() bool
+func Kill(pid int, signal syscall.Signal) error
+func LoginUser() *user.User
+func MustFindUser(uname string) *user.User
+func NewCmd(bin string, args ...string) *cmdr.Cmd
+func OpenBrowser(URL string) error
+func ProcessExists(pid int) bool
+func QuickExec(cmdLine string, workDir ...string) (string, error)
+func SearchPath(keywords string) []string
+func ShellExec(cmdLine string, shells ...string) (string, error)
+func StdIsTerminal() bool
+func UHomeDir() string
+func UserCacheDir(subPath string) string
+func UserConfigDir(subPath string) string
+func UserDir(subPath string) string
+func UserHomeDir() string
+func Workdir() string
+type CallerInfo struct{ ... }
+    func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
+type GoInfo struct{ ... }
+    func OsGoInfo() (*GoInfo, error)
+    func ParseGoVersion(line string) (*GoInfo, error)
+```

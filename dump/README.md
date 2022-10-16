@@ -61,12 +61,44 @@ You will see:
 
 ![](_examples/preview-nested-struct.png)
 
-## Functions
+## Functions API
 
 ```go
+func Clear(vs ...interface{})
+func Config(fn func(opts *Options))
+func Format(vs ...interface{}) string
+func Fprint(w io.Writer, vs ...interface{})
+func NoLoc(vs ...interface{})
 func P(vs ...interface{})
-func V(vs ...interface{})
 func Print(vs ...interface{})
+func Println(vs ...interface{})
+func Reset()
+func V(vs ...interface{})
+type Dumper struct{ ... }
+    func NewDumper(out io.Writer, skip int) *Dumper
+    func NewWithOptions(fn func(opts *Options)) *Dumper
+    func Std() *Dumper
+type Options struct{ ... }
+    func NewDefaultOptions(out io.Writer, skip int) *Options
+```
+
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+```
+
+**Testing**:
+
+```shell
+go test -v ./timex/...
+```
+
+**Test limit by regexp**:
+
+```shell
+go test -v -run ^TestSetByKeys ./timex/...
 ```
 
 ## Related

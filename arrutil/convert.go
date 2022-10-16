@@ -41,7 +41,7 @@ func StringsToInts(ss []string) (ints []int, err error) {
 }
 
 // MustToStrings convert interface{}(allow: array,slice) to []string
-func MustToStrings(arr interface{}) []string {
+func MustToStrings(arr any) []string {
 	ret, _ := ToStrings(arr)
 	return ret
 }
@@ -60,7 +60,7 @@ func StringsToSlice(ss []string) []interface{} {
  *************************************************************/
 
 // ToInt64s convert interface{}(allow: array,slice) to []int64
-func ToInt64s(arr interface{}) (ret []int64, err error) {
+func ToInt64s(arr any) (ret []int64, err error) {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
 		err = ErrInvalidType
@@ -79,13 +79,13 @@ func ToInt64s(arr interface{}) (ret []int64, err error) {
 }
 
 // MustToInt64s convert interface{}(allow: array,slice) to []int64
-func MustToInt64s(arr interface{}) []int64 {
+func MustToInt64s(arr any) []int64 {
 	ret, _ := ToInt64s(arr)
 	return ret
 }
 
-// SliceToInt64s convert []interface{} to []int64
-func SliceToInt64s(arr []interface{}) []int64 {
+// SliceToInt64s convert []any to []int64
+func SliceToInt64s(arr []any) []int64 {
 	i64s := make([]int64, len(arr))
 	for i, v := range arr {
 		i64s[i] = mathutil.MustInt64(v)
@@ -94,7 +94,7 @@ func SliceToInt64s(arr []interface{}) []int64 {
 }
 
 // ToStrings convert interface{}(allow: array,slice) to []string
-func ToStrings(arr interface{}) (ret []string, err error) {
+func ToStrings(arr any) (ret []string, err error) {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
 		err = ErrInvalidType
@@ -112,8 +112,8 @@ func ToStrings(arr interface{}) (ret []string, err error) {
 	return
 }
 
-// SliceToStrings convert []interface{} to []string
-func SliceToStrings(arr []interface{}) []string {
+// SliceToStrings convert []any to []string
+func SliceToStrings(arr []any) []string {
 	ss := make([]string, len(arr))
 	for i, v := range arr {
 		ss[i] = strutil.MustString(v)
@@ -122,16 +122,16 @@ func SliceToStrings(arr []interface{}) []string {
 }
 
 // AnyToString simple and quickly convert any array, slice to string
-func AnyToString(arr interface{}) string {
+func AnyToString(arr any) string {
 	return NewFormatter(arr).Format()
 }
 
-// SliceToString convert []interface{} to string
-func SliceToString(arr ...interface{}) string { return ToString(arr) }
+// SliceToString convert []any to string
+func SliceToString(arr ...any) string { return ToString(arr) }
 
 // ToString simple and quickly convert []interface{} to string
-func ToString(arr []interface{}) string {
-	// like fmt.Println([]interface{}(nil))
+func ToString(arr []any) string {
+	// like fmt.Println([]any(nil))
 	if arr == nil {
 		return "[]"
 	}
@@ -151,7 +151,7 @@ func ToString(arr []interface{}) string {
 }
 
 // JoinSlice join []any slice to string.
-func JoinSlice(sep string, arr ...interface{}) string {
+func JoinSlice(sep string, arr ...any) string {
 	if arr == nil {
 		return ""
 	}

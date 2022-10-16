@@ -27,6 +27,7 @@
 - [`stdutil`](./stdutil) Provide some commonly std util functions.
 - [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
+  - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
   - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
   - [cmdr](./sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks

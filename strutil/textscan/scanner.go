@@ -1,5 +1,5 @@
-// Package textscan implements text scanner for quickly parse text contents.
-// can use for parse like INI, Properties format contents
+// Package textscan Implemented a parser that quickly scans and analyzes text content.
+// It can be used to parse INI, Properties and other formats
 package textscan
 
 import (
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// ErrScan struct
+// ErrScan error on scan or parse contents
 type ErrScan struct {
 	Msg  string // error message
 	Line int    // error line number, start 1

@@ -26,6 +26,7 @@ Go一些常用的工具函数实现、增强、收集和整理
 - [`stdutil`](./stdutil) 提供一些常用的 std util 函数。
 - [`structs`](./structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](./strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
+  - [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
 - [`sysutil`](./sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
   - [clipboard](./sysutil/clipboard) 提供简单的剪贴板读写操作工具库
   - [cmdr](./sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务

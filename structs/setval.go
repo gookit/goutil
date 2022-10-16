@@ -43,7 +43,7 @@ type InitOptions struct {
 //	err = structs.InitDefaults(u1)
 //	fmt.Printf("%+v\n", u1)
 //	// Output: {Name:inhere Age:30}
-func InitDefaults(ptr interface{}, optFns ...InitOptFunc) error {
+func InitDefaults(ptr any, optFns ...InitOptFunc) error {
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("must be provider an pointer value")
@@ -120,7 +120,7 @@ type SetOptions struct {
 	// FieldTagName get field name for read value. default tag: json
 	FieldTagName string
 	// ValueHook before set value hook TODO
-	ValueHook func(val interface{}) interface{}
+	ValueHook func(val any) interface{}
 
 	// ParseDefault init default value by DefaultValTag tag value.
 	// default: false
@@ -140,7 +140,7 @@ type SetOptions struct {
 // TIPS:
 //
 //	Only support set: string, bool, intX, uintX, floatX
-func SetValues(ptr interface{}, data map[string]interface{}, optFns ...SetOptFunc) error {
+func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error {
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr {
 		return errors.New("must be provider an pointer value")
@@ -162,7 +162,7 @@ func SetValues(ptr interface{}, data map[string]interface{}, optFns ...SetOptFun
 	return setValues(rv, data, opt)
 }
 
-func setValues(rv reflect.Value, data map[string]interface{}, opt *SetOptions) error {
+func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 	if data == nil || len(data) == 0 {
 		return nil
 	}

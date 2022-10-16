@@ -20,7 +20,7 @@ type ArrFormatter struct {
 }
 
 // NewFormatter instance
-func NewFormatter(arr interface{}) *ArrFormatter {
+func NewFormatter(arr any) *ArrFormatter {
 	f := &ArrFormatter{}
 	f.Src = arr
 
@@ -120,6 +120,6 @@ func (f *ArrFormatter) doFormat() {
 }
 
 // FormatIndent array data to string.
-func FormatIndent(arr interface{}, indent string) string {
+func FormatIndent(arr any, indent string) string {
 	return NewFormatter(arr).WithIndent(indent).Format()
 }

@@ -126,3 +126,105 @@ ts := timex.NowUnix() // current unix timestamp
 date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
 date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```
+
+## Functions
+
+```go
+func AddDay(t time.Time, day int) time.Time
+func AddHour(t time.Time, hour int) time.Time
+func AddMinutes(t time.Time, minutes int) time.Time
+func AddSeconds(t time.Time, seconds int) time.Time
+func Date(t time.Time, template string) string
+func DateFormat(t time.Time, template string) string
+func DayEnd(t time.Time) time.Time
+func DayStart(t time.Time) time.Time
+func Format(t time.Time) string
+func FormatBy(t time.Time, layout string) string
+func FormatByTpl(t time.Time, template string) string
+func FormatUnix(sec int64) string
+func FormatUnixBy(sec int64, layout string) string
+func FormatUnixByTpl(sec int64, template string) string
+func HourEnd(t time.Time) time.Time
+func HourStart(t time.Time) time.Time
+func HowLongAgo(sec int64) string
+func NowAddDay(day int) time.Time
+func NowAddHour(hour int) time.Time
+func NowAddMinutes(minutes int) time.Time
+func NowAddSeconds(seconds int) time.Time
+func NowHourEnd() time.Time
+func NowHourStart() time.Time
+func NowUnix() int64
+func SetLocalByName(tzName string) error
+func ToDuration(s string) (time.Duration, error)
+func ToLayout(template string) string
+func TodayEnd() time.Time
+func TodayStart() time.Time
+
+// for create timex.Time
+    func FromDate(s string, template ...string) (*Time, error)
+    func FromString(s string, layouts ...string) (*Time, error)
+    func FromTime(t time.Time) *Time
+    func FromUnix(sec int64) *Time
+    func Local() *Time
+    func LocalByName(tzName string) *Time
+    func New(t time.Time) *Time
+    func Now() *Time
+    func Wrap(t time.Time) *Time
+```
+
+### Methods in timex.Time
+
+```go
+func (t *Time) AddDay(day int) *Time
+func (t *Time) AddHour(hours int) *Time
+func (t *Time) AddMinutes(minutes int) *Time
+func (t *Time) AddSeconds(seconds int) *Time
+func (t *Time) CustomHMS(hour, min, sec int) *Time
+func (t *Time) DateFormat(template string) string
+func (t *Time) Datetime() string
+func (t *Time) DayAfter(day int) *Time
+func (t *Time) DayAgo(day int) *Time
+func (t *Time) DayEnd() *Time
+func (t *Time) DayStart() *Time
+func (t Time) Diff(u time.Time) time.Duration
+func (t Time) DiffSec(u time.Time) int
+func (t *Time) Format(layout string) string
+func (t *Time) HourEnd() *Time
+func (t *Time) HourStart() *Time
+func (t Time) HowLongAgo(before time.Time) string
+func (t *Time) IsAfter(u time.Time) bool
+func (t *Time) IsAfterUnix(ux int64) bool
+func (t *Time) IsBefore(u time.Time) bool
+func (t *Time) IsBeforeUnix(ux int64) bool
+func (t *Time) SubDay(day int) *Time
+func (t *Time) SubHour(hours int) *Time
+func (t *Time) SubMinutes(minutes int) *Time
+func (t *Time) SubSeconds(seconds int) *Time
+func (t Time) SubUnix(u time.Time) int
+func (t Time) T() time.Time
+func (t Time) Timestamp() int64
+func (t *Time) Tomorrow() *Time
+func (t *Time) TplFormat(template string) string
+func (t *Time) UnmarshalJSON(data []byte) error
+func (t *Time) UnmarshalText(data []byte) error
+func (t *Time) Yesterday() *Time
+```
+
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+```
+
+**Testing**:
+
+```shell
+go test -v ./timex/...
+```
+
+**Test limit by regexp**:
+
+```shell
+go test -v -run ^TestSetByKeys ./timex/...
+```

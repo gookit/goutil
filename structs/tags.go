@@ -16,7 +16,7 @@ import (
 var ErrNotAnStruct = errors.New("must input an struct value")
 
 // ParseTags for parse struct tags.
-func ParseTags(st interface{}, tagNames []string) (map[string]maputil.SMap, error) {
+func ParseTags(st any, tagNames []string) (map[string]maputil.SMap, error) {
 	p := NewTagParser(tagNames...)
 
 	if err := p.Parse(st); err != nil {

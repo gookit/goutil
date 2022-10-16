@@ -175,6 +175,39 @@ maputil.SMap { #len=4
 },
 ```
 
+## Functions API
+
+```go
+func InitDefaults(ptr any, optFns ...InitOptFunc) error
+func MustToMap(st any, optFns ...MapOptFunc) map[string]interface{}
+func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error)
+func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error)
+func ParseTagValueNamed(field, tagVal string, keys ...string) (mp maputil.SMap, err error)
+func ParseTags(st any, tagNames []string) (map[string]maputil.SMap, error)
+func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
+func StructToMap(st any, optFns ...MapOptFunc) (map[string]interface{}, error)
+func ToMap(st any, optFns ...MapOptFunc) map[string]interface{}
+func TryToMap(st any, optFns ...MapOptFunc) (map[string]interface{}, error)
+type Aliases struct{ ... }
+    func NewAliases(checker func(alias string)) *Aliases
+type Data struct{ ... }
+    func NewData() *Data
+type InitOptFunc func(opt *InitOptions)
+type InitOptions struct{ ... }
+type LiteData struct{ ... }
+type MapOptFunc func(opt *MapOptions)
+type MapOptions struct{ ... }
+type SMap struct{ ... }
+type SetOptFunc func(opt *SetOptions)
+type SetOptions struct{ ... }
+type TagParser struct{ ... }
+    func NewTagParser(tagNames ...string) *TagParser
+type TagValFunc func(field, tagVal string) (maputil.SMap, error)
+    func ParseTagValueDefine(sep string, defines []string) TagValFunc
+type Value struct{ ... }
+    func NewValue(val any) *Value
+```
+
 ## Testings
 
 ```shell

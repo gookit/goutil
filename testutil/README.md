@@ -103,7 +103,7 @@ golint ./...
 go test ./...
 ```
 
-Testing in docker:
+**Testing in docker**:
 
 ```shell
 cd goutil

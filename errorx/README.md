@@ -193,6 +193,25 @@ Print the `err.Error()`:
 third error message; second error message; first error message
 ```
 
+## Code Check & Testing
+
+```bash
+gofmt -w -l ./
+golint ./...
+```
+
+**Testing**:
+
+```shell
+go test -v ./errorx/...
+```
+
+**Test limit by regexp**:
+
+```shell
+go test -v -run ^TestSetByKeys ./errorx/...
+```
+
 ## Refers
 
 - golang errors
