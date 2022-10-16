@@ -61,7 +61,7 @@ line string
 }
 ```
 
-**Output:**:
+**Output:**
 
 ```shell
 ====> Token kind: Comments
@@ -89,7 +89,6 @@ comments:
 ==== Collected data:
 map[string]string { #len=3
   "desc": string("
-
 a multi
 line string
 "), #len=22
@@ -98,32 +97,9 @@ line string
 },
 ```
 
-## Functions
+## Projects using `textscan`
 
-```go
-package textscan // import "github.com/gookit/goutil/strutil/textscan"
+`textscan` is used in these projects:
 
-func AddKind(k Kind, name string)
-func CommentsDetect(text string) (ok, more bool, err error)
-func CommentsDetectEnd(line string) bool
-func IsKindToken(k Kind, tok Token) bool
-func KindString(k Kind) string
-type BaseToken struct{ ... }
-type CommentToken struct{ ... }
-    func NewCommentToken(val string) *CommentToken
-type CommentsMatcher struct{ ... }
-type EmptyToken struct{ ... }
-    func NewEmptyToken() *EmptyToken
-type HandleFn func(t Token)
-type KeyValueMatcher struct{ ... }
-type Kind rune
-    const TokInvalid Kind = iota ...
-type LiteToken interface{ ... }
-type Matcher interface{ ... }
-type Parser struct{ ... }
-    func NewParser(fn HandleFn) *Parser
-type TextScanner struct{ ... }
-    func NewScanner(in interface{}) *TextScanner
-type Token interface{ ... }
-type ValueToken struct{ ... }
-```
+- https://github.com/gookit/ini
+- https://github.com/gookit/properties

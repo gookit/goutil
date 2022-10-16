@@ -94,3 +94,9 @@ PRINT AT github.com/gookit/goutil/cliutil_test.TestParseLine(line_parser_test.go
 ```text
 Build line: ./myapp -a val0 -m "this is message" arg0
 ```
+
+## Projects using `cliutil`
+
+`cliutil` is used in these projects:
+
+- https://github.com/gookit/gcli
