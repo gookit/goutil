@@ -103,14 +103,14 @@ func (s *EnumString) Set(value string) error {
 //	c.VarOpt(&names, "names", "", "multi name by comma split")
 //
 //	--names "tom,john,joy"
-//	 names.Split(",") -> []string{"tom","john","joy"}
+//	names.Split(",") -> []string{"tom","john","joy"}
 //
 //	// case 2:
 //	var ids gcli.String
 //	c.VarOpt(&ids, "ids", "", "multi id by comma split")
 //
 //	--names "23,34,56"
-//	 names.Ints(",") -> []int{23,34,56}
+//	names.Ints(",") -> []int{23,34,56}
 type String string
 
 // Set value

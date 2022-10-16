@@ -41,11 +41,11 @@ func SetDebug(open bool) {
 //
 // eg:
 //
-// 	// Can be set required and shorts on desc:
-// 	// format1: desc;required
-// 	cmd.IntVar(&age, "age", 0, "your age;true")
-// 	// format2: desc;required;shorts
-// 	cmd.IntVar(&age, "age", 0, "your age;true;a")
+//	// Can be set required and shorts on desc:
+//	// format1: desc;required
+//	cmd.IntVar(&age, "age", 0, "your age;true")
+//	// format2: desc;required;shorts
+//	cmd.IntVar(&age, "age", 0, "your age;true;a")
 type CFlags struct {
 	*flag.FlagSet
 	// bound options.
@@ -77,14 +77,15 @@ type CFlags struct {
 // New create new instance.
 //
 // Usage:
-// 	cmd := cflag.New(func(c *cflag.CFlags) {
+//
+//	cmd := cflag.New(func(c *cflag.CFlags) {
 //		c.Version = "0.1.2"
 //		c.Desc = "this is my cli tool"
 //	})
 //
-// 	// binding opts and args
+//	// binding opts and args
 //
-// 	cmd.Parse(nil)
+//	cmd.Parse(nil)
 func New(fns ...func(c *CFlags)) *CFlags {
 	return NewEmpty(func(c *CFlags) {
 		c.FlagSet = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
@@ -440,14 +441,14 @@ func (c *CFlags) showHelp(err error) {
 		buf.QuietWritef("<cyan>%s</>\n\n", c.helpDesc())
 	}
 
-	buf.QuietWritef("<comment>Usage:</> %s [--Options...] [...Arguments]\n", binName)
+	buf.QuietWritef("<comment>Usage:</> %s [--Options...] [...CliArgs]\n", binName)
 	buf.QuietWriteString("<comment>Options:</>\n")
 
 	// render options help
 	c.renderOptionsHelp(buf)
 
 	if len(c.bindArgs) > 0 {
-		buf.QuietWriteString("\n<comment>Arguments:</>\n")
+		buf.QuietWriteString("\n<comment>CliArgs:</>\n")
 		for _, arg := range c.bindArgs {
 			buf.QuietWritef(
 				"  <green>%s</>   %s\n",
