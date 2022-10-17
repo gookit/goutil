@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/gookit/goutil/internal/comfunc"
 )
@@ -14,6 +15,7 @@ type Cmd struct {
 	*exec.Cmd
 	// Name of the command
 	Name string
+
 	// RunBefore hook
 	RunBefore func(c *Cmd)
 	// RunAfter hook
@@ -32,23 +34,6 @@ func NewCmd(bin string, args ...string) *Cmd {
 	}
 }
 
-// IDString of the command
-func (c *Cmd) IDString() string {
-	if c.Name != "" {
-		return c.Name
-	}
-
-	if len(c.Args) > 0 {
-		return c.Args[0]
-	}
-	return c.Path
-}
-
-// Cmdline to command line
-func (c *Cmd) Cmdline() string {
-	return comfunc.Cmdline(c.Args)
-}
-
 // OnBefore exec add hook
 func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
 	c.RunBefore = fn
@@ -59,6 +44,28 @@ func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
 func (c *Cmd) OnAfter(fn func(c *Cmd, err error)) *Cmd {
 	c.RunAfter = fn
 	return c
+}
+
+// WithBin name returns the current object
+func (c *Cmd) WithBin(name string) *Cmd {
+	c.Args[0] = name
+	c.lookPath(name)
+	return c
+}
+
+func (c *Cmd) lookPath(name string) {
+	if filepath.Base(name) == name {
+		lp, err := exec.LookPath(name)
+		if lp != "" {
+			// Update cmd.Path even if err is non-nil.
+			// If err is ErrDot (especially on Windows), lp may include a resolved
+			// extension (like .exe or .bat) that should be preserved.
+			c.Path = lp
+		}
+		if err != nil {
+			c.Err = err
+		}
+	}
 }
 
 // WithWorkDir returns the current object
@@ -99,7 +106,9 @@ func (c *Cmd) WithArg(args ...string) *Cmd {
 }
 
 // AddArgf add args and returns the current object. alias of the WithArgf()
-func (c *Cmd) AddArgf(format string, args ...interface{}) *Cmd { return c.WithArgf(format, args...) }
+func (c *Cmd) AddArgf(format string, args ...interface{}) *Cmd {
+	return c.WithArgf(format, args...)
+}
 
 // WithArgf add arg and returns the current object
 func (c *Cmd) WithArgf(format string, args ...interface{}) *Cmd {
@@ -139,7 +148,43 @@ func (c *Cmd) WithArgsIf(args []string, exprOk bool) *Cmd {
 	return c
 }
 
-// ResetArgs for git
+// -------------------------------------------------
+// helper command
+// -------------------------------------------------
+
+// IDString of the command
+func (c *Cmd) IDString() string {
+	if c.Name != "" {
+		return c.Name
+	}
+	return c.BinOrPath()
+}
+
+// BinName of the command
+func (c *Cmd) BinName() string {
+	if len(c.Args) > 0 {
+		return c.Args[0]
+	}
+	return ""
+}
+
+// BinOrPath of the command
+func (c *Cmd) BinOrPath() string {
+	if len(c.Args) > 0 {
+		return c.Args[0]
+	}
+	return c.Path
+}
+
+// OnlyArgs of the command, not contains bin name.
+func (c *Cmd) OnlyArgs() (ss []string) {
+	if len(c.Args) > 1 {
+		return c.Args[1:]
+	}
+	return
+}
+
+// ResetArgs for command, but will keep bin name.
 func (c *Cmd) ResetArgs() {
 	if len(c.Args) > 0 {
 		c.Args = c.Args[0:1]
@@ -148,12 +193,31 @@ func (c *Cmd) ResetArgs() {
 	}
 }
 
-// -------------------------------------------------
-// run command
-// -------------------------------------------------
+// Cmdline to command line
+func (c *Cmd) Cmdline() string {
+	return comfunc.Cmdline(c.Args)
+}
+
+// Copy new instance from current command, with new args.
+func (c *Cmd) Copy(args ...string) *Cmd {
+	nc := *c
+
+	// copy bin name.
+	if len(c.Args) > 0 {
+		nc.Args = append([]string{c.Args[0]}, args...)
+	} else {
+		nc.Args = args
+	}
+
+	return &nc
+}
 
 // GoCmd get exec.Cmd
 func (c *Cmd) GoCmd() *exec.Cmd { return c.Cmd }
+
+// -------------------------------------------------
+// run command
+// -------------------------------------------------
 
 // Success run and return whether success
 func (c *Cmd) Success() bool {
