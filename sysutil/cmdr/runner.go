@@ -66,6 +66,11 @@ func (t *Task) Err() error {
 	return t.err
 }
 
+// IsSuccess of task
+func (t *Task) IsSuccess() bool {
+	return t.err == nil
+}
+
 // Runner use for batch run multi task commands
 type Runner struct {
 	prev *Task

@@ -1,6 +1,7 @@
 package cmdr
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -15,6 +16,7 @@ type Cmd struct {
 	*exec.Cmd
 	// Name of the command
 	Name string
+	// inited bool
 
 	// RunBefore hook
 	RunBefore func(c *Cmd)
@@ -28,11 +30,28 @@ func WrapGoCmd(cmd *exec.Cmd) *Cmd {
 }
 
 // NewCmd instance
+//
+// see exec.Command
 func NewCmd(bin string, args ...string) *Cmd {
 	return &Cmd{
+		// inited: true,
 		Cmd: exec.Command(bin, args...),
 	}
 }
+
+// CmdWithCtx create new instance with context.
+//
+// see exec.CommandContext
+func CmdWithCtx(ctx context.Context, bin string, args ...string) *Cmd {
+	return &Cmd{
+		// inited: true,
+		Cmd: exec.CommandContext(ctx, bin, args...),
+	}
+}
+
+// -------------------------------------------------
+// config the command
+// -------------------------------------------------
 
 // OnBefore exec add hook
 func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
@@ -68,6 +87,12 @@ func (c *Cmd) lookPath(name string) {
 	}
 }
 
+// WithGoCmd and returns the current instance.
+func (c *Cmd) WithGoCmd(ec *exec.Cmd) *Cmd {
+	c.Cmd = ec
+	return c
+}
+
 // WithWorkDir returns the current object
 func (c *Cmd) WithWorkDir(dir string) *Cmd {
 	c.Dir = dir
@@ -87,7 +112,7 @@ func (c *Cmd) WithStdin(in io.Reader) *Cmd {
 	return c
 }
 
-// WithOutput returns the current argument
+// WithOutput returns the current instance
 func (c *Cmd) WithOutput(out, errOut io.Writer) *Cmd {
 	c.Stdout = out
 	if errOut != nil {

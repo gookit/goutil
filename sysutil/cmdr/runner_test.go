@@ -22,6 +22,7 @@ func TestRunner_Run(t *testing.T) {
 	task, err := rr.Task("task1")
 	assert.NoErr(t, err)
 	assert.NoErr(t, task.Err())
+	assert.True(t, task.IsSuccess())
 
 	ids := rr.TaskIDs()
 	// dump.P(rr.TaskIDs())
