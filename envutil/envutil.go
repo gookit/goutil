@@ -40,3 +40,10 @@ func ParseEnvValue(val string) string {
 func ParseValue(val string) (newVal string) {
 	return comfunc.ParseEnvVar(val, ValueGetter)
 }
+
+// SetEnvs to os
+func SetEnvs(mp map[string]string) {
+	for key, value := range mp {
+		_ = os.Setenv(key, value)
+	}
+}

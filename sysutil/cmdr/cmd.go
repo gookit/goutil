@@ -82,7 +82,7 @@ func (c *Cmd) lookPath(name string) {
 			c.Path = lp
 		}
 		if err != nil {
-			c.Err = err
+			panic("lookPath error:" + err.Error())
 		}
 	}
 }

@@ -48,6 +48,15 @@ func TestIsConsole(t *testing.T) {
 	is.True(envutil.HasShellEnv("sh"))
 }
 
+func TestIsGithubActions(t *testing.T) {
+	is := assert.New(t)
+
+	testutil.MockEnvValue("GITHUB_ACTIONS", "true", func(nv string) {
+		is.Eq("true", nv)
+		is.True(envutil.IsGithubActions())
+	})
+}
+
 func TestIsSupportColor(t *testing.T) {
 	is := assert.New(t)
 

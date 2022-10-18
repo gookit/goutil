@@ -19,7 +19,7 @@ func Getenv(name string, def ...string) string {
 // GetInt get int ENV value by key name, can with default value
 func GetInt(name string, def ...int) int {
 	if val := os.Getenv(name); val != "" {
-		return strutil.MustInt(val)
+		return strutil.QuietInt(val)
 	}
 
 	if len(def) > 0 {
@@ -31,7 +31,7 @@ func GetInt(name string, def ...int) int {
 // GetBool get bool ENV value by key name, can with default value
 func GetBool(name string, def ...bool) bool {
 	if val := os.Getenv(name); val != "" {
-		return strutil.MustBool(val)
+		return strutil.QuietBool(val)
 	}
 
 	if len(def) > 0 {

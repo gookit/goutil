@@ -67,7 +67,8 @@ func IsWSL() bool {
 // IsTerminal isatty check
 //
 // Usage:
-// 	envutil.IsTerminal(os.Stdout.Fd())
+//
+//	envutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
 	return isatty.IsTerminal(fd)
 }
@@ -83,22 +84,27 @@ func IsConsole(out io.Writer) bool {
 }
 
 // HasShellEnv has shell env check.
+//
 // Usage:
-// 	HasShellEnv("sh")
-// 	HasShellEnv("bash")
+//
+//	HasShellEnv("sh")
+//	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	return comfunc.HasShellEnv(shell)
 }
 
 // Support color:
-// 	"TERM=xterm"
-// 	"TERM=xterm-vt220"
-// 	"TERM=xterm-256color"
-// 	"TERM=screen-256color"
-// 	"TERM=tmux-256color"
-// 	"TERM=rxvt-unicode-256color"
+//
+//	"TERM=xterm"
+//	"TERM=xterm-vt220"
+//	"TERM=xterm-256color"
+//	"TERM=screen-256color"
+//	"TERM=tmux-256color"
+//	"TERM=rxvt-unicode-256color"
+//
 // Don't support color:
-// 	"TERM=cygwin"
+//
+//	"TERM=cygwin"
 var specialColorTerms = map[string]bool{
 	"alacritty": true,
 }
@@ -106,10 +112,12 @@ var specialColorTerms = map[string]bool{
 // IsSupportColor check current console is support color.
 //
 // Supported:
-// 	linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
+//
+//	linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
 //
 // Not support:
-// 	windows cmd.exe, powerShell.exe
+//
+//	windows cmd.exe, powerShell.exe
 func IsSupportColor() bool {
 	envTerm := os.Getenv("TERM")
 	if strings.Contains(envTerm, "xterm") {
@@ -154,4 +162,9 @@ func IsSupport256Color() bool {
 func IsSupportTrueColor() bool {
 	// "COLORTERM=truecolor"
 	return strings.Contains(os.Getenv("COLORTERM"), "truecolor")
+}
+
+// IsGithubActions env
+func IsGithubActions() bool {
+	return os.Getenv("GITHUB_ACTIONS") == "true"
 }
