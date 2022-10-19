@@ -8,6 +8,9 @@ import (
 	"os/exec"
 	"path/filepath"
 
+	"github.com/gookit/color"
+	"github.com/gookit/goutil"
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
@@ -18,10 +21,10 @@ type Cmd struct {
 	Name string
 	// inited bool
 
-	// RunBefore hook
-	RunBefore func(c *Cmd)
-	// RunAfter hook
-	RunAfter func(c *Cmd, err error)
+	// BeforeRun hook
+	BeforeRun func(c *Cmd)
+	// AfterRun hook
+	AfterRun func(c *Cmd, err error)
 }
 
 // WrapGoCmd instance
@@ -29,12 +32,16 @@ func WrapGoCmd(cmd *exec.Cmd) *Cmd {
 	return &Cmd{Cmd: cmd}
 }
 
+// NewGitCmd instance
+func NewGitCmd(subCmd string, args ...string) *Cmd {
+	return NewCmd("git", subCmd).AddArgs(args)
+}
+
 // NewCmd instance
 //
 // see exec.Command
 func NewCmd(bin string, args ...string) *Cmd {
 	return &Cmd{
-		// inited: true,
 		Cmd: exec.Command(bin, args...),
 	}
 }
@@ -44,9 +51,13 @@ func NewCmd(bin string, args ...string) *Cmd {
 // see exec.CommandContext
 func CmdWithCtx(ctx context.Context, bin string, args ...string) *Cmd {
 	return &Cmd{
-		// inited: true,
 		Cmd: exec.CommandContext(ctx, bin, args...),
 	}
+}
+
+// PrintCmdline on before exec
+func PrintCmdline(c *Cmd) {
+	color.Yellowln(">", c.Cmdline())
 }
 
 // -------------------------------------------------
@@ -55,13 +66,13 @@ func CmdWithCtx(ctx context.Context, bin string, args ...string) *Cmd {
 
 // OnBefore exec add hook
 func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
-	c.RunBefore = fn
+	c.BeforeRun = fn
 	return c
 }
 
 // OnAfter exec add hook
 func (c *Cmd) OnAfter(fn func(c *Cmd, err error)) *Cmd {
-	c.RunAfter = fn
+	c.AfterRun = fn
 	return c
 }
 
@@ -82,7 +93,7 @@ func (c *Cmd) lookPath(name string) {
 			c.Path = lp
 		}
 		if err != nil {
-			panic("lookPath error:" + err.Error())
+			goutil.Panicf("look %q path error: %s", name, err.Error())
 		}
 	}
 }
@@ -96,6 +107,14 @@ func (c *Cmd) WithGoCmd(ec *exec.Cmd) *Cmd {
 // WithWorkDir returns the current object
 func (c *Cmd) WithWorkDir(dir string) *Cmd {
 	c.Dir = dir
+	return c
+}
+
+// WorkDirOnNot set, returns the current object
+func (c *Cmd) WorkDirOnNot(dir string) *Cmd {
+	if c.Dir == "" {
+		c.Dir = dir
+	}
 	return c
 }
 
@@ -118,6 +137,12 @@ func (c *Cmd) WithOutput(out, errOut io.Writer) *Cmd {
 	if errOut != nil {
 		c.Stderr = errOut
 	}
+	return c
+}
+
+// WithAnyArgs add args and returns the current object.
+func (c *Cmd) WithAnyArgs(args ...interface{}) *Cmd {
+	c.Args = append(c.Args, arrutil.SliceToStrings(args)...)
 	return c
 }
 
@@ -275,28 +300,28 @@ func (c *Cmd) SafeOutput() string {
 
 // Output run and return output
 func (c *Cmd) Output() (string, error) {
-	if c.RunBefore != nil {
-		c.RunBefore(c)
+	if c.BeforeRun != nil {
+		c.BeforeRun(c)
 	}
 
 	output, err := c.Cmd.Output()
 
-	if c.RunAfter != nil {
-		c.RunAfter(c, err)
+	if c.AfterRun != nil {
+		c.AfterRun(c, err)
 	}
 	return string(output), err
 }
 
 // CombinedOutput run and return output, will combine stderr and stdout output
 func (c *Cmd) CombinedOutput() (string, error) {
-	if c.RunBefore != nil {
-		c.RunBefore(c)
+	if c.BeforeRun != nil {
+		c.BeforeRun(c)
 	}
 
 	output, err := c.Cmd.CombinedOutput()
 
-	if c.RunAfter != nil {
-		c.RunAfter(c, err)
+	if c.AfterRun != nil {
+		c.AfterRun(c, err)
 	}
 	return string(output), err
 }
@@ -316,15 +341,15 @@ func (c *Cmd) FlushRun() error {
 
 // Run runs command
 func (c *Cmd) Run() error {
-	if c.RunBefore != nil {
-		c.RunBefore(c)
+	if c.BeforeRun != nil {
+		c.BeforeRun(c)
 	}
 
 	// do running
 	err := c.Cmd.Run()
 
-	if c.RunAfter != nil {
-		c.RunAfter(c, err)
+	if c.AfterRun != nil {
+		c.AfterRun(c, err)
 	}
 	return err
 

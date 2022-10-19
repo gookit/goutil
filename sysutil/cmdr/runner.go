@@ -2,54 +2,37 @@ package cmdr
 
 import (
 	"fmt"
-	"strings"
 
+	"github.com/gookit/color"
+	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/errorx"
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 )
 
-// Errs on run tasks. key is Task.ID
-type Errs map[string]error
-
-// Error string
-func (e Errs) Error() string {
-	var sb strings.Builder
-	for name, err := range e {
-		sb.WriteString(name)
-		sb.WriteByte(':')
-		sb.WriteString(err.Error())
-		sb.WriteByte('\n')
-	}
-	return sb.String()
-}
-
-// IsEmpty error
-func (e Errs) IsEmpty() bool {
-	return len(e) == 0
-}
-
-// One error
-func (e Errs) One() error {
-	for _, err := range e {
-		return err
-	}
-	return nil
-}
-
 // Task struct
 type Task struct {
-	err error
+	err   error
+	index int
 
 	// ID for task
 	ID  string
 	Cmd *Cmd
 
-	// RunBefore hook
-	RunBefore func() bool
+	// BeforeRun hook
+	BeforeRun func(t *Task)
 	PrevCond  func(prev *Task) bool
+}
+
+func NewTask(cmd *Cmd) *Task {
+	return &Task{
+		Cmd: cmd,
+	}
 }
 
 // get task id by cmd.Name
 func (t *Task) ensureID(idx int) {
+	t.index = idx
 	if t.ID != "" {
 		return
 	}
@@ -61,9 +44,29 @@ func (t *Task) ensureID(idx int) {
 	t.ID = id
 }
 
+// Run command
+func (t *Task) Run() error {
+	if t.BeforeRun != nil {
+		t.BeforeRun(t)
+	}
+
+	t.err = t.Cmd.Run()
+	return t.err
+}
+
 // Err get
 func (t *Task) Err() error {
 	return t.err
+}
+
+// Index get
+func (t *Task) Index() int {
+	return t.index
+}
+
+// Cmdline get
+func (t *Task) Cmdline() string {
+	return t.Cmd.Cmdline()
 }
 
 // IsSuccess of task
@@ -77,24 +80,39 @@ type Runner struct {
 	// task name to index
 	idMap map[string]int
 	tasks []*Task
-	// Errs on run tasks
-	Errs Errs
+	// Errs on run tasks, key is Task.ID
+	Errs errorx.ErrMap
 
+	// TODO Concurrent run
+	// common workdir
+	// wordDir string
+
+	// Params for add custom params
+	Params maputil.Map
+
+	// DryRun dry run all commands
+	DryRun bool
 	// IgnoreErr continue on error
-	IgnoreErr  bool
-	RunBefore  func(r *Runner) bool
-	RunAfter   func(r *Runner)
-	ListenPrev func(t *Task) bool
-	EachBefore func(c *Cmd) bool
+	IgnoreErr bool
+	// BeforeRun hooks on each task. return false to skip current task.
+	BeforeRun func(r *Runner, t *Task) bool
+	// AfterRun hook on each task. return false to stop running.
+	AfterRun func(r *Runner, t *Task) bool
 }
 
-// NewRunner instance
-func NewRunner() *Runner {
-	return &Runner{
-		idMap: make(map[string]int, 0),
-		tasks: make([]*Task, 0),
-		Errs:  make(Errs),
+// NewRunner instance with config func
+func NewRunner(fns ...func(rr *Runner)) *Runner {
+	rr := &Runner{
+		idMap:  make(map[string]int, 0),
+		tasks:  make([]*Task, 0),
+		Errs:   make(errorx.ErrMap),
+		Params: make(maputil.Map),
 	}
+
+	for _, fn := range fns {
+		fn(rr)
+	}
+	return rr
 }
 
 // Add multitask at once
@@ -128,67 +146,83 @@ func (r *Runner) AddCmd(cmds ...*Cmd) *Runner {
 	return r
 }
 
+// GitCmd quick a git command task
+func (r *Runner) GitCmd(subCmd string, args ...string) *Runner {
+	r.AddTask(&Task{
+		Cmd: NewGitCmd(subCmd, args...),
+	})
+	return r
+}
+
+// CmdWithArgs a command task
+func (r *Runner) CmdWithArgs(cmdName string, args ...string) *Runner {
+	r.AddTask(&Task{
+		Cmd: NewCmd(cmdName, args...),
+	})
+	return r
+}
+
+// CmdWithAnys a command task
+func (r *Runner) CmdWithAnys(cmdName string, args ...interface{}) *Runner {
+	r.AddTask(&Task{
+		Cmd: NewCmd(cmdName, arrutil.SliceToStrings(args)...),
+	})
+	return r
+}
+
 // Run all tasks
 func (r *Runner) Run() error {
-	if r.RunBefore != nil {
-		if ok := r.RunBefore(r); !ok {
-			return nil
+	// do run tasks
+	for i, task := range r.tasks {
+		if r.BeforeRun != nil && !r.BeforeRun(r, task) {
+			continue
+		}
+
+		if r.prev != nil && task.PrevCond != nil && !task.PrevCond(r.prev) {
+			continue
+		}
+
+		if r.DryRun {
+			color.Infof("DRY-RUN: task #%d execute completed\n", i+1)
+			continue
+		}
+
+		if !r.RunTask(task) {
+			break
 		}
 	}
 
-	if r.RunAfter != nil {
-		r.RunAfter(r)
-	}
-
-	// to run tasks
-	r.runTasks()
-
-	if r.Errs.IsEmpty() {
+	if len(r.Errs) == 0 {
 		return nil
 	}
 	return r.Errs
 }
 
-// Prev task instance after running
-func (r *Runner) runTasks() {
-	for _, task := range r.tasks {
-		if task.RunBefore != nil && !task.RunBefore() {
-			continue
+// RunTask command
+func (r *Runner) RunTask(task *Task) (goon bool) {
+	// do running
+	if err := task.Run(); err != nil {
+		r.Errs[task.ID] = err
+		color.Errorf("Task #%d run error: %s\n", task.Index()+1, err)
+
+		// not ignore error, stop.
+		if !r.IgnoreErr {
+			return false
 		}
-
-		if r.prev != nil {
-			if r.ListenPrev != nil && !r.ListenPrev(r.prev) {
-				continue
-			}
-
-			if task.PrevCond != nil && !task.PrevCond(r.prev) {
-				continue
-			}
-		}
-
-		cmd := task.Cmd
-		if r.EachBefore != nil && r.EachBefore(cmd) {
-			continue
-		}
-
-		// do running
-		if err := cmd.Run(); err != nil {
-			task.err = err
-			r.Errs[task.ID] = err
-
-			// not ignore error, stop.
-			if !r.IgnoreErr {
-				return
-			}
-		}
-
-		if r.EachBefore != nil && !r.EachBefore(cmd) {
-			continue
-		}
-
-		// store prev
-		r.prev = task
 	}
+
+	if r.AfterRun != nil && !r.AfterRun(r, task) {
+		return false
+	}
+
+	// store prev
+	r.prev = task
+	return true
+}
+
+// Len of tasks
+func (r *Runner) Len() int {
+	return len(r.tasks)
 }
 
 // TaskIDs get
