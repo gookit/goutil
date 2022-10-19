@@ -3,6 +3,7 @@ package errorx
 import (
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // ErrorCoder interface
@@ -69,4 +70,58 @@ func (e *errorR) String() string {
 // GoString get.
 func (e *errorR) GoString() string {
 	return e.String()
+}
+
+// ErrMap type
+type ErrMap map[string]error
+
+// Error string
+func (e ErrMap) Error() string {
+	var sb strings.Builder
+	for name, err := range e {
+		sb.WriteString(name)
+		sb.WriteByte(':')
+		sb.WriteString(err.Error())
+		sb.WriteByte('\n')
+	}
+	return sb.String()
+}
+
+// IsEmpty error
+func (e ErrMap) IsEmpty() bool {
+	return len(e) == 0
+}
+
+// One error
+func (e ErrMap) One() error {
+	for _, err := range e {
+		return err
+	}
+	return nil
+}
+
+// ErrList type
+type ErrList []error
+
+// Error string
+func (el ErrList) Error() string {
+	var sb strings.Builder
+	for _, err := range el {
+		sb.WriteString(err.Error())
+		sb.WriteByte('\n')
+	}
+	return sb.String()
+}
+
+// IsEmpty error
+func (el ErrList) IsEmpty() bool {
+	return len(el) == 0
+}
+
+// First error
+func (el ErrList) First() error {
+	if len(el) > 0 {
+		return el[0]
+	}
+	return nil
 }
