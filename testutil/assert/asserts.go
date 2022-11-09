@@ -281,6 +281,12 @@ func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 // -------------------- error --------------------
 //
 
+// NoError asserts that the given is a nil error. alias of NoError()
+func NoError(t TestingT, err error, fmtAndArgs ...any) bool {
+	t.Helper()
+	return NoErr(t, err, fmtAndArgs...)
+}
+
 // NoErr asserts that the given is a nil error
 func NoErr(t TestingT, err error, fmtAndArgs ...any) bool {
 	if err != nil {
@@ -288,6 +294,12 @@ func NoErr(t TestingT, err error, fmtAndArgs ...any) bool {
 		return fail(t, fmt.Sprintf("Received unexpected error:\n%+v", err), fmtAndArgs)
 	}
 	return true
+}
+
+// Error asserts that the given is a not nil error. alias of Error()
+func Error(t TestingT, err error, fmtAndArgs ...any) bool {
+	t.Helper()
+	return Err(t, err, fmtAndArgs...)
 }
 
 // Err asserts that the given is a not nil error
@@ -388,6 +400,14 @@ func LenGt(t TestingT, give any, minLn int, fmtAndArgs ...any) bool {
 // -------------------- compare --------------------
 //
 
+// Equal asserts that the want should equal to the given.
+//
+// alias of Eq()
+func Equal(t TestingT, want, give any, fmtAndArgs ...any) bool {
+	t.Helper()
+	return Eq(t, want, give, fmtAndArgs...)
+}
+
 // Eq asserts that the want should equal to the given
 func Eq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
@@ -411,8 +431,17 @@ func Eq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 }
 
 // Neq asserts that the want should not be equal to the given.
+//
 // alias of NotEq()
 func Neq(t TestingT, want, give any, fmtAndArgs ...any) bool {
+	t.Helper()
+	return NotEq(t, want, give, fmtAndArgs...)
+}
+
+// NotEqual asserts that the want should not be equal to the given.
+//
+// alias of NotEq()
+func NotEqual(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
 	return NotEq(t, want, give, fmtAndArgs...)
 }
