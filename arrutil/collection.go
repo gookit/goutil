@@ -202,7 +202,7 @@ func Excepts(first, second any, fn Comparer) interface{} {
 //	first: the first slice. MUST BE A SLICE.
 //	second: the second slice. MUST BE A SLICE.
 //	fn: the comparer function.
-//	returns: the intersect of the two slices.
+//	returns: to intersect of the two slices.
 func Intersects(first any, second any, fn Comparer) interface{} {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
@@ -310,10 +310,12 @@ func TakeWhile(data any, fn Predicate) interface{} {
 	if aType.Kind() != reflect.Slice {
 		panic("collections.TakeWhile: data must be a slice")
 	}
+
 	sourceVal := reflect.ValueOf(data)
 	if sourceVal.Len() == 0 {
 		return MakeEmptySlice(aType.Elem())
 	}
+
 	result := reflect.New(reflect.SliceOf(aType.Elem())).Elem()
 	for i := 0; i < sourceVal.Len(); i++ {
 		s := sourceVal.Index(i).Interface()
@@ -335,10 +337,12 @@ func ExceptWhile(data any, fn Predicate) interface{} {
 	if aType.Kind() != reflect.Slice {
 		panic("collections.ExceptWhile: data must be a slice")
 	}
+
 	sourceVal := reflect.ValueOf(data)
 	if sourceVal.Len() == 0 {
 		return MakeEmptySlice(aType.Elem())
 	}
+
 	result := reflect.New(reflect.SliceOf(aType.Elem())).Elem()
 	for i := 0; i < sourceVal.Len(); i++ {
 		s := sourceVal.Index(i).Interface()

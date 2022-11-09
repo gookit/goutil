@@ -30,6 +30,8 @@ func IntsHas(ints []int, val int) bool
 func JoinSlice(sep string, arr ...any) string
 func JoinStrings(sep string, ss ...string) string
 func MakeEmptySlice(itemType reflect.Type) interface{}
+func Map[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
+func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
 func MustToInt64s(arr any) []int64
 func MustToStrings(arr any) []string
 func NotContains(arr, val any) bool
