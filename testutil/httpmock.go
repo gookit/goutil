@@ -27,20 +27,20 @@ type (
 // NewHttpRequest for http testing
 // Usage:
 //
-// 	req := NewHttpRequest("GET", "/path", nil)
+//	req := NewHttpRequest("GET", "/path", nil)
 //
-// 	// with data 1
-// 	body := strings.NewReader("string ...")
-// 	req := NewHttpRequest("POST", "/path", &MD{
-// 		Body: body,
-// 		Headers: M{"x-head": "val"}
-// 	})
+//	// with data 1
+//	body := strings.NewReader("string ...")
+//	req := NewHttpRequest("POST", "/path", &MD{
+//		Body: body,
+//		Headers: M{"x-head": "val"}
+//	})
 //
-// 	// with data 2
-// 	req := NewHttpRequest("POST", "/path", &MD{
-// 		BodyString: "data string",
-// 		Headers: M{"x-head": "val"}
-// 	})
+//	// with data 2
+//	req := NewHttpRequest("POST", "/path", &MD{
+//		BodyString: "data string",
+//		Headers: M{"x-head": "val"}
+//	})
 func NewHttpRequest(method, path string, data *MD) *http.Request {
 	var body io.Reader
 	if data != nil {
@@ -77,21 +77,22 @@ func NewHttpRequest(method, path string, data *MD) *http.Request {
 // MockRequest mock an HTTP Request
 //
 // Usage:
-// 	handler := router.New()
-// 	res := MockRequest(handler, "GET", "/path", nil)
 //
-// 	// with data 1
-// 	body := strings.NewReader("string ...")
-// 	res := MockRequest(handler, "POST", "/path", &MD{
-// 		Body: body,
-// 		Headers: M{"x-head": "val"}
-// 	})
+//	handler := router.New()
+//	res := MockRequest(handler, "GET", "/path", nil)
 //
-// 	// with data 2
-// 	res := MockRequest(handler, "POST", "/path", &MD{
-// 		BodyString: "data string",
-// 		Headers: M{"x-head": "val"}
-// 	})
+//	// with data 1
+//	body := strings.NewReader("string ...")
+//	res := MockRequest(handler, "POST", "/path", &MD{
+//		Body: body,
+//		Headers: M{"x-head": "val"}
+//	})
+//
+//	// with data 2
+//	res := MockRequest(handler, "POST", "/path", &MD{
+//		BodyString: "data string",
+//		Headers: M{"x-head": "val"}
+//	})
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder {
 	// w.Result() will return http.Response
 	w := httptest.NewRecorder()

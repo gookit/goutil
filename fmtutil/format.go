@@ -18,9 +18,10 @@ const (
 // DataSize format bytes number friendly.
 //
 // Usage:
-// 	file, err := os.Open(path)
-// 	fl, err := file.Stat()
-// 	fmtSize := DataSize(fl.Size())
+//
+//	file, err := os.Open(path)
+//	fl, err := file.Stat()
+//	fmtSize := DataSize(fl.Size())
 func DataSize(size uint64) string {
 	switch {
 	case size < 1024:

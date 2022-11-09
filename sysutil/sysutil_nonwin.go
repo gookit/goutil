@@ -47,14 +47,17 @@ func ProcessExists(pid int) bool {
 // OpenBrowser Open browser URL
 //
 // Mac：
-// 	open 'https://github.com/inhere'
+//
+//	open 'https://github.com/inhere'
 //
 // Linux:
-// 	xdg-open URL
-// 	x-www-browser 'https://github.com/inhere'
+//
+//	xdg-open URL
+//	x-www-browser 'https://github.com/inhere'
 //
 // Windows:
-// 	cmd /c start https://github.com/inhere
+//
+//	cmd /c start https://github.com/inhere
 func OpenBrowser(URL string) error {
 	bin := "x-www-browser"
 	if IsDarwin() {

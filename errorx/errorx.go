@@ -45,7 +45,8 @@ type XErrorFace interface {
 // ErrorX struct
 //
 // TIPS:
-//  fmt pkg call order: Format > GoString > Error > String
+//
+//	fmt pkg call order: Format > GoString > Error > String
 type ErrorX struct {
 	// trace stack
 	*stack
@@ -181,7 +182,8 @@ func (e *ErrorX) CallerFunc() *Func {
 // Location information for the caller func. more please see CallerFunc
 //
 // Returns eg:
-// 	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
+//
+//	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
 func (e *ErrorX) Location() string {
 	if e.stack == nil {
 		return "unknown"

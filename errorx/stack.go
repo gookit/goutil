@@ -107,7 +107,8 @@ func (f *Func) FileLine() (file string, line int) {
 // Location simple location info for the func
 //
 // Returns eg:
-// 	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
+//
+//	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
 func (f *Func) Location() string {
 	file, line := f.FileLine()
 
@@ -117,8 +118,9 @@ func (f *Func) Location() string {
 // String of the func
 //
 // Returns eg:
-// 	github.com/gookit/goutil/errorx_test.TestWithPrev()
-// 	  At /path/to/github.com/gookit/goutil/errorx_test.go:34
+//
+//	github.com/gookit/goutil/errorx_test.TestWithPrev()
+//	  At /path/to/github.com/gookit/goutil/errorx_test.go:34
 func (f *Func) String() string {
 	file, line := f.FileLine()
 

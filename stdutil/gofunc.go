@@ -58,7 +58,8 @@ func (ffn *FullFcName) String() string {
 // FuncName get full func name, contains pkg path.
 //
 // eg:
-// 	// OUTPUT: github.com/gookit/goutil/stdutil.PanicIf
+//
+//	// OUTPUT: github.com/gookit/goutil/stdutil.PanicIf
 //	stdutil.FuncName(stdutil.PkgName)
 func FuncName(fn interface{}) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
@@ -73,6 +74,7 @@ func CutFuncName(fullFcName string) (pkgPath, shortFnName string) {
 // PkgName get current package name
 //
 // Usage:
+//
 //	fullFcName := stdutil.FuncName(fn)
 //	pgkName := stdutil.PkgName(fullFcName)
 func PkgName(fullFcName string) string {

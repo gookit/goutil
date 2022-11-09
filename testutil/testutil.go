@@ -1,7 +1,7 @@
 package testutil
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -10,9 +10,10 @@ var oldStdout, oldStderr, newReader *os.File
 // DiscardStdout Discard os.Stdout output
 //
 // Usage:
-// 	DiscardStdout()
-// 	fmt.Println("Hello, playground")
-// 	RestoreStdout()
+//
+//	DiscardStdout()
+//	fmt.Println("Hello, playground")
+//	RestoreStdout()
 func DiscardStdout() error {
 	// save old os.Stdout
 	oldStdout = os.Stdout
@@ -31,9 +32,10 @@ func DiscardStdout() error {
 // RewriteStdout rewrite os.Stdout
 //
 // Usage:
-// 	RewriteStdout()
-// 	fmt.Println("Hello, playground")
-// 	msg := RestoreStdout()
+//
+//	RewriteStdout()
+//	fmt.Println("Hello, playground")
+//	msg := RestoreStdout()
 func RewriteStdout() {
 	if oldStdout != nil {
 		return
@@ -62,7 +64,7 @@ func RestoreStdout(printData ...bool) (s string) {
 	}
 
 	// read output data
-	out, _ := ioutil.ReadAll(newReader)
+	out, _ := io.ReadAll(newReader)
 	s = string(out)
 
 	// print the read data to stdout
@@ -79,9 +81,10 @@ func RestoreStdout(printData ...bool) (s string) {
 // RewriteStderr rewrite os.Stderr
 //
 // Usage:
-// 	RewriteStderr()
-// 	fmt.Fprintln(os.Stderr, "Hello, playground")
-// 	msg := RestoreStderr()
+//
+//	RewriteStderr()
+//	fmt.Fprintln(os.Stderr, "Hello, playground")
+//	msg := RestoreStderr()
 func RewriteStderr() {
 	if oldStderr != nil {
 		return
@@ -110,7 +113,7 @@ func RestoreStderr(printData ...bool) (s string) {
 	}
 
 	// read output data
-	bts, _ := ioutil.ReadAll(newReader)
+	bts, _ := io.ReadAll(newReader)
 	s = string(bts)
 
 	// print the read data to stderr

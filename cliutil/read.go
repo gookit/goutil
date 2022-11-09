@@ -26,8 +26,9 @@ func ReadInput(question string) (string, error) {
 // ReadLine read one line from user input.
 //
 // Usage:
-// 	in := cliutil.ReadLine("")
-// 	ans, _ := cliutil.ReadLine("your name?")
+//
+//	in := cliutil.ReadLine("")
+//	ans, _ := cliutil.ReadLine("your name?")
 func ReadLine(question string) (string, error) {
 	if len(question) > 0 {
 		color.Print(question)
@@ -47,7 +48,8 @@ func ReadFirst(question string) (string, error) {
 // ReadFirstByte read first byte char
 //
 // Usage:
-// 	ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
+//
+//	ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
 func ReadFirstByte(question string) (byte, error) {
 	if len(question) > 0 {
 		color.Print(question)

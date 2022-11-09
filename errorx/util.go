@@ -70,11 +70,12 @@ func Is(err, target error) bool {
 // NOTICE: target must be ptr and not nil. alias of errors.As()
 //
 // Usage:
+//
 //	var ex *errorx.ErrorX
 //	err := doSomething()
-// 	if errorx.To(err, &ex) {
-// 		fmt.Println(ex.GoString())
-// 	}
+//	if errorx.To(err, &ex) {
+//		fmt.Println(ex.GoString())
+//	}
 func To(err error, target interface{}) bool {
 	return errors.As(err, target)
 }

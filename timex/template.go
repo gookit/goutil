@@ -8,7 +8,7 @@ import (
 
 // char to Go date layout eg: "2006-01-02 15:04:05",
 //
-// More see time.stdLongMonth
+// # More see time.stdLongMonth
 //
 // Char sheet from https://www.php.net/manual/en/datetime.format.php
 var charMap = map[byte][]byte{

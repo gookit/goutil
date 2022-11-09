@@ -62,6 +62,7 @@ func (fn FilterFunc) Filter(filePath, filename string) bool {
 // ExtFilterFunc filter filepath by given file ext.
 //
 // Usage:
+//
 //	f := EmptyFinder()
 //	f.AddFilter(ExtFilterFunc([]string{".go", ".md"}, true))
 //	f.AddFilter(ExtFilterFunc([]string{".log", ".tmp"}, false))
@@ -80,6 +81,7 @@ func ExtFilterFunc(exts []string, include bool) FileFilterFunc {
 // SuffixFilterFunc filter filepath by given file ext.
 //
 // Usage:
+//
 //	f := EmptyFinder()
 //	f.AddFilter(SuffixFilterFunc([]string{"util.go", ".md"}, true))
 //	f.AddFilter(SuffixFilterFunc([]string{"_test.go", ".log"}, false))
@@ -144,6 +146,7 @@ func ModTimeFilterFunc(limitSec int, op rune, include bool) FileFilterFunc {
 // GlobFilterFunc filter filepath by given patterns.
 //
 // Usage:
+//
 //	f := EmptyFiler()
 //	f.AddFilter(GlobFilterFunc([]string{"*_test.go"}, true))
 func GlobFilterFunc(patterns []string, include bool) FileFilterFunc {
@@ -160,9 +163,10 @@ func GlobFilterFunc(patterns []string, include bool) FileFilterFunc {
 // RegexFilterFunc filter filepath by given regex pattern
 //
 // Usage:
+//
 //	f := EmptyFiler()
 //	f.AddFilter(RegexFilterFunc(`[A-Z]\w+`, true))
-func RegexFilterFunc(pattern string, include bool) FileFilterFunc {
+func RegexFilterFunc(pattern string, _ bool) FileFilterFunc {
 	reg := regexp.MustCompile(pattern)
 
 	return func(_, filename string) bool {

@@ -50,9 +50,10 @@ func IsEqual(src, dst interface{}) bool {
 // alias of the IsContains
 //
 // TIP: only support types: string, map, array, slice
-// 	map         - check key exists
-// 	string 	    - check sub-string exists
-// 	array,slice - check sub-element exists
+//
+//	map         - check key exists
+//	string 	    - check sub-string exists
+//	array,slice - check sub-element exists
 func Contains(data, elem interface{}) bool {
 	_, found := CheckContains(data, elem)
 	return found
@@ -61,9 +62,10 @@ func Contains(data, elem interface{}) bool {
 // IsContains try loop over the data check if the data includes the element.
 //
 // TIP: only support types: string, map, array, slice
-// 	map         - check key exists
-// 	string 	    - check sub-string exists
-// 	array,slice - check sub-element exists
+//
+//	map         - check key exists
+//	string 	    - check sub-string exists
+//	array,slice - check sub-element exists
 func IsContains(data, elem interface{}) bool {
 	_, found := CheckContains(data, elem)
 	return found
@@ -72,9 +74,10 @@ func IsContains(data, elem interface{}) bool {
 // CheckContains try loop over the data check if the data includes the element.
 //
 // TIP: only support types: string, map, array, slice
-// 	map         - check key exists
-// 	string 	    - check sub-string exists
-// 	array,slice - check sub-element exists
+//
+//	map         - check key exists
+//	string 	    - check sub-string exists
+//	array,slice - check sub-element exists
 //
 // return (false, false) if impossible.
 // return (true, false) if element was not found.
