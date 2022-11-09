@@ -64,6 +64,12 @@ func PrintCmdline(c *Cmd) {
 // config the command
 // -------------------------------------------------
 
+// Config the command
+func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
+	fn(c)
+	return c
+}
+
 // OnBefore exec add hook
 func (c *Cmd) OnBefore(fn func(c *Cmd)) *Cmd {
 	c.BeforeRun = fn

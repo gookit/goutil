@@ -9,10 +9,14 @@ import (
 	"text/template"
 )
 
-// Position for padding string
+// PosFlag type
+type PosFlag uint8
+
+// Position for padding/resize string
 const (
-	PosLeft uint8 = iota
+	PosLeft PosFlag = iota
 	PosRight
+	PosMiddle
 )
 
 /*************************************************************
@@ -20,7 +24,7 @@ const (
  *************************************************************/
 
 // Padding a string.
-func Padding(s, pad string, length int, pos uint8) string {
+func Padding(s, pad string, length int, pos PosFlag) string {
 	diff := len(s) - length
 	if diff >= 0 { // do not need padding.
 		return s
@@ -40,7 +44,6 @@ func Padding(s, pad string, length int, pos uint8) string {
 	if pos == PosRight { // to right
 		return s + Repeat(pad, -diff)
 	}
-
 	return Repeat(pad, -diff) + s
 }
 
@@ -52,6 +55,27 @@ func PadLeft(s, pad string, length int) string {
 // PadRight a string.
 func PadRight(s, pad string, length int) string {
 	return Padding(s, pad, length, PosRight)
+}
+
+// Resize a string by given length and align settings. padding space.
+func Resize(s string, length int, align PosFlag) string {
+	diff := len(s) - length
+	if diff >= 0 { // do not need padding.
+		return s
+	}
+
+	if align == PosMiddle {
+		strLn := len(s)
+		padLn := (length - strLn) / 2
+		padStr := string(make([]byte, padLn, padLn))
+
+		if diff := length - padLn*2; diff > 0 {
+			s += " "
+		}
+		return padStr + s + padStr
+	}
+
+	return Padding(s, " ", length, align)
 }
 
 /*************************************************************
@@ -76,19 +100,21 @@ func Repeat(s string, times int) string {
 }
 
 // RepeatRune repeat a rune char.
-func RepeatRune(char rune, times int) (chars []rune) {
+func RepeatRune(char rune, times int) []rune {
+	chars := make([]rune, 0, times)
 	for i := 0; i < times; i++ {
 		chars = append(chars, char)
 	}
-	return
+	return chars
 }
 
 // RepeatBytes repeat a byte char.
-func RepeatBytes(char byte, times int) (chars []byte) {
+func RepeatBytes(char byte, times int) []byte {
+	chars := make([]byte, 0, times)
 	for i := 0; i < times; i++ {
 		chars = append(chars, char)
 	}
-	return
+	return chars
 }
 
 // Replaces replace multi strings
