@@ -2,9 +2,9 @@
 package arrutil
 
 import (
-	"reflect"
 	"strings"
 
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/mathutil"
 )
 
@@ -92,29 +92,27 @@ func TrimStrings(ss []string, cutSet ...string) []string {
 }
 
 // GetRandomOne get random element from an array/slice
-func GetRandomOne(arr any) interface{} { return RandomOne(arr) }
+func GetRandomOne[T any](arr []T) T { return RandomOne(arr) }
 
 // RandomOne get random element from an array/slice
-func RandomOne(arr any) interface{} {
-	rv := reflect.ValueOf(arr)
-	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
-		return arr
+func RandomOne[T any](arr []T) T {
+	if ln := len(arr); ln > 0 {
+		i := mathutil.RandomInt(0, len(arr))
+		return arr[i]
 	}
-
-	i := mathutil.RandomInt(0, rv.Len())
-	r := rv.Index(i).Interface()
-	return r
+	panic("cannot get value from nil or empty slice")
 }
 
-// Unique value in the given array, slice.
-func Unique(arr any) interface{} {
-	rv := reflect.ValueOf(arr)
-	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
-		return arr
-	}
+// Unique value in the given slice data.
+func Unique[T ~string | comdef.XintOrFloat](arr []T) []T {
+	valMap := make(map[T]struct{}, len(arr))
+	uniArr := make([]T, 0, len(arr))
 
-	for i := 0; i < rv.Len(); i++ {
-		// TODO ...
+	for _, t := range arr {
+		if _, ok := valMap[t]; !ok {
+			valMap[t] = struct{}{}
+			uniArr = append(uniArr, t)
+		}
 	}
-	return arr
+	return uniArr
 }
