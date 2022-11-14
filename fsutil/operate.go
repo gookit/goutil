@@ -2,11 +2,13 @@ package fsutil
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 )
 
 // Mkdir alias of os.MkdirAll()
@@ -317,7 +319,13 @@ func Unzip(archive, targetDir string) (err error) {
 	}
 
 	for _, file := range reader.File {
+
+		if strings.Contains(file.Name, "..") {
+			return fmt.Errorf("illegal file path in zip: %v", file.Name)
+		}
+
 		fullPath := filepath.Join(targetDir, file.Name)
+
 		if file.FileInfo().IsDir() {
 			err = os.MkdirAll(fullPath, file.Mode())
 			if err != nil {
