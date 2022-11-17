@@ -197,11 +197,11 @@ func TestFindShouldPassed(t *testing.T) {
 		"c",
 	}
 
-	result, err := arrutil.Find(data, func(a interface{}) bool { return a == "b" })
+	result, err := arrutil.Find(data, func(a any) bool { return a == "b" })
 	assert.Nil(t, err)
 	assert.Eq(t, "b", result)
 
-	_, err = arrutil.Find(data, func(a interface{}) bool { return a == "d" })
+	_, err = arrutil.Find(data, func(a any) bool { return a == "d" })
 	assert.NotNil(t, err)
 	assert.Eq(t, arrutil.ErrElementNotFound, err.Error())
 
@@ -209,13 +209,13 @@ func TestFindShouldPassed(t *testing.T) {
 
 func TestFindNotSliceShouldPanic(t *testing.T) {
 	assert.Panics(t, func() {
-		_, _ = arrutil.Find([1]string{"a"}, func(a interface{}) bool { return a == "b" })
+		_, _ = arrutil.Find([1]string{"a"}, func(a any) bool { return a == "b" })
 	})
 }
 
 func TestFindEmptyReturnsErrElementNotFound(t *testing.T) {
 	data := []string{}
-	_, err := arrutil.Find(data, func(a interface{}) bool { return a == "b" })
+	_, err := arrutil.Find(data, func(a any) bool { return a == "b" })
 	assert.NotNil(t, err)
 	assert.Eq(t, arrutil.ErrElementNotFound, err.Error())
 }
@@ -228,10 +228,10 @@ func TestFindOrDefaultShouldPassed(t *testing.T) {
 		"c",
 	}
 
-	result := arrutil.FindOrDefault(data, func(a interface{}) bool { return a == "b" }, "d").(string)
+	result := arrutil.FindOrDefault(data, func(a any) bool { return a == "b" }, "d").(string)
 	assert.Eq(t, "b", result)
 
-	result = arrutil.FindOrDefault(data, func(a interface{}) bool { return a == "d" }, "d").(string)
+	result = arrutil.FindOrDefault(data, func(a any) bool { return a == "d" }, "d").(string)
 	assert.Eq(t, "d", result)
 }
 
@@ -243,19 +243,19 @@ func TestTakeWhileShouldPassed(t *testing.T) {
 		"c",
 	}
 
-	result := arrutil.TakeWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
+	result := arrutil.TakeWhile(data, func(a any) bool { return a == "b" || a == "c" }).([]string)
 	assert.Eq(t, []string{"b", "c"}, result)
 }
 
 func TestTakeWhileNotSliceShouldPanic(t *testing.T) {
 	assert.Panics(t, func() {
-		arrutil.TakeWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+		arrutil.TakeWhile([1]string{"a"}, func(a any) bool { return a == "b" || a == "c" })
 	})
 }
 
 func TestTakeWhileEmptyReturnsEmpty(t *testing.T) {
 	var data []string
-	result := arrutil.TakeWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
+	result := arrutil.TakeWhile(data, func(a any) bool { return a == "b" || a == "c" }).([]string)
 	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
@@ -269,13 +269,13 @@ func TestExceptWhileShouldPassed(t *testing.T) {
 		"c",
 	}
 
-	result := arrutil.ExceptWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
+	result := arrutil.ExceptWhile(data, func(a any) bool { return a == "b" || a == "c" }).([]string)
 	assert.Eq(t, []string{"a"}, result)
 }
 
 func TestExceptWhileNotSliceShouldPanic(t *testing.T) {
 	assert.Panics(t, func() {
-		arrutil.ExceptWhile([1]string{"a"}, func(a interface{}) bool { return a == "b" || a == "c" })
+		arrutil.ExceptWhile([1]string{"a"}, func(a any) bool { return a == "b" || a == "c" })
 	})
 }
 

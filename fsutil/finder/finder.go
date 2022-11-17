@@ -1,7 +1,6 @@
 package finder
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -346,7 +345,7 @@ func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
 // EachContents handle each found file contents
 func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
 	f.Each(func(filePath string) {
-		bts, err := ioutil.ReadFile(filePath)
+		bts, err := os.ReadFile(filePath)
 		if err != nil {
 			return
 		}

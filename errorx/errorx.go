@@ -205,7 +205,7 @@ func New(msg string) error {
 
 // Newf error with format message, and with caller stacks.
 // alias of Errorf()
-func Newf(tpl string, vars ...interface{}) error {
+func Newf(tpl string, vars ...any) error {
 	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
@@ -213,7 +213,7 @@ func Newf(tpl string, vars ...interface{}) error {
 }
 
 // Errorf error with format message, and with caller stacks
-func Errorf(tpl string, vars ...interface{}) error {
+func Errorf(tpl string, vars ...any) error {
 	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
@@ -230,7 +230,7 @@ func With(err error, msg string) error {
 }
 
 // Withf error and with format message, and with caller stacks
-func Withf(err error, tpl string, vars ...interface{}) error {
+func Withf(err error, tpl string, vars ...any) error {
 	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		prev:  err,
@@ -248,7 +248,7 @@ func WithPrev(err error, msg string) error {
 }
 
 // WithPrevf error and with format message, and with caller stacks. alias of Withf()
-func WithPrevf(err error, tpl string, vars ...interface{}) error {
+func WithPrevf(err error, tpl string, vars ...any) error {
 	return &ErrorX{
 		msg:   fmt.Sprintf(tpl, vars...),
 		prev:  err,
@@ -324,7 +324,7 @@ func Wrap(err error, msg string) error {
 }
 
 // Wrapf error with format message, but not with stack
-func Wrapf(err error, tpl string, vars ...interface{}) error {
+func Wrapf(err error, tpl string, vars ...any) error {
 	if err == nil {
 		return fmt.Errorf(tpl, vars...)
 	}

@@ -59,7 +59,7 @@ func StringsToSlice(ss []string) []any {
  * helper func for slices
  *************************************************************/
 
-// ToInt64s convert interface{}(allow: array,slice) to []int64
+// ToInt64s convert any(allow: array,slice) to []int64
 func ToInt64s(arr any) (ret []int64, err error) {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
@@ -78,7 +78,7 @@ func ToInt64s(arr any) (ret []int64, err error) {
 	return
 }
 
-// MustToInt64s convert interface{}(allow: array,slice) to []int64
+// MustToInt64s convert any(allow: array,slice) to []int64
 func MustToInt64s(arr any) []int64 {
 	ret, _ := ToInt64s(arr)
 	return ret
@@ -93,7 +93,7 @@ func SliceToInt64s(arr []any) []int64 {
 	return i64s
 }
 
-// ToStrings convert interface{}(allow: array,slice) to []string
+// ToStrings convert any(allow: array,slice) to []string
 func ToStrings(arr any) (ret []string, err error) {
 	rv := reflect.ValueOf(arr)
 	if rv.Kind() != reflect.Slice && rv.Kind() != reflect.Array {
@@ -129,7 +129,7 @@ func AnyToString(arr any) string {
 // SliceToString convert []any to string
 func SliceToString(arr ...any) string { return ToString(arr) }
 
-// ToString simple and quickly convert []interface{} to string
+// ToString simple and quickly convert []any to string
 func ToString(arr []any) string {
 	// like fmt.Println([]any(nil))
 	if arr == nil {

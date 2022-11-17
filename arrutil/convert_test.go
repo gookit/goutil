@@ -18,10 +18,10 @@ func TestToInt64s(t *testing.T) {
 	ints = arrutil.MustToInt64s([]string{"1", "2"})
 	is.Eq("[]int64{1, 2}", fmt.Sprintf("%#v", ints))
 
-	ints = arrutil.MustToInt64s([]interface{}{"1", "2"})
+	ints = arrutil.MustToInt64s([]any{"1", "2"})
 	is.Eq("[]int64{1, 2}", fmt.Sprintf("%#v", ints))
 
-	ints = arrutil.SliceToInt64s([]interface{}{"1", "2"})
+	ints = arrutil.SliceToInt64s([]any{"1", "2"})
 	is.Eq("[]int64{1, 2}", fmt.Sprintf("%#v", ints))
 
 	_, err = arrutil.ToInt64s([]string{"a", "b"})
@@ -38,10 +38,10 @@ func TestToStrings(t *testing.T) {
 	ss = arrutil.MustToStrings([]int{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
-	ss = arrutil.MustToStrings([]interface{}{1, 2})
+	ss = arrutil.MustToStrings([]any{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
-	ss = arrutil.SliceToStrings([]interface{}{1, 2})
+	ss = arrutil.SliceToStrings([]any{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
 	as := arrutil.StringsToSlice([]string{"1", "2"})
@@ -50,7 +50,7 @@ func TestToStrings(t *testing.T) {
 	_, err = arrutil.ToStrings("b")
 	is.Err(err)
 
-	_, err = arrutil.ToStrings([]interface{}{[]int{1}, nil})
+	_, err = arrutil.ToStrings([]any{[]int{1}, nil})
 	is.Err(err)
 }
 

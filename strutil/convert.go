@@ -78,29 +78,29 @@ func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
  *************************************************************/
 
 // String convert val to string
-func String(val interface{}) (string, error) {
+func String(val any) (string, error) {
 	return AnyToString(val, true)
 }
 
 // QuietString convert value to string, will ignore error
-func QuietString(in interface{}) string {
+func QuietString(in any) string {
 	val, _ := AnyToString(in, false)
 	return val
 }
 
 // MustString convert value to string, TODO will panic on error
-func MustString(in interface{}) string {
+func MustString(in any) string {
 	val, _ := AnyToString(in, false)
 	return val
 }
 
 // StringOrErr convert value to string, return error on failed
-func StringOrErr(val interface{}) (string, error) {
+func StringOrErr(val any) (string, error) {
 	return AnyToString(val, true)
 }
 
 // ToString convert value to string
-func ToString(val interface{}) (string, error) {
+func ToString(val any) (string, error) {
 	return AnyToString(val, true)
 }
 
@@ -110,7 +110,7 @@ func ToString(val interface{}) (string, error) {
 //
 //	False will use fmt.Sprint convert complex type
 //	True  will return error on fail.
-func AnyToString(val interface{}, defaultAsErr bool) (str string, err error) {
+func AnyToString(val any, defaultAsErr bool) (str string, err error) {
 	if val == nil {
 		return
 	}

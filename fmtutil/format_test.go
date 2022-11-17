@@ -44,7 +44,7 @@ func TestParseByte(t *testing.T) {
 }
 
 func TestPrettyJSON(t *testing.T) {
-	tests := []interface{}{
+	tests := []any{
 		map[string]int{"a": 1},
 		struct {
 			A int `json:"a"`
@@ -62,9 +62,9 @@ func TestPrettyJSON(t *testing.T) {
 
 func TestArgsWithSpaces(t *testing.T) {
 	assert.Eq(t, "", fmtutil.ArgsWithSpaces(nil))
-	assert.Eq(t, "", fmtutil.ArgsWithSpaces([]interface{}{}))
-	assert.Eq(t, "abc", fmtutil.ArgsWithSpaces([]interface{}{"abc"}))
-	assert.Eq(t, "23 abc", fmtutil.ArgsWithSpaces([]interface{}{23, "abc"}))
+	assert.Eq(t, "", fmtutil.ArgsWithSpaces([]any{}))
+	assert.Eq(t, "abc", fmtutil.ArgsWithSpaces([]any{"abc"}))
+	assert.Eq(t, "23 abc", fmtutil.ArgsWithSpaces([]any{23, "abc"}))
 }
 
 func TestStringsToInts(t *testing.T) {

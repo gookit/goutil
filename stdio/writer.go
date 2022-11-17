@@ -21,7 +21,7 @@ func (w *WriteWrapper) Write(p []byte) (n int, err error) {
 }
 
 // Writef data to output
-func (w *WriteWrapper) Writef(tpl string, vs ...interface{}) (n int, err error) {
+func (w *WriteWrapper) Writef(tpl string, vs ...any) (n int, err error) {
 	return fmt.Fprintf(w.Out, tpl, vs...)
 }
 

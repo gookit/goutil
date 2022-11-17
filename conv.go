@@ -61,7 +61,7 @@ func Uint(v any) uint64 {
 }
 
 // ToUint try to convert value to uint64
-func ToUint(v interface{}) (uint64, error) {
+func ToUint(v any) (uint64, error) {
 	return mathutil.ToUint(v)
 }
 
@@ -72,7 +72,7 @@ func ToUint(v interface{}) (uint64, error) {
 //	string 	    => string
 //
 // returns int64,string,float or error
-func BaseTypeVal(val interface{}) (value interface{}, err error) {
+func BaseTypeVal(val any) (value any, err error) {
 	return reflects.BaseTypeVal(reflect.ValueOf(val))
 }
 

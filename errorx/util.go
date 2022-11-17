@@ -11,7 +11,7 @@ func Raw(msg string) error {
 }
 
 // Rawf new a raw go error. alias of errors.New()
-func Rawf(tpl string, vars ...interface{}) error {
+func Rawf(tpl string, vars ...any) error {
 	return fmt.Errorf(tpl, vars...)
 }
 
@@ -76,13 +76,13 @@ func Is(err, target error) bool {
 //	if errorx.To(err, &ex) {
 //		fmt.Println(ex.GoString())
 //	}
-func To(err error, target interface{}) bool {
+func To(err error, target any) bool {
 	return errors.As(err, target)
 }
 
 // As same of the To(), alias of errors.As()
 //
 // NOTICE: target must be ptr and not nil
-func As(err error, target interface{}) bool {
+func As(err error, target any) bool {
 	return errors.As(err, target)
 }

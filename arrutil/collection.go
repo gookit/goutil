@@ -59,7 +59,7 @@ var (
 
 	// ReferenceEqualsComparer Comparer for strcut ptr. It will compare the struct by their ptr addr.
 	// returns: 0 if equal, -1 if a != b
-	ReferenceEqualsComparer Comparer = func(a, b interface{}) int {
+	ReferenceEqualsComparer Comparer = func(a, b any) int {
 		if a == b {
 			return 0
 		}
@@ -68,7 +68,7 @@ var (
 
 	// ElemTypeEqualsComparer Comparer for struct/value. It will compare the struct by their element type (reflect.Type.Elem()).
 	// returns: 0 if same type, -1 if not.
-	ElemTypeEqualsComparer Comparer = func(a, b interface{}) int {
+	ElemTypeEqualsComparer Comparer = func(a, b any) int {
 		at := reflect.TypeOf(a)
 		bt := reflect.TypeOf(b)
 		if at.Kind() == reflect.Ptr {
@@ -143,7 +143,7 @@ func TwowaySearch(data any, item any, fn Comparer) (int, error) {
 //
 // itemType: the type of the elements in the source.
 // returns: the new slice.
-func MakeEmptySlice(itemType reflect.Type) interface{} {
+func MakeEmptySlice(itemType reflect.Type) any {
 	ret := reflect.MakeSlice(reflect.SliceOf(itemType), 0, 0).Interface()
 	return ret
 }
@@ -152,7 +152,7 @@ func MakeEmptySlice(itemType reflect.Type) interface{} {
 //
 //	data: the slice to clone.
 //	returns: the cloned slice.
-func CloneSlice(data any) interface{} {
+func CloneSlice(data any) any {
 	typeOfData := reflect.TypeOf(data)
 	if typeOfData.Kind() != reflect.Slice {
 		panic("collections.CloneSlice: data must be a slice")
@@ -166,7 +166,7 @@ func CloneSlice(data any) interface{} {
 //	second: the second slice. MUST BE A SLICE.
 //	fn: the comparer function.
 //	returns: the difference of the two slices.
-func Excepts(first, second any, fn Comparer) interface{} {
+func Excepts(first, second any, fn Comparer) any {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
 		panic("collections.Excepts: first must be a slice")
@@ -203,7 +203,7 @@ func Excepts(first, second any, fn Comparer) interface{} {
 //	second: the second slice. MUST BE A SLICE.
 //	fn: the comparer function.
 //	returns: to intersect of the two slices.
-func Intersects(first any, second any, fn Comparer) interface{} {
+func Intersects(first any, second any, fn Comparer) any {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
 		panic("collections.Intersects: first must be a slice")
@@ -240,7 +240,7 @@ func Intersects(first any, second any, fn Comparer) interface{} {
 //	second: the second slice. MUST BE A SLICE.
 //	fn: the comparer function.
 //	returns: the union of the two slices.
-func Union(first, second any, fn Comparer) interface{} {
+func Union(first, second any, fn Comparer) any {
 	excepts := Excepts(second, first, fn)
 
 	typeOfFirst := reflect.TypeOf(first)
@@ -262,7 +262,7 @@ func Union(first, second any, fn Comparer) interface{} {
 //	source: the slice. MUST BE A SLICE.
 //	fn: the predicate function.
 //	returns: the struct/value of the slice.
-func Find(source any, fn Predicate) (interface{}, error) {
+func Find(source any, fn Predicate) (any, error) {
 	aType := reflect.TypeOf(source)
 	if aType.Kind() != reflect.Slice {
 		panic("collections.Find: source must be a slice")
@@ -289,7 +289,7 @@ func Find(source any, fn Predicate) (interface{}, error) {
 //	fn: the predicate function.
 //	defaultValue: the default value.
 //	returns: the struct/value of the slice.
-func FindOrDefault(source any, fn Predicate, defaultValue any) interface{} {
+func FindOrDefault(source any, fn Predicate, defaultValue any) any {
 	item, err := Find(source, fn)
 	if err != nil {
 		if err.Error() == ErrElementNotFound {
@@ -305,7 +305,7 @@ func FindOrDefault(source any, fn Predicate, defaultValue any) interface{} {
 //	data: the slice. MUST BE A SLICE.
 //	fn: the predicate function.
 //	returns: the set of the slice.
-func TakeWhile(data any, fn Predicate) interface{} {
+func TakeWhile(data any, fn Predicate) any {
 	aType := reflect.TypeOf(data)
 	if aType.Kind() != reflect.Slice {
 		panic("collections.TakeWhile: data must be a slice")
@@ -332,7 +332,7 @@ func TakeWhile(data any, fn Predicate) interface{} {
 //	data: the slice. MUST BE A SLICE.
 //	fn: the predicate function.
 //	returns: the set of the slice.
-func ExceptWhile(data any, fn Predicate) interface{} {
+func ExceptWhile(data any, fn Predicate) any {
 	aType := reflect.TypeOf(data)
 	if aType.Kind() != reflect.Slice {
 		panic("collections.ExceptWhile: data must be a slice")

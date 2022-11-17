@@ -82,7 +82,7 @@ func ParseByte(sizeStr string) uint64 {
 }
 
 // PrettyJSON get pretty Json string
-func PrettyJSON(v interface{}) (string, error) {
+func PrettyJSON(v any) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
 }
@@ -102,7 +102,7 @@ func StringsToInts(ss []string) (ints []int, err error) {
 }
 
 // ArgsWithSpaces it like Println, will add spaces for each argument
-func ArgsWithSpaces(args []interface{}) (message string) {
+func ArgsWithSpaces(args []any) (message string) {
 	if ln := len(args); ln == 0 {
 		message = ""
 	} else if ln == 1 {

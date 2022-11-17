@@ -49,7 +49,7 @@ func MustReadReader(r io.Reader) []byte {
 }
 
 // GetContents read contents from path or io.Reader, will panic on error
-func GetContents(in interface{}) []byte {
+func GetContents(in any) []byte {
 	if fPath, ok := in.(string); ok {
 		return MustReadFile(fPath)
 	}
@@ -162,7 +162,7 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File {
 // Usage:
 //
 //	fsutil.PutContents(filePath, contents, fsutil.FsCWTFlags)
-func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error) {
+func PutContents(filePath string, data any, fileFlag ...int) (int, error) {
 	// create and open file
 	dstFile, err := QuickOpenFile(filePath, fileFlag...)
 	if err != nil {
@@ -192,7 +192,7 @@ func PutContents(filePath string, data interface{}, fileFlag ...int) (int, error
 // Usage:
 //
 //	fsutil.WriteFile(filePath, contents, 0666, fsutil.FsCWAFlags)
-func WriteFile(filePath string, data interface{}, perm os.FileMode, fileFlag ...int) error {
+func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) error {
 	flag := FsCWTFlags
 	if len(fileFlag) > 0 {
 		flag = fileFlag[0]

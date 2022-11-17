@@ -418,7 +418,7 @@ func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
 	return true
 }
 
-func (d *Dumper) print(v ...interface{}) {
+func (d *Dumper) print(v ...any) {
 	if d.NoColor {
 		_, _ = fmt.Fprint(d.Output, v...)
 	} else {
@@ -426,7 +426,7 @@ func (d *Dumper) print(v ...interface{}) {
 	}
 }
 
-func (d *Dumper) printf(f string, v ...interface{}) {
+func (d *Dumper) printf(f string, v ...any) {
 	if !d.msValue {
 		_, _ = d.Output.Write(d.indentBytes)
 	}
@@ -438,7 +438,7 @@ func (d *Dumper) printf(f string, v ...interface{}) {
 	}
 }
 
-func (d *Dumper) indentPrint(v ...interface{}) {
+func (d *Dumper) indentPrint(v ...any) {
 	if !d.msValue {
 		_, _ = d.Output.Write(d.indentBytes)
 	}

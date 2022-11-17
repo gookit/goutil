@@ -315,13 +315,13 @@ func TestPrint_cyclic_slice(t *testing.T) {
 		"number": 1 + 1i,
 		"bytes":  []byte{97, 98, 99},
 		"lines":  "first line\nsecond line",
-		"slice":  []interface{}{1, 2},
+		"slice":  []any{1, 2},
 		"time":   time.Now(),
 		"struct": struct{ test int32 }{
 			test: 13,
 		},
 	}
-	a["slice"].([]interface{})[1] = a["slice"]
+	a["slice"].([]any)[1] = a["slice"]
 
 	// TIP: will stack overflow
 	// fmt.Println(a)

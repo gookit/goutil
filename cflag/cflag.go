@@ -13,7 +13,7 @@ package cflag
 
 import (
 	"flag"
-	"io/ioutil"
+	"io"
 	"os"
 	"path"
 	"strings"
@@ -261,7 +261,7 @@ func (c *CFlags) Parse(args []string) error {
 
 func (c *CFlags) prepare() error {
 	// dont use flag output.
-	c.SetOutput(ioutil.Discard)
+	c.SetOutput(io.Discard)
 
 	// parse flag usage string
 	c.VisitAll(func(f *flag.Flag) {

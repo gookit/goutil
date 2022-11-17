@@ -25,5 +25,5 @@ type (
 	MarshalFunc func(v any) ([]byte, error)
 
 	// UnmarshalFunc define
-	UnmarshalFunc func(bts []byte, ptr interface{}) error
+	UnmarshalFunc func(bts []byte, ptr any) error
 )

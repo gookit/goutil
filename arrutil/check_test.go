@@ -33,7 +33,7 @@ func TestStringsHas(t *testing.T) {
 
 func TestContains(t *testing.T) {
 	is := assert.New(t)
-	tests := map[interface{}]interface{}{
+	tests := map[any]any{
 		1:    []int{1, 2, 3},
 		2:    []int8{1, 2, 3},
 		3:    []int16{1, 2, 3},
@@ -69,7 +69,7 @@ func TestContains(t *testing.T) {
 	is.False(arrutil.Contains(nil, 12))
 	is.False(arrutil.Contains(map[int]int{2: 3}, 12))
 
-	tests1 := map[interface{}]interface{}{
+	tests1 := map[any]any{
 		2:   []int{1, 3},
 		"a": []string{"b", "c"},
 	}

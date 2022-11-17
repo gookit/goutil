@@ -3,7 +3,6 @@ package stdio
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"strings"
 )
 
@@ -29,13 +28,12 @@ func QuietWriteString(w io.Writer, ss ...string) {
 
 // DiscardReader anything from the reader
 func DiscardReader(src io.Reader) {
-	_, _ = io.Copy(ioutil.Discard, src)
+	_, _ = io.Copy(io.Discard, src)
 }
 
 // MustReadReader read contents from io.Reader, will panic on error
 func MustReadReader(r io.Reader) []byte {
-	// TODO go 1.16+ bs, err := io.ReadAll(r)
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		panic(err)
 	}
