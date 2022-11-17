@@ -43,7 +43,7 @@ func TestRepeatBytes(t *testing.T) {
 
 func TestRenderTemplate(t *testing.T) {
 	tpl := "hi, My name is {{ .name | upFirst }}, age is {{ .age }}"
-	assert.Eq(t, "hi, My name is Inhere, age is 2000", strutil.RenderTemplate(tpl, map[string]interface{}{
+	assert.Eq(t, "hi, My name is Inhere, age is 2000", strutil.RenderTemplate(tpl, map[string]any{
 		"name": "inhere",
 		"age":  2000,
 	}, nil))
@@ -86,7 +86,7 @@ func TestWrapTag(t *testing.T) {
 }
 
 func TestPrettyJSON(t *testing.T) {
-	tests := []interface{}{
+	tests := []any{
 		map[string]int{"a": 1},
 		struct {
 			A int `json:"a"`

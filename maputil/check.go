@@ -22,7 +22,7 @@ func HasKey(mp, key any) (ok bool) {
 }
 
 // HasAllKeys check of the given map.
-func HasAllKeys(mp any, keys ...any) (ok bool, noKey interface{}) {
+func HasAllKeys(mp any, keys ...any) (ok bool, noKey any) {
 	rftVal := reflect.Indirect(reflect.ValueOf(mp))
 	if rftVal.Kind() != reflect.Map {
 		return

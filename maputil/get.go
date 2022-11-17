@@ -7,19 +7,19 @@ import (
 )
 
 // DeepGet value by key path. eg "top" "top.sub"
-func DeepGet(mp map[string]any, path string) (val interface{}) {
+func DeepGet(mp map[string]any, path string) (val any) {
 	val, _ = GetByPath(path, mp)
 	return
 }
 
 // QuietGet value by key path. eg "top" "top.sub"
-func QuietGet(mp map[string]any, path string) (val interface{}) {
+func QuietGet(mp map[string]any, path string) (val any) {
 	val, _ = GetByPath(path, mp)
 	return
 }
 
 // GetByPath get value by key path from a map(map[string]any). eg "top" "top.sub"
-func GetByPath(path string, mp map[string]any) (val interface{}, ok bool) {
+func GetByPath(path string, mp map[string]any) (val any, ok bool) {
 	if val, ok := mp[path]; ok {
 		return val, true
 	}
@@ -59,7 +59,7 @@ func GetByPath(path string, mp map[string]any) (val interface{}, ok bool) {
 			}
 		case []string, []int, []float32, []float64, []bool, []rune:
 			slice := reflect.ValueOf(tData)
-			sData := make([]interface{}, slice.Len())
+			sData := make([]any, slice.Len())
 			for i := 0; i < slice.Len(); i++ {
 				sData[i] = slice.Index(i).Interface()
 			}
@@ -74,7 +74,7 @@ func GetByPath(path string, mp map[string]any) (val interface{}, ok bool) {
 	return item, true
 }
 
-func getBySlice(k string, slice []any) (val interface{}, ok bool) {
+func getBySlice(k string, slice []any) (val any, ok bool) {
 	i, err := strconv.ParseInt(k, 10, 64)
 	if err != nil {
 		return nil, false
@@ -100,7 +100,7 @@ func Keys(mp any) (keys []string) {
 }
 
 // Values get all values from the given map.
-func Values(mp any) (values []interface{}) {
+func Values(mp any) (values []any) {
 	rftVal := reflect.Indirect(reflect.ValueOf(mp))
 	if rftVal.Kind() != reflect.Map {
 		return

@@ -64,7 +64,7 @@ func AddHeaders(req *http.Request, header http.Header) {
 }
 
 // ToQueryValues convert string-map to url.Values
-func ToQueryValues(data interface{}) url.Values {
+func ToQueryValues(data any) url.Values {
 	// use url.Values directly if we have it
 	if uv, ok := data.(url.Values); ok {
 		return uv

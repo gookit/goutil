@@ -281,7 +281,7 @@ func TestExceptWhileNotSliceShouldPanic(t *testing.T) {
 
 func TestExceptWhileEmptyReturnsEmpty(t *testing.T) {
 	var data []string
-	result := arrutil.ExceptWhile(data, func(a interface{}) bool { return a == "b" || a == "c" }).([]string)
+	result := arrutil.ExceptWhile(data, func(a any) bool { return a == "b" || a == "c" }).([]string)
 
 	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")

@@ -10,7 +10,7 @@ import (
 )
 
 // TODO remove
-type any = interface{}
+type any = any
 
 func TestMergeStringMap(t *testing.T) {
 	ret := maputil.MergeSMap(map[string]string{"A": "v0"}, map[string]string{"A": "v1"}, false)

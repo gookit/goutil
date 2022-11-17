@@ -23,14 +23,14 @@ func (d Data) IsEmtpy() bool {
 }
 
 // Value get from the data map
-func (d Data) Value(key string) (interface{}, bool) {
+func (d Data) Value(key string) (any, bool) {
 	val, ok := d.GetByPath(key)
 	return val, ok
 }
 
 // Get value from the data map.
 // Supports dot syntax to get deep values. eg: top.sub
-func (d Data) Get(key string) interface{} {
+func (d Data) Get(key string) any {
 	if val, ok := d.GetByPath(key); ok {
 		return val
 	}
@@ -39,7 +39,7 @@ func (d Data) Get(key string) interface{} {
 
 // GetByPath get value from the data map by path. eg: top.sub
 // Supports dot syntax to get deep values.
-func (d Data) GetByPath(path string) (interface{}, bool) {
+func (d Data) GetByPath(path string) (any, bool) {
 	if val, ok := d[path]; ok {
 		return val, true
 	}
@@ -100,7 +100,7 @@ func (d Data) SetByKeys(keys []string, value any) error {
 }
 
 // Default get value from the data map with default value
-func (d Data) Default(key string, def any) interface{} {
+func (d Data) Default(key string, def any) any {
 	if val, ok := d.GetByPath(key); ok {
 		return val
 	}

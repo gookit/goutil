@@ -135,7 +135,7 @@ func Replaces(str string, pairs map[string]string) string {
 
 // PrettyJSON get pretty Json string
 // Deprecated: please use fmtutil.PrettyJSON() or jsonutil.Pretty() instead it
-func PrettyJSON(v interface{}) (string, error) {
+func PrettyJSON(v any) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
 }

@@ -64,7 +64,7 @@ func NewTagParser(tagNames ...string) *TagParser {
 }
 
 // Parse an struct value
-func (p *TagParser) Parse(st interface{}) error {
+func (p *TagParser) Parse(st any) error {
 	rv := reflect.ValueOf(st)
 	if rv.Kind() == reflect.Ptr && !rv.IsNil() {
 		rv = rv.Elem()

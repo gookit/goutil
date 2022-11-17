@@ -11,7 +11,7 @@ func TestNewData(t *testing.T) {
 	md := structs.NewData()
 	assert.Eq(t, 0, md.DataLen())
 
-	md.SetData(map[string]interface{}{
+	md.SetData(map[string]any{
 		"key0": 234,
 	})
 	assert.NotEmpty(t, md.Data())
@@ -34,7 +34,7 @@ func TestDataStore_EnableLock(t *testing.T) {
 	md := structs.NewData()
 	md.EnableLock()
 
-	md.SetData(map[string]interface{}{
+	md.SetData(map[string]any{
 		"key0": 234,
 		"key1": "abc",
 		"key2": true,

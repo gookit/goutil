@@ -8,7 +8,7 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func makMapForSetByPath() map[string]interface{} {
+func makMapForSetByPath() map[string]any {
 	return map[string]any{
 		"key0": "v0",
 		"key2": 34,
@@ -150,7 +150,7 @@ func TestSetByKeys_slice_upAdd_method2(t *testing.T) {
 }
 
 func TestSetByPath(t *testing.T) {
-	mp := map[string]interface{}{
+	mp := map[string]any{
 		"key0": "v0",
 		"key1": "v1",
 		"key2": 34,
@@ -161,7 +161,7 @@ func TestSetByPath(t *testing.T) {
 	assert.ContainsKey(t, mp, "key0")
 	assert.Eq(t, "v00", mp["key0"])
 
-	err = maputil.SetByPath(&mp, "key3", map[string]interface{}{
+	err = maputil.SetByPath(&mp, "key3", map[string]any{
 		"k301": "v301",
 		"k302": 234,
 		"k303": []string{"v303-1", "v303-2"},

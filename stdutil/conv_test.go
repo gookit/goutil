@@ -35,7 +35,7 @@ func TestTryString(t *testing.T) {
 }
 
 func TestBaseTypeVal(t *testing.T) {
-	tests := []interface{}{
+	tests := []any{
 		2,
 		int8(2), int16(2), int32(2), int64(2),
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
@@ -47,7 +47,7 @@ func TestBaseTypeVal(t *testing.T) {
 		assert.Eq(t, int64(2), val)
 	}
 
-	tests3 := []struct{ in, out interface{} }{
+	tests3 := []struct{ in, out any }{
 		{"adc", "adc"},
 		{"2", "2"},
 		{json.Number("2"), "2"},

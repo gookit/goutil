@@ -46,65 +46,65 @@ func Grayln(a ...any) { color.Gray.Println(a...) }
 func Greenp(a ...any) { color.Green.Print(a...) }
 
 // Greenf print message with green color
-func Greenf(format string, a ...interface{}) { color.Green.Printf(format, a...) }
+func Greenf(format string, a ...any) { color.Green.Printf(format, a...) }
 
 // Greenln print message line with green color
-func Greenln(a ...interface{}) { color.Green.Println(a...) }
+func Greenln(a ...any) { color.Green.Println(a...) }
 
 // Yellowp print message with yellow color
-func Yellowp(a ...interface{}) { color.Yellow.Print(a...) }
+func Yellowp(a ...any) { color.Yellow.Print(a...) }
 
 // Yellowf print message with yellow color
-func Yellowf(format string, a ...interface{}) { color.Yellow.Printf(format, a...) }
+func Yellowf(format string, a ...any) { color.Yellow.Printf(format, a...) }
 
 // Yellowln print message line with yellow color
-func Yellowln(a ...interface{}) { color.Yellow.Println(a...) }
+func Yellowln(a ...any) { color.Yellow.Println(a...) }
 
 // Magentap print message with magenta color
-func Magentap(a ...interface{}) { color.Magenta.Print(a...) }
+func Magentap(a ...any) { color.Magenta.Print(a...) }
 
 // Magentaf print message with magenta color
-func Magentaf(format string, a ...interface{}) { color.Magenta.Printf(format, a...) }
+func Magentaf(format string, a ...any) { color.Magenta.Printf(format, a...) }
 
 // Magentaln print message line with magenta color
-func Magentaln(a ...interface{}) { color.Magenta.Println(a...) }
+func Magentaln(a ...any) { color.Magenta.Println(a...) }
 
 /*************************************************************
  * quick use style print message
  *************************************************************/
 
 // Infop print message with info color
-func Infop(a ...interface{}) { color.Info.Print(a...) }
+func Infop(a ...any) { color.Info.Print(a...) }
 
 // Infof print message with info style
-func Infof(format string, a ...interface{}) { color.Info.Printf(format, a...) }
+func Infof(format string, a ...any) { color.Info.Printf(format, a...) }
 
 // Infoln print message with info style
-func Infoln(a ...interface{}) { color.Info.Println(a...) }
+func Infoln(a ...any) { color.Info.Println(a...) }
 
 // Successp print message with success color
-func Successp(a ...interface{}) { color.Success.Print(a...) }
+func Successp(a ...any) { color.Success.Print(a...) }
 
 // Successf print message with success style
-func Successf(format string, a ...interface{}) { color.Success.Printf(format, a...) }
+func Successf(format string, a ...any) { color.Success.Printf(format, a...) }
 
 // Successln print message with success style
-func Successln(a ...interface{}) { color.Success.Println(a...) }
+func Successln(a ...any) { color.Success.Println(a...) }
 
 // Errorp print message with error color
-func Errorp(a ...interface{}) { color.Error.Print(a...) }
+func Errorp(a ...any) { color.Error.Print(a...) }
 
 // Errorf print message with error style
-func Errorf(format string, a ...interface{}) { color.Error.Printf(format, a...) }
+func Errorf(format string, a ...any) { color.Error.Printf(format, a...) }
 
 // Errorln print message with error style
-func Errorln(a ...interface{}) { color.Error.Println(a...) }
+func Errorln(a ...any) { color.Error.Println(a...) }
 
 // Warnp print message with warn color
-func Warnp(a ...interface{}) { color.Warn.Print(a...) }
+func Warnp(a ...any) { color.Warn.Print(a...) }
 
 // Warnf print message with warn style
-func Warnf(format string, a ...interface{}) { color.Warn.Printf(format, a...) }
+func Warnf(format string, a ...any) { color.Warn.Printf(format, a...) }
 
 // Warnln print message with warn style
-func Warnln(a ...interface{}) { color.Warn.Println(a...) }
+func Warnln(a ...any) { color.Warn.Println(a...) }

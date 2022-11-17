@@ -74,13 +74,13 @@ func StripSlashes(s string) string {
 //
 
 // Md5 Generate a 32-bit md5 string
-func Md5(src interface{}) string { return GenMd5(src) }
+func Md5(src any) string { return GenMd5(src) }
 
 // MD5 Generate a 32-bit md5 string
-func MD5(src interface{}) string { return GenMd5(src) }
+func MD5(src any) string { return GenMd5(src) }
 
 // GenMd5 Generate a 32-bit md5 string
-func GenMd5(src interface{}) string {
+func GenMd5(src any) string {
 	h := md5.New()
 	if s, ok := src.(string); ok {
 		h.Write([]byte(s))

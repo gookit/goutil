@@ -61,7 +61,7 @@ func (ffn *FullFcName) String() string {
 //
 //	// OUTPUT: github.com/gookit/goutil/stdutil.PanicIf
 //	stdutil.FuncName(stdutil.PkgName)
-func FuncName(fn interface{}) string {
+func FuncName(fn any) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
 

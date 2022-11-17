@@ -17,7 +17,7 @@ func NewBuffer() *Buffer {
 }
 
 // WriteAny type value to buffer
-func (b *Buffer) WriteAny(vs ...interface{}) {
+func (b *Buffer) WriteAny(vs ...any) {
 	for _, v := range vs {
 		_, _ = b.Buffer.WriteString(fmt.Sprint(v))
 	}
@@ -29,7 +29,7 @@ func (b *Buffer) QuietWriteByte(c byte) {
 }
 
 // QuietWritef write message to buffer
-func (b *Buffer) QuietWritef(tpl string, vs ...interface{}) {
+func (b *Buffer) QuietWritef(tpl string, vs ...any) {
 	_, _ = b.WriteString(fmt.Sprintf(tpl, vs...))
 }
 

@@ -130,7 +130,7 @@ func TestInitDefaults_fieldPtr(t *testing.T) {
 }
 
 func TestSetValues(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"Name": "inhere",
 		"Age":  234,
 		"Tags": []string{"php", "go"},
@@ -158,7 +158,7 @@ func TestSetValues(t *testing.T) {
 }
 
 func TestSetValues_useFieldTag(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "inhere",
 		"age":  234,
 		"tags": []string{"php", "go"},
@@ -183,7 +183,7 @@ func TestSetValues_useFieldTag(t *testing.T) {
 }
 
 func TestSetValues_useDefaultTag(t *testing.T) {
-	data := map[string]interface{}{
+	data := map[string]any{
 		"name": "inhere",
 		// "age":  234,
 		// "city": "chengdu",

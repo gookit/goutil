@@ -10,7 +10,7 @@ import (
 )
 
 func TestNewFormatter(t *testing.T) {
-	mp := map[string]interface{}{"a": "v0", "b": 23}
+	mp := map[string]any{"a": "v0", "b": 23}
 
 	mf := maputil.NewFormatter(mp)
 	assert.Contains(t, mf.String(), "b:23")
@@ -33,7 +33,7 @@ func TestNewFormatter(t *testing.T) {
 }
 
 func TestFormatIndent_mlevel(t *testing.T) {
-	mp := map[string]interface{}{"a": "v0", "b": 23}
+	mp := map[string]any{"a": "v0", "b": 23}
 
 	mp["subs"] = map[string]string{
 		"sub_k1": "sub val1",

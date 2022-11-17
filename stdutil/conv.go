@@ -8,13 +8,13 @@ import (
 )
 
 // ToString always convert value to string, will ignore error
-func ToString(v interface{}) string {
+func ToString(v any) string {
 	s, _ := strutil.AnyToString(v, false)
 	return s
 }
 
 // MustString convert value(basic type) to string, will panic on convert a complex type.
-func MustString(v interface{}) string {
+func MustString(v any) string {
 	s, err := strutil.AnyToString(v, true)
 	if err != nil {
 		panic(err)
@@ -23,7 +23,7 @@ func MustString(v interface{}) string {
 }
 
 // TryString try to convert a value to string
-func TryString(v interface{}) (string, error) {
+func TryString(v any) (string, error) {
 	return strutil.AnyToString(v, true)
 }
 
@@ -34,7 +34,7 @@ func TryString(v interface{}) (string, error) {
 //	string 	    => string
 //
 // returns int64,string,float or error
-func BaseTypeVal(val interface{}) (value interface{}, err error) {
+func BaseTypeVal(val any) (value any, err error) {
 	return reflects.BaseTypeVal(reflect.ValueOf(val))
 }
 
@@ -45,6 +45,6 @@ func BaseTypeVal(val interface{}) (value interface{}, err error) {
 //	string 	    => string
 //
 // returns int64,string,float or error
-func BaseTypeVal2(v reflect.Value) (value interface{}, err error) {
+func BaseTypeVal2(v reflect.Value) (value any, err error) {
 	return reflects.BaseTypeVal(v)
 }

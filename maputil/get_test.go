@@ -8,13 +8,13 @@ import (
 )
 
 func TestGetByPath(t *testing.T) {
-	mp := map[string]interface{}{
+	mp := map[string]any{
 		"key0": "val0",
 		"key1": map[string]string{"sk0": "sv0"},
 		"key2": []string{"sv1", "sv2"},
-		"key3": map[string]interface{}{"sk1": "sv1"},
+		"key3": map[string]any{"sk1": "sv1"},
 		"key4": []int{1, 2},
-		"key5": []interface{}{1, "2", true},
+		"key5": []any{1, "2", true},
 	}
 
 	v, ok := maputil.GetByPath("key0", mp)
@@ -80,7 +80,7 @@ func TestGetByPath(t *testing.T) {
 }
 
 func TestKeys(t *testing.T) {
-	mp := map[string]interface{}{
+	mp := map[string]any{
 		"key0": "v0",
 		"key1": "v1",
 		"key2": 34,
@@ -106,7 +106,7 @@ func TestKeys(t *testing.T) {
 }
 
 func TestValues(t *testing.T) {
-	mp := map[string]interface{}{
+	mp := map[string]any{
 		"key0": "v0",
 		"key1": "v1",
 		"key2": 34,

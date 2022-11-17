@@ -27,7 +27,7 @@ func TestHttpReq_Send(t *testing.T) {
 	assert.False(t, httpreq.IsClientError(sc))
 	assert.False(t, httpreq.IsServerError(sc))
 
-	retMp := make(map[string]interface{})
+	retMp := make(map[string]any)
 	err = jsonutil.DecodeReader(resp.Body, &retMp)
 	assert.NoErr(t, err)
 	dump.P(retMp)

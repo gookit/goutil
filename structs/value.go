@@ -31,7 +31,7 @@ func (v *Value) Reset() {
 }
 
 // Val get
-func (v *Value) Val() interface{} {
+func (v *Value) Val() any {
 	return v.V
 }
 

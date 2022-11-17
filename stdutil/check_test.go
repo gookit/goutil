@@ -57,14 +57,14 @@ func TestValueIsEmpty(t *testing.T) {
 	is.True(stdutil.ValueIsEmpty(reflect.ValueOf(nil)))
 	is.True(stdutil.ValueIsEmpty(reflect.ValueOf("")))
 
-	type T struct{ v interface{} }
+	type T struct{ v any }
 	rv := reflect.ValueOf(T{}).Field(0)
 	is.True(stdutil.ValueIsEmpty(rv))
 }
 
 func TestValueLen(t *testing.T) {
 	is := assert.New(t)
-	tests := []interface{}{
+	tests := []any{
 		"abc",
 		123,
 		int8(123), int16(123), int32(123), int64(123),

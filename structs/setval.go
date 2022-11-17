@@ -23,7 +23,7 @@ type InitOptions struct {
 	// default: false
 	ParseEnv bool
 	// ValueHook before set value hook TODO
-	ValueHook func(val string) interface{}
+	ValueHook func(val string) any
 }
 
 // InitDefaults init struct default value by field "default" tag.
@@ -120,7 +120,7 @@ type SetOptions struct {
 	// FieldTagName get field name for read value. default tag: json
 	FieldTagName string
 	// ValueHook before set value hook TODO
-	ValueHook func(val any) interface{}
+	ValueHook func(val any) any
 
 	// ParseDefault init default value by DefaultValTag tag value.
 	// default: false
@@ -203,7 +203,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 
 		// field is struct
 		if fv.Kind() == reflect.Struct {
-			asMp, ok := val.(map[string]interface{})
+			asMp, ok := val.(map[string]any)
 			if !ok {
 				return fmt.Errorf("field is struct, must provide map data value")
 			}

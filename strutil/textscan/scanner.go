@@ -44,7 +44,7 @@ type TextScanner struct {
 }
 
 // NewScanner instance
-func NewScanner(in interface{}) *TextScanner {
+func NewScanner(in any) *TextScanner {
 	ts := &TextScanner{}
 	if in != nil {
 		ts.SetInput(in)
