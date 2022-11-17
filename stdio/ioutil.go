@@ -13,7 +13,7 @@ func QuietFprint(w io.Writer, ss ...string) {
 }
 
 // QuietFprintf to writer, will ignore error
-func QuietFprintf(w io.Writer, tpl string, vs ...interface{}) {
+func QuietFprintf(w io.Writer, tpl string, vs ...any) {
 	_, _ = fmt.Fprintf(w, tpl, vs...)
 }
 

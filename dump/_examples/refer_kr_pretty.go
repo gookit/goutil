@@ -6,14 +6,15 @@ import (
 )
 
 // rum demo:
-// 	go run ./refer_kr_pretty.go
-// 	go run ./dump/_examples/refer_kr_pretty.go
+//
+//	go run ./refer_kr_pretty.go
+//	go run ./dump/_examples/refer_kr_pretty.go
 func main() {
-	vs := []interface{}{
+	vs := []any{
 		23,
 		[]string{"ab", "cd"},
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}, // len > 10
-		map[string]interface{}{
+		map[string]any{
 			"key": "val", "sub": map[string]string{"k": "v"},
 		},
 		struct {

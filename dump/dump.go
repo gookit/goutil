@@ -77,32 +77,32 @@ func Config(fn func(opts *Options)) {
 }
 
 // V like fmt.Println, but the output is clearer and more beautiful
-func V(vs ...interface{}) {
+func V(vs ...any) {
 	std.Dump(vs...)
 }
 
 // P like fmt.Println, but the output is clearer and more beautiful
-func P(vs ...interface{}) {
+func P(vs ...any) {
 	std.Print(vs...)
 }
 
 // Print like fmt.Println, but the output is clearer and more beautiful
-func Print(vs ...interface{}) {
+func Print(vs ...any) {
 	std.Print(vs...)
 }
 
 // Println like fmt.Println, but the output is clearer and more beautiful
-func Println(vs ...interface{}) {
+func Println(vs ...any) {
 	std.Println(vs...)
 }
 
 // Fprint like fmt.Println, but the output is clearer and more beautiful
-func Fprint(w io.Writer, vs ...interface{}) {
+func Fprint(w io.Writer, vs ...any) {
 	std.Fprint(w, vs...)
 }
 
 // Format like fmt.Println, but the output is clearer and more beautiful
-func Format(vs ...interface{}) string {
+func Format(vs ...any) string {
 	w := &bytes.Buffer{}
 
 	std2.Fprint(w, vs...)
@@ -110,11 +110,11 @@ func Format(vs ...interface{}) string {
 }
 
 // NoLoc dump vars data, without location.
-func NoLoc(vs ...interface{}) {
+func NoLoc(vs ...any) {
 	std2.Println(vs...)
 }
 
 // Clear dump clear data, without location.
-func Clear(vs ...interface{}) {
+func Clear(vs ...any) {
 	std2.Println(vs...)
 }

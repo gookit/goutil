@@ -62,7 +62,7 @@ func SliceSubKind(typ reflect.Type) reflect.Kind {
 }
 
 // SetValue to a reflect.Value
-func SetValue(rv reflect.Value, val interface{}) error {
+func SetValue(rv reflect.Value, val any) error {
 	// get real type of the ptr value
 	if rv.Kind() == reflect.Ptr {
 		// init if is nil

@@ -70,7 +70,7 @@ func TestNew(t *testing.T) {
 	c.IntVar(&opts.int, "int", 0, "this is a int option;true;i")
 	c.StringVar(&opts.str, "str", "", "this is a string option;;s")
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default;;s1")
-	c.AddValidator("int", func(val interface{}) error {
+	c.AddValidator("int", func(val any) error {
 		iv := val.(int)
 		if iv < 10 {
 			return errorx.Raw("value should >= 10")

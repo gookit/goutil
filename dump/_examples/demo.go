@@ -7,20 +7,21 @@ import (
 )
 
 // rum demo:
-// 	go run ./dump/_examples/demo.go
+//
+//	go run ./dump/_examples/demo.go
 func main() {
-	val := map[string]interface{}{
+	val := map[string]any{
 		"bool":   true,
 		"number": 1 + 1i,
 		"bytes":  []byte{97, 98, 99},
 		"lines":  "multiline string\nline two",
-		"slice":  []interface{}{1, 2},
+		"slice":  []any{1, 2},
 		"time":   time.Now(),
 		"struct": struct{ test int32 }{
 			test: 13,
 		},
 	}
-	val["slice"].([]interface{})[1] = val["slice"]
+	val["slice"].([]any)[1] = val["slice"]
 	dump.P(val)
 	return
 	// dump.Config.ShowFile = true
@@ -33,6 +34,6 @@ func otherFunc() {
 	dump.P("abc", "def")
 	dump.P([]string{"ab", "cd"})
 	dump.P(
-		[]interface{}{"ab", 234, []int{1, 3}},
+		[]any{"ab", 234, []int{1, 3}},
 	)
 }

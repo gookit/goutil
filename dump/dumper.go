@@ -125,22 +125,22 @@ func (d *Dumper) ResetOptions() {
 }
 
 // Dump vars
-func (d *Dumper) Dump(vs ...interface{}) {
+func (d *Dumper) Dump(vs ...any) {
 	d.dump(vs...)
 }
 
 // Print vars. alias of Dump()
-func (d *Dumper) Print(vs ...interface{}) {
+func (d *Dumper) Print(vs ...any) {
 	d.dump(vs...)
 }
 
 // Println vars. alias of Dump()
-func (d *Dumper) Println(vs ...interface{}) {
+func (d *Dumper) Println(vs ...any) {
 	d.dump(vs...)
 }
 
 // Fprint print vars to io.Writer
-func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
+func (d *Dumper) Fprint(w io.Writer, vs ...any) {
 	backup := d.Output // backup
 
 	d.Output = w
@@ -149,7 +149,7 @@ func (d *Dumper) Fprint(w io.Writer, vs ...interface{}) {
 }
 
 // dump go vars
-func (d *Dumper) dump(vs ...interface{}) {
+func (d *Dumper) dump(vs ...any) {
 	// reset some settings.
 	d.curDepth = 0
 	d.visited = make(map[visit]int)
@@ -222,7 +222,7 @@ func (d *Dumper) advance(step int) {
 	d.indentBytes = strutil.RepeatBytes(d.IndentChar, d.IndentLen*d.curDepth)
 }
 
-func (d *Dumper) printOne(v interface{}) {
+func (d *Dumper) printOne(v any) {
 	if v == nil {
 		d.indentPrint("<nil>,\n")
 		return

@@ -171,7 +171,7 @@ func (c *CFlags) addShortcuts(name string, shorts []string) {
 }
 
 // AddArg binding for command
-func (c *CFlags) AddArg(name, desc string, required bool, value interface{}) {
+func (c *CFlags) AddArg(name, desc string, required bool, value any) {
 	arg := &FlagArg{
 		Name:  name,
 		Desc:  desc,

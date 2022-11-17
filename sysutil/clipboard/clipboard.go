@@ -3,10 +3,10 @@ package clipboard
 
 import (
 	"bytes"
+	"errors"
 	"os/exec"
 	"strings"
 
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/sysutil"
 )
@@ -83,7 +83,7 @@ func (c *Clipboard) WriteString(s string) (int, error) {
 // Flush buffer contents to clipboard
 func (c *Clipboard) Flush() error {
 	if c.buf == nil || c.buf.Len() == 0 {
-		return errorx.Raw("not write contents")
+		return errors.New("not write contents")
 	}
 
 	// linux:

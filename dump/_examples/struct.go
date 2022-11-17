@@ -8,13 +8,14 @@ import (
 )
 
 // rum demo:
-// 	go run ./struct.go
-// 	go run ./dump/_examples/struct.go
+//
+//	go run ./struct.go
+//	go run ./dump/_examples/struct.go
 func main() {
 	s1 := &struct {
-		cannotExport map[string]interface{}
+		cannotExport map[string]any
 	}{
-		cannotExport: map[string]interface{}{
+		cannotExport: map[string]any{
 			"key1": 12,
 			"key2": "abcd123",
 		},

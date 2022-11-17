@@ -11,7 +11,7 @@ import (
 
 func TestLen(t *testing.T) {
 	is := assert.New(t)
-	tests := []interface{}{
+	tests := []any{
 		"abc",
 		123,
 		int8(123), int16(123), int32(123), int64(123),
@@ -33,7 +33,7 @@ func TestLen(t *testing.T) {
 
 func TestSliceSubKind(t *testing.T) {
 	noErrTests := []struct {
-		val  interface{}
+		val  any
 		want reflect.Kind
 	}{
 		{"invalid", reflect.Invalid},
@@ -48,7 +48,7 @@ func TestSliceSubKind(t *testing.T) {
 		{[]uint32{1, 2}, reflect.Uint32},
 		{[]uint64{1, 2}, reflect.Uint64},
 		{[]string{"a", "b"}, reflect.String},
-		{[]interface{}{"a", "b"}, reflect.Interface},
+		{[]any{"a", "b"}, reflect.Interface},
 	}
 
 	for _, item := range noErrTests {
@@ -108,7 +108,7 @@ func TestSliceAddItem_ok(t *testing.T) {
 }
 
 func TestSlice_subMap_addItem(t *testing.T) {
-	d := []interface{}{
+	d := []any{
 		map[string]string{
 			"k3051": "v3051",
 		},
@@ -123,7 +123,7 @@ func TestSlice_subMap_addItem(t *testing.T) {
 }
 
 func TestMap_subSlice_addItem(t *testing.T) {
-	mp := map[string]interface{}{
+	mp := map[string]any{
 		"sl": []string{"abc"},
 	}
 

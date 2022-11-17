@@ -19,7 +19,7 @@ type BaseFormatter struct {
 	// Out formatted to the writer
 	Out io.Writer
 	// Src data(array, map, struct) for format
-	Src interface{}
+	Src any
 	// MaxDepth limit depth for array, map data TODO
 	MaxDepth int
 	// Prefix string for each element

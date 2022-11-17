@@ -25,12 +25,12 @@ func (d *LiteData) SetData(data map[string]any) {
 }
 
 // Value get from data
-func (d *LiteData) Value(key string) interface{} {
+func (d *LiteData) Value(key string) any {
 	return d.data[key]
 }
 
 // GetVal get from data
-func (d *LiteData) GetVal(key string) interface{} {
+func (d *LiteData) GetVal(key string) any {
 	return d.data[key]
 }
 
@@ -83,7 +83,7 @@ func (d *Data) EnableLock() *Data {
 }
 
 // Data get all
-func (d *Data) Data() map[string]interface{} {
+func (d *Data) Data() map[string]any {
 	return d.data
 }
 
@@ -106,16 +106,16 @@ func (d *Data) DataLen() int {
 
 // ResetData all data
 func (d *Data) ResetData() {
-	d.data = make(map[string]interface{})
+	d.data = make(map[string]any)
 }
 
 // Set value to data
-func (d *Data) Set(key string, val interface{}) {
+func (d *Data) Set(key string, val any) {
 	d.SetValue(key, val)
 }
 
 // SetValue to data
-func (d *Data) SetValue(key string, val interface{}) {
+func (d *Data) SetValue(key string, val any) {
 	if d.enableLock {
 		d.Lock()
 		defer d.Unlock()
@@ -125,7 +125,7 @@ func (d *Data) SetValue(key string, val interface{}) {
 }
 
 // Value get from data
-func (d *Data) Value(key string) (val interface{}, ok bool) {
+func (d *Data) Value(key string) (val any, ok bool) {
 	if d.enableLock {
 		d.RLock()
 		defer d.RUnlock()
@@ -136,12 +136,12 @@ func (d *Data) Value(key string) (val interface{}, ok bool) {
 }
 
 // Get val from data
-func (d *Data) Get(key string) interface{} {
+func (d *Data) Get(key string) any {
 	return d.GetVal(key)
 }
 
 // GetVal get from data
-func (d *Data) GetVal(key string) interface{} {
+func (d *Data) GetVal(key string) any {
 	if d.enableLock {
 		d.RLock()
 		defer d.RUnlock()

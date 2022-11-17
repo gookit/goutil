@@ -24,6 +24,10 @@ const (
 	OneHour = time.Hour
 	OneDay  = 24 * time.Hour
 	OneWeek = 7 * 24 * time.Hour
+
+	DatetimeLayout = "2006-01-02 15:04:05"
+	DateOnlyLayout = "2006-01-02"
+	TimeOnlyLayout = "15:04:05"
 )
 
 var (

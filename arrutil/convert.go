@@ -40,15 +40,15 @@ func StringsToInts(ss []string) (ints []int, err error) {
 	return
 }
 
-// MustToStrings convert interface{}(allow: array,slice) to []string
+// MustToStrings convert array or slice to []string
 func MustToStrings(arr any) []string {
 	ret, _ := ToStrings(arr)
 	return ret
 }
 
-// StringsToSlice convert []string to []interface{}
-func StringsToSlice(ss []string) []interface{} {
-	args := make([]interface{}, len(ss))
+// StringsToSlice convert []string to []any
+func StringsToSlice(ss []string) []any {
+	args := make([]any, len(ss))
 	for i, s := range ss {
 		args[i] = s
 	}

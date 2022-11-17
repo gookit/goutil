@@ -7,7 +7,7 @@ import (
 )
 
 // OptCheckFn define
-type OptCheckFn func(val interface{}) error
+type OptCheckFn func(val any) error
 
 // FlagOpt struct
 type FlagOpt struct {

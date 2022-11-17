@@ -21,7 +21,7 @@ func ExamplePrint() {
 		[]string{"ab", "cd"},
 		[]int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11},
 		map[string]string{"key": "val"},
-		map[string]interface{}{
+		map[string]any{
 			"sub": map[string]string{"k": "v"},
 		},
 		struct {
@@ -146,7 +146,7 @@ func TestPrint(t *testing.T) {
 `, buf.String())
 
 	buf.Reset()
-	Fprint(buf, map[string]interface{}{
+	Fprint(buf, map[string]any{
 		"key": "val",
 		"sub": map[string]string{"k": "v"},
 	})
@@ -177,7 +177,7 @@ func TestPrintNil(t *testing.T) {
 	is.Eq("int(0),\n", buf.String())
 	buf.Reset()
 
-	var f interface{}
+	var f any
 	V(f)
 	is.Eq("<nil>,\n", buf.String())
 	buf.Reset()
@@ -211,9 +211,9 @@ func TestStruct_CannotExportField(t *testing.T) {
 
 func TestStruct_InterfaceField(t *testing.T) {
 	myS1 := struct {
-		// cannotExport interface{} // ok
+		// cannotExport any // ok
 		cannotExport st1 // ok
-		// CanExport interface{} ok
+		// CanExport any ok
 		CanExport st1 // ok
 	}{
 		cannotExport: s1,
@@ -227,9 +227,9 @@ func TestStruct_InterfaceField(t *testing.T) {
 
 func TestStruct_MapInterfacedValue(t *testing.T) {
 	myS2 := &struct {
-		cannotExport map[string]interface{}
+		cannotExport map[string]any
 	}{
-		cannotExport: map[string]interface{}{
+		cannotExport: map[string]any{
 			"key1": 12,
 			"key2": "abcd123",
 		},
@@ -243,9 +243,9 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 	type st2 struct {
 		st1
 		Github string
-		Face1  interface{}
-		face2  interface{}
-		faces  map[string]interface{}
+		Face1  any
+		face2  any
+		faces  map[string]any
 	}
 
 	s2 := st2{
@@ -253,7 +253,7 @@ func TestStruct_MapInterfacedValue(t *testing.T) {
 		Github: "https://github.com/inhere",
 		Face1:  s1,
 		face2:  s1,
-		faces: map[string]interface{}{
+		faces: map[string]any{
 			"key1": 12,
 			"key2": "abc2344",
 		},
@@ -285,7 +285,7 @@ func TestStruct_ptrField(t *testing.T) {
 }
 
 func TestFormat(t *testing.T) {
-	s := Format(23, "abc", map[string]interface{}{
+	s := Format(23, "abc", map[string]any{
 		"key1": 12,
 		"key2": "abc2344",
 	})
@@ -295,8 +295,8 @@ func TestFormat(t *testing.T) {
 }
 
 func TestPrint_over_max_depth(t *testing.T) {
-	a := map[string]interface{}{}
-	a["circular"] = map[string]interface{}{
+	a := map[string]any{}
+	a["circular"] = map[string]any{
 		"a": a,
 	}
 
@@ -310,7 +310,7 @@ func TestPrint_over_max_depth(t *testing.T) {
 }
 
 func TestPrint_cyclic_slice(t *testing.T) {
-	a := map[string]interface{}{
+	a := map[string]any{
 		"bool":   true,
 		"number": 1 + 1i,
 		"bytes":  []byte{97, 98, 99},

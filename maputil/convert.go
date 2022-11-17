@@ -86,7 +86,7 @@ func FormatIndent(mp any, indent string) string {
 //	{"top": {"sub": "value", "sub2": "value2"} }
 //	->
 //	{"top.sub": "value", "top.sub2": "value2" }
-func Flatten(mp map[string]any) map[string]interface{} {
+func Flatten(mp map[string]any) map[string]any {
 	if mp == nil {
 		return nil
 	}

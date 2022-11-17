@@ -8,7 +8,7 @@ import (
 )
 
 // IsNil value check
-func IsNil(v interface{}) bool {
+func IsNil(v any) bool {
 	if v == nil {
 		return true
 	}
@@ -16,7 +16,7 @@ func IsNil(v interface{}) bool {
 }
 
 // IsEmpty value check
-func IsEmpty(v interface{}) bool {
+func IsEmpty(v any) bool {
 	if v == nil {
 		return true
 	}
@@ -24,7 +24,7 @@ func IsEmpty(v interface{}) bool {
 }
 
 // IsFunc value
-func IsFunc(val interface{}) bool {
+func IsFunc(val any) bool {
 	if val == nil {
 		return false
 	}
@@ -34,7 +34,7 @@ func IsFunc(val interface{}) bool {
 // IsEqual determines if two objects are considered equal.
 //
 // TIP: cannot compare function type
-func IsEqual(src, dst interface{}) bool {
+func IsEqual(src, dst any) bool {
 	if src == nil || dst == nil {
 		return src == dst
 	}
@@ -54,7 +54,7 @@ func IsEqual(src, dst interface{}) bool {
 //	map         - check key exists
 //	string 	    - check sub-string exists
 //	array,slice - check sub-element exists
-func Contains(data, elem interface{}) bool {
+func Contains(data, elem any) bool {
 	_, found := stdutil.CheckContains(data, elem)
 	return found
 }
@@ -66,7 +66,7 @@ func Contains(data, elem interface{}) bool {
 //	map         - check key exists
 //	string 	    - check sub-string exists
 //	array,slice - check sub-element exists
-func IsContains(data, elem interface{}) bool {
+func IsContains(data, elem any) bool {
 	_, found := stdutil.CheckContains(data, elem)
 	return found
 }

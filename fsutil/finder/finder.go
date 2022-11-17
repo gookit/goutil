@@ -126,12 +126,12 @@ func (f *FileFinder) ExcludeName(files ...string) *FileFinder {
 }
 
 // AddFilter for filter filepath or dirpath
-func (f *FileFinder) AddFilter(filterFuncs ...interface{}) *FileFinder {
+func (f *FileFinder) AddFilter(filterFuncs ...any) *FileFinder {
 	return f.WithFilter(filterFuncs...)
 }
 
 // WithFilter add filter func for filtering filepath or dirpath
-func (f *FileFinder) WithFilter(filterFuncs ...interface{}) *FileFinder {
+func (f *FileFinder) WithFilter(filterFuncs ...any) *FileFinder {
 	for _, filterFunc := range filterFuncs {
 		if fileFilter, ok := filterFunc.(FileFilter); ok {
 			f.fileFilters = append(f.fileFilters, fileFilter)

@@ -43,12 +43,12 @@ func MustOK(err error) {
 }
 
 // Panicf format panic message use fmt.Sprintf
-func Panicf(format string, v ...interface{}) {
+func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
 }
 
 // FuncName get func name
-func FuncName(f interface{}) string {
+func FuncName(f any) string {
 	return stdutil.FuncName(f)
 }
 

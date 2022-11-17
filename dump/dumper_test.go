@@ -154,7 +154,7 @@ func TestDump_Ptr(t *testing.T) {
 func TestDumper_AccessCantExportedField(t *testing.T) {
 	type MyStruct struct {
 		// id string
-		id interface{}
+		id any
 	}
 
 	myStruct := MyStruct{
@@ -192,9 +192,9 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 	// init an nested struct
 	s1 := st1{st0{2}, 23, "inhere"}
 	myS1 := struct {
-		// cannotExport interface{} // ok
+		// cannotExport any // ok
 		cannotExport st1 // ok
-		// CanExport interface{} ok
+		// CanExport any ok
 		CanExport st1 // ok
 	}{
 		cannotExport: s1,
@@ -207,7 +207,7 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 // ------------------------- map -------------------------
 
 func TestDump_Map(t *testing.T) {
-	m4 := map[string]interface{}{
+	m4 := map[string]any{
 		"key1": 12,
 		"key2": "val1",
 		"key3": [][]int{
@@ -218,7 +218,7 @@ func TestDump_Map(t *testing.T) {
 		"key5": -34,
 		"key6": nil,
 		"key7": []int{23, 34},
-		"key8": map[string]interface{}{
+		"key8": map[string]any{
 			"key8sub1": []int{23, 34},
 			"key8sub2": []string{"a", "b"},
 		},
@@ -260,7 +260,7 @@ func TestMap_Simpled(t *testing.T) {
 
 	*/
 
-	m4 := map[string]interface{}{
+	m4 := map[string]any{
 		"key1": 12,
 		"key2": "val1",
 		"key3": 34,
@@ -284,7 +284,7 @@ func TestMap_Simpled(t *testing.T) {
 
 func TestMap_InterfaceNested(t *testing.T) {
 	s1 := st1{st0{2}, 23, "inhere"}
-	m1 := map[string]interface{}{
+	m1 := map[string]any{
 		"key1": 112,
 		"key2": uint(112),
 		"key3": int64(112),
@@ -298,7 +298,7 @@ func TestMap_InterfaceNested(t *testing.T) {
 			"key1": 12,
 			"key2": 13,
 		},
-		"submap2": map[string]interface{}{
+		"submap2": map[string]any{
 			"key1": 12,
 			"key2": "abc",
 			"submap21": map[string]string{
@@ -306,10 +306,10 @@ func TestMap_InterfaceNested(t *testing.T) {
 				"key2": "val2",
 			},
 		},
-		"submap3": map[string]interface{}{
+		"submap3": map[string]any{
 			"key1": 12,
 			"key2": "abc",
-			"submap31": map[string]interface{}{
+			"submap31": map[string]any{
 				"key31": 12,
 				"key32": 13,
 				"user":  user,

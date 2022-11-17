@@ -62,7 +62,7 @@ func TestPadding(t *testing.T) {
 	tests := []struct {
 		want, give, pad string
 		len             int
-		pos             uint8
+		pos             strutil.PosFlag
 	}{
 		{"ab000", "ab", "0", 5, strutil.PosRight},
 		{"000ab", "ab", "0", 5, strutil.PosLeft},
