@@ -49,7 +49,7 @@ func (as *Assertions) NotPanics(fn PanicRunFunc, fmtAndArgs ...any) *Assertions 
 	return as
 }
 
-func (as *Assertions) PanicsMsg(fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) PanicsMsg(fn PanicRunFunc, wantVal any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = PanicsMsg(as.t, fn, wantVal, fmtAndArgs...)
 	return as

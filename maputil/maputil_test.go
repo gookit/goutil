@@ -9,9 +9,6 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-// TODO remove
-type any = any
-
 func TestMergeStringMap(t *testing.T) {
 	ret := maputil.MergeSMap(map[string]string{"A": "v0"}, map[string]string{"A": "v1"}, false)
 	assert.Eq(t, map[string]string{"A": "v0"}, ret)

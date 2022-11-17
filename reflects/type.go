@@ -56,7 +56,7 @@ type xType struct {
 }
 
 // TypeOf value
-func TypeOf(v interface{}) Type {
+func TypeOf(v any) Type {
 	rftTyp := reflect.TypeOf(v)
 
 	return &xType{

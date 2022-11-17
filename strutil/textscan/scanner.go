@@ -53,7 +53,7 @@ func NewScanner(in any) *TextScanner {
 }
 
 // SetInput for scan and parse
-func (s *TextScanner) SetInput(in interface{}) {
+func (s *TextScanner) SetInput(in any) {
 	// init
 	// if s.ks == nil {
 	// 	s.ks = make(map[Kind]string, len(kinds))

@@ -80,7 +80,7 @@ func TestAnyToString(t *testing.T) {
 		is.Eq("2", strutil.QuietString(in))
 	}
 
-	tests1 := []interface{}{
+	tests1 := []any{
 		float32(2.3), 2.3,
 	}
 	for _, in := range tests1 {

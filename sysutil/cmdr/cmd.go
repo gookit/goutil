@@ -147,7 +147,7 @@ func (c *Cmd) WithOutput(out, errOut io.Writer) *Cmd {
 }
 
 // WithAnyArgs add args and returns the current object.
-func (c *Cmd) WithAnyArgs(args ...interface{}) *Cmd {
+func (c *Cmd) WithAnyArgs(args ...any) *Cmd {
 	c.Args = append(c.Args, arrutil.SliceToStrings(args)...)
 	return c
 }
@@ -162,12 +162,12 @@ func (c *Cmd) WithArg(args ...string) *Cmd {
 }
 
 // AddArgf add args and returns the current object. alias of the WithArgf()
-func (c *Cmd) AddArgf(format string, args ...interface{}) *Cmd {
+func (c *Cmd) AddArgf(format string, args ...any) *Cmd {
 	return c.WithArgf(format, args...)
 }
 
 // WithArgf add arg and returns the current object
-func (c *Cmd) WithArgf(format string, args ...interface{}) *Cmd {
+func (c *Cmd) WithArgf(format string, args ...any) *Cmd {
 	c.Args = append(c.Args, fmt.Sprintf(format, args...))
 	return c
 }

@@ -16,7 +16,7 @@ type user struct {
 var testUser = user{"inhere", 200}
 
 func TestPretty(t *testing.T) {
-	tests := []interface{}{
+	tests := []any{
 		map[string]int{"a": 1},
 		struct {
 			A int `json:"a"`

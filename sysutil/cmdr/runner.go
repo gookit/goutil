@@ -163,7 +163,7 @@ func (r *Runner) CmdWithArgs(cmdName string, args ...string) *Runner {
 }
 
 // CmdWithAnys a command task
-func (r *Runner) CmdWithAnys(cmdName string, args ...interface{}) *Runner {
+func (r *Runner) CmdWithAnys(cmdName string, args ...any) *Runner {
 	r.AddTask(&Task{
 		Cmd: NewCmd(cmdName, arrutil.SliceToStrings(args)...),
 	})

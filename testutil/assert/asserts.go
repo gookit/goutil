@@ -78,7 +78,7 @@ func NotEmpty(t TestingT, give any, fmtAndArgs ...any) bool {
 type PanicRunFunc func()
 
 // didPanic returns true if the function passed to it panics. Otherwise, it returns false.
-func runPanicFunc(f PanicRunFunc) (didPanic bool, message interface{}, stack string) {
+func runPanicFunc(f PanicRunFunc) (didPanic bool, message any, stack string) {
 	didPanic = true
 	defer func() {
 		message = recover()
@@ -121,7 +121,7 @@ func NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 }
 
 // PanicsMsg should panic and with a value
-func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal interface{}, fmtAndArgs ...any) bool {
+func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal any, fmtAndArgs ...any) bool {
 	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
 	if !hasPanic {
 		t.Helper()
@@ -554,7 +554,7 @@ func NotSame(t TestingT, want, actual any, fmtAndArgs ...any) bool {
 
 // samePointers compares two generic interface objects and returns whether
 // they point to the same object
-func samePointers(first, second interface{}) bool {
+func samePointers(first, second any) bool {
 	firstPtr, secondPtr := reflect.ValueOf(first), reflect.ValueOf(second)
 	if firstPtr.Kind() != reflect.Ptr || secondPtr.Kind() != reflect.Ptr {
 		return false

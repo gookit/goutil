@@ -12,7 +12,7 @@ import (
 func TestToInt(t *testing.T) {
 	is := assert.New(t)
 
-	tests := []interface{}{
+	tests := []any{
 		2,
 		int8(2), int16(2), int32(2), int64(2),
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
@@ -21,7 +21,7 @@ func TestToInt(t *testing.T) {
 		time.Duration(2),
 		json.Number("2"),
 	}
-	errTests := []interface{}{
+	errTests := []any{
 		nil,
 		"2a",
 		[]int{1},
@@ -97,7 +97,7 @@ func TestToInt(t *testing.T) {
 func TestToString(t *testing.T) {
 	is := assert.New(t)
 
-	tests := []interface{}{
+	tests := []any{
 		2,
 		int8(2), int16(2), int32(2), int64(2),
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
@@ -132,7 +132,7 @@ func TestToString(t *testing.T) {
 func TestToFloat(t *testing.T) {
 	is := assert.New(t)
 
-	tests := []interface{}{
+	tests := []any{
 		2,
 		int8(2), int16(2), int32(2), int64(2),
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),

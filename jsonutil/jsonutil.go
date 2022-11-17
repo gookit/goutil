@@ -12,7 +12,7 @@ import (
 )
 
 // WriteFile write data to JSON file
-func WriteFile(filePath string, data interface{}) error {
+func WriteFile(filePath string, data any) error {
 	jsonBytes, err := Encode(data)
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func WriteFile(filePath string, data interface{}) error {
 }
 
 // ReadFile Read JSON file data
-func ReadFile(filePath string, v interface{}) error {
+func ReadFile(filePath string, v any) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -32,28 +32,28 @@ func ReadFile(filePath string, v interface{}) error {
 }
 
 // Pretty JSON string and return
-func Pretty(v interface{}) (string, error) {
+func Pretty(v any) (string, error) {
 	out, err := json.MarshalIndent(v, "", "    ")
 	return string(out), err
 }
 
 // Encode data to json bytes.
-func Encode(v interface{}) ([]byte, error) {
+func Encode(v any) ([]byte, error) {
 	return json.Marshal(v)
 }
 
 // EncodePretty encode pretty JSON data to json bytes.
-func EncodePretty(v interface{}) ([]byte, error) {
+func EncodePretty(v any) ([]byte, error) {
 	return json.MarshalIndent(v, "", "    ")
 }
 
 // EncodeToWriter encode data to writer.
-func EncodeToWriter(v interface{}, w io.Writer) error {
+func EncodeToWriter(v any, w io.Writer) error {
 	return json.NewEncoder(w).Encode(v)
 }
 
 // EncodeUnescapeHTML data to json bytes. will close escape HTML
-func EncodeUnescapeHTML(v interface{}) ([]byte, error) {
+func EncodeUnescapeHTML(v any) ([]byte, error) {
 	buf := &bytes.Buffer{}
 	enc := json.NewEncoder(buf)
 	enc.SetEscapeHTML(false)
@@ -66,24 +66,24 @@ func EncodeUnescapeHTML(v interface{}) ([]byte, error) {
 }
 
 // Decode json bytes to data ptr.
-func Decode(bts []byte, ptr interface{}) error {
+func Decode(bts []byte, ptr any) error {
 	return json.Unmarshal(bts, ptr)
 }
 
 // DecodeString json string to data ptr.
-func DecodeString(str string, ptr interface{}) error {
+func DecodeString(str string, ptr any) error {
 	return json.Unmarshal([]byte(str), ptr)
 }
 
 // DecodeReader decode JSON from io reader.
-func DecodeReader(r io.Reader, ptr interface{}) error {
+func DecodeReader(r io.Reader, ptr any) error {
 	return json.NewDecoder(r).Decode(ptr)
 }
 
 // Mapping src data(map,struct) to dst struct use json tags.
 //
 // On src, dst both is struct, equivalent to merging two structures (src should be a subset of dsc)
-func Mapping(src, dst interface{}) error {
+func Mapping(src, dst any) error {
 	bts, err := Encode(src)
 	if err != nil {
 		return err

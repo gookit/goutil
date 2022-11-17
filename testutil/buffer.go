@@ -23,7 +23,7 @@ func (b *Buffer) WriteString(ss ...string) {
 }
 
 // WriteAny method
-func (b *Buffer) WriteAny(vs ...interface{}) {
+func (b *Buffer) WriteAny(vs ...any) {
 	for _, v := range vs {
 		_, _ = b.Buffer.WriteString(fmt.Sprint(v))
 	}

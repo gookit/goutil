@@ -17,7 +17,7 @@ func Wrap(rv reflect.Value) Value {
 }
 
 // ValueOf the give value
-func ValueOf(v interface{}) Value {
+func ValueOf(v any) Value {
 	if rv, ok := v.(reflect.Value); ok {
 		return Wrap(rv)
 	}

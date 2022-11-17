@@ -25,7 +25,7 @@ func IsNil(v reflect.Value) bool {
 }
 
 // IsFunc value
-func IsFunc(val interface{}) bool {
+func IsFunc(val any) bool {
 	if val == nil {
 		return false
 	}
@@ -35,7 +35,7 @@ func IsFunc(val interface{}) bool {
 // IsEqual determines if two objects are considered equal.
 //
 // TIP: cannot compare function type
-func IsEqual(src, dst interface{}) bool {
+func IsEqual(src, dst any) bool {
 	if src == nil || dst == nil {
 		return src == dst
 	}

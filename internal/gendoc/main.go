@@ -255,11 +255,11 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	return buf
 }
 
-func bufWritef(buf *bytes.Buffer, f string, a ...interface{}) {
+func bufWritef(buf *bytes.Buffer, f string, a ...any) {
 	_, _ = fmt.Fprintf(buf, f, a...)
 }
 
-func bufWriteln(buf *bytes.Buffer, a ...interface{}) {
+func bufWriteln(buf *bytes.Buffer, a ...any) {
 	_, _ = fmt.Fprintln(buf, a...)
 }
 

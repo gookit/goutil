@@ -10,7 +10,7 @@ import (
 
 func TestCompare(t *testing.T) {
 	tests := []struct {
-		x, y interface{}
+		x, y any
 		op   string
 	}{
 		{2, 2, comdef.OpEq},

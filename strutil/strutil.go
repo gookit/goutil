@@ -141,12 +141,12 @@ func PrettyJSON(v any) (string, error) {
 }
 
 // RenderTemplate render text template
-func RenderTemplate(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
+func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string {
 	return RenderText(input, data, fns, isFile...)
 }
 
 // RenderText render text template
-func RenderText(input string, data interface{}, fns template.FuncMap, isFile ...bool) string {
+func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string {
 	t := template.New("simple-text")
 	t.Funcs(template.FuncMap{
 		// don't escape content

@@ -18,7 +18,7 @@ import (
 //	string 	    => string
 //
 // returns int64,string,float or error
-func BaseTypeVal(v reflect.Value) (value interface{}, err error) {
+func BaseTypeVal(v reflect.Value) (value any, err error) {
 	v = reflect.Indirect(v)
 
 	switch v.Kind() {
@@ -37,7 +37,7 @@ func BaseTypeVal(v reflect.Value) (value interface{}, err error) {
 }
 
 // ValueByType create reflect.Value by give reflect.Type
-func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error) {
+func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 	if typ.Kind() <= reflect.Float64 {
 		return ValueByKind(val, typ.Kind())
 	}
@@ -57,7 +57,7 @@ func ValueByType(val interface{}, typ reflect.Type) (rv reflect.Value, err error
 // TIPs:
 //
 //	Only support kind: string, bool, intX, uintX, floatX
-func ValueByKind(val interface{}, kind reflect.Kind) (rv reflect.Value, err error) {
+func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 	switch kind {
 	case reflect.Int:
 		if dstV, err1 := mathutil.ToInt(val); err1 == nil {

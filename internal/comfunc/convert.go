@@ -8,13 +8,13 @@ import (
 )
 
 // Bool try to convert type to bool
-func Bool(v interface{}) bool {
+func Bool(v any) bool {
 	bl, _ := ToBool(v)
 	return bl
 }
 
 // ToBool try to convert type to bool
-func ToBool(v interface{}) (bool, error) {
+func ToBool(v any) (bool, error) {
 	if bl, ok := v.(bool); ok {
 		return bl, nil
 	}

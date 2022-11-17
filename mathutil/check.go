@@ -8,7 +8,7 @@ package mathutil
 //	mathutil.Compare(2, 1.3, ">") // true
 //	mathutil.Compare(2.2, 1.3, ">") // true
 //	mathutil.Compare(2.1, 2, ">") // true
-func Compare(srcVal, dstVal interface{}, op string) (ok bool) {
+func Compare(srcVal, dstVal any, op string) (ok bool) {
 	if srcVal == nil || dstVal == nil {
 		return false
 	}

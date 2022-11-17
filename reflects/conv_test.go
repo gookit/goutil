@@ -10,7 +10,7 @@ import (
 
 func TestBaseTypeVal(t *testing.T) {
 	tests := []struct {
-		want, give interface{}
+		want, give any
 	}{
 		{int64(23), 23},
 		{int64(23), uint(23)},
@@ -52,7 +52,7 @@ func TestValueByType(t *testing.T) {
 
 func TestValueByKind(t *testing.T) {
 	tests := []struct {
-		want, give interface{}
+		want, give any
 		// want kind
 		kind reflect.Kind
 	}{
@@ -87,7 +87,7 @@ func TestValueByKind(t *testing.T) {
 
 func TestToString(t *testing.T) {
 	tests := []struct {
-		give interface{}
+		give any
 		want string
 	}{
 		{nil, ""},
