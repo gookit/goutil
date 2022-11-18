@@ -6,6 +6,7 @@ require (
 	github.com/gookit/color v1.5.2
 	github.com/mattn/go-isatty v0.0.16
 	golang.org/x/crypto v0.0.0-20220829220503-c86fa9a7ed90
+	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261
 	golang.org/x/text v0.4.0
 )
