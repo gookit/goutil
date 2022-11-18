@@ -72,7 +72,7 @@ func (e *errorR) GoString() string {
 	return e.String()
 }
 
-// ErrMap type
+// ErrMap multi error map
 type ErrMap map[string]error
 
 // Error string
@@ -85,6 +85,14 @@ func (e ErrMap) Error() string {
 		sb.WriteByte('\n')
 	}
 	return sb.String()
+}
+
+// ErrorOrNil error
+func (e ErrMap) ErrorOrNil() error {
+	if len(e) == 0 {
+		return nil
+	}
+	return e
 }
 
 // IsEmpty error
@@ -100,28 +108,37 @@ func (e ErrMap) One() error {
 	return nil
 }
 
-// ErrList type
-type ErrList []error
+// Errors multi error list
+type Errors []error
+type ErrList = Errors
 
 // Error string
-func (el ErrList) Error() string {
+func (es Errors) Error() string {
 	var sb strings.Builder
-	for _, err := range el {
+	for _, err := range es {
 		sb.WriteString(err.Error())
 		sb.WriteByte('\n')
 	}
 	return sb.String()
 }
 
+// ErrorOrNil error
+func (es Errors) ErrorOrNil() error {
+	if len(es) == 0 {
+		return nil
+	}
+	return es
+}
+
 // IsEmpty error
-func (el ErrList) IsEmpty() bool {
-	return len(el) == 0
+func (es Errors) IsEmpty() bool {
+	return len(es) == 0
 }
 
 // First error
-func (el ErrList) First() error {
-	if len(el) > 0 {
-		return el[0]
+func (es Errors) First() error {
+	if len(es) > 0 {
+		return es[0]
 	}
 	return nil
 }
