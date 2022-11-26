@@ -13,34 +13,6 @@ func TestSimilarity(t *testing.T) {
 	is.True(ok)
 }
 
-func TestRepeat(t *testing.T) {
-	assert.Eq(t, "aaa", strutil.Repeat("a", 3))
-	assert.Eq(t, "DD", strutil.Repeat("D", 2))
-	assert.Eq(t, "D", strutil.Repeat("D", 1))
-	assert.Eq(t, "", strutil.Repeat("0", 0))
-	assert.Eq(t, "", strutil.Repeat("D", -3))
-}
-
-func TestRepeatRune(t *testing.T) {
-	tests := []struct {
-		want  []rune
-		give  rune
-		times int
-	}{
-		{[]rune("bbb"), 'b', 3},
-		{[]rune("..."), '.', 3},
-		{[]rune("  "), ' ', 2},
-	}
-
-	for _, tt := range tests {
-		assert.Eq(t, tt.want, strutil.RepeatRune(tt.give, tt.times))
-	}
-}
-
-func TestRepeatBytes(t *testing.T) {
-	assert.Eq(t, []byte("aaa"), strutil.RepeatBytes('a', 3))
-}
-
 func TestRenderTemplate(t *testing.T) {
 	tpl := "hi, My name is {{ .name | upFirst }}, age is {{ .age }}"
 	assert.Eq(t, "hi, My name is Inhere, age is 2000", strutil.RenderTemplate(tpl, map[string]any{
@@ -58,31 +30,8 @@ func TestReplaces(t *testing.T) {
 		}))
 }
 
-func TestPadding(t *testing.T) {
-	tests := []struct {
-		want, give, pad string
-		len             int
-		pos             strutil.PosFlag
-	}{
-		{"ab000", "ab", "0", 5, strutil.PosRight},
-		{"000ab", "ab", "0", 5, strutil.PosLeft},
-		{"ab012", "ab012", "0", 4, strutil.PosLeft},
-		{"ab   ", "ab", "", 5, strutil.PosRight},
-		{"   ab", "ab", "", 5, strutil.PosLeft},
-	}
-
-	for _, tt := range tests {
-		assert.Eq(t, tt.want, strutil.Padding(tt.give, tt.pad, tt.len, tt.pos))
-
-		if tt.pos == strutil.PosRight {
-			assert.Eq(t, tt.want, strutil.PadRight(tt.give, tt.pad, tt.len))
-		} else {
-			assert.Eq(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
-		}
-	}
-}
-
 func TestWrapTag(t *testing.T) {
+	assert.Eq(t, "<info>abc</info>", strutil.WrapTag("abc", "info"))
 }
 
 func TestPrettyJSON(t *testing.T) {
