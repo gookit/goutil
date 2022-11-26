@@ -63,7 +63,7 @@ func Resize(s string, length int, align PosFlag) string {
 	if align == PosMiddle {
 		strLn := len(s)
 		padLn := (length - strLn) / 2
-		padStr := string(make([]byte, padLn, padLn))
+		padStr := string(make([]byte, padLn))
 
 		if diff := length - padLn*2; diff > 0 {
 			s += " "

@@ -377,7 +377,7 @@ type CommentToken struct {
 	m *CommentsMatcher
 
 	more bool
-	mark string // end mark for multi line
+	// mark string // end mark for multi line
 
 	// for multi line comments.
 	comments []string

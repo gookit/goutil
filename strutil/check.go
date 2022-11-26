@@ -20,7 +20,7 @@ func IsNumChar(c byte) bool {
 	return c >= '0' && c <= '9'
 }
 
-var numReg = regexp.MustCompile("^\\d+$")
+var numReg = regexp.MustCompile(`^\d+$`)
 
 // IsNumeric returns true if the given string is a numeric, otherwise false.
 func IsNumeric(s string) bool {

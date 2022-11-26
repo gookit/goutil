@@ -40,10 +40,10 @@ func TestHeaderToStringMap(t *testing.T) {
 
 func TestToQueryValues(t *testing.T) {
 	vs := httpreq.ToQueryValues(map[string]string{"field1": "value1", "field2": "value2"})
-	assert.StrContains(t, vs.Encode(), "field=value1")
+	assert.StrContains(t, vs.Encode(), "field1=value1")
 
 	vs = httpreq.ToQueryValues(map[string]any{"field1": 234, "field2": "value2"})
-	assert.StrContains(t, vs.Encode(), "field=234")
+	assert.StrContains(t, vs.Encode(), "field1=234")
 }
 
 func TestRequestToString(t *testing.T) {

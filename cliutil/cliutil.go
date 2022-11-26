@@ -134,7 +134,7 @@ func ShellQuote(s string) string {
 
 	if quote > 0 {
 		ln := len(s) + 2
-		bs := make([]byte, ln, ln)
+		bs := make([]byte, ln)
 
 		bs[0] = quote
 		bs[ln-1] = quote

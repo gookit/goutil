@@ -1,7 +1,7 @@
 package process
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/mathutil"
@@ -39,7 +39,7 @@ func (pf *PidFile) PID() int {
 	}
 
 	if fsutil.FileExist(pf.file) {
-		bts, err := ioutil.ReadFile(pf.file)
+		bts, err := os.ReadFile(pf.file)
 		if err == nil {
 			pf.pid = strutil.QuietInt(string(bts))
 		}

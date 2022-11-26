@@ -117,7 +117,7 @@ func TestPrint(t *testing.T) {
 
 	buf.Reset()
 	Fprint(buf, []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11})
-	is.Eq(`[]int [ #len=11
+	is.Eq(`[]int [ #len=11,cap=11
   int(1),
   int(2),
   int(3),

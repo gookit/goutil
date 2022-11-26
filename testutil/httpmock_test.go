@@ -1,7 +1,7 @@
 package testutil_test
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"testing"
@@ -16,7 +16,7 @@ func TestMockRequest(t *testing.T) {
 		_, _ = w.Write([]byte("hello!"))
 
 		if r.Body != nil {
-			bs, _ := ioutil.ReadAll(r.Body)
+			bs, _ := io.ReadAll(r.Body)
 			_, _ = w.Write(bs)
 		}
 	}))

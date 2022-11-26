@@ -228,7 +228,7 @@ func (r *Runner) Len() int {
 // TaskIDs get
 func (r *Runner) TaskIDs() []string {
 	ss := make([]string, 0, len(r.idMap))
-	for id, _ := range r.idMap {
+	for id := range r.idMap {
 		ss = append(ss, id)
 	}
 	return ss

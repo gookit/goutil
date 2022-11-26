@@ -35,7 +35,7 @@ func TestFromDate(t *testing.T) {
 	assert.Eq(t, "2022-04-20 19:40:34", tx.Datetime())
 	assert.Eq(t, tx.Unix(), tx.Timestamp())
 
-	tx, err = timex.FromDate("invalid")
+	_, err = timex.FromDate("invalid")
 	assert.Err(t, err)
 }
 

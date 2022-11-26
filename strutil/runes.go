@@ -126,7 +126,7 @@ func Utf8Split(s string, w int) []string {
 	tmpS := ""
 
 	ss := make([]string, 0, sw/w+1)
-	for _, r := range []rune(s) {
+	for _, r := range s {
 		rw := RuneWidth(r)
 		if tmpW+rw == w {
 			tmpS += string(r)
@@ -162,7 +162,7 @@ func WidthWrap(s string, w int) string {
 	tmpW := 0
 	out := ""
 
-	for _, r := range []rune(s) {
+	for _, r := range s {
 		cw := RuneWidth(r)
 		if r == '\n' {
 			out += string(r)

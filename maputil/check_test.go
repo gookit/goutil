@@ -8,18 +8,15 @@ import (
 )
 
 func TestHasKey(t *testing.T) {
-	var mp any
+	var mp any = map[string]string{"key0": "val0"}
 
-	mp = map[string]string{"key0": "val0"}
 	assert.True(t, maputil.HasKey(mp, "key0"))
 	assert.False(t, maputil.HasKey(mp, "not-exist"))
 	assert.False(t, maputil.HasKey("abc", "not-exist"))
 }
 
 func TestHasAllKeys(t *testing.T) {
-	var mp any
-
-	mp = map[string]string{"key0": "val0", "key1": "def"}
+	var mp any = map[string]string{"key0": "val0", "key1": "def"}
 	ok, noKey := maputil.HasAllKeys(mp, "key0")
 	assert.True(t, ok)
 	assert.Nil(t, noKey)
