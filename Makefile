@@ -26,6 +26,11 @@ readme:
 	go run ./internal/gendoc -o README.md
 	go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
 
+  readme-c:     ## Generate or update README file and commit change to git
+readme-c: readme
+	git add README.* internal
+	git commit -m "doc: update and re-generate README docs"
+
   csfix:      ## Fix code style for all files by go fmt
 csfix:
 	go fmt ./...

@@ -976,17 +976,19 @@ func EscapeJS(s string) string
 func EscapeHTML(s string) string
 func AddSlashes(s string) string
 func StripSlashes(s string) string
-func Md5(src any) string { return GenMd5(src) }
-func MD5(src any) string { return GenMd5(src) }
-func GenMd5(src any) string
+func Md5(src any) string
+func MD5(src any) string { return Md5(src) }
+func GenMd5(src any) string { return Md5(src) }
+func Md5Bytes(src any) []byte
 func URLEncode(s string) string
 func URLDecode(s string) string
 func B32Encode(str string) string
 func B32Decode(str string) string
-func Base64(str string) string
 func B64Encode(str string) string
+func B64EncodeBytes(src []byte) []byte
 func B64Decode(str string) string
-func NewBaseEncoder(base int) *BaseEncoder
+func B64DecodeBytes(str string) []byte
+func Encoding(base int, typ BaseType) BaseEncoder
 // source at strutil/filter.go
 func Trim(s string, cutSet ...string) string
 func Ltrim(s string, cutSet ...string) string { return TrimLeft(s, cutSet...) }
@@ -1013,6 +1015,20 @@ func IndentBytes(b, prefix []byte) []byte
 // source at strutil/id.go
 func MicroTimeID() string
 func MicroTimeHexID() string
+// source at strutil/padding.go
+func Padding(s, pad string, length int, pos PosFlag) string
+func PadLeft(s, pad string, length int) string
+func PadRight(s, pad string, length int) string
+func Resize(s string, length int, align PosFlag) string
+func PadBytes(bs []byte, pad byte, length int, pos PosFlag) []byte
+func PadBytesLeft(bs []byte, pad byte, length int) []byte
+func PadBytesRight(bs []byte, pad byte, length int) []byte
+func PadRunes(rs []rune, pad rune, length int, pos PosFlag) []rune
+func PadRunesLeft(rs []rune, pad rune, length int) []rune
+func PadRunesRight(rs []rune, pad rune, length int) []rune
+func Repeat(s string, times int) string
+func RepeatRune(char rune, times int) []rune
+func RepeatBytes(char byte, times int) []byte
 // source at strutil/random.go
 func RandomChars(ln int) string
 func RandomCharsV2(ln int) string
@@ -1030,7 +1046,8 @@ func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 func RuneCount(s string) int { return len([]rune(s)) }
 func RuneWidth(r rune) int
 func TextWidth(s string) int { return Utf8Width(s) }
-func Utf8Width(s string) (size int)
+func Utf8Width(s string) int { return RunesWidth([]rune(s)) }
+func RunesWidth(rs []rune) (w int)
 func TextTruncate(s string, w int, tail string) string { return Utf8Truncate(s, w, tail) }
 func Utf8Truncate(s string, w int, tail string) string
 func TextSplit(s string, w int) []string { return Utf8Split(s, w) }
@@ -1054,13 +1071,6 @@ func SplitNTrimmed(s, sep string, n int) (ss []string)
 func Substr(s string, pos, length int) string
 func SplitInlineComment(val string) (string, string)
 // source at strutil/strutil.go
-func Padding(s, pad string, length int, pos PosFlag) string
-func PadLeft(s, pad string, length int) string
-func PadRight(s, pad string, length int) string
-func Resize(s string, length int, align PosFlag) string
-func Repeat(s string, times int) string
-func RepeatRune(char rune, times int) []rune
-func RepeatBytes(char byte, times int) []byte
 func Replaces(str string, pairs map[string]string) string
 func PrettyJSON(v any) (string, error)
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string
@@ -1096,13 +1106,14 @@ func FindExecutable(binName string) (string, error)
 func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool
 func SearchPath(keywords string) []string
+// source at sysutil/sysgo.go
+func GoVersion() string
+func ParseGoVersion(line string) (*GoInfo, error)
+func OsGoInfo() (*GoInfo, error)
 // source at sysutil/sysutil.go
 func Workdir() string
 func BinDir() string
 func BinFile() string
-func GoVersion() string
-func ParseGoVersion(line string) (*GoInfo, error)
-func OsGoInfo() (*GoInfo, error)
 // source at sysutil/sysutil_nonwin.go
 func IsWin() bool
 func IsWindows() bool
@@ -1369,11 +1380,7 @@ root@xx:/go/work# go test ./...
 ## License
 
 [MIT](LICENSE)
-nt](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
-- [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
-- [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
-- [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
-- [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
+ort Map, Struct, Form data
 - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
 - More, please see https://github.com/gookit
 
