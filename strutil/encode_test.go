@@ -51,7 +51,7 @@ func TestBaseDecode(t *testing.T) {
 	is.Eq("MFRGG===", strutil.B32Encode("abc"))
 	is.Eq("abc", strutil.B32Decode("MFRGG==="))
 
-	is.Eq("YWJj", strutil.Base64("abc"))
 	is.Eq("YWJj", strutil.B64Encode("abc"))
 	is.Eq("abc", strutil.B64Decode("YWJj"))
+	is.Eq([]byte("YWJj"), strutil.B64EncodeBytes([]byte("abc")))
 }

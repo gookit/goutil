@@ -74,21 +74,25 @@ func StripSlashes(s string) string {
 //
 
 // Md5 Generate a 32-bit md5 string
-func Md5(src any) string { return GenMd5(src) }
+func Md5(src any) string {
+	return hex.EncodeToString(Md5Bytes(src))
+}
 
 // MD5 Generate a 32-bit md5 string
-func MD5(src any) string { return GenMd5(src) }
+func MD5(src any) string { return Md5(src) }
 
 // GenMd5 Generate a 32-bit md5 string
-func GenMd5(src any) string {
+func GenMd5(src any) string { return Md5(src) }
+
+// Md5Bytes Generate a 32-bit md5 bytes
+func Md5Bytes(src any) []byte {
 	h := md5.New()
 	if s, ok := src.(string); ok {
 		h.Write([]byte(s))
 	} else {
 		h.Write([]byte(fmt.Sprint(src)))
 	}
-
-	return hex.EncodeToString(h.Sum(nil))
+	return h.Sum(nil)
 }
 
 // URLEncode encode url string.
@@ -126,14 +130,17 @@ func B32Decode(str string) string {
 	return string(dec)
 }
 
-// Base64 encode
-func Base64(str string) string {
-	return base64.StdEncoding.EncodeToString([]byte(str))
-}
-
 // B64Encode base64 encode
 func B64Encode(str string) string {
 	return base64.StdEncoding.EncodeToString([]byte(str))
+}
+
+// B64EncodeBytes base64 encode
+func B64EncodeBytes(src []byte) []byte {
+	buf := make([]byte, base64.StdEncoding.EncodedLen(len(src)))
+	base64.StdEncoding.Encode(buf, src)
+
+	return buf
 }
 
 // B64Decode base64 decode
@@ -142,23 +149,54 @@ func B64Decode(str string) string {
 	return string(dec)
 }
 
-// BaseEncoder struct
-type BaseEncoder struct {
-	// Base value
-	Base int
+// B64DecodeBytes base64 decode
+func B64DecodeBytes(str string) []byte {
+	dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(str)))
+	n, _ := base64.StdEncoding.Decode(dbuf, []byte(str))
+
+	return dbuf[:n]
 }
 
-// NewBaseEncoder instance
-func NewBaseEncoder(base int) *BaseEncoder {
-	return &BaseEncoder{Base: base}
+// BaseEncoder interface
+type BaseEncoder interface {
+	Encode(dst []byte, src []byte)
+	EncodeToString(src []byte) string
+	Decode(dst []byte, src []byte) (n int, err error)
+	DecodeString(s string) ([]byte, error)
 }
 
-// Encode handle
-func (be *BaseEncoder) Encode(s string) string {
-	return s
-}
+// BaseType for base encoding
+type BaseType uint8
 
-// Decode handle
-func (be *BaseEncoder) Decode(s string) (string, error) {
-	return s, nil
+// types for base encoding
+const (
+	BaseTypeStd BaseType = iota
+	BaseTypeHex
+	BaseTypeURL
+	BaseTypeRawStd
+	BaseTypeRawURL
+)
+
+// Encoding instance
+func Encoding(base int, typ BaseType) BaseEncoder {
+	if base == 32 {
+		switch typ {
+		case BaseTypeHex:
+			return base32.HexEncoding
+		default:
+			return base32.StdEncoding
+		}
+	}
+
+	// base 64
+	switch typ {
+	case BaseTypeURL:
+		return base64.URLEncoding
+	case BaseTypeRawURL:
+		return base64.RawURLEncoding
+	case BaseTypeRawStd:
+		return base64.RawStdEncoding
+	default:
+		return base64.StdEncoding
+	}
 }
