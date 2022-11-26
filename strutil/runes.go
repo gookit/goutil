@@ -62,24 +62,30 @@ func RuneWidth(r rune) int {
 	return 1
 }
 
-// TextWidth alias of the Utf8Width()
+// TextWidth utf8 string width. alias of RunesWidth()
 func TextWidth(s string) int { return Utf8Width(s) }
 
-// Utf8Width utf8 string width.
+// Utf8Width utf8 string width. alias of RunesWidth
+func Utf8Width(s string) int { return RunesWidth([]rune(s)) }
+
+// RunesWidth utf8 runes string width.
+//
+// Examples:
 //
 //	str := "hi,你好"
+//
 //	strutil.Utf8Width(str)	=> 7
 //	len(str) => 9
 //	len([]rune(str)) = utf8.RuneCountInString(s) => 5
-func Utf8Width(s string) (size int) {
-	if len(s) == 0 {
+func RunesWidth(rs []rune) (w int) {
+	if len(rs) == 0 {
 		return
 	}
 
-	for _, runeVal := range []rune(s) {
-		size += RuneWidth(runeVal)
+	for _, runeVal := range rs {
+		w += RuneWidth(runeVal)
 	}
-	return size
+	return w
 }
 
 // TextTruncate alias of the Utf8Truncate()
@@ -162,7 +168,9 @@ func WidthWrap(s string, w int) string {
 			out += string(r)
 			tmpW = 0
 			continue
-		} else if tmpW+cw > w {
+		}
+
+		if tmpW+cw > w {
 			out += "\n"
 			tmpW = 0
 			out += string(r)
@@ -174,4 +182,46 @@ func WidthWrap(s string, w int) string {
 		tmpW += cw
 	}
 	return out
+}
+
+// WordWrap text string and limit width.
+func WordWrap(s string, w int) string {
+	tmpW := 0
+	out := ""
+
+	for _, sub := range strings.Split(s, " ") {
+		cw := TextWidth(sub)
+		if tmpW+cw > w {
+			if tmpW != 0 {
+				out += "\n"
+			}
+
+			tmpW = 0
+			out += sub
+			tmpW += cw
+			continue
+		}
+
+		out += sub
+		tmpW += cw
+	}
+	return out
+}
+
+// Runes data slice
+type Runes []rune
+
+// Padding a rune to want length and with position
+func (rs Runes) Padding(pad rune, length int, pos PosFlag) []rune {
+	return PadChars(rs, pad, length, pos)
+}
+
+// PadLeft a rune to want length
+func (rs Runes) PadLeft(pad rune, length int) []rune {
+	return rs.Padding(pad, length, PosLeft)
+}
+
+// PadRight a rune to want length
+func (rs Runes) PadRight(pad rune, length int) []rune {
+	return rs.Padding(pad, length, PosRight)
 }
