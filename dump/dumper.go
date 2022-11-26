@@ -291,7 +291,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		}
 
 		eleNum := v.Len()
-		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum))
+		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
 
 		d.indentPrint(t.String(), " [ ", lenTip, "\n")
 		d.msValue = false

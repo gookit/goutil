@@ -30,3 +30,10 @@ type IntOrFloat interface {
 type XintOrFloat interface {
 	Int | Uint | Float
 }
+
+// ScalarType interface type.
+//
+// contains: (x)int, float, ~string, ~bool types
+type ScalarType interface {
+	Int | Uint | Float | ~string | ~bool
+}
