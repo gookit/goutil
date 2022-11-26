@@ -103,6 +103,7 @@ func TestTimeX_AddSeconds(t *testing.T) {
 
 	assert.Eq(t, timex.OneHour, h1.Diff(tx.Time))
 	assert.Eq(t, timex.OneHourSec, h1.DiffSec(tx.Time))
+	assert.Eq(t, timex.OneHourSec, h1.DiffUnix(tx.Unix()))
 }
 
 func TestTimeX_HourStart(t *testing.T) {

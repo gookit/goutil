@@ -223,6 +223,11 @@ func (t Time) DiffSec(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
+// DiffUnix calc diff seconds for t.Unix() - u
+func (t Time) DiffUnix(u int64) int {
+	return int(t.Unix() - u)
+}
+
 // SubUnix calc diff seconds for t - u
 func (t Time) SubUnix(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
