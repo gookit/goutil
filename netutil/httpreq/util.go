@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/gookit/goutil/strutil"
 )
 
 // IsOK check response status code is 200
@@ -63,6 +65,19 @@ func AddHeaders(req *http.Request, header http.Header) {
 	}
 }
 
+// HeaderToStringMap convert
+func HeaderToStringMap(rh http.Header) map[string]string {
+	if len(rh) == 0 {
+		return nil
+	}
+
+	mp := make(map[string]string, len(rh))
+	for name, values := range rh {
+		mp[name] = strings.Join(values, "; ")
+	}
+	return mp
+}
+
 // ToQueryValues convert string-map to url.Values
 func ToQueryValues(data any) url.Values {
 	// use url.Values directly if we have it
@@ -74,6 +89,10 @@ func ToQueryValues(data any) url.Values {
 	if strMp, ok := data.(map[string]string); ok {
 		for k, v := range strMp {
 			uv.Add(k, v)
+		}
+	} else if kvMp, ok := data.(map[string]any); ok {
+		for k, v := range kvMp {
+			uv.Add(k, strutil.QuietString(v))
 		}
 	}
 

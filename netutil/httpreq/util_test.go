@@ -28,6 +28,24 @@ func TestAddHeaders(t *testing.T) {
 	assert.Eq(t, "val0", req.Header.Get("key0"))
 }
 
+func TestHeaderToStringMap(t *testing.T) {
+	assert.Nil(t, httpreq.HeaderToStringMap(nil))
+	assert.Nil(t, httpreq.HeaderToStringMap(http.Header{}))
+
+	want := map[string]string{"key": "value; more"}
+	assert.Eq(t, want, httpreq.HeaderToStringMap(http.Header{
+		"key": {"value", "more"},
+	}))
+}
+
+func TestToQueryValues(t *testing.T) {
+	vs := httpreq.ToQueryValues(map[string]string{"field1": "value1", "field2": "value2"})
+	assert.StrContains(t, vs.Encode(), "field=value1")
+
+	vs = httpreq.ToQueryValues(map[string]any{"field1": 234, "field2": "value2"})
+	assert.StrContains(t, vs.Encode(), "field=234")
+}
+
 func TestRequestToString(t *testing.T) {
 	req, err := http.NewRequest("GET", "inhere.xyz", nil)
 	assert.NoErr(t, err)

@@ -14,3 +14,9 @@ type DoerFunc func(req *http.Request) (*http.Response, error)
 func (do DoerFunc) Do(req *http.Request) (*http.Response, error) {
 	return do(req)
 }
+
+// ReqLogger interface
+type ReqLogger interface {
+	Infof(format string, args ...any)
+	Errorf(format string, args ...any)
+}
