@@ -1,6 +1,7 @@
 package finder
 
 import (
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -248,16 +249,12 @@ func (f *FileFinder) findInDir(dirPath string) {
 		return // ignore I/O error
 	}
 
-	// opening
-	d, err := os.Open(dirPath)
+	// sort.Strings(names)
+	// names, _ := d.Readdirnames(-1)
+	stats, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		return // ignore I/O error
 	}
-
-	// sort.Strings(names)
-	// names, _ := d.Readdirnames(-1)
-	stats, _ := d.Readdir(-1)
-	_ = d.Close() // close dir.
 
 	for _, fi := range stats {
 		baseName := fi.Name()

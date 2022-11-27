@@ -1,6 +1,7 @@
 package fsutil
 
 import (
+	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -86,16 +87,14 @@ func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error)
 		return // ignore I/O error
 	}
 
-	d, err := os.Open(dir)
-	if err != nil {
-		return // ignore I/O error
-	}
-	defer d.Close()
-
 	// names, _ := d.Readdirnames(-1)
 	// sort.Strings(names)
 
-	stats, _ := d.Readdir(-1)
+	stats, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return
+	}
+
 	for _, fi := range stats {
 		baseName := fi.Name()
 		filePath := dir + "/" + baseName
