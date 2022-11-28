@@ -1,5 +1,7 @@
 # Test Utils
 
+`testutil` provide some test help util functions. eg: http test, mock ENV value
+
 - `assert` go tests helper
 - env variable mocks
 - http request mock 
@@ -7,7 +9,7 @@
 ## Install
 
 ```bash
-go get github.com/gookit/goutil/sysutil
+go get github.com/gookit/goutil/testutil
 ```
 
 ## [`assert`](./assert) tests

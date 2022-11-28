@@ -1,3 +1,4 @@
+// Package jsonutil provide some util functions for quick operate JSON data
 package jsonutil
 
 import (

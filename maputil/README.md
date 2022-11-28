@@ -1,5 +1,7 @@
 # Map Utils
 
+`maputil` provide map data util functions. eg: convert, sub-value get, simple merge
+
 - use `map[string]any` as Data
 - deep get value by key path
 - deep set value by key path

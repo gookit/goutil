@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-// WriteWrapper struct
+// WriteWrapper warp io.Writer support more operate methods.
 type WriteWrapper struct {
 	Out io.Writer
 }

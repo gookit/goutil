@@ -1,3 +1,4 @@
+// Package testutil provide some test help util functions. eg: http test, mock ENV value
 package testutil
 
 import (

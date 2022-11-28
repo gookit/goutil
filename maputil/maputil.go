@@ -1,3 +1,4 @@
+// Package maputil provide map data util functions. eg: convert, sub-value get, simple merge
 package maputil
 
 import (

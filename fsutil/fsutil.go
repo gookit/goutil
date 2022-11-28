@@ -1,3 +1,4 @@
+// Package fsutil Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
 package fsutil
 
 import (

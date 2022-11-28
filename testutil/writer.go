@@ -21,18 +21,21 @@ func NewTestWriter() *TestWriter {
 }
 
 // SetErrOnWrite method
-func (w *TestWriter) SetErrOnWrite() {
+func (w *TestWriter) SetErrOnWrite() *TestWriter {
 	w.ErrOnWrite = true
+	return w
 }
 
 // SetErrOnFlush method
-func (w *TestWriter) SetErrOnFlush() {
+func (w *TestWriter) SetErrOnFlush() *TestWriter {
 	w.ErrOnFlush = true
+	return w
 }
 
 // SetErrOnClose method
-func (w *TestWriter) SetErrOnClose() {
+func (w *TestWriter) SetErrOnClose() *TestWriter {
 	w.ErrOnClose = true
+	return w
 }
 
 // Flush implements

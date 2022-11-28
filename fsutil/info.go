@@ -70,13 +70,15 @@ func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
 	return
 }
 
-// filter and handle func for FindInDir
 type (
+	// FilterFunc type for FindInDir
 	FilterFunc func(fPath string, fi os.FileInfo) bool
+	// HandleFunc type for FindInDir
 	HandleFunc func(fPath string, fi os.FileInfo) error
 )
 
 // FindInDir code refer the go pkg: path/filepath.glob()
+//
 // filters: return false will skip the file.
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) {
 	fi, err := os.Stat(dir)

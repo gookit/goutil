@@ -1,3 +1,4 @@
+// Package finder provide a finder tool for find files
 package finder
 
 import (
