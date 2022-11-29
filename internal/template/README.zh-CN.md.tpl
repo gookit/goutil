@@ -44,6 +44,7 @@ Go一些常用的string、number、slice、map、struct、env、system等工具�
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
   - [assert](testutil/assert) 用于帮助测试的断言函数工具包
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
+  - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
 
 ## GoDoc

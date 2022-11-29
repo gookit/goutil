@@ -104,6 +104,7 @@ func TestIsSpace(t *testing.T) {
 	assert.False(t, strutil.IsBlank(" a "))
 	assert.True(t, strutil.IsNotBlank(" a "))
 	assert.False(t, strutil.IsEmpty(" "))
+	assert.True(t, strutil.IsBlank(""))
 	assert.True(t, strutil.IsBlank(" "))
 	assert.True(t, strutil.IsBlank("   "))
 	assert.False(t, strutil.IsNotBlank("   "))
