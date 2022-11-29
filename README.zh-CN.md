@@ -201,10 +201,6 @@ func ExecCommand(binName string, args []string, workDir ...string) (string, erro
 func ShellExec(cmdLine string, shells ...string) (string, error)
 func CurrentShell(onlyName bool) (path string)
 func HasShellEnv(shell string) bool
-func Workdir() string
-func BinDir() string
-func BinFile() string
-func BinName() string
 func BuildOptionHelpName(names []string) string
 func ShellQuote(s string) string
 func OutputLines(output string) []string
@@ -243,14 +239,21 @@ func Errorln(a ...any) { color.Error.Println(a...) }
 func Warnp(a ...any) { color.Warn.Print(a...) }
 func Warnf(format string, a ...any) { color.Warn.Printf(format, a...) }
 func Warnln(a ...any) { color.Warn.Println(a...) }
+// source at cliutil/info.go
+func Workdir() string
+func BinDir() string
+func BinFile() string
+func BinName() string
+func GetTermSize(refresh ...bool) (w int, h int)
 // source at cliutil/read.go
 func ReadInput(question string) (string, error)
 func ReadLine(question string) (string, error)
 func ReadFirst(question string) (string, error)
 func ReadFirstByte(question string) (byte, error)
 func ReadFirstRune(question string) (rune, error)
-// source at cliutil/read_nonwin.go
 func ReadPassword(question ...string) string
+func InputIsYes(ans string) bool
+func ByteIsYes(ans byte) bool
 ```
 
 #### CLI Util Usage
@@ -1367,12 +1370,6 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 - [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
 - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
 - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
-- More, please see https://github.com/gookit
-
-## License
-
-[MIT](LICENSE)
-(https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
 - More, please see https://github.com/gookit
 
 ## License
