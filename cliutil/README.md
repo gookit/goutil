@@ -1,10 +1,12 @@
 # Cli Util
 
+`cliutil` provides some extra util functions for CLI.
+
 - Helper util functions in cli
 - Color print in console terminal
 - Read terminal message input
 - Command line args string parse
-- Build command line string from []string
+- Build command line string from `[]string`
 
 ## Install
 
@@ -43,7 +45,19 @@ name := cliutil.ReadInput("Your name: ")
 name := cliutil.ReadLine("Your name: ")
 
 ans, _ := cliutil.ReadFirst("continue?[y/n] ")
+if cliutil.InputIsYes(ans) {
+	// do something ...
+}
 
+ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
+if cliutil.ByteIsYes(ans) {
+	// do something ...
+}
+```
+
+### Read Password
+
+```go
 pwd := cliutil.ReadPassword("Input password:")
 ```
 

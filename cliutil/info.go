@@ -3,7 +3,6 @@ package cliutil
 import (
 	"os"
 	"path"
-	"syscall"
 
 	"golang.org/x/term"
 )
@@ -38,7 +37,7 @@ func GetTermSize(refresh ...bool) (w int, h int) {
 	}
 
 	var err error
-	w, h, err = term.GetSize(syscall.Stdin)
+	w, h, err = term.GetSize(syscallStdinFd())
 	if err != nil {
 		return
 	}
