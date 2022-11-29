@@ -5,7 +5,7 @@ package cliutil
 import (
 	"syscall"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 // ReadPassword from console terminal
@@ -16,7 +16,7 @@ func ReadPassword(question ...string) string {
 		print("Enter Password: ")
 	}
 
-	bs, err := terminal.ReadPassword(syscall.Stdin)
+	bs, err := term.ReadPassword(syscall.Stdin)
 	if err != nil {
 		return ""
 	}

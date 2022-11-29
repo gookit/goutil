@@ -2,8 +2,6 @@
 package cliutil
 
 import (
-	"os"
-	"path"
 	"strings"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
@@ -81,27 +79,6 @@ func CurrentShell(onlyName bool) (path string) {
 //	HasShellEnv("bash")
 func HasShellEnv(shell string) bool {
 	return comfunc.HasShellEnv(shell)
-}
-
-// Workdir get
-func Workdir() string {
-	dir, _ := os.Getwd()
-	return dir
-}
-
-// BinDir get
-func BinDir() string {
-	return path.Dir(os.Args[0])
-}
-
-// BinFile get
-func BinFile() string {
-	return os.Args[0]
-}
-
-// BinName get
-func BinName() string {
-	return path.Base(os.Args[0])
 }
 
 // BuildOptionHelpName for render flag help

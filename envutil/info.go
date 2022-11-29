@@ -8,7 +8,7 @@ import (
 
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/sysutil"
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
 )
 
 // IsWin system. linux windows darwin
@@ -70,7 +70,8 @@ func IsWSL() bool {
 //
 //	envutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
-	return isatty.IsTerminal(fd)
+	// return isatty.IsTerminal(fd) // "github.com/mattn/go-isatty"
+	return term.IsTerminal(int(fd))
 }
 
 // StdIsTerminal os.Stdout is terminal

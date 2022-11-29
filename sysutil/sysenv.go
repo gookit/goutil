@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/gookit/goutil/internal/comfunc"
-	"github.com/mattn/go-isatty"
+	"golang.org/x/term"
 )
 
 // IsMSys msys(MINGW64) env，不一定支持颜色
@@ -41,7 +41,8 @@ func IsConsole(out io.Writer) bool {
 //
 //	sysutil.IsTerminal(os.Stdout.Fd())
 func IsTerminal(fd uintptr) bool {
-	return isatty.IsTerminal(fd)
+	// return isatty.IsTerminal(fd) // "github.com/mattn/go-isatty"
+	return term.IsTerminal(int(fd))
 }
 
 // StdIsTerminal os.Stdout is terminal
