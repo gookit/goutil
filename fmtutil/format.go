@@ -12,7 +12,7 @@ import (
 const (
 	OneKByte = 1024
 	OneMByte = 1024 * 1024
-	OneGByte = 1024 * 1024
+	OneGByte = 1024 * 1024 * 1024
 )
 
 // DataSize format bytes number friendly.
