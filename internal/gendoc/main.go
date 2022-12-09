@@ -29,13 +29,14 @@ var (
 		"internal",
 	}
 	nameMap = map[string]string{
-		"arr":     "array/Slice",
+		"arr":     "array and Slice",
 		"str":     "strings",
-		"sys":     "system",
+		"byte":    "Bytes Utils",
+		"sys":     "system Utils",
 		"math":    "math/Number",
 		"fs":      "file System",
-		"fmt":     "formatting",
-		"test":    "testing",
+		"fmt":     "format Utils",
+		"test":    "testing Utils",
 		"dump":    "dumper",
 		"structs": "structs",
 		"json":    "JSON Utils",

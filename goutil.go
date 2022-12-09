@@ -61,3 +61,11 @@ func FuncName(f any) string {
 func PkgName(funcName string) string {
 	return stdutil.PkgName(funcName)
 }
+
+// ErrOnFail return input error on cond is false, otherwise return nil
+func ErrOnFail(cond bool, err error) error {
+	if !cond {
+		return err
+	}
+	return nil
+}

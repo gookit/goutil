@@ -82,7 +82,7 @@ u64Val = goutil.Uint("2") // 2
 
 ## Packages
 
-### Array/Slice
+### Array and Slice
 
 > Package `github.com/gookit/goutil/arrutil`
 
@@ -152,6 +152,21 @@ ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2}
 ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```
 
+
+### Bytes Utils
+
+> Package `github.com/gookit/goutil/byteutil`
+
+```go
+// source at byteutil/buffer.go
+func NewBuffer() *Buffer
+// source at byteutil/bytex.go
+func Md5(src any) []byte
+// source at byteutil/encoder.go
+func NewStdEncoder(encFn func(src []byte) []byte, decFn func(src []byte) ([]byte, error)) *StdEncoder
+// source at byteutil/pool.go
+func NewChanPool(maxSize int, width int, capWidth int) *ChanPool
+```
 
 ### Cflag
 
@@ -549,7 +564,7 @@ runtime.goexit()
 ```
 
 
-### Formatting
+### Format Utils
 
 > Package `github.com/gookit/goutil/fmtutil`
 
@@ -906,7 +921,7 @@ func NewValue(val any) *Value
 ```go
 // source at strutil/bytes.go
 func NewBuffer() *Buffer
-func NewByteChanPool(maxSize int, width int, capWidth int) *ByteChanPool
+func NewByteChanPool(maxSize, width, capWidth int) *ByteChanPool
 // source at strutil/check.go
 func NoCaseEq(s, t string) bool
 func IsNumChar(c byte) bool
@@ -974,15 +989,18 @@ func ToOSArgs(s string) []string
 func MustToTime(s string, layouts ...string) time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error)
 func ToDuration(s string) (time.Duration, error)
+// source at strutil/crypto.go
+func Md5(src any) string
+func MD5(src any) string { return Md5(src) }
+func GenMd5(src any) string { return Md5(src) }
+func Md5Bytes(src any) []byte
+func HashPasswd(pwd, key string) string
+func VerifyPasswd(pwdMAC, pwd, key string) bool
 // source at strutil/encode.go
 func EscapeJS(s string) string
 func EscapeHTML(s string) string
 func AddSlashes(s string) string
 func StripSlashes(s string) string
-func Md5(src any) string
-func MD5(src any) string { return Md5(src) }
-func GenMd5(src any) string { return Md5(src) }
-func Md5Bytes(src any) []byte
 func URLEncode(s string) string
 func URLDecode(s string) string
 func B32Encode(str string) string
@@ -1081,7 +1099,7 @@ func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) st
 func WrapTag(s, tag string) string
 ```
 
-### System
+### System Utils
 
 > Package `github.com/gookit/goutil/sysutil`
 
@@ -1142,7 +1160,7 @@ func ChangeUserByName(newUname string) (err error)
 func ChangeUserUidGid(newUid int, newGid int) (err error)
 ```
 
-### Testing
+### Testing Utils
 
 > Package `github.com/gookit/goutil/testutil`
 
@@ -1383,4 +1401,3 @@ root@xx:/go/work# go test ./...
 ## License
 
 [MIT](LICENSE)
-
