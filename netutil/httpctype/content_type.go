@@ -3,7 +3,7 @@ package httpctype
 
 const Key = "Content-Type"
 
-// HTTP Content-Type with charset of the most common data formats.
+// there are some HTTP Content-Type with charset of the most common data formats.
 const (
 	CSS  = "text/css; charset=utf-8"
 	HTML = "text/html; charset=utf-8"

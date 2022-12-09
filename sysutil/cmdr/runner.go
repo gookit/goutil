@@ -24,6 +24,7 @@ type Task struct {
 	PrevCond  func(prev *Task) bool
 }
 
+// NewTask instance
 func NewTask(cmd *Cmd) *Task {
 	return &Task{
 		Cmd: cmd,

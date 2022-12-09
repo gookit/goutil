@@ -6,12 +6,14 @@ import (
 	"path"
 )
 
+// perm for create dir or file
 var (
-	// DefaultDirPerm perm and flags for create log file
 	DefaultDirPerm   os.FileMode = 0775
 	DefaultFilePerm  os.FileMode = 0665
 	OnlyReadFilePerm os.FileMode = 0444
+)
 
+var (
 	// DefaultFileFlags for create and write
 	DefaultFileFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND
 	// OnlyReadFileFlags open file for read

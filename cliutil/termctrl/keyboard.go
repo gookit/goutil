@@ -74,5 +74,8 @@ const (
 	KeyAlt  = ' '
 )
 
-var PasteStart = []byte{KeyEscape, '[', '2', '0', '0', '~'}
-var PasteEnd = []byte{KeyEscape, '[', '2', '0', '1', '~'}
+// special chars on paste start or end
+var (
+	PasteStart = []byte{KeyEscape, '[', '2', '0', '0', '~'}
+	PasteEnd   = []byte{KeyEscape, '[', '2', '0', '1', '~'}
+)

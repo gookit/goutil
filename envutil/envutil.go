@@ -1,3 +1,4 @@
+// Package envutil provide some commonly ENV util functions.
 package envutil
 
 import (

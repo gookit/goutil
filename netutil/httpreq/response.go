@@ -77,10 +77,10 @@ func (r *Resp) BodyBuffer() *bytes.Buffer {
 	return buf
 }
 
-// BindJsonOnOk body data on status is 200
+// BindJSONOnOk body data on status is 200
 //
 // NOTICE: must close resp body.
-func (r *Resp) BindJsonOnOk(ptr any) error {
+func (r *Resp) BindJSONOnOk(ptr any) error {
 	// NOTICE: must close resp body.
 	defer r.QuiteCloseBody()
 
@@ -96,10 +96,10 @@ func (r *Resp) BindJsonOnOk(ptr any) error {
 	return json.NewDecoder(r.Body).Decode(ptr)
 }
 
-// BindJson body data to a ptr
+// BindJSON body data to a ptr
 //
 // NOTICE: must close resp body.
-func (r *Resp) BindJson(ptr any) error {
+func (r *Resp) BindJSON(ptr any) error {
 	// NOTICE: must close resp body.
 	defer r.QuiteCloseBody()
 

@@ -110,6 +110,8 @@ func (e ErrMap) One() error {
 
 // Errors multi error list
 type Errors []error
+
+// ErrList alias for Errors
 type ErrList = Errors
 
 // Error string

@@ -1,6 +1,6 @@
 package httpctype
 
-// Content-Type MIME of the most common data formats.
+// there are some Content-Type MIME of the most common data formats.
 const (
 	MIMEHTML  = "text/html"
 	MIMEText  = "text/plain" // equals MIMEPlain
