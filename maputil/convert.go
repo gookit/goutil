@@ -29,8 +29,8 @@ func ToStringMap(src map[string]any) map[string]string {
 	return newMp
 }
 
-// HttpQueryString convert map[string]any data to http query string.
-func HttpQueryString(data map[string]any) string {
+// HTTPQueryString convert map[string]any data to http query string.
+func HTTPQueryString(data map[string]any) string {
 	ss := make([]string, 0, len(data))
 	for k, v := range data {
 		ss = append(ss, k+"="+strutil.QuietString(v))

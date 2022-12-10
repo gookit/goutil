@@ -53,7 +53,7 @@ func ParseByte(sizeStr string) uint64 {
 		// last second char is k,m,g
 		lastSec := sizeStr[lastPos-1]
 		if lastSec > 'A' {
-			lastPos -= 1
+			lastPos--
 		}
 	}
 

@@ -9,6 +9,8 @@ import (
 
 // Data an map data type
 type Data map[string]any
+
+// Map alias of Data
 type Map = Data
 
 // Has value on the data map

@@ -25,9 +25,9 @@ func TestToStringMap(t *testing.T) {
 	assert.Eq(t, ret["b"], "23")
 }
 
-func TestHttpQueryString(t *testing.T) {
+func TestHTTPQueryString(t *testing.T) {
 	src := map[string]any{"a": "v0", "b": 23}
-	str := maputil.HttpQueryString(src)
+	str := maputil.HTTPQueryString(src)
 
 	fmt.Println(str)
 	assert.Contains(t, str, "b=23")
