@@ -15,30 +15,6 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// Options for dump vars
-type Options struct {
-	// Output the output writer
-	Output io.Writer
-	// NoType dont show data type TODO
-	NoType bool
-	// NoColor don't with color
-	NoColor bool
-	// IndentLen width. default is 2
-	IndentLen int
-	// IndentChar default is one space
-	IndentChar byte
-	// MaxDepth for nested print
-	MaxDepth int
-	// ShowFlag for display caller position
-	ShowFlag int
-	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
-	// MoreLenNL int
-	// CallerSkip skip for call runtime.Caller()
-	CallerSkip int
-	// ColorTheme for print result.
-	ColorTheme Theme
-}
-
 // printValue must keep track of already-printed pointer values to avoid
 // infinite recursion. refer the pkg: github.com/kr/pretty
 type visit struct {
@@ -73,30 +49,8 @@ func NewDumper(out io.Writer, skip int) *Dumper {
 }
 
 // NewWithOptions create
-func NewWithOptions(fn func(opts *Options)) *Dumper {
-	d := NewDumper(os.Stdout, 3)
-	fn(d.Options)
-	return d
-}
-
-// NewDefaultOptions create.
-func NewDefaultOptions(out io.Writer, skip int) *Options {
-	if out == nil {
-		out = os.Stdout
-	}
-
-	return &Options{
-		Output: out,
-		// ---
-		MaxDepth: 5,
-		ShowFlag: Ffunc | Ffname | Fline,
-		// MoreLenNL: 8,
-		// ---
-		IndentLen:  2,
-		IndentChar: ' ',
-		CallerSkip: skip,
-		ColorTheme: defaultTheme,
-	}
+func NewWithOptions(fns ...OptionFunc) *Dumper {
+	return NewDumper(os.Stdout, defaultSkip).WithOptions(fns...)
 }
 
 // WithSkip for dumper
@@ -112,8 +66,10 @@ func (d *Dumper) WithoutColor() *Dumper {
 }
 
 // WithOptions for dumper
-func (d *Dumper) WithOptions(fn func(opts *Options)) *Dumper {
-	fn(d.Options)
+func (d *Dumper) WithOptions(fns ...OptionFunc) *Dumper {
+	for _, fn := range fns {
+		fn(d.Options)
+	}
 	return d
 }
 
@@ -121,23 +77,17 @@ func (d *Dumper) WithOptions(fn func(opts *Options)) *Dumper {
 func (d *Dumper) ResetOptions() {
 	d.curDepth = 0
 	d.visited = make(map[visit]int)
-	d.Options = NewDefaultOptions(os.Stdout, 2)
+	d.Options = NewDefaultOptions(os.Stdout, d.CallerSkip)
 }
 
 // Dump vars
-func (d *Dumper) Dump(vs ...any) {
-	d.dump(vs...)
-}
+func (d *Dumper) Dump(vs ...any) { d.dump(vs...) }
 
 // Print vars. alias of Dump()
-func (d *Dumper) Print(vs ...any) {
-	d.dump(vs...)
-}
+func (d *Dumper) Print(vs ...any) { d.dump(vs...) }
 
 // Println vars. alias of Dump()
-func (d *Dumper) Println(vs ...any) {
-	d.dump(vs...)
-}
+func (d *Dumper) Println(vs ...any) { d.dump(vs...) }
 
 // Fprint print vars to io.Writer
 func (d *Dumper) Fprint(w io.Writer, vs ...any) {
@@ -228,12 +178,20 @@ func (d *Dumper) printOne(v any) {
 		return
 	}
 
+	if bts, ok := v.([]byte); ok && d.BytesAsString {
+		strVal := d.ColorTheme.string(string(bts))
+		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(len(bts)) + ",cap=" + strconv.Itoa(cap(bts)))
+		d.printf("[]byte(\"%s\"), %s\n", strVal, lenTip)
+		return
+	}
+
+	// print reflect value
 	rv := reflect.ValueOf(v)
 	d.printRValue(rv.Type(), rv)
 }
 
+// print reflect value
 func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
-	// var isPtr bool
 	// if is a ptr, get real type and value
 	if t.Kind() == reflect.Ptr {
 		if v.IsNil() {
@@ -241,10 +199,8 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			return
 		}
 
-		v = v.Elem()
-		t = t.Elem()
-		// add "*" prefix
-		d.indentPrint("&")
+		v, t = v.Elem(), t.Elem()
+		d.indentPrint("&") // add prefix
 	}
 
 	if !v.IsValid() {
@@ -322,6 +278,14 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			d.advance(1)
 
 			fName := t.Field(i).Name
+			if d.SkipPrivate && isUnexported(fName) {
+				continue
+			}
+
+			// if d.SkipNilField { // TODO
+			// }
+
+			// print field name
 			d.indentPrint(d.ColorTheme.field(fName), ": ")
 
 			d.msValue = true
@@ -340,6 +304,9 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		for _, key := range v.MapKeys() {
 			mv := v.MapIndex(key)
 			d.advance(1)
+
+			// if d.SkipNilField { // TODO
+			// }
 
 			// print key name
 			if !key.CanInterface() {

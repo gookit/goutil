@@ -16,6 +16,8 @@ import (
 // 	return NewDumper(buf, 2)
 // }
 
+const skipInTest = 2
+
 var (
 	ints1 = []int{1, 2, 3, 4}
 	ints2 = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
@@ -27,11 +29,11 @@ var (
 )
 
 func newStd() *Dumper {
-	return NewDumper(os.Stdout, 2)
+	return NewDumper(os.Stdout, skipInTest)
 }
 
 func TestNewDefaultOptions(t *testing.T) {
-	opts := NewDefaultOptions(nil, 2)
+	opts := NewDefaultOptions(nil, skipInTest)
 
 	assert.Eq(t, "<normal>text value</>", opts.ColorTheme.value("text value"))
 }
@@ -53,7 +55,7 @@ func TestDumper_Fprint(t *testing.T) {
 
 func TestDump_Basic(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	dumper := NewDumper(buffer, 2)
+	dumper := NewDumper(buffer, skipInTest)
 
 	dumper.Dump(
 		nil,
@@ -93,7 +95,7 @@ func TestDump_Basic(t *testing.T) {
 
 func TestDump_Ints(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	dumper := NewDumper(buffer, 2)
+	dumper := NewDumper(buffer, skipInTest)
 	dumper.WithoutColor()
 
 	// assert.Equal(t, 8, dumper.MoreLenNL)
@@ -119,7 +121,7 @@ func TestDump_Ints(t *testing.T) {
 
 func TestDump_Ptr(t *testing.T) {
 	buffer := new(bytes.Buffer)
-	dumper := NewDumper(buffer, 2)
+	dumper := NewDumper(buffer, skipInTest)
 	// dumper.WithoutColor()
 
 	var s string
@@ -189,7 +191,7 @@ func TestDumper_AccessCantExportedField(t *testing.T) {
 
 // code from https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
 func TestDumper_AccessCantExportedField1(t *testing.T) {
-	// init an nested struct
+	// init a nested struct
 	s1 := st1{st0{2}, 23, "inhere"}
 	myS1 := struct {
 		// cannotExport any // ok

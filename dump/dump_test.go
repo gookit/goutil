@@ -67,6 +67,32 @@ func TestStd(t *testing.T) {
 	assert.Eq(t, Std().IndentLen, 2)
 }
 
+func TestStd2(t *testing.T) {
+	assert.Eq(t, Std2().NoColor, false)
+	assert.Eq(t, Std2().IndentLen, 2)
+	assert.Eq(t, Fnopos, Std2().ShowFlag)
+
+	buf := newBuffer()
+	Std2().WithOptions(func(opt *Options) {
+		opt.Output = buf
+		opt.NoColor = true
+	})
+	defer Reset2()
+
+	NoLoc(123, "abcd")
+
+	str := buf.String()
+	fmt.Print(str)
+	assert.StrContains(t, str, "int(123)")
+	assert.NotContains(t, str, "PRINT")
+
+	buf.Reset()
+	Clear(123, "abcd")
+	str = buf.String()
+	assert.StrContains(t, str, "int(123)")
+	assert.NotContains(t, str, "PRINT")
+}
+
 func TestConfig(t *testing.T) {
 	is := assert.New(t)
 	buf := new(bytes.Buffer)

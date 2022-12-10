@@ -18,6 +18,9 @@ const (
 	Fline
 )
 
+const defaultSkip = 3
+const defaultSkip2 = 2
+
 var (
 	// valid flag for print caller info
 	callerFlags = []int{Ffunc, Ffile, Ffname, Fline}
@@ -34,7 +37,7 @@ var (
 	}
 
 	// std dumper
-	std = NewDumper(os.Stdout, 3)
+	std = NewDumper(os.Stdout, defaultSkip)
 	// no location dumper.
 	std2 = NewWithOptions(func(opts *Options) {
 		opts.Output = os.Stdout
@@ -62,19 +65,13 @@ func (ct Theme) wrap(key string, s string) string {
 }
 
 // Std dumper
-func Std() *Dumper {
-	return std
-}
+func Std() *Dumper { return std }
 
 // Reset std dumper
-func Reset() {
-	std = NewDumper(os.Stdout, 3)
-}
+func Reset() { std = NewDumper(os.Stdout, 3) }
 
 // Config std dumper
-func Config(fn func(opts *Options)) {
-	std.WithOptions(fn)
-}
+func Config(fns ...OptionFunc) { std.WithOptions(fns...) }
 
 // V like fmt.Println, but the output is clearer and more beautiful
 func V(vs ...any) {
@@ -101,6 +98,17 @@ func Fprint(w io.Writer, vs ...any) {
 	std.Fprint(w, vs...)
 }
 
+// Std2 dumper
+func Std2() *Dumper { return std2 }
+
+// Reset2 reset std2 dumper
+func Reset2() {
+	std2 = NewWithOptions(func(opts *Options) {
+		opts.Output = os.Stdout
+		opts.ShowFlag = Fnopos
+	})
+}
+
 // Format like fmt.Println, but the output is clearer and more beautiful
 func Format(vs ...any) string {
 	w := &bytes.Buffer{}
@@ -117,4 +125,9 @@ func NoLoc(vs ...any) {
 // Clear dump clear data, without location.
 func Clear(vs ...any) {
 	std2.Println(vs...)
+}
+
+// is unexported field name on struct
+func isUnexported(fieldName string) bool {
+	return fieldName[0] < 'A' || fieldName[0] > 'Z'
 }
