@@ -1097,6 +1097,7 @@ func PrettyJSON(v any) (string, error)
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string
 func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string
 func WrapTag(s, tag string) string
+func SubstrCount(s string, needle string, params ...uint64) (int, error)
 ```
 
 ### System Utils
