@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"reflect"
 
 	"github.com/gookit/color"
 )
@@ -129,4 +130,17 @@ func Clear(vs ...any) {
 // is unexported field name on struct
 func isUnexported(fieldName string) bool {
 	return fieldName[0] < 'A' || fieldName[0] > 'Z'
+}
+
+func isNilOrInvalid(v reflect.Value) bool {
+	if !v.IsValid() {
+		return true
+	}
+
+	switch v.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Map, reflect.Pointer, reflect.UnsafePointer, reflect.Interface, reflect.Slice:
+		return v.IsNil()
+	default:
+		return false
+	}
 }

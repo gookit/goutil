@@ -274,16 +274,17 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		fldNum := v.NumField()
 		for i := 0; i < fldNum; i++ {
-			fv := v.Field(i)
-			d.advance(1)
-
 			fName := t.Field(i).Name
 			if d.SkipPrivate && isUnexported(fName) {
 				continue
 			}
 
-			// if d.SkipNilField { // TODO
-			// }
+			fv := v.Field(i)
+			if d.SkipNilField && isNilOrInvalid(fv) {
+				continue
+			}
+
+			d.advance(1)
 
 			// print field name
 			d.indentPrint(d.ColorTheme.field(fName), ": ")
@@ -303,10 +304,11 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		for _, key := range v.MapKeys() {
 			mv := v.MapIndex(key)
-			d.advance(1)
+			if d.SkipNilField && isNilOrInvalid(mv) {
+				continue
+			}
 
-			// if d.SkipNilField { // TODO
-			// }
+			d.advance(1)
 
 			// print key name
 			if !key.CanInterface() {

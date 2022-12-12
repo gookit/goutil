@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gookit/color"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -25,7 +26,38 @@ func TestSkipPrivate(t *testing.T) {
 	assert.NotContains(t, str, "id: string(\"ab12345\")")
 }
 
+// see https://github.com/gookit/goutil/issues/41
+func TestSkipNilField(t *testing.T) {
+	buf := newBuffer()
+	dumper := newStd().WithOptions(WithoutOutput(buf), WithoutPosition(), WithoutColor())
+	assert.False(t, dumper.SkipNilField)
+
+	mp := map[string]any{
+		"name": "inhere",
+		"age":  nil,
+	}
+
+	dumper.Println(mp)
+	str := buf.String()
+	fmt.Print("Default: \n", str)
+	assert.StrContains(t, str, `"age": nil`)
+	buf.Reset()
+
+	dumper.WithOptions(SkipNilField())
+	assert.True(t, dumper.SkipNilField)
+	dumper.Println(mp)
+
+	str = buf.String()
+	fmt.Print("SkipNilField: \n", str)
+	assert.NotContains(t, str, `"age": nil`)
+}
+
 func TestWithoutColor(t *testing.T) {
+	ol := color.ForceColor()
+	defer func() {
+		color.ForceSetColorLevel(ol)
+	}()
+
 	buf := newBuffer()
 	dumper := newStd().WithOptions(WithoutOutput(buf), WithoutPosition(), WithCallerSkip(2))
 

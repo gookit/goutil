@@ -308,6 +308,28 @@ func TestStruct_ptrField(t *testing.T) {
 	color.Infoln("\nUse fmt.Println:")
 	fmt.Println(opt)
 	fmt.Println("---------------------------------------------------------------")
+
+	opt = &userOpts{
+		Str: &astr,
+	}
+
+	Println(opt)
+	/* Output:
+	PRINT AT github.com/gookit/goutil/dump.TestStruct_ptrField(dump_test.go:316)
+	&dump.userOpts {
+	  Int: *int<nil>,
+	  Str: &string("xyz"), #len=3
+	},
+	*/
+	d := newStd().WithOptions(SkipNilField())
+	d.Println(opt)
+	/* Output:
+	PRINT AT github.com/gookit/goutil/dump.TestStruct_ptrField(dump_test.go:318)
+	&dump.userOpts {
+	    Str: &string("xyz"), #len=3
+	  },
+
+	*/
 }
 
 func TestFormat(t *testing.T) {

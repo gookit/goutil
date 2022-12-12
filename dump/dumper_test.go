@@ -204,6 +204,9 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 	}
 
 	Println(myS1)
+
+	d := newStd().WithOptions(SkipPrivate())
+	d.Println(myS1)
 }
 
 // ------------------------- map -------------------------
@@ -355,7 +358,7 @@ var (
 )
 
 func TestDump_Struct(t *testing.T) {
-
+	P(user)
 }
 
 func TestStruct_WithNested(t *testing.T) {

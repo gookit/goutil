@@ -61,6 +61,40 @@ You will see:
 
 ![](_examples/preview-nested-struct.png)
 
+### Options for dump
+
+```go
+// Options for dumper
+type Options struct {
+	// Output the output writer
+	Output io.Writer
+	// NoType don't show data type TODO
+	NoType bool
+	// NoColor don't with color
+	NoColor bool
+	// IndentLen width. default is 2
+	IndentLen int
+	// IndentChar default is one space
+	IndentChar byte
+	// MaxDepth for nested print
+	MaxDepth int
+	// ShowFlag for display caller position
+	ShowFlag int
+	// CallerSkip skip for call runtime.Caller()
+	CallerSkip int
+	// ColorTheme for print result.
+	ColorTheme Theme
+	// SkipNilField value dump on map, struct.
+	SkipNilField bool
+	// SkipPrivate field dump on struct.
+	SkipPrivate bool
+	// BytesAsString dump handle.
+	BytesAsString bool
+	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
+	// MoreLenNL int
+}
+```
+
 ## Functions API
 
 ```go
