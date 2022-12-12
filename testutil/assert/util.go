@@ -58,7 +58,14 @@ func truncatingFormat(data any) string {
 		return "<nil>"
 	}
 
-	value := fmt.Sprintf("%T(%v)", data, data)
+	var value string
+	switch data.(type) {
+	case string:
+		value = fmt.Sprintf("string(%q)", data)
+	default:
+		value = fmt.Sprintf("%T(%v)", data, data)
+	}
+
 	// Give us some space the type info too if needed.
 	max := bufio.MaxScanTokenSize - 100
 	if len(value) > max {

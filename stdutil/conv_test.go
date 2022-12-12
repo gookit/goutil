@@ -66,5 +66,6 @@ func TestBaseTypeVal(t *testing.T) {
 	assert.Err(t, err)
 
 	val, err = stdutil.BaseTypeVal2(reflect.ValueOf(int32(2)))
+	assert.NoErr(t, err)
 	assert.Eq(t, int64(2), val)
 }

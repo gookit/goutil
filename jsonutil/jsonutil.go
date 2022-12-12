@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -18,7 +17,7 @@ func WriteFile(filePath string, data any) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filePath, jsonBytes, 0664)
+	return os.WriteFile(filePath, jsonBytes, 0664)
 }
 
 // ReadFile Read JSON file data

@@ -270,7 +270,7 @@ func (f *FileFinder) findInDir(dirPath string) {
 			ok := true
 			for _, df := range f.dirFilters {
 				ok = df.FilterDir(fullPath, baseName)
-				if true == ok { // 有一个满足即可
+				if ok { // 有一个满足即可
 					break
 				}
 			}

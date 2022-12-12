@@ -242,7 +242,12 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		if len(lines) > 0 {
 			bufWriteln(buf, "// source at", filename)
 			for _, line := range lines {
-				bufWriteln(buf, strings.TrimRight(line, "{ "))
+				idx := strings.IndexByte(line, '{')
+				if idx > 0 {
+					bufWriteln(buf, line[:idx])
+				} else {
+					bufWriteln(buf, line)
+				}
 			}
 		}
 	}

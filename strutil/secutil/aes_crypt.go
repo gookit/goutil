@@ -46,9 +46,9 @@ type AesCrypt struct {
 	iv  []byte
 	key []byte
 
-	init    bool
-	keyLen  int
-	padding string
+	init   bool
+	keyLen int
+	// padding string
 
 	encryptType string
 }

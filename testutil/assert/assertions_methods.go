@@ -13,48 +13,56 @@ func (as *Assertions) NotNil(val any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// True check, please see True()
 func (as *Assertions) True(give bool, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = True(as.t, give, fmtAndArgs...)
 	return as
 }
 
+// False check, please see False()
 func (as *Assertions) False(give bool, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = False(as.t, give, fmtAndArgs...)
 	return as
 }
 
+// Empty check, please see Empty()
 func (as *Assertions) Empty(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Empty(as.t, give, fmtAndArgs...)
 	return as
 }
 
+// NotEmpty check, please see NotEmpty()
 func (as *Assertions) NotEmpty(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = NotEmpty(as.t, give, fmtAndArgs...)
 	return as
 }
 
+// Panics check, please see Panics()
 func (as *Assertions) Panics(fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Panics(as.t, fn, fmtAndArgs...)
 	return as
 }
 
+// NotPanics check, please see NotPanics()
 func (as *Assertions) NotPanics(fn PanicRunFunc, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = NotPanics(as.t, fn, fmtAndArgs...)
 	return as
 }
 
+// PanicsMsg check, please see PanicsMsg()
 func (as *Assertions) PanicsMsg(fn PanicRunFunc, wantVal any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = PanicsMsg(as.t, fn, wantVal, fmtAndArgs...)
 	return as
 }
 
+// PanicsErrMsg check, please see PanicsErrMsg()
 func (as *Assertions) PanicsErrMsg(fn PanicRunFunc, errMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = PanicsErrMsg(as.t, fn, errMsg, fmtAndArgs...)

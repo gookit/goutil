@@ -163,7 +163,7 @@ func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error {
 }
 
 func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
-	if data == nil || len(data) == 0 {
+	if len(data) == 0 {
 		return nil
 	}
 

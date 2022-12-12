@@ -19,7 +19,6 @@ const (
 )
 
 const defaultSkip = 3
-const defaultSkip2 = 2
 
 var (
 	// valid flag for print caller info

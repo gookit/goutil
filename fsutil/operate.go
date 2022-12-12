@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
@@ -27,12 +26,12 @@ func MkParentDir(fpath string) error {
 
 // DiscardReader anything from the reader
 func DiscardReader(src io.Reader) {
-	_, _ = io.Copy(ioutil.Discard, src)
+	_, _ = io.Copy(io.Discard, src)
 }
 
 // MustReadFile read file contents, will panic on error
 func MustReadFile(filePath string) []byte {
-	bs, err := ioutil.ReadFile(filePath)
+	bs, err := os.ReadFile(filePath)
 	if err != nil {
 		panic(err)
 	}
@@ -42,8 +41,7 @@ func MustReadFile(filePath string) []byte {
 
 // MustReadReader read contents from io.Reader, will panic on error
 func MustReadReader(r io.Reader) []byte {
-	// TODO go 1.16+ bs, err := io.ReadAll(r)
-	bs, err := ioutil.ReadAll(r)
+	bs, err := io.ReadAll(r)
 	if err != nil {
 		panic(err)
 	}
@@ -66,7 +64,7 @@ func GetContents(in any) []byte {
 // ReadExistFile read file contents if existed, will panic on error
 func ReadExistFile(filePath string) []byte {
 	if IsFile(filePath) {
-		bs, err := ioutil.ReadFile(filePath)
+		bs, err := os.ReadFile(filePath)
 		if err != nil {
 			panic(err)
 		}
