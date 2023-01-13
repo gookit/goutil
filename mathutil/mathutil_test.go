@@ -27,3 +27,8 @@ func TestSwapMaxInt(t *testing.T) {
 	assert.Eq(t, int64(34), x64)
 	assert.Eq(t, int64(2), y64)
 }
+
+func TestOrElse(t *testing.T) {
+	assert.Eq(t, 23, mathutil.OrElse(23, 21))
+	assert.Eq(t, 21.3, mathutil.OrElse[float64](0, 21.3))
+}

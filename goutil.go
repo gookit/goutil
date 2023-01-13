@@ -69,3 +69,5 @@ func ErrOnFail(cond bool, err error) error {
 	}
 	return nil
 }
+
+// func OrElse[T comdef.ScalarType1](in, or T) T { }

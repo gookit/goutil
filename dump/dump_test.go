@@ -340,6 +340,16 @@ func TestFormat(t *testing.T) {
 
 	assert.NotEmpty(t, s)
 	fmt.Println(s)
+
+	var ob any
+	ob = user
+
+	s = Format(ob)
+	fmt.Println(s)
+
+	ob = nil
+	s = Format(ob)
+	fmt.Println(s)
 }
 
 func TestPrint_over_max_depth(t *testing.T) {

@@ -1,7 +1,11 @@
 // Package mathutil provide math(int, number) util functions. eg: convert, math calc, random
 package mathutil
 
-import "math"
+import (
+	"math"
+
+	"github.com/gookit/goutil/comdef"
+)
 
 // MaxFloat compare and return max value
 func MaxFloat(x, y float64) float64 {
@@ -38,4 +42,12 @@ func SwapMaxI64(x, y int64) (int64, int64) {
 		return x, y
 	}
 	return y, x
+}
+
+// OrElse return or value on in is empty value
+func OrElse[T comdef.XintOrFloat](in, or T) T {
+	if in != 0 {
+		return in
+	}
+	return or
 }

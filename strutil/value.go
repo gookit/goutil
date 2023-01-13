@@ -69,6 +69,14 @@ func (s *Value) String() string {
 	return string(*s)
 }
 
+// OrElse string
+func (s *Value) OrElse(or string) string {
+	if *s != "" {
+		return string(*s)
+	}
+	return or
+}
+
 // Split string
 func (s *Value) Split(sep string) []string {
 	return strings.Split(string(*s), sep)
@@ -82,4 +90,12 @@ func (s *Value) SplitN(sep string, n int) []string {
 // TrimSpace string and return new
 func (s *Value) TrimSpace() Value {
 	return Value(strings.TrimSpace(string(*s)))
+}
+
+// OrElse return or value on s is empty
+func OrElse(s, or string) string {
+	if s != "" {
+		return s
+	}
+	return or
 }
