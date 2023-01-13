@@ -57,6 +57,10 @@ func TestRepeatRune(t *testing.T) {
 
 func TestRepeatBytes(t *testing.T) {
 	assert.Eq(t, []byte("aaa"), strutil.RepeatBytes('a', 3))
+	assert.Eq(t, []byte{}, strutil.RepeatBytes('a', 0))
+	assert.Eq(t, []byte{}, strutil.RepeatBytes(' ', 0))
+	assert.Eq(t, []byte{' '}, strutil.RepeatBytes(' ', 1))
+	assert.Len(t, strutil.RepeatBytes(' ', 20), 20)
 }
 
 func TestPadChars(t *testing.T) {
@@ -97,4 +101,10 @@ func TestPadChars(t *testing.T) {
 		assert.Eq(t, item.wt, strutil.PadBytes(item.ls, item.pad, item.pln, strutil.PosRight))
 		assert.Eq(t, item.wt, strutil.PadBytesRight(item.ls, item.pad, item.pln))
 	}
+}
+
+// runtime error: make slice: cap out of range #76
+// https://github.com/gookit/goutil/issues/76
+func TestIssues_76(t *testing.T) {
+	// TODO
 }

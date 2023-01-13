@@ -14,9 +14,19 @@ func Cut(s, sep string) (before string, after string, found bool) {
 	return s, "", false
 }
 
+// QuietCut always returns two substring.
+func QuietCut(s, sep string) (before string, after string) {
+	before, after, _ = Cut(s, sep)
+	return
+}
+
 // MustCut always returns two substring.
 func MustCut(s, sep string) (before string, after string) {
-	before, after, _ = Cut(s, sep)
+	var ok bool
+	before, after, ok = Cut(s, sep)
+	if !ok {
+		panic("cannot split input string to two nodes")
+	}
 	return
 }
 

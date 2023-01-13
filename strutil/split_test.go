@@ -20,6 +20,14 @@ func TestCut(t *testing.T) {
 	assert.Eq(t, "hi", b)
 	assert.Eq(t, "inhere", a)
 
+	assert.Panics(t, func() {
+		strutil.MustCut("abc", ",")
+	})
+
+	b, a = strutil.QuietCut(str, ",")
+	assert.Eq(t, "hi", b)
+	assert.Eq(t, "inhere", a)
+
 	b, a = strutil.TrimCut(str, ",")
 	assert.Eq(t, "hi", b)
 	assert.Eq(t, "inhere", a)
