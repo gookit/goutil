@@ -411,7 +411,6 @@ func (t *CommentToken) MergeSame(tok Token) error {
 	}
 
 	if tok.Kind() == t.Kind() {
-		t.more = true
 		t.comments = append(t.comments, tok.Value())
 		return nil
 	}

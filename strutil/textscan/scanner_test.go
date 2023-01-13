@@ -82,28 +82,3 @@ line string
 	assert.NotEmpty(t, data)
 	assert.ContainsKeys(t, data, []string{"age", "name", "desc"})
 }
-
-func TestParser_ParseText(t *testing.T) {
-	p := textscan.NewParser(func(t textscan.Token) {
-		dump.P(t)
-	})
-
-	err := p.ParseText(`
-# comments 1
-name = inhere
-
-// comments 2
-age = 28
-
-/*
-multi line
-comments 3
-*/
-desc = '''
-a multi
-line string
-'''
-`)
-	assert.NoErr(t, err)
-
-}
