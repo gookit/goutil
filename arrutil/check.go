@@ -85,3 +85,13 @@ func Contains(arr, val any) bool {
 func NotContains(arr, val any) bool {
 	return !Contains(arr, val)
 }
+
+// Some check array whether to include item with specified conditions
+func Some[T any](list []T, predicate func(index int, obj T) bool) (index int, find bool) {
+	for index, item := range list {
+		if find := predicate(index, item); find {
+			return index, true
+		}
+	}
+	return index, false
+}
