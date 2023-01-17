@@ -44,10 +44,10 @@ func SwapMaxI64(x, y int64) (int64, int64) {
 	return y, x
 }
 
-// OrElse return or value on in is empty value
-func OrElse[T comdef.XintOrFloat](in, or T) T {
+// OrElse return s OR nv(new-value) on s is empty
+func OrElse[T comdef.XintOrFloat](in, nv T) T {
 	if in != 0 {
 		return in
 	}
-	return or
+	return nv
 }

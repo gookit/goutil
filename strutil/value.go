@@ -91,11 +91,3 @@ func (s *Value) SplitN(sep string, n int) []string {
 func (s *Value) TrimSpace() Value {
 	return Value(strings.TrimSpace(string(*s)))
 }
-
-// OrElse return or value on s is empty
-func OrElse(s, or string) string {
-	if s != "" {
-		return s
-	}
-	return or
-}

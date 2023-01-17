@@ -10,6 +10,14 @@ import (
 	"text/template"
 )
 
+// OrElse return s OR nv(new-value) on s is empty
+func OrElse(s, newVal string) string {
+	if s != "" {
+		return s
+	}
+	return newVal
+}
+
 // Replaces replace multi strings
 //
 //	pairs: {old1: new1, old2: new2, ...}
