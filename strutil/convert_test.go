@@ -13,6 +13,8 @@ func TestStringJoin(t *testing.T) {
 	assert.Eq(t, "a:b", strutil.Join(":", "a", "b"))
 	assert.Eq(t, "a:b", strutil.Implode(":", "a", "b"))
 	assert.Eq(t, "a:b", strutil.JoinList(":", []string{"a", "b"}))
+
+	assert.Eq(t, "ab:23", strutil.JoinAny(":", "ab", 23))
 }
 
 func TestStringToBool(t *testing.T) {

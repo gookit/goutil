@@ -56,7 +56,12 @@ func BytePos(s string, bt byte) int {
 	return strings.IndexByte(s, bt)
 }
 
-// HasOneSub substr in the given string.
+// ContainsOne substr(s) in the given string.
+func ContainsOne(s string, subs []string) bool {
+	return HasOneSub(s, subs)
+}
+
+// HasOneSub substr(s) in the given string.
 func HasOneSub(s string, subs []string) bool {
 	for _, sub := range subs {
 		if strings.Contains(s, sub) {
@@ -64,6 +69,11 @@ func HasOneSub(s string, subs []string) bool {
 		}
 	}
 	return false
+}
+
+// ContainsAll substr(s) in the given string.
+func ContainsAll(s string, subs []string) bool {
+	return HasAllSubs(s, subs)
 }
 
 // HasAllSubs all substr in the given string.
@@ -142,6 +152,26 @@ func IsBlankBytes(bs []byte) bool {
 // IsSymbol reports whether the rune is a symbolic character.
 func IsSymbol(r rune) bool {
 	return unicode.IsSymbol(r)
+}
+
+// HasEmpty value for input strings
+func HasEmpty(ss ...string) bool {
+	for _, s := range ss {
+		if s == "" {
+			return true
+		}
+	}
+	return false
+}
+
+// IsAllEmpty for input strings
+func IsAllEmpty(ss ...string) bool {
+	for _, s := range ss {
+		if s != "" {
+			return false
+		}
+	}
+	return true
 }
 
 var verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)

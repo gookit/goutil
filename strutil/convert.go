@@ -70,6 +70,16 @@ func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
 // JoinList alias of strings.Join
 func JoinList(sep string, ss []string) string { return strings.Join(ss, sep) }
 
+// JoinAny type to string
+func JoinAny(sep string, parts ...any) string {
+	ss := make([]string, 0, len(parts))
+	for _, part := range parts {
+		ss = append(ss, QuietString(part))
+	}
+
+	return strings.Join(ss, sep)
+}
+
 // Implode alias of strings.Join
 func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
 
