@@ -134,3 +134,11 @@ func SplitInlineComment(val string) (string, string) {
 	}
 	return val, ""
 }
+
+// FirstLine from command output
+func FirstLine(output string) string {
+	if i := strings.IndexByte(output, '\n'); i >= 0 {
+		return output[0:i]
+	}
+	return output
+}

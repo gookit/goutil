@@ -6,6 +6,7 @@ import (
 
 	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/sysutil"
 )
 
@@ -134,9 +135,6 @@ func OutputLines(output string) []string {
 }
 
 // FirstLine from command output
-func FirstLine(output string) string {
-	if i := strings.Index(output, "\n"); i >= 0 {
-		return output[0:i]
-	}
-	return output
-}
+//
+// Deprecated: please use strutil.FirstLine
+var FirstLine = strutil.FirstLine

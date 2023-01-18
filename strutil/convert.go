@@ -213,7 +213,10 @@ func QuietBool(s string) bool {
 
 // MustBool convert, will panic on error
 func MustBool(s string) bool {
-	val, _ := comfunc.StrToBool(strings.TrimSpace(s))
+	val, err := comfunc.StrToBool(strings.TrimSpace(s))
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 
@@ -236,6 +239,12 @@ func ToInt(s string) (int, error) {
 	return strconv.Atoi(strings.TrimSpace(s))
 }
 
+// Int2 convert string to int, will ignore error
+func Int2(s string) int {
+	val, _ := ToInt(s)
+	return val
+}
+
 // QuietInt convert string to int, will ignore error
 func QuietInt(s string) int {
 	val, _ := ToInt(s)
@@ -244,8 +253,7 @@ func QuietInt(s string) int {
 
 // MustInt convert string to int, will panic on error
 func MustInt(s string) int {
-	val, _ := ToInt(s)
-	return val
+	return IntOrPanic(s)
 }
 
 // IntOrPanic convert value to int, will panic on error
