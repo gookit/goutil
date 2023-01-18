@@ -2,6 +2,7 @@ package process_test
 
 import (
 	"os"
+	"syscall"
 	"testing"
 
 	"github.com/gookit/goutil/sysutil/process"
@@ -16,4 +17,8 @@ func TestProcessExists(t *testing.T) {
 
 func TestPID(t *testing.T) {
 	assert.True(t, process.PID() > 0)
+}
+
+func TestKillByName(t *testing.T) {
+	assert.Err(t, process.KillByName("never-never-exist-process", syscall.SIGKILL))
 }

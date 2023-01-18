@@ -90,11 +90,6 @@ func IsShellSpecialVar(c uint8) bool {
 	return false
 }
 
-// EnvPaths get and split $PATH to []string
-func EnvPaths() []string {
-	return filepath.SplitList(os.Getenv("PATH"))
-}
-
 // FindExecutable in the system
 //
 // Usage:
@@ -104,7 +99,7 @@ func FindExecutable(binName string) (string, error) {
 	return exec.LookPath(binName)
 }
 
-// Executable find in the system
+// Executable find in the system, alias of FindExecutable()
 //
 // Usage:
 //
@@ -121,6 +116,11 @@ func Executable(binName string) (string, error) {
 func HasExecutable(binName string) bool {
 	_, err := exec.LookPath(binName)
 	return err == nil
+}
+
+// EnvPaths get and split $PATH to []string
+func EnvPaths() []string {
+	return filepath.SplitList(os.Getenv("PATH"))
 }
 
 // SearchPath search executable files in the system $PATH
