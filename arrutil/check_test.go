@@ -31,6 +31,36 @@ func TestStringsHas(t *testing.T) {
 	assert.False(t, arrutil.InStrings("c", ss))
 }
 
+func TestInAndNotIn(t *testing.T) {
+	is := assert.New(t)
+
+	arr := []int{1, 2, 3}
+	is.True(arrutil.In(2, arr))
+	is.False(arrutil.NotIn(2, arr))
+
+	arr1 := []rune{'a', 'b'}
+	is.True(arrutil.In('b', arr1))
+	is.False(arrutil.NotIn('b', arr1))
+
+	arr2 := []string{"a", "b", "c"}
+	is.True(arrutil.In("b", arr2))
+	is.False(arrutil.NotIn("b", arr2))
+}
+
+func TestContainsAll(t *testing.T) {
+	is := assert.New(t)
+
+	arr := []int{1, 2, 3}
+	is.True(arrutil.ContainsAll(arr, []int{2}))
+	is.False(arrutil.ContainsAll(arr, []int{2, 45}))
+	is.True(arrutil.IsParent(arr, []int{2}))
+
+	arr2 := []string{"a", "b", "c"}
+	is.True(arrutil.ContainsAll(arr2, []string{"b"}))
+	is.False(arrutil.ContainsAll(arr2, []string{"b", "e"}))
+	is.True(arrutil.IsParent(arr2, []string{"b"}))
+}
+
 func TestContains(t *testing.T) {
 	is := assert.New(t)
 	tests := map[any]any{
