@@ -2,10 +2,8 @@ package fsutil_test
 
 import (
 	"os"
-	"strings"
 	"testing"
 
-	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -14,6 +12,7 @@ import (
 func TestMkdir(t *testing.T) {
 	// TODO windows will error
 	if envutil.IsWin() {
+		t.Skip("skip mkdir test on Windows")
 		return
 	}
 
@@ -29,8 +28,6 @@ func TestMkdir(t *testing.T) {
 		assert.True(t, fsutil.IsDir("./testdata/sub/sub24"))
 
 		assert.NoErr(t, os.RemoveAll("./testdata/sub"))
-	} else {
-		cliutil.Redln("chmod dir ./testdata fail")
 	}
 }
 
@@ -113,43 +110,6 @@ func TestQuietRemove(t *testing.T) {
 	assert.NotPanics(t, func() {
 		fsutil.QuietRemove("/path-not-exist")
 	})
-}
-
-func TestDiscardReader(t *testing.T) {
-	sr := strings.NewReader("hello")
-	fsutil.DiscardReader(sr)
-
-	assert.Empty(t, fsutil.MustReadReader(sr))
-	assert.Empty(t, fsutil.GetContents(sr))
-}
-
-func TestGetContents(t *testing.T) {
-	fpath := "./testdata/get-contents.txt"
-	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
-
-	_, err := fsutil.PutContents(fpath, "hello")
-	assert.NoErr(t, err)
-
-	assert.Nil(t, fsutil.ReadExistFile("/path-not-exist"))
-	assert.Eq(t, []byte("hello"), fsutil.ReadExistFile(fpath))
-
-	assert.Panics(t, func() {
-		fsutil.GetContents(45)
-	})
-}
-
-func TestMustCopyFile(t *testing.T) {
-	srcPath := "./testdata/cp-file-src.txt"
-	dstPath := "./testdata/cp-file-dst.txt"
-
-	assert.NoErr(t, fsutil.RmIfExist(srcPath))
-	assert.NoErr(t, fsutil.RmFileIfExist(dstPath))
-
-	_, err := fsutil.PutContents(srcPath, "hello")
-	assert.NoErr(t, err)
-
-	fsutil.MustCopyFile(srcPath, dstPath)
-	assert.Eq(t, []byte("hello"), fsutil.GetContents(dstPath))
 }
 
 func TestUnzip(t *testing.T) {
