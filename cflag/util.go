@@ -4,6 +4,7 @@ import (
 	"flag"
 	"reflect"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/gookit/color"
@@ -48,6 +49,7 @@ func AddPrefixes2(name string, shorts []string, nameAtEnd bool) string {
 		return AddPrefix(name)
 	}
 
+	sort.Strings(shorts)
 	withPfx := make([]string, 0, shortLn+1)
 	if !nameAtEnd {
 		withPfx = append(withPfx, AddPrefix(name))

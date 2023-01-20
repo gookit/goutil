@@ -125,6 +125,14 @@ func (d Data) Int64(key string) int64 {
 	return 0
 }
 
+// Uint value get
+func (d Data) Uint(key string) uint64 {
+	if val, ok := d.GetByPath(key); ok {
+		return mathutil.QuietUint(val)
+	}
+	return 0
+}
+
 // Str value get by key
 func (d Data) Str(key string) string {
 	if val, ok := d.GetByPath(key); ok {
