@@ -71,7 +71,7 @@ func SplitShortcut(shortcut string) []string {
 	return FilterNames(strings.Split(shortcut, ","))
 }
 
-// FilterNames for option names
+// FilterNames for option names, will clear there are: "-+= "
 func FilterNames(names []string) []string {
 	filtered := make([]string, 0, len(names))
 	for _, sub := range names {

@@ -1,6 +1,8 @@
 package byteutil
 
-import "bytes"
+import (
+	"bytes"
+)
 
 // FirstLine from command output
 func FirstLine(bs []byte) []byte {
