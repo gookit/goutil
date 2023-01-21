@@ -179,7 +179,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	var pkgFuncs = make(map[string][]string)
 
 	// match func
-	reg := regexp.MustCompile(`func [A-Z]\w+\(.*\).*`)
+	reg := regexp.MustCompile(`func [A-Z]\w+.*`)
 	buf := new(bytes.Buffer)
 
 	color.Info.Println("- find and collect exported functions...")

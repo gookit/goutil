@@ -93,11 +93,19 @@ func StringsRemove(ss []string, s string) []string
 func StringsFilter(ss []string, filter ...func(s string) bool) []string 
 func StringsMap(ss []string, mapFn func(s string) string) []string 
 func TrimStrings(ss []string, cutSet ...string) []string 
+func GetRandomOne[T any](arr []T) T 
+func RandomOne[T any](arr []T) T 
+func Unique[T ~string | comdef.XintOrFloat](arr []T) []T 
 // source at arrutil/check.go
 func IntsHas(ints []int, val int) bool 
 func Int64sHas(ints []int64, val int64) bool 
 func InStrings(elem string, ss []string) bool 
 func StringsHas(ss []string, val string) bool 
+func NotIn[T comdef.ScalarType](value T, list []T) bool 
+func In[T comdef.ScalarType](value T, list []T) bool 
+func ContainsAll[T comdef.ScalarType](list, values []T) bool 
+func IsSubList[T comdef.ScalarType](values, list []T) bool 
+func IsParent[T comdef.ScalarType](values, list []T) bool 
 func HasValue(arr, val any) bool 
 func Contains(arr, val any) bool 
 func NotContains(arr, val any) bool 
@@ -112,6 +120,9 @@ func Find(source any, fn Predicate) (any, error)
 func FindOrDefault(source any, fn Predicate, defaultValue any) any 
 func TakeWhile(data any, fn Predicate) any 
 func ExceptWhile(data any, fn Predicate) any 
+// source at arrutil/collection_gte118.go
+func Map[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V 
+func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V 
 // source at arrutil/convert.go
 func JoinStrings(sep string, ss ...string) string 
 func StringsJoin(sep string, ss ...string) string 
@@ -466,6 +477,8 @@ Package errorx provide a enhanced error implements, allow with call stack and wr
 // source at errorx/assert.go
 func IsTrue(result bool, fmtAndArgs ...any) error 
 func IsFalse(result bool, fmtAndArgs ...any) error 
+func IsIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error 
+func NotIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error 
 // source at errorx/errors.go
 func NewR(code int, msg string) ErrorR 
 func Fail(code int, msg string) ErrorR 
@@ -795,11 +808,14 @@ func QuietString(val any) string
 func String(val any) string 
 func TryToString(val any, defaultAsErr bool) (str string, err error) 
 // source at mathutil/mathutil.go
+func Max[T comdef.XintOrFloat](x, y T) T 
+func SwapMax[T comdef.XintOrFloat](x, y T) (T, T) 
 func MaxInt(x, y int) int 
 func SwapMaxInt(x, y int) (int, int) 
 func MaxI64(x, y int64) int64 
 func SwapMaxI64(x, y int64) (int64, int64) 
 func MaxFloat(x, y float64) float64 
+func OrElse[T comdef.XintOrFloat](in, nv T) T 
 // source at mathutil/number.go
 func IsNumeric(c byte) bool 
 func Percent(val, total int) float64 
@@ -1076,6 +1092,7 @@ func Padding(s, pad string, length int, pos PosFlag) string
 func PadLeft(s, pad string, length int) string 
 func PadRight(s, pad string, length int) string 
 func Resize(s string, length int, align PosFlag) string 
+func PadChars[T byte | rune](cs []T, pad T, length int, pos PosFlag) []T 
 func PadBytes(bs []byte, pad byte, length int, pos PosFlag) []byte 
 func PadBytesLeft(bs []byte, pad byte, length int) []byte 
 func PadBytesRight(bs []byte, pad byte, length int) []byte 
@@ -1085,6 +1102,7 @@ func PadRunesRight(rs []rune, pad rune, length int) []rune
 func Repeat(s string, times int) string 
 func RepeatRune(char rune, times int) []rune 
 func RepeatBytes(char byte, times int) []byte 
+func RepeatChars[T byte | rune](char T, times int) []T 
 // source at strutil/random.go
 func RandomChars(ln int) string 
 func RandomCharsV2(ln int) string 
