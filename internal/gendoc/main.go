@@ -135,7 +135,7 @@ func handle(c *cflag.CFlags) error {
 		out = os.Stdout
 	} else {
 		toFile = true
-		out, err = os.OpenFile(genOpts.output, os.O_CREATE|os.O_WRONLY, fsutil.DefaultFilePerm)
+		out, err = os.OpenFile(genOpts.output, fsutil.FsCWTFlags, fsutil.DefaultFilePerm)
 		goutil.PanicIfErr(err)
 
 		// close after handle

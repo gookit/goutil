@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-Go一些常用的string、number、slice、map、struct、env、system等工具函数实现、增强、收集和整理。
+`goutil` Go 常用功能的扩展工具库。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
@@ -159,6 +159,8 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```go
 // source at byteutil/buffer.go
 func NewBuffer() *Buffer 
+// source at byteutil/byteutil.go
+func FirstLine(bs []byte) []byte 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
 // source at byteutil/encoder.go
@@ -220,7 +222,6 @@ func HasShellEnv(shell string) bool
 func BuildOptionHelpName(names []string) string 
 func ShellQuote(s string) string 
 func OutputLines(output string) []string 
-func FirstLine(output string) string 
 // source at cliutil/color_print.go
 func Redp(a ...any) 
 func Redf(format string, a ...any) 
@@ -463,6 +464,9 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 
 ```go
+// source at errorx/assert.go
+func IsTrue(result bool, fmtAndArgs ...any) error 
+func IsFalse(result bool, fmtAndArgs ...any) error 
 // source at errorx/errors.go
 func NewR(code int, msg string) ErrorR 
 func Fail(code int, msg string) ErrorR 
@@ -628,20 +632,11 @@ func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error)
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error 
 func MkParentDir(fpath string) error 
-func DiscardReader(src io.Reader) 
-func MustReadFile(filePath string) []byte 
-func MustReadReader(r io.Reader) []byte 
-func GetContents(in any) []byte 
-func ReadExistFile(filePath string) []byte 
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) 
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) 
 func OpenReadFile(filepath string) (*os.File, error) 
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*os.File, error) 
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File 
-func PutContents(filePath string, data any, fileFlag ...int) (int, error) 
-func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) error 
-func CopyFile(srcPath, dstPath string) error 
-func MustCopyFile(srcPath, dstPath string) 
 func Remove(fPath string) error 
 func MustRemove(fPath string) 
 func QuietRemove(fPath string) 
@@ -650,6 +645,22 @@ func DeleteIfExist(fPath string) error
 func RmFileIfExist(fPath string) error 
 func DeleteIfFileExist(fPath string) error 
 func Unzip(archive, targetDir string) (err error) 
+// source at fsutil/opread.go
+func NewIOReader(in any) (r io.Reader, err error) 
+func DiscardReader(src io.Reader) 
+func MustReadFile(filePath string) []byte 
+func MustReadReader(r io.Reader) []byte 
+func ReadString(in any) string 
+func GetContents(in any) []byte 
+func ReadExistFile(filePath string) []byte 
+func TextScanner(in any) *scanner.Scanner 
+func LineScanner(in any) *bufio.Scanner 
+// source at fsutil/opwrite.go
+func PutContents(filePath string, data any, fileFlag ...int) (int, error) 
+func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) error 
+func WriteOSFile(f *os.File, data any) (n int, err error) 
+func CopyFile(srcPath, dstPath string) error 
+func MustCopyFile(srcPath, dstPath string) 
 ```
 
 #### FsUtil Usage
@@ -785,11 +796,11 @@ func QuietString(val any) string
 func String(val any) string 
 func TryToString(val any, defaultAsErr bool) (str string, err error) 
 // source at mathutil/mathutil.go
-func MaxFloat(x, y float64) float64 
 func MaxInt(x, y int) int 
 func SwapMaxInt(x, y int) (int, int) 
 func MaxI64(x, y int64) int64 
 func SwapMaxI64(x, y int64) (int64, int64) 
+func MaxFloat(x, y float64) float64 
 // source at mathutil/number.go
 func IsNumeric(c byte) bool 
 func Percent(val, total int) float64 
@@ -848,8 +859,12 @@ func QuietFprint(w io.Writer, ss ...string)
 func QuietFprintf(w io.Writer, tpl string, vs ...any) 
 func QuietFprintln(w io.Writer, ss ...string) 
 func QuietWriteString(w io.Writer, ss ...string) 
+// source at stdio/stdio.go
 func DiscardReader(src io.Reader) 
+func ReadString(r io.Reader) string 
 func MustReadReader(r io.Reader) []byte 
+func NewIOReader(in any) io.Reader 
+func NewScanner(in any) *bufio.Scanner 
 // source at stdio/writer.go
 func NewWriteWrapper(w io.Writer) *WriteWrapper 
 ```
@@ -907,6 +922,7 @@ func NewAliases(checker func(alias string)) *Aliases
 func ToMap(st any, optFns ...MapOptFunc) map[string]any 
 func MustToMap(st any, optFns ...MapOptFunc) map[string]any 
 func TryToMap(st any, optFns ...MapOptFunc) (map[string]any, error) 
+func ToString(st any, optFns ...MapOptFunc) string 
 func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) 
 // source at structs/data.go
 func NewData() *Data 
@@ -944,7 +960,9 @@ func IsAlphabet(char uint8) bool
 func IsAlphaNum(c uint8) bool 
 func StrPos(s, sub string) int 
 func BytePos(s string, bt byte) int 
+func ContainsOne(s string, subs []string) bool 
 func HasOneSub(s string, subs []string) bool 
+func ContainsAll(s string, subs []string) bool 
 func HasAllSubs(s string, subs []string) bool 
 func IsStartsOf(s string, prefixes []string) bool 
 func HasOnePrefix(s string, prefixes []string) bool 
@@ -959,6 +977,8 @@ func IsBlank(s string) bool
 func IsNotBlank(s string) bool 
 func IsBlankBytes(bs []byte) bool 
 func IsSymbol(r rune) bool 
+func HasEmpty(ss ...string) bool 
+func IsAllEmpty(ss ...string) bool 
 func IsVersion(s string) bool 
 func Compare(s1, s2, op string) bool 
 func VersionCompare(v1, v2, op string) bool 
@@ -967,6 +987,7 @@ func Quote(s string) string
 func Unquote(s string) string 
 func Join(sep string, ss ...string) string 
 func JoinList(sep string, ss []string) string 
+func JoinAny(sep string, parts ...any) string 
 func Implode(sep string, ss ...string) string 
 func String(val any) (string, error) 
 func QuietString(in any) string 
@@ -983,6 +1004,7 @@ func MustBool(s string) bool
 func Bool(s string) (bool, error) 
 func Int(s string) (int, error) 
 func ToInt(s string) (int, error) 
+func Int2(s string) int 
 func QuietInt(s string) int 
 func MustInt(s string) int 
 func IntOrPanic(s string) int 
@@ -1095,6 +1117,7 @@ func NewComparator(src, dst string) *SimilarComparator
 func Similarity(s, t string, rate float32) (float32, bool) 
 // source at strutil/split.go
 func Cut(s, sep string) (before string, after string, found bool) 
+func QuietCut(s, sep string) (before string, after string) 
 func MustCut(s, sep string) (before string, after string) 
 func TrimCut(s, sep string) (string, string) 
 func SplitValid(s, sep string) (ss []string) 
@@ -1105,7 +1128,9 @@ func SplitTrimmed(s, sep string) (ss []string)
 func SplitNTrimmed(s, sep string, n int) (ss []string) 
 func Substr(s string, pos, length int) string 
 func SplitInlineComment(val string) (string, string) 
+func FirstLine(output string) string 
 // source at strutil/strutil.go
+func OrElse(s, newVal string) string 
 func Replaces(str string, pairs map[string]string) string 
 func PrettyJSON(v any) (string, error) 
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string 
@@ -1137,10 +1162,10 @@ func Hostname() string
 func CurrentShell(onlyName bool) (path string) 
 func HasShellEnv(shell string) bool 
 func IsShellSpecialVar(c uint8) bool 
-func EnvPaths() []string 
 func FindExecutable(binName string) (string, error) 
 func Executable(binName string) (string, error) 
 func HasExecutable(binName string) bool 
+func EnvPaths() []string 
 func SearchPath(keywords string) []string 
 // source at sysutil/sysgo.go
 func GoVersion() string 
@@ -1299,116 +1324,6 @@ tx.AddDay(2)
 tx.AddHour(1)
 tx.AddMinutes(15)
 tx.AddSeconds(120)
-```
-
-compare time:
-
-```go
-// before compare
-tx.IsBefore(u time.Time)
-tx.IsBeforeUnix(1647411580)
-// after compare
-tx.IsAfter(u time.Time)
-tx.IsAfterUnix(1647411580)
-```
-
-**Helper functions**
-
-```go
-ts := timex.NowUnix() // current unix timestamp
-
-t := NowAddDay(1) // from now add 1 day
-t := NowAddHour(1) // from now add 1 hour
-t := NowAddMinutes(3) // from now add 3 minutes
-t := NowAddSeconds(180) // from now add 180 seconds
-```
-
-**Convert time to date by template**
-
-Template Chars:
-
-```text
- Y,y - year
-  Y - year 2006
-  y - year 06
- m - month 01-12
- d - day 01-31
- H,h - hour
-  H - hour 00-23
-  h - hour 01-12
- I,i - minute
-  I - minute 00-59
-  i - minute 0-59
- S,s - second
-  S - second 00-59
-  s - second 0-59
-```
-
-> More, please see [char map](./timex/template.go)
-
-Examples, use timex:
-
-```go
-tx := timex.Now()
-date := tx.DateFormat("Y-m-d H:I:S") // Output: 2022-04-20 19:09:03
-date = tx.DateFormat("y-m-d h:i:s") // Output: 22-04-20 07:9:3
-```
-
-Format time.Time:
-
-```go
-tx := time.Now()
-date := timex.DateFormat(tx, "Y-m-d H:I:S") // Output: 2022-04-20 19:40:34
-```
-
-More usage:
-
-```go
-ts := timex.NowUnix() // current unix timestamp
-
-date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
-date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
-```
-
-
-## Code Check & Testing
-
-```bash
-gofmt -w -l ./
-golint ./...
-
-# testing
-go test -v ./...
-go test -v -run ^TestErr$
-go test -v -run ^TestErr$ ./testutil/assert/...
-```
-
-## Related
-
-- https://github.com/duke-git/lancet
-- https://github.com/samber/lo
-- https://github.com/zyedidia/generic
-- https://github.com/thoas/go-funk
-
-## Gookit packages
-
-- [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
-- [gookit/rux](https://github.com/gookit/rux) Simple and fast request router for golang HTTP
-- [gookit/gcli](https://github.com/gookit/gcli) Build CLI application, tool library, running CLI commands
-- [gookit/slog](https://github.com/gookit/slog) Lightweight, easy to extend, configurable logging library written in Go
-- [gookit/color](https://github.com/gookit/color) A command-line color library with true color support, universal API methods and Windows support
-- [gookit/event](https://github.com/gookit/event) Lightweight event manager and dispatcher implements by Go
-- [gookit/cache](https://github.com/gookit/cache) Generic cache use and cache manager for golang. support File, Memory, Redis, Memcached.
-- [gookit/config](https://github.com/gookit/config) Go config management. support JSON, YAML, TOML, INI, HCL, ENV and Flags
-- [gookit/filter](https://github.com/gookit/filter) Provide filtering, sanitizing, and conversion of golang data
-- [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
-- [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
-- More, please see https://github.com/gookit
-
-## License
-
-[MIT](LICENSE)
-AddSeconds(120)
 ```
 
 compare time:
