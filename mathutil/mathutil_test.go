@@ -9,6 +9,7 @@ import (
 
 func TestMaxFloat(t *testing.T) {
 	assert.Eq(t, float64(3), mathutil.MaxFloat(2, 3))
+	assert.Eq(t, 3.3, mathutil.Max(2.1, 3.3))
 }
 
 func TestMaxI64(t *testing.T) {
@@ -16,10 +17,18 @@ func TestMaxI64(t *testing.T) {
 	assert.Eq(t, 3, mathutil.MaxInt(3, 2))
 	assert.Eq(t, int64(3), mathutil.MaxI64(2, 3))
 	assert.Eq(t, int64(3), mathutil.MaxI64(3, 2))
+
+	assert.Eq(t, 3, mathutil.Max[int](3, 2))
+	assert.Eq(t, int64(3), mathutil.Max[int64](3, 2))
+	assert.Eq(t, int64(3), mathutil.Max(int64(3), int64(2)))
 }
 
 func TestSwapMaxInt(t *testing.T) {
-	x, y := mathutil.SwapMaxInt(2, 34)
+	x, y := mathutil.SwapMax(2, 34)
+	assert.Eq(t, 34, x)
+	assert.Eq(t, 2, y)
+
+	x, y = mathutil.SwapMaxInt(2, 34)
 	assert.Eq(t, 34, x)
 	assert.Eq(t, 2, y)
 
