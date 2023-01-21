@@ -1,9 +1,10 @@
-package textutil
+package textutil_test
 
 import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/strutil/textutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -32,13 +33,19 @@ func TestReplaceVars(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strutil.JoinAny(" ", "case", i), func(t *testing.T) {
-			if got := ReplaceVars(tt.tplText, tplVars, format); got != tt.want {
+			if got := textutil.ReplaceVars(tt.tplText, tplVars, format); got != tt.want {
 				t.Errorf("ReplaceVars() = %v, want = %v", got, tt.want)
 			}
 		})
 	}
 
 	// custom format
-	assert.Equal(t, "hi inhere", ReplaceVars("hi {$name}", tplVars, "{$,}"))
-	assert.Equal(t, "hi {$name}", ReplaceVars("hi {$name}", nil, "{$,}"))
+	assert.Equal(t, "hi inhere", textutil.ReplaceVars("hi {$name}", tplVars, "{$,}"))
+	assert.Equal(t, "hi {$name}", textutil.ReplaceVars("hi {$name}", nil, "{$,}"))
+}
+
+func TestIsMatchAll(t *testing.T) {
+	str := "hi inhere, age is 120"
+	assert.True(t, textutil.IsMatchAll(str, []string{"hi", "inhere"}))
+	assert.False(t, textutil.IsMatchAll(str, []string{"hi", "^inhere"}))
 }
