@@ -42,6 +42,8 @@ func TestGetBool(t *testing.T) {
 }
 
 func TestEnviron(t *testing.T) {
+	assert.NotEmpty(t, EnvPaths())
+
 	testutil.MockOsEnv(map[string]string{
 		TestEnvName: TestEnvValue,
 	}, func() {

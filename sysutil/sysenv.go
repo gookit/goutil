@@ -118,6 +118,11 @@ func HasExecutable(binName string) bool {
 	return err == nil
 }
 
+// Environ like os.Environ, but will returns key-value map[string]string data.
+func Environ() map[string]string {
+	return comfunc.Environ()
+}
+
 // EnvPaths get and split $PATH to []string
 func EnvPaths() []string {
 	return filepath.SplitList(os.Getenv("PATH"))
