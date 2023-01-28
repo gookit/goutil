@@ -47,8 +47,9 @@ func TestToStrings(t *testing.T) {
 	as := arrutil.StringsToSlice([]string{"1", "2"})
 	is.Eq(`[]interface {}{"1", "2"}`, fmt.Sprintf("%#v", as))
 
-	_, err = arrutil.ToStrings("b")
-	is.Err(err)
+	ss, err = arrutil.ToStrings("b")
+	is.Nil(err)
+	is.Eq(`[]string{"b"}`, fmt.Sprintf("%#v", ss))
 
 	_, err = arrutil.ToStrings([]any{[]int{1}, nil})
 	is.Err(err)
@@ -89,6 +90,34 @@ func TestStringsToInts(t *testing.T) {
 
 	_, err = arrutil.StringsToInts([]string{"a", "b"})
 	is.Err(err)
+
+	ints = arrutil.StringsAsInts([]string{"1", "2"})
+	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", ints))
+	is.Nil(arrutil.StringsAsInts([]string{"abc"}))
+}
+
+func TestConvType(t *testing.T) {
+	is := assert.New(t)
+
+	// []string => []int
+	arr, err := arrutil.ConvType([]string{"1", "2"}, 1)
+	is.Nil(err)
+	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", arr))
+
+	// []int => []string
+	arr1, err := arrutil.ConvType([]int{1, 2}, "1")
+	is.Nil(err)
+	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", arr1))
+
+	// not need conv
+	arr2, err := arrutil.ConvType([]string{"1", "2"}, "1")
+	is.Nil(err)
+	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", arr2))
+
+	// conv error
+	arr3, err := arrutil.ConvType([]string{"ab", "cd"}, 1)
+	is.Err(err)
+	is.Nil(arr3)
 }
 
 func TestJoinSlice(t *testing.T) {
