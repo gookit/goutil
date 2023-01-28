@@ -125,18 +125,23 @@ func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
 // source at arrutil/convert.go
 func JoinStrings(sep string, ss ...string) string 
 func StringsJoin(sep string, ss ...string) string 
-func StringsToInts(ss []string) (ints []int, err error) 
-func MustToStrings(arr any) []string 
-func StringsToSlice(ss []string) []any 
+func JoinSlice(sep string, arr ...any) string 
 func ToInt64s(arr any) (ret []int64, err error) 
 func MustToInt64s(arr any) []int64 
 func SliceToInt64s(arr []any) []int64 
+func StringsAsInts(ss []string) []int 
+func StringsToInts(ss []string) (ints []int, err error) 
+func StringsTryInts(ss []string) (ints []int, err error) 
+func MustToStrings(arr any) []string 
+func AnyToStrings(arr any) []string 
+func StringsToSlice(ss []string) []any 
 func ToStrings(arr any) (ret []string, err error) 
 func SliceToStrings(arr []any) []string 
+func QuietStrings(arr []any) []string 
+func ConvType[T any, R any](arr []T, newElemTyp R) ([]R, error) 
 func AnyToString(arr any) string 
 func SliceToString(arr ...any) string 
 func ToString(arr []any) string 
-func JoinSlice(sep string, arr ...any) string 
 // source at arrutil/format.go
 func NewFormatter(arr any) *ArrFormatter 
 func FormatIndent(arr any, indent string) string 
@@ -429,7 +434,10 @@ func SetEnvs(mp map[string]string)
 func Getenv(name string, def ...string) string 
 func GetInt(name string, def ...int) int 
 func GetBool(name string, def ...bool) bool 
+func EnvPaths() []string 
 func Environ() map[string]string 
+func SearchEnvKeys(keywords string) map[string]string 
+func SearchEnv(keywords string, matchValue bool) map[string]string 
 // source at envutil/info.go
 func IsWin() bool 
 func IsWindows() bool 
@@ -630,6 +638,7 @@ func OSTempDir(pattern string) (string, error)
 func TempDir(dir, pattern string) (string, error) 
 func MimeType(path string) (mime string) 
 func ReaderMimeType(r io.Reader) (mime string) 
+func JoinPaths(elem ...string) string 
 // source at fsutil/info.go
 func Dir(fpath string) string 
 func PathName(fpath string) string 
@@ -644,6 +653,8 @@ func GlobWithFunc(pattern string, fn func(filePath string) error) (err error)
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error 
+func MkDirs(perm os.FileMode, dirPaths ...string) error 
+func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error 
 func MkParentDir(fpath string) error 
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) 
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) 
@@ -837,6 +848,7 @@ func RandomIntWithSeed(min, max int, seed int64) int
 ```go
 // source at reflects/check.go
 func HasChild(v reflect.Value) bool 
+func IsArrayOrSlice(k reflect.Kind) bool 
 func IsNil(v reflect.Value) bool 
 func IsFunc(val any) bool 
 func IsEqual(src, dst any) bool 
@@ -846,6 +858,7 @@ func IsEmptyValue(v reflect.Value) bool
 func BaseTypeVal(v reflect.Value) (value any, err error) 
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) 
 func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) 
+func ConvSlice(oldSlRv reflect.Value, newElemTyp reflect.Type) (rv reflect.Value, err error) 
 func String(rv reflect.Value) string 
 func ToString(rv reflect.Value) (str string, err error) 
 func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) 
@@ -976,6 +989,8 @@ func IsAlphabet(char uint8) bool
 func IsAlphaNum(c uint8) bool 
 func StrPos(s, sub string) int 
 func BytePos(s string, bt byte) int 
+func IEqual(s1 string, s2 string) bool 
+func IContains(s string, sub string) bool 
 func ContainsOne(s string, subs []string) bool 
 func HasOneSub(s string, subs []string) bool 
 func ContainsAll(s string, subs []string) bool 
@@ -1183,6 +1198,7 @@ func IsShellSpecialVar(c uint8) bool
 func FindExecutable(binName string) (string, error) 
 func Executable(binName string) (string, error) 
 func HasExecutable(binName string) bool 
+func Environ() map[string]string 
 func EnvPaths() []string 
 func SearchPath(keywords string) []string 
 // source at sysutil/sysgo.go

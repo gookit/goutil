@@ -98,7 +98,7 @@ func formatTplAndArgs(fmtAndArgs ...any) string {
 
 func callerInfos() []string {
 	num := 3
-	skip := 4
+	skip := 2
 	ss := make([]string, 0, num)
 
 	for i := skip; i < skip+num; i++ {

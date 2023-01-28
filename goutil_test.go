@@ -27,8 +27,8 @@ func TestPanicf(t *testing.T) {
 
 func TestErrOnFail(t *testing.T) {
 	err := errors.New("a error")
-	assert.Err(t, goutil.ErrOnFail(true, err))
-	assert.NoErr(t, goutil.ErrOnFail(false, err))
+	assert.Err(t, goutil.ErrOnFail(false, err))
+	assert.NoErr(t, goutil.ErrOnFail(true, err))
 }
 
 func TestOrValue(t *testing.T) {
