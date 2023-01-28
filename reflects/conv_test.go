@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -39,8 +40,42 @@ func TestValueByType(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.True(t, val.Bool())
 
+	val, err = reflects.ValueByType("abc", reflect.TypeOf("s"))
+	assert.NoErr(t, err)
+	assert.Eq(t, "abc", val.Interface())
+
+	val, err = reflects.ValueByType(123, reflect.TypeOf("s"))
+	assert.NoErr(t, err)
+	assert.Eq(t, "123", val.Interface())
+
+	val, err = reflects.ValueByType("123", reflect.TypeOf(1))
+	assert.NoErr(t, err)
+	assert.Eq(t, 123, val.Interface())
+}
+
+func TestValueByType_slice(t *testing.T) {
+	val, err := reflects.ValueByType([]int{12, 23}, reflect.TypeOf([]int{}))
+	assert.NoErr(t, err)
+	assert.Eq(t, []int{12, 23}, val.Interface())
+
+	arr := []string{"val0", "val1"}
+	val, err = reflects.ValueByType(arr, reflect.TypeOf([]string{}))
+	assert.NoErr(t, err)
+	assert.Eq(t, arr, val.Interface())
+
+	// auto conv elem type
+	val, err = reflects.ValueByType([]string{"12", "23"}, reflect.TypeOf([]int{}))
+	assert.NoErr(t, err)
+	assert.Eq(t, []int{12, 23}, val.Interface())
+
+	val, err = reflects.ValueByType([]string{"ab", "cd"}, reflect.TypeOf([]int{}))
+	assert.Err(t, err)
+	assert.False(t, val.IsValid())
+}
+
+func TestValueByType_map(t *testing.T) {
 	mp := map[string]string{"key": "val"}
-	val, err = reflects.ValueByType(mp, reflect.TypeOf(map[string]string{}))
+	val, err := reflects.ValueByType(mp, reflect.TypeOf(map[string]string{}))
 	assert.NoErr(t, err)
 	assert.Eq(t, mp, val.Interface())
 
@@ -48,6 +83,29 @@ func TestValueByType(t *testing.T) {
 	val, err = reflects.ValueByType(mp, reflect.TypeOf(map[int]string{}))
 	assert.Err(t, err)
 	assert.False(t, val.IsValid())
+}
+
+func TestConvSlice(t *testing.T) {
+	oldArr := []string{"ab", "cd"}
+	newArr, err := reflects.ConvSlice(reflect.ValueOf(oldArr), reflect.TypeOf("s"))
+	assert.NoErr(t, err)
+	assert.Eq(t, oldArr, newArr.Interface())
+
+	// conv fail
+	oldArr = []string{"ab", "cd"}
+	newArr, err = reflects.ConvSlice(reflect.ValueOf(oldArr), reflect.TypeOf(1))
+	assert.Err(t, err)
+	assert.False(t, newArr.IsValid())
+
+	// conv to ints
+	oldArr = []string{"12", "23"}
+	newArr, err = reflects.ConvSlice(reflect.ValueOf(oldArr), reflect.TypeOf(1))
+	assert.NoErr(t, err)
+	assert.Eq(t, arrutil.StringsAsInts(oldArr), newArr.Interface())
+
+	assert.Panics(t, func() {
+		_, _ = reflects.ConvSlice(reflect.ValueOf("s"), reflect.TypeOf("s"))
+	})
 }
 
 func TestValueByKind(t *testing.T) {

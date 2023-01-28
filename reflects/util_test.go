@@ -37,6 +37,7 @@ func TestSliceSubKind(t *testing.T) {
 		want reflect.Kind
 	}{
 		{"invalid", reflect.Invalid},
+		{[2]int{1, 2}, reflect.Int},
 		{[]int{1, 2}, reflect.Int},
 		{[]int8{1, 2}, reflect.Int8},
 		{[]int16{1, 2}, reflect.Int16},
