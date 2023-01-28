@@ -15,6 +15,27 @@ func Mkdir(dirPath string, perm os.FileMode) error {
 	return os.MkdirAll(dirPath, perm)
 }
 
+// MkDirs batch make multi dirs at once
+func MkDirs(perm os.FileMode, dirPaths ...string) error {
+	for _, dirPath := range dirPaths {
+		if err := os.MkdirAll(dirPath, perm); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MkSubDirs batch make multi sub-dirs at once
+func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error {
+	for _, dirName := range subDirs {
+		dirPath := parentDir + "/" + dirName
+		if err := os.MkdirAll(dirPath, perm); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // MkParentDir quick create parent dir
 func MkParentDir(fpath string) error {
 	dirPath := filepath.Dir(fpath)
@@ -36,6 +57,13 @@ const (
 	FsRFlags   = os.O_RDONLY                             // read-only
 )
 
+func fsFlagsOr(fileFlags []int, fileFlag int) int {
+	if len(fileFlags) > 0 {
+		return fileFlags[0]
+	}
+	return fileFlag
+}
+
 // OpenFile like os.OpenFile, but will auto create dir.
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	fileDir := path.Dir(filepath)
@@ -56,11 +84,7 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 //
 // Tip: file flag default is FsCWAFlags
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) {
-	flag := FsCWAFlags
-	if len(fileFlag) > 0 {
-		flag = fileFlag[0]
-	}
-
+	flag := fsFlagsOr(fileFlag, FsCWAFlags)
 	return OpenFile(filepath, flag, DefaultFilePerm)
 }
 

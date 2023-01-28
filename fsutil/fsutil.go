@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 const (
@@ -76,4 +77,9 @@ func ReaderMimeType(r io.Reader) (mime string) {
 	}
 
 	return http.DetectContentType(buf[:n])
+}
+
+// JoinPaths elements, alias of filepath.Join()
+func JoinPaths(elem ...string) string {
+	return filepath.Join(elem...)
 }
