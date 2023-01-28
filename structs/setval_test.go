@@ -47,6 +47,24 @@ func TestInitDefaults(t *testing.T) {
 	assert.ErrMsg(t, err, "must be provider an struct value")
 }
 
+func TestInitDefaults_sliceField(t *testing.T) {
+	type InitSliceFld struct {
+		Name   string   `default:"inhere"`
+		Age    int      `default:""`
+		Tags   []string `default:"php,go"`
+		TagIds []int64  `default:"34,456"`
+	}
+
+	u := &InitSliceFld{}
+	err := structs.InitDefaults(u)
+	dump.P(u)
+
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, []string{"php", "go"}, u.Tags)
+	assert.Eq(t, []int64{34, 456}, u.TagIds)
+}
+
 func TestInitDefaults_parseEnv(t *testing.T) {
 	type App struct {
 		Name  string `default:"${ APP_NAME | my-app }"`
