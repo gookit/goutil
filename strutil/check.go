@@ -56,7 +56,17 @@ func BytePos(s string, bt byte) int {
 	return strings.IndexByte(s, bt)
 }
 
-// ContainsOne substr(s) in the given string.
+// IEqual ignore case check given two string is equals.
+func IEqual(s1 string, s2 string) bool {
+	return strings.ToLower(s1) == strings.ToLower(s2)
+}
+
+// IContains ignore case check substr in the given string.
+func IContains(s string, sub string) bool {
+	return strings.Contains(strings.ToLower(s), strings.ToLower(sub))
+}
+
+// ContainsOne substr(s) in the given string. alias of HasOneSub()
 func ContainsOne(s string, subs []string) bool {
 	return HasOneSub(s, subs)
 }
@@ -71,7 +81,7 @@ func HasOneSub(s string, subs []string) bool {
 	return false
 }
 
-// ContainsAll substr(s) in the given string.
+// ContainsAll substr(s) in the given string. alias of HasAllSubs()
 func ContainsAll(s string, subs []string) bool {
 	return HasAllSubs(s, subs)
 }

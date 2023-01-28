@@ -132,7 +132,22 @@ func TestIsVersion(t *testing.T) {
 	assert.True(t, strutil.IsVersion("1.2.0-alpha1"))
 }
 
+func TestIEqual(t *testing.T) {
+	assert.False(t, strutil.IEqual("h3ab2c", "d"))
+	assert.False(t, strutil.IEqual("ab", "ac"))
+	assert.True(t, strutil.IEqual("ab", "AB"))
+	assert.True(t, strutil.IEqual("ab", "Ab"))
+	assert.True(t, strutil.IEqual("ab", "ab"))
+}
+
+func TestIContains(t *testing.T) {
+	assert.False(t, strutil.IContains("h3ab2c", "d"))
+	assert.True(t, strutil.IContains("h3ab2c", "AB"))
+	assert.True(t, strutil.IContains("H3AB2C", "aB"))
+}
+
 func TestHasOneSub(t *testing.T) {
+	assert.False(t, strutil.ContainsOne("h3ab2c", []string{"d"}))
 	assert.False(t, strutil.HasOneSub("h3ab2c", []string{"d"}))
 	assert.True(t, strutil.HasOneSub("h3ab2c", []string{"ab"}))
 }
@@ -140,6 +155,7 @@ func TestHasOneSub(t *testing.T) {
 func TestHasAllSubs(t *testing.T) {
 	assert.False(t, strutil.HasAllSubs("h3ab2c", []string{"a", "d"}))
 	assert.True(t, strutil.HasAllSubs("h3ab2c", []string{"a", "b"}))
+	assert.True(t, strutil.ContainsAll("h3ab2c", []string{"a", "b"}))
 }
 
 func TestVersionCompare(t *testing.T) {
