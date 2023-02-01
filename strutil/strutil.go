@@ -18,6 +18,16 @@ func OrElse(s, newVal string) string {
 	return newVal
 }
 
+// Valid return first not empty element.
+func Valid(ss ...string) string {
+	for _, s := range ss {
+		if s != "" {
+			return s
+		}
+	}
+	return ""
+}
+
 // Replaces replace multi strings
 //
 //	pairs: {old1: new1, old2: new2, ...}

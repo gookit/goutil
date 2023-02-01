@@ -66,7 +66,6 @@ func ParseEnvVar(val string, getFn func(string) string) (newVal string) {
 		if len(ss) == 2 {
 			name, def = strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 		} else {
-			def = eVar // use raw value
 			name = strings.TrimSpace(ss[0])
 		}
 

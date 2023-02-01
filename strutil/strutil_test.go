@@ -13,6 +13,16 @@ func TestSimilarity(t *testing.T) {
 	is.True(ok)
 }
 
+func TestValid(t *testing.T) {
+	is := assert.New(t)
+
+	is.Eq("ab", strutil.Valid("ab", ""))
+	is.Eq("ab", strutil.Valid("ab", "cd"))
+	is.Eq("cd", strutil.Valid("", "cd"))
+	is.Eq("cd", strutil.OrElse("", "cd"))
+	is.Eq("ab", strutil.OrElse("ab", "cd"))
+}
+
 func TestRenderTemplate(t *testing.T) {
 	tpl := "hi, My name is {{ .name | upFirst }}, age is {{ .age }}"
 	assert.Eq(t, "hi, My name is Inhere, age is 2000", strutil.RenderTemplate(tpl, map[string]any{
