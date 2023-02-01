@@ -177,6 +177,8 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 func NewBuffer() *Buffer 
 // source at byteutil/byteutil.go
 func FirstLine(bs []byte) []byte 
+func StrOrErr(bs []byte, err error) (string, error) 
+func SafeString(bs []byte, err error) string 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
 // source at byteutil/encoder.go
@@ -1164,6 +1166,7 @@ func SplitInlineComment(val string) (string, string)
 func FirstLine(output string) string 
 // source at strutil/strutil.go
 func OrElse(s, newVal string) string 
+func Valid(ss ...string) string 
 func Replaces(str string, pairs map[string]string) string 
 func PrettyJSON(v any) (string, error) 
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string 

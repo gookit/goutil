@@ -13,7 +13,7 @@ func TestParseEnvValue(t *testing.T) {
 		eKey, eVal, rVal, nVal string
 	}{
 		{"EnvKey", "EnvKey val", "${EnvKey}", "EnvKey val"},
-		{"EnvKey", "", "${EnvKey}", "${EnvKey}"},
+		{"EnvKey", "", "${EnvKey}", ""},
 		{"EnvKey0", "EnvKey0 val", "${ EnvKey0 }", "EnvKey0 val"},
 		{"EnvKey1", "EnvKey1 val", "${EnvKey1|defValue}", "EnvKey1 val"},
 		{"EnvKey1", "", "${EnvKey1|defValue}", "defValue"},
@@ -38,11 +38,12 @@ func TestParseEnvValue(t *testing.T) {
 	}
 
 	// test multi ENV key
-	rVal := "${FirstEnv}/${ SecondEnv }"
+	rVal := "${FirstEnv}/${ SecondEnv | def_val}"
 	is.Eq("", Getenv("FirstEnv"))
 	is.Eq("", Getenv("SecondEnv"))
-	is.Eq(rVal, ParseEnvValue(rVal))
-	is.Eq(rVal, VarParse(rVal))
+	is.Eq("/def_val", ParseEnvValue(rVal))
+	is.Eq("/def_val", VarParse(rVal))
+	is.Eq("/", VarReplace(rVal)) // use os.ExpandEnv()
 
 	testutil.MockEnvValues(map[string]string{
 		"FirstEnv":  "abc",
@@ -59,6 +60,6 @@ func TestParseEnvValue(t *testing.T) {
 	}, func() {
 		is.Eq("abc", Getenv("FirstEnv"))
 		is.Eq("", Getenv("SecondEnv"))
-		is.Eq("abc/${ SecondEnv }", ParseEnvValue(rVal))
+		is.Eq("abc/def_val", ParseEnvValue(rVal))
 	})
 }
