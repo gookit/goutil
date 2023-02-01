@@ -10,12 +10,28 @@ import (
 	"text/template"
 )
 
+// OrCond return s1 on cond is True, OR return s2.
+func OrCond(cond bool, s1, s2 string) string {
+	if cond {
+		return s1
+	}
+	return s2
+}
+
 // OrElse return s OR nv(new-value) on s is empty
 func OrElse(s, newVal string) string {
 	if s != "" {
 		return s
 	}
 	return newVal
+}
+
+// OrHandle return fn(s) on s is not empty.
+func OrHandle(s string, fn func(s string) string) string {
+	if s != "" {
+		return fn(s)
+	}
+	return s
 }
 
 // Valid return first not empty element.
