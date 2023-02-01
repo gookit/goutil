@@ -124,10 +124,22 @@ func (c *Cmd) WorkDirOnNot(dir string) *Cmd {
 	return c
 }
 
-// OutputToStd output to OS stdout and error
-func (c *Cmd) OutputToStd() *Cmd {
+// OutputToOS output to OS stdout and error
+func (c *Cmd) OutputToOS() *Cmd {
+	return c.ToOSStdoutStderr()
+}
+
+// ToOSStdoutStderr output to OS stdout and error
+func (c *Cmd) ToOSStdoutStderr() *Cmd {
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
+	return c
+}
+
+// ToOSStdout output to OS stdout
+func (c *Cmd) ToOSStdout() *Cmd {
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stdout
 	return c
 }
 
@@ -280,6 +292,11 @@ func (c *Cmd) Success() bool {
 	return c.Run() == nil
 }
 
+// HasStdout output setting.
+func (c *Cmd) HasStdout() bool {
+	return c.Stdout != nil
+}
+
 // SafeLines run and return output as lines
 func (c *Cmd) SafeLines() []string {
 	ss, _ := c.OutputLines()
@@ -341,7 +358,7 @@ func (c *Cmd) MustRun() {
 
 // FlushRun runs command and flush output to stdout
 func (c *Cmd) FlushRun() error {
-	c.OutputToStd()
+	c.ToOSStdoutStderr()
 	return c.Run()
 }
 

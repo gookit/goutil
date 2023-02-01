@@ -93,6 +93,8 @@ type Runner struct {
 
 	// DryRun dry run all commands
 	DryRun bool
+	// OutToStd stdout and stderr
+	OutToStd bool
 	// IgnoreErr continue on error
 	IgnoreErr bool
 	// BeforeRun hooks on each task. return false to skip current task.
@@ -201,6 +203,10 @@ func (r *Runner) Run() error {
 
 // RunTask command
 func (r *Runner) RunTask(task *Task) (goon bool) {
+	if r.OutToStd && !task.Cmd.HasStdout() {
+		task.Cmd.ToOSStdoutStderr()
+	}
+
 	// do running
 	if err := task.Run(); err != nil {
 		r.Errs[task.ID] = err
