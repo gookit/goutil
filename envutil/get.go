@@ -41,6 +41,18 @@ func GetBool(name string, def ...bool) bool {
 	return false
 }
 
+// GetMulti ENV values by input names.
+func GetMulti(names ...string) map[string]string {
+	valMap := make(map[string]string, len(names))
+
+	for _, name := range names {
+		if val := os.Getenv(name); val != "" {
+			valMap[name] = val
+		}
+	}
+	return valMap
+}
+
 // EnvPaths get and split $PATH to []string
 func EnvPaths() []string {
 	return filepath.SplitList(os.Getenv("PATH"))

@@ -28,6 +28,8 @@ func TestGetenv(t *testing.T) {
 		assert.Eq(t, 1, GetInt(TestEnvName), "int env value not equals")
 		assert.Eq(t, 0, GetInt(TestNoEnvName))
 		assert.Eq(t, 2, GetInt(TestNoEnvName, 2))
+
+		assert.Len(t, GetMulti(TestEnvName, TestNoEnvName), 1)
 	})
 }
 

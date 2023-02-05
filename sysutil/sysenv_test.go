@@ -16,7 +16,7 @@ func TestSysenv_common(t *testing.T) {
 
 	assert.NotEmpty(t, sysutil.Environ())
 
-	ss = sysutil.SearchPath("go")
+	ss = sysutil.SearchPath("go", 3)
 	assert.NotEmpty(t, ss)
 	// dump.P(ss)
 }

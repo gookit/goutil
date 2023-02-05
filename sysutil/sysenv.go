@@ -133,7 +133,7 @@ func EnvPaths() []string {
 // Usage:
 //
 //	sysutil.SearchPath("go")
-func SearchPath(keywords string) []string {
+func SearchPath(keywords string, limit int) []string {
 	path := os.Getenv("PATH")
 	ptn := "*" + keywords + "*"
 
@@ -147,6 +147,11 @@ func SearchPath(keywords string) []string {
 		matches, err := filepath.Glob(filepath.Join(dir, ptn))
 		if err == nil && len(matches) > 0 {
 			list = append(list, matches...)
+
+			// limit result
+			if limit > 0 && len(list) > limit {
+				break
+			}
 		}
 	}
 
