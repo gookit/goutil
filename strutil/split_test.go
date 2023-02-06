@@ -86,15 +86,69 @@ func TestSubstr(t *testing.T) {
 }
 
 func TestSplitInlineComment(t *testing.T) {
-	val, comment := strutil.SplitInlineComment("value0")
-	assert.Eq(t, "value0", val)
-	assert.Eq(t, "", comment)
+	tests := []struct {
+		str    string
+		val    string
+		cmt    string
+		strict bool
+	}{
+		{
+			str: "value",
+			val: "value",
+		},
+		{
+			str: "value // comments at end",
+			val: "value",
+			cmt: "// comments at end",
+		},
+		{
+			str:    "value // comments at end",
+			val:    "value",
+			cmt:    "// comments at end",
+			strict: true,
+		},
+		{
+			str: "value// comments at end",
+			val: "value",
+			cmt: "// comments at end",
+		},
+		{
+			str:    "value// comments at end",
+			val:    "value// comments at end",
+			strict: true,
+		},
+		{
+			str: "value # comments at end",
+			val: "value",
+			cmt: "# comments at end",
+		},
+		{
+			str:    "value # comments at end",
+			val:    "value",
+			cmt:    "# comments at end",
+			strict: true,
+		},
+		{
+			str: "value# comments at end",
+			val: "value",
+			cmt: "# comments at end",
+		},
+		{
+			str:    "value# comments at end",
+			val:    "value# comments at end",
+			strict: true,
+		},
+	}
 
-	val, comment = strutil.SplitInlineComment("value0 // comments at end")
-	assert.Eq(t, "value0", val)
-	assert.Eq(t, "// comments at end", comment)
-
-	val, comment = strutil.SplitInlineComment("value0 # comments at end")
-	assert.Eq(t, "value0", val)
-	assert.Eq(t, "# comments at end", comment)
+	for i, tt := range tests {
+		idx := strutil.QuietString(i)
+		val, comment := strutil.SplitInlineComment(tt.str+idx, tt.strict)
+		if comment == "" {
+			assert.Eq(t, tt.val+idx, val)
+			assert.Eq(t, tt.cmt, comment)
+		} else {
+			assert.Eq(t, tt.val, val)
+			assert.Eq(t, tt.cmt+idx, comment)
+		}
+	}
 }

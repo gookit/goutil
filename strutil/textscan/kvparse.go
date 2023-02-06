@@ -127,7 +127,7 @@ func (m *KeyValueMatcher) inlineCommentsAndUnquote(vt *ValueToken, val string) s
 	if m.InlineComment {
 		// split inline comments
 		var comment string
-		val, comment = strutil.SplitInlineComment(val)
+		val, comment = strutil.SplitInlineComment(val, true)
 
 		if len(comment) > 0 {
 			cmt := NewCommentToken(comment)

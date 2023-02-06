@@ -92,6 +92,11 @@ func String(val any) (string, error) {
 	return AnyToString(val, true)
 }
 
+// ToString convert value to string
+func ToString(val any) (string, error) {
+	return AnyToString(val, true)
+}
+
 // QuietString convert value to string, will ignore error
 func QuietString(in any) string {
 	val, _ := AnyToString(in, false)
@@ -106,11 +111,6 @@ func MustString(in any) string {
 
 // StringOrErr convert value to string, return error on failed
 func StringOrErr(val any) (string, error) {
-	return AnyToString(val, true)
-}
-
-// ToString convert value to string
-func ToString(val any) (string, error) {
 	return AnyToString(val, true)
 }
 

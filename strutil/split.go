@@ -123,15 +123,27 @@ func Substr(s string, pos, length int) string {
 	return string(runes[pos:stopIdx])
 }
 
-// SplitInlineComment for a text string.
-func SplitInlineComment(val string) (string, string) {
-	if pos := strings.IndexByte(val, '#'); pos > -1 {
-		return strings.TrimRight(val[0:pos], " "), val[pos:]
+// SplitInlineComment for an inline text string.
+func SplitInlineComment(val string, strict ...bool) (string, string) {
+	// strict check: must with space
+	if len(strict) > 0 && strict[0] {
+		if pos := strings.Index(val, " #"); pos > -1 {
+			return strings.TrimRight(val[0:pos], " "), val[pos+1:]
+		}
+
+		if pos := strings.Index(val, " //"); pos > -1 {
+			return strings.TrimRight(val[0:pos], " "), val[pos+1:]
+		}
+	} else {
+		if pos := strings.IndexByte(val, '#'); pos > -1 {
+			return strings.TrimRight(val[0:pos], " "), val[pos:]
+		}
+
+		if pos := strings.Index(val, "//"); pos > -1 {
+			return strings.TrimRight(val[0:pos], " "), val[pos:]
+		}
 	}
 
-	if pos := strings.Index(val, "//"); pos > -1 {
-		return strings.TrimRight(val[0:pos], " "), val[pos:]
-	}
 	return val, ""
 }
 
