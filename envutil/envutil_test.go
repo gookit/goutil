@@ -3,6 +3,7 @@ package envutil
 import (
 	"testing"
 
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -62,4 +63,37 @@ func TestParseEnvValue(t *testing.T) {
 		is.Eq("", Getenv("SecondEnv"))
 		is.Eq("abc/def_val", ParseEnvValue(rVal))
 	})
+}
+
+func TestSetEnvs(t *testing.T) {
+	envMp := map[string]string{
+		"FirstEnv":  "abc",
+		"SecondEnv": "def",
+	}
+	keys := maputil.Keys(envMp)
+	for key := range envMp {
+		assert.Empty(t, Getenv(key))
+	}
+
+	// SetEnvs
+	SetEnvs(maputil.SMap(envMp).ToKVPairs()...)
+	for key, val := range envMp {
+		assert.Eq(t, val, Getenv(key))
+	}
+
+	UnsetEnvs(keys...)
+	for key := range envMp {
+		assert.Empty(t, Getenv(key))
+	}
+
+	// SetEnvMap
+	SetEnvMap(envMp)
+	for key, val := range envMp {
+		assert.Eq(t, val, Getenv(key))
+	}
+
+	UnsetEnvs(keys...)
+	for key := range envMp {
+		assert.Empty(t, Getenv(key))
+	}
 }

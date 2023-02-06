@@ -13,12 +13,13 @@ import (
 func TestSysenv_common(t *testing.T) {
 	ss := sysutil.EnvPaths()
 	assert.NotEmpty(t, ss)
-
 	assert.NotEmpty(t, sysutil.Environ())
 
 	ss = sysutil.SearchPath("go", 3)
 	assert.NotEmpty(t, ss)
 	// dump.P(ss)
+	ss = sysutil.SearchPath("o", 3)
+	assert.NotEmpty(t, ss)
 }
 
 func TestCurrentShell(t *testing.T) {

@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/maputil"
@@ -46,4 +47,16 @@ func TestSMap_usage(t *testing.T) {
 	assert.Eq(t, int64(0), mp.Int64("notExists"))
 	assert.Eq(t, "", mp.Str("notExists"))
 	assert.Empty(t, mp.Ints("notExists"))
+}
+
+func TestSMap_ToKVPairs(t *testing.T) {
+	mp := maputil.SMap{
+		"k1": "23",
+		"k2": "ab",
+	}
+	arr := mp.ToKVPairs()
+	assert.Len(t, arr, 4)
+	str := fmt.Sprint(arr)
+	assert.StrContains(t, str, "k1 23")
+	assert.StrContains(t, str, "k2 ab")
 }
