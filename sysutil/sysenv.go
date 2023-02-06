@@ -136,20 +136,29 @@ func EnvPaths() []string {
 func SearchPath(keywords string, limit int) []string {
 	path := os.Getenv("PATH")
 	ptn := "*" + keywords + "*"
-
 	list := make([]string, 0)
+
+	checked := make(map[string]bool)
 	for _, dir := range filepath.SplitList(path) {
+		// Unix shell semantics: path element "" means "."
 		if dir == "" {
-			// Unix shell semantics: path element "" means "."
 			dir = "."
 		}
 
+		// mark dir is checked
+		if _, ok := checked[dir]; ok {
+			continue
+		}
+
+		checked[dir] = true
 		matches, err := filepath.Glob(filepath.Join(dir, ptn))
 		if err == nil && len(matches) > 0 {
 			list = append(list, matches...)
+			size := len(list)
 
-			// limit result
-			if limit > 0 && len(list) > limit {
+			// limit result size
+			if limit > 0 && size >= limit {
+				list = list[:limit]
 				break
 			}
 		}
