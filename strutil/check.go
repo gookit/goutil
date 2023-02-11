@@ -57,12 +57,12 @@ func BytePos(s string, bt byte) int {
 }
 
 // IEqual ignore case check given two string is equals.
-func IEqual(s1 string, s2 string) bool {
-	return strings.ToLower(s1) == strings.ToLower(s2)
+func IEqual(s1, s2 string) bool {
+	return strings.EqualFold(s1, s2)
 }
 
 // IContains ignore case check substr in the given string.
-func IContains(s string, sub string) bool {
+func IContains(s, sub string) bool {
 	return strings.Contains(strings.ToLower(s), strings.ToLower(sub))
 }
 

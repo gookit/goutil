@@ -17,7 +17,9 @@ import (
 )
 
 var (
-	ErrDateLayout   = errors.New("invalid date layout string")
+	// ErrDateLayout error
+	ErrDateLayout = errors.New("invalid date layout string")
+	// ErrInvalidParam error
 	ErrInvalidParam = errors.New("invalid input parameter")
 
 	// some regex for convert string.
