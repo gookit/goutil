@@ -169,6 +169,11 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 func (d *Dumper) advance(step int) {
 	d.curDepth += step
 	// d.nextDepth = d.curDepth + step
+	if d.curDepth < 1 {
+		d.indentBytes = []byte{}
+		return
+	}
+
 	d.indentBytes = strutil.RepeatBytes(d.IndentChar, d.IndentLen*d.curDepth)
 }
 

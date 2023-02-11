@@ -160,7 +160,7 @@ func RepeatBytes(char byte, times int) []byte {
 
 // RepeatChars repeat a byte char.
 func RepeatChars[T byte | rune](char T, times int) []T {
-	if times == 0 {
+	if times <= 0 {
 		return make([]T, 0)
 	}
 

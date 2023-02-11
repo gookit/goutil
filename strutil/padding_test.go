@@ -59,6 +59,7 @@ func TestRepeatBytes(t *testing.T) {
 	assert.Eq(t, []byte("aaa"), strutil.RepeatBytes('a', 3))
 	assert.Eq(t, []byte{}, strutil.RepeatBytes('a', 0))
 	assert.Eq(t, []byte{}, strutil.RepeatBytes(' ', 0))
+	assert.Eq(t, []byte{}, strutil.RepeatBytes(' ', -2))
 	assert.Eq(t, []byte{' '}, strutil.RepeatBytes(' ', 1))
 	assert.Len(t, strutil.RepeatBytes(' ', 20), 20)
 }
