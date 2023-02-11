@@ -173,3 +173,16 @@ func (d *Data) BoolVal(key string) bool {
 func (d *Data) String() string {
 	return maputil.ToString(d.data)
 }
+
+// OrderedMap data TODO
+type OrderedMap struct {
+	maputil.Data
+	len  int
+	keys []string
+	vals []any
+}
+
+// NewOrderedMap instance.
+func NewOrderedMap(len int) *OrderedMap {
+	return &OrderedMap{len: len}
+}

@@ -431,11 +431,14 @@ func VarReplace(s string) string
 func VarParse(val string) string 
 func ParseEnvValue(val string) string 
 func ParseValue(val string) (newVal string) 
-func SetEnvs(mp map[string]string) 
+func SetEnvMap(mp map[string]string) 
+func SetEnvs(kvPairs ...string) 
+func UnsetEnvs(keys ...string) 
 // source at envutil/get.go
 func Getenv(name string, def ...string) string 
 func GetInt(name string, def ...int) int 
 func GetBool(name string, def ...bool) bool 
+func GetMulti(names ...string) map[string]string 
 func EnvPaths() []string 
 func Environ() map[string]string 
 func SearchEnvKeys(keywords string) map[string]string 
@@ -674,9 +677,12 @@ func Unzip(archive, targetDir string) (err error)
 // source at fsutil/opread.go
 func NewIOReader(in any) (r io.Reader, err error) 
 func DiscardReader(src io.Reader) 
+func ReadFile(filePath string) []byte 
 func MustReadFile(filePath string) []byte 
+func ReadReader(r io.Reader) []byte 
 func MustReadReader(r io.Reader) []byte 
 func ReadString(in any) string 
+func ReadAll(in any) []byte 
 func GetContents(in any) []byte 
 func ReadExistFile(filePath string) []byte 
 func TextScanner(in any) *scanner.Scanner 
@@ -957,6 +963,7 @@ func ToString(st any, optFns ...MapOptFunc) string
 func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) 
 // source at structs/data.go
 func NewData() *Data 
+func NewOrderedMap(len int) *OrderedMap 
 // source at structs/setval.go
 func InitDefaults(ptr any, optFns ...InitOptFunc) error 
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error 
@@ -1023,10 +1030,10 @@ func JoinList(sep string, ss []string) string
 func JoinAny(sep string, parts ...any) string 
 func Implode(sep string, ss ...string) string 
 func String(val any) (string, error) 
+func ToString(val any) (string, error) 
 func QuietString(in any) string 
 func MustString(in any) string 
 func StringOrErr(val any) (string, error) 
-func ToString(val any) (string, error) 
 func AnyToString(val any, defaultAsErr bool) (str string, err error) 
 func Byte2str(b []byte) string 
 func Byte2string(b []byte) string 
@@ -1162,10 +1169,12 @@ func SplitN(s, sep string, n int) (ss []string)
 func SplitTrimmed(s, sep string) (ss []string) 
 func SplitNTrimmed(s, sep string, n int) (ss []string) 
 func Substr(s string, pos, length int) string 
-func SplitInlineComment(val string) (string, string) 
+func SplitInlineComment(val string, strict ...bool) (string, string) 
 func FirstLine(output string) string 
 // source at strutil/strutil.go
+func OrCond(cond bool, s1, s2 string) string 
 func OrElse(s, newVal string) string 
+func OrHandle(s string, fn func(s string) string) string 
 func Valid(ss ...string) string 
 func Replaces(str string, pairs map[string]string) string 
 func PrettyJSON(v any) (string, error) 
@@ -1203,7 +1212,7 @@ func Executable(binName string) (string, error)
 func HasExecutable(binName string) bool 
 func Environ() map[string]string 
 func EnvPaths() []string 
-func SearchPath(keywords string) []string 
+func SearchPath(keywords string, limit int) []string 
 // source at sysutil/sysgo.go
 func GoVersion() string 
 func ParseGoVersion(line string) (*GoInfo, error) 
