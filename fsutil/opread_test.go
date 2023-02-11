@@ -12,8 +12,8 @@ func TestDiscardReader(t *testing.T) {
 	sr := strings.NewReader("hello")
 	fsutil.DiscardReader(sr)
 
-	assert.Empty(t, fsutil.MustReadReader(sr))
-	assert.Empty(t, fsutil.GetContents(sr))
+	assert.Empty(t, fsutil.ReadReader(sr))
+	assert.Empty(t, fsutil.ReadAll(sr))
 }
 
 func TestGetContents(t *testing.T) {
@@ -28,5 +28,8 @@ func TestGetContents(t *testing.T) {
 
 	assert.Panics(t, func() {
 		fsutil.GetContents(45)
+	})
+	assert.Panics(t, func() {
+		fsutil.ReadFile("/path-not-exist")
 	})
 }

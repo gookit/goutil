@@ -24,6 +24,11 @@ func DiscardReader(src io.Reader) {
 	_, _ = io.Copy(io.Discard, src)
 }
 
+// ReadFile read file contents, will panic on error
+func ReadFile(filePath string) []byte {
+	return MustReadFile(filePath)
+}
+
 // MustReadFile read file contents, will panic on error
 func MustReadFile(filePath string) []byte {
 	bs, err := os.ReadFile(filePath)
@@ -32,6 +37,9 @@ func MustReadFile(filePath string) []byte {
 	}
 	return bs
 }
+
+// ReadReader read contents from io.Reader, will panic on error
+func ReadReader(r io.Reader) []byte { return MustReadReader(r) }
 
 // MustReadReader read contents from io.Reader, will panic on error
 func MustReadReader(r io.Reader) []byte {
@@ -46,6 +54,9 @@ func MustReadReader(r io.Reader) []byte {
 func ReadString(in any) string {
 	return string(GetContents(in))
 }
+
+// ReadAll read contents from path or io.Reader, will panic on in type error
+func ReadAll(in any) []byte { return GetContents(in) }
 
 // GetContents read contents from path or io.Reader, will panic on in type error
 func GetContents(in any) []byte {

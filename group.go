@@ -71,7 +71,9 @@ func (p *QuickRun) Add(fns ...RunFn) *QuickRun {
 
 // Run all func
 func (p *QuickRun) Run() error {
-	for _, fn := range p.fns {
+	for i, fn := range p.fns {
+		p.ctx.Set("index", i)
+
 		if err := fn(p.ctx); err != nil {
 			return err
 		}

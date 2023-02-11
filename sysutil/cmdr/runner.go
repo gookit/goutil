@@ -186,13 +186,14 @@ func (r *Runner) Run() error {
 		}
 
 		if r.DryRun {
-			color.Infof("DRY-RUN: task #%d execute completed\n", i+1)
+			color.Infof("DRY-RUN: task#%d execute completed\n\n", i+1)
 			continue
 		}
 
 		if !r.RunTask(task) {
 			break
 		}
+		fmt.Println() // with newline.
 	}
 
 	if len(r.Errs) == 0 {
