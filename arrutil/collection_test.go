@@ -43,6 +43,20 @@ func TestElemTypeEqualCompareFuncShouldNotEquals(t *testing.T) {
 	assert.NotEq(t, 0, arrutil.ElemTypeEqualsComparer(1, "2"))
 }
 
+func TestDifferencesShouldPassed(t *testing.T) {
+	data := []string{
+		"a",
+		"b",
+		"c",
+	}
+	result := arrutil.Differences[string](data, []string{"a", "b"}, arrutil.StringEqualsComparer)
+	assert.Eq(t, []string{"c"}, result)
+	result = arrutil.Differences[string]([]string{"a", "b"}, data, arrutil.StringEqualsComparer)
+	assert.Eq(t, []string{"c"}, result)
+	result = arrutil.Differences[string]([]string{"a", "b", "d"}, data, arrutil.StringEqualsComparer)
+	assert.Eq(t, 2, len(result))
+}
+
 func TestExceptsShouldPassed(t *testing.T) {
 	data := []string{
 		"a",
