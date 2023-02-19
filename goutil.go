@@ -37,6 +37,14 @@ func MustOK(err error) {
 	}
 }
 
+// Must if error is not empty, will panic
+func Must[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
 // PkgName get current package name. alias of stdutil.PkgName()
 //
 // Usage:

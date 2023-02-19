@@ -17,6 +17,11 @@ func TestPanicIfErr(t *testing.T) {
 	goutil.PanicIfErr(nil)
 	goutil.PanicErr(nil)
 	goutil.MustOK(nil)
+
+	assert.Eq(t, "hi", goutil.Must("hi", nil))
+	assert.Panics(t, func() {
+		goutil.Must("hi", errors.New("a error"))
+	})
 }
 
 func TestPanicf(t *testing.T) {
