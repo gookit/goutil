@@ -82,6 +82,8 @@ func TestAnyToString(t *testing.T) {
 		is.Eq("2", strutil.QuietString(in))
 	}
 
+	is.Eq("2", strutil.SafeString(2))
+
 	tests1 := []any{
 		float32(2.3), 2.3,
 	}

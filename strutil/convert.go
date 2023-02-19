@@ -89,12 +89,12 @@ func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
  * convert value to string
  *************************************************************/
 
-// String convert val to string
+// String convert value to string, return error on failed
 func String(val any) (string, error) {
 	return AnyToString(val, true)
 }
 
-// ToString convert value to string
+// ToString convert value to string, return error on failed
 func ToString(val any) (string, error) {
 	return AnyToString(val, true)
 }
@@ -105,9 +105,18 @@ func QuietString(in any) string {
 	return val
 }
 
-// MustString convert value to string, TODO will panic on error
-func MustString(in any) string {
+// SafeString convert value to string, will ignore error
+func SafeString(in any) string {
 	val, _ := AnyToString(in, false)
+	return val
+}
+
+// MustString convert value to string, will panic on error
+func MustString(in any) string {
+	val, err := AnyToString(in, false)
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 
@@ -118,10 +127,10 @@ func StringOrErr(val any) (string, error) {
 
 // AnyToString convert value to string.
 //
-// if defaultAsErr:
+// For defaultAsErr:
 //
-//	False will use fmt.Sprint convert complex type
-//	True  will return error on fail.
+//   - False  will use fmt.Sprint convert complex type
+//   - True   will return error on fail.
 func AnyToString(val any, defaultAsErr bool) (str string, err error) {
 	if val == nil {
 		return

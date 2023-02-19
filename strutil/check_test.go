@@ -182,3 +182,29 @@ func TestVersionCompare(t *testing.T) {
 
 	assert.False(t, strutil.Compare("2020-12-16", "2021-12-17", ">="))
 }
+
+func TestGlobMatch(t *testing.T) {
+	tests := []struct {
+		p, s string
+		want bool
+	}{
+		{"a*", "abc", true},
+		{"ab.*.ef", "ab.cd.ef", true},
+		{"ab.*.*", "ab.cd.ef", true},
+		{"ab.cd.*", "ab.cd.ef", true},
+		{"ab.*", "ab.cd.ef", true},
+		{"a*/b", "a/c/b", false},
+		{"a*", "a/c/b", false},
+		{"a**", "a/c/b", false},
+	}
+
+	for _, tt := range tests {
+		assert.Eq(t, tt.want, strutil.GlobMatch(tt.p, tt.s), "case %v", tt)
+	}
+
+	assert.True(t, strutil.QuickMatch("ab", "abc"))
+	assert.True(t, strutil.QuickMatch("abc", "abc"))
+	assert.False(t, strutil.GlobMatch("ab", "abc"))
+	assert.True(t, strutil.GlobMatch("ab*", "abc"))
+	assert.True(t, strutil.QuickMatch("ab*", "abc"))
+}
