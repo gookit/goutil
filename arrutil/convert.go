@@ -225,3 +225,18 @@ func ToString(arr []any) string {
 	sb.WriteByte(']')
 	return sb.String()
 }
+
+// CombineToSMap combine two string-slice to map[string]string
+func CombineToSMap(keys, values []string) map[string]string {
+	ln := len(values)
+	mp := make(map[string]string, len(keys))
+
+	for i, key := range keys {
+		if ln > i {
+			mp[key] = values[i]
+		} else {
+			mp[key] = ""
+		}
+	}
+	return mp
+}

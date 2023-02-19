@@ -23,6 +23,12 @@ func TestToStringMap(t *testing.T) {
 
 	assert.Eq(t, ret["a"], "v0")
 	assert.Eq(t, ret["b"], "23")
+
+	keys := []string{"key0", "key1"}
+
+	mp := maputil.CombineToSMap(keys, []string{"val0", "val1"})
+	assert.Len(t, mp, 2)
+	assert.Eq(t, "val0", mp.Str("key0"))
 }
 
 func TestHTTPQueryString(t *testing.T) {

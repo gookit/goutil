@@ -125,3 +125,16 @@ func TestJoinSlice(t *testing.T) {
 	assert.Eq(t, "", arrutil.JoinSlice(",", nil))
 	assert.Eq(t, "a,23,b", arrutil.JoinSlice(",", "a", 23, "b"))
 }
+
+func TestCombineToSMap(t *testing.T) {
+	keys := []string{"key0", "key1"}
+
+	mp := arrutil.CombineToSMap(keys, []string{"val0", "val1"})
+	assert.Len(t, mp, 2)
+	assert.Eq(t, "val0", mp["key0"])
+
+	mp = arrutil.CombineToSMap(keys, []string{"val0"})
+	assert.Len(t, mp, 2)
+	assert.Eq(t, "val0", mp["key0"])
+	assert.Eq(t, "", mp["key1"])
+}
