@@ -10,6 +10,21 @@ import (
 	"github.com/gookit/color"
 )
 
+const (
+	// RegGoodName match a good option, argument name
+	RegGoodName = `^[a-zA-Z][\w-]*$`
+)
+
+var (
+	// GoodName good name for option and argument
+	goodName = regexp.MustCompile(RegGoodName)
+)
+
+// IsGoodName check
+func IsGoodName(name string) bool {
+	return goodName.MatchString(name)
+}
+
 // IsZeroValue determines whether the string represents the zero
 // value for a flag.
 //
