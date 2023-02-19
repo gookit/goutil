@@ -22,3 +22,8 @@ func BinDir() string {
 func BinFile() string {
 	return os.Args[0]
 }
+
+// Open file or url address
+func Open(fileOrUrl string) error {
+	return OpenBrowser(fileOrUrl)
+}
