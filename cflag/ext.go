@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/strutil/textutil"
 )
 
 /*************************************************************************
@@ -80,15 +83,9 @@ func (s *EnumString) SetEnum(enum []string) {
 
 // Set new value, will check value is right
 func (s *EnumString) Set(value string) error {
-	var ok bool
-	for _, item := range s.enum {
-		if value == item {
-			ok = true
-			break
-		}
-	}
+	s.val = value
 
-	if !ok {
+	if !arrutil.InStrings(value, s.enum) {
 		return fmt.Errorf("value must one of the: %v", s.enum)
 	}
 	return nil
@@ -124,12 +121,58 @@ func (s *String) String() string {
 	return string(*s)
 }
 
+// Strings split value to []string by sep ','
+func (s *String) Strings() []string {
+	return strutil.Split(string(*s), ",")
+}
+
 // Split value to []string
 func (s *String) Split(sep string) []string {
-	return strutil.ToStrings(string(*s), sep)
+	return strutil.Split(string(*s), sep)
 }
 
 // Ints value to []int
 func (s *String) Ints(sep string) []int {
 	return strutil.Ints(string(*s), sep)
+}
+
+// ConfString The config-string flag, INI format, like nginx-config.
+// Implemented the flag.Value interface.
+//
+// Example:
+//
+//	--config 'k0=val0;k1=val1' => string map {k0:val0, k1:val1}
+type ConfString struct {
+	maputil.SMap
+	val string
+}
+
+// String to string
+func (s *ConfString) String() string {
+	return s.val
+}
+
+// SetData value
+func (s *ConfString) SetData(mp map[string]string) {
+	s.SMap = mp
+}
+
+// Data map get
+func (s *ConfString) Data() maputil.SMap {
+	return s.SMap
+}
+
+// Set new value, will check value is right
+func (s *ConfString) Set(value string) error {
+	if value != "" {
+		s.val = value
+
+		// parse to map
+		mp, err := textutil.ParseInlineINI(value)
+		if err != nil {
+			return err
+		}
+		s.SMap = mp
+	}
+	return nil
 }

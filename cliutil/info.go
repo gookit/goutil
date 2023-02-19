@@ -28,6 +28,13 @@ func BinName() string {
 	return path.Base(os.Args[0])
 }
 
+// exec: `stty -a 2>&1`
+// const (
+// mac: speed 9600 baud; 97 rows; 362 columns;
+// macSttyMsgPattern = `(\d+)\s+rows;\s*(\d+)\s+columns;`
+// linux: speed 38400 baud; rows 97; columns 362; line = 0;
+// linuxSttyMsgPattern = `rows\s+(\d+);\s*columns\s+(\d+);`
+// )
 var terminalWidth, terminalHeight int
 
 // GetTermSize for current console terminal.

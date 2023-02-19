@@ -97,7 +97,7 @@ func IsFlagHelpErr(err error) bool {
 // regex: "`.+`"
 var codeReg = regexp.MustCompile("`" + `.+` + "`")
 
-// WrapColorForCode WrapColorForCode. convert "hello `keywords`" to "hello <mga>keywords</>"
+// WrapColorForCode convert "hello `keywords`" to "hello <mga>keywords</>"
 func WrapColorForCode(s string) string {
 	if !strings.ContainsRune(s, '`') {
 		return s
