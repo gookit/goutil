@@ -49,3 +49,20 @@ func TestIsMatchAll(t *testing.T) {
 	assert.True(t, textutil.IsMatchAll(str, []string{"hi", "inhere"}))
 	assert.False(t, textutil.IsMatchAll(str, []string{"hi", "^inhere"}))
 }
+
+func TestParseInlineINI(t *testing.T) {
+	mp, err := textutil.ParseInlineINI("")
+	assert.NoErr(t, err)
+	assert.Empty(t, mp)
+
+	mp, err = textutil.ParseInlineINI("default=inhere")
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, mp)
+	assert.Eq(t, "inhere", mp.Str("default"))
+
+	_, err = textutil.ParseInlineINI("string")
+	assert.ErrSubMsg(t, err, "parse inline config error: must")
+
+	_, err = textutil.ParseInlineINI("name=n;default=inhere", "name")
+	assert.ErrSubMsg(t, err, "parse inline config error: invalid key name")
+}
