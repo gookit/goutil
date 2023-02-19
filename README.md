@@ -113,6 +113,7 @@ func NotContains(arr, val any) bool
 func TwowaySearch(data any, item any, fn Comparer) (int, error) 
 func MakeEmptySlice(itemType reflect.Type) any 
 func CloneSlice(data any) any 
+func Differences[T any](first, second []T, fn Comparer) []T 
 func Excepts(first, second any, fn Comparer) any 
 func Intersects(first any, second any, fn Comparer) any 
 func Union(first, second any, fn Comparer) any 
@@ -143,6 +144,7 @@ func ConvType[T any, R any](arr []T, newElemTyp R) ([]R, error)
 func AnyToString(arr any) string 
 func SliceToString(arr ...any) string 
 func ToString(arr []any) string 
+func CombineToSMap(keys, values []string) map[string]string 
 // source at arrutil/format.go
 func NewFormatter(arr any) *ArrFormatter 
 func FormatIndent(arr any, indent string) string 
@@ -182,6 +184,8 @@ func StrOrErr(bs []byte, err error) (string, error)
 func SafeString(bs []byte, err error) string 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
+// source at byteutil/check.go
+func IsNumChar(c byte) bool 
 // source at byteutil/encoder.go
 func NewStdEncoder(encFn func(src []byte) []byte, decFn func(src []byte) ([]byte, error)) *StdEncoder 
 // source at byteutil/pool.go
@@ -205,6 +209,7 @@ func WithVersion(version string) func(c *CFlags)
 // source at cflag/optarg.go
 func NewArg(name, desc string, required bool) *FlagArg 
 // source at cflag/util.go
+func IsGoodName(name string) bool 
 func IsZeroValue(opt *flag.Flag, value string) (bool, bool) 
 func AddPrefix(name string) string 
 func AddPrefixes(name string, shorts []string) string 
@@ -495,6 +500,7 @@ func NotIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error
 // source at errorx/errors.go
 func NewR(code int, msg string) ErrorR 
 func Fail(code int, msg string) ErrorR 
+func Failf(code int, tpl string, v ...any) ErrorR 
 func Suc(msg string) ErrorR 
 // source at errorx/errorx.go
 func New(msg string) error 
@@ -762,6 +768,7 @@ func HasAllKeys(mp any, keys ...any) (ok bool, noKey any)
 // source at maputil/convert.go
 func KeyToLower(src map[string]string) map[string]string 
 func ToStringMap(src map[string]any) map[string]string 
+func CombineToSMap(keys, values []string) SMap 
 func HTTPQueryString(data map[string]any) string 
 func ToString(mp map[string]any) string 
 func ToString2(mp any) string 
@@ -975,6 +982,7 @@ func ParseTags(st any, tagNames []string) (map[string]maputil.SMap, error)
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error) 
 func NewTagParser(tagNames ...string) *TagParser 
 func ParseTagValueDefault(field, tagVal string) (mp maputil.SMap, err error) 
+func ParseTagValueQuick(tagVal string, defines []string) maputil.SMap 
 func ParseTagValueDefine(sep string, defines []string) TagValFunc 
 func ParseTagValueNamed(field, tagVal string, keys ...string) (mp maputil.SMap, err error) 
 // source at structs/value.go
@@ -990,15 +998,15 @@ func NewValue(val any) *Value
 func NewBuffer() *Buffer 
 func NewByteChanPool(maxSize, width, capWidth int) *ByteChanPool 
 // source at strutil/check.go
-func NoCaseEq(s, t string) bool 
 func IsNumChar(c byte) bool 
 func IsNumeric(s string) bool 
 func IsAlphabet(char uint8) bool 
 func IsAlphaNum(c uint8) bool 
 func StrPos(s, sub string) int 
 func BytePos(s string, bt byte) int 
-func IEqual(s1 string, s2 string) bool 
-func IContains(s string, sub string) bool 
+func IEqual(s1, s2 string) bool 
+func NoCaseEq(s, t string) bool 
+func IContains(s, sub string) bool 
 func ContainsOne(s string, subs []string) bool 
 func HasOneSub(s string, subs []string) bool 
 func ContainsAll(s string, subs []string) bool 
@@ -1021,6 +1029,8 @@ func IsAllEmpty(ss ...string) bool
 func IsVersion(s string) bool 
 func Compare(s1, s2, op string) bool 
 func VersionCompare(v1, v2, op string) bool 
+func QuickMatch(pattern, s string) bool 
+func GlobMatch(pattern, s string) bool 
 // source at strutil/convert.go
 func Quote(s string) string 
 func Unquote(s string) string 
@@ -1031,6 +1041,7 @@ func Implode(sep string, ss ...string) string
 func String(val any) (string, error) 
 func ToString(val any) (string, error) 
 func QuietString(in any) string 
+func SafeString(in any) string 
 func MustString(in any) string 
 func StringOrErr(val any) (string, error) 
 func AnyToString(val any, defaultAsErr bool) (str string, err error) 
@@ -1085,6 +1096,9 @@ func B64EncodeBytes(src []byte) []byte
 func B64Decode(str string) string 
 func B64DecodeBytes(str string) []byte 
 func Encoding(base int, typ BaseType) BaseEncoder 
+// source at strutil/ext.go
+func NewComparator(src, dst string) *SimilarComparator 
+func Similarity(s, t string, rate float32) (float32, bool) 
 // source at strutil/filter.go
 func Trim(s string, cutSet ...string) string 
 func Ltrim(s string, cutSet ...string) string 
@@ -1153,9 +1167,6 @@ func Utf8Split(s string, w int) []string
 func TextWrap(s string, w int) string 
 func WidthWrap(s string, w int) string 
 func WordWrap(s string, w int) string 
-// source at strutil/similar_find.go
-func NewComparator(src, dst string) *SimilarComparator 
-func Similarity(s, t string, rate float32) (float32, bool) 
 // source at strutil/split.go
 func Cut(s, sep string) (before string, after string, found bool) 
 func QuietCut(s, sep string) (before string, after string) 
@@ -1220,6 +1231,7 @@ func OsGoInfo() (*GoInfo, error)
 func Workdir() string 
 func BinDir() string 
 func BinFile() string 
+func Open(fileOrUrl string) error 
 // source at sysutil/sysutil_nonwin.go
 func IsWin() bool 
 func IsWindows() bool 
