@@ -4,6 +4,7 @@ package sysutil
 import (
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // Workdir get
@@ -25,5 +26,19 @@ func BinFile() string {
 
 // Open file or url address
 func Open(fileOrUrl string) error {
-	return OpenBrowser(fileOrUrl)
+	return OpenURL(fileOrUrl)
+}
+
+// OpenBrowser file or url address
+func OpenBrowser(fileOrUrl string) error {
+	return OpenURL(fileOrUrl)
+}
+
+// OpenFile opens new browser window for the file path.
+func OpenFile(path string) error {
+	fpath, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+	return OpenURL("file://" + fpath)
 }
