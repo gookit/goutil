@@ -8,7 +8,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/internal/comfunc"
@@ -19,7 +18,8 @@ type Cmd struct {
 	*exec.Cmd
 	// Name of the command
 	Name string
-	// inited bool
+	// DryRun if True, not real execute command
+	DryRun bool
 
 	// BeforeRun hook
 	BeforeRun func(c *Cmd)
@@ -55,11 +55,6 @@ func CmdWithCtx(ctx context.Context, bin string, args ...string) *Cmd {
 	}
 }
 
-// PrintCmdline on before exec
-func PrintCmdline(c *Cmd) {
-	color.Yellowln(">", c.Cmdline())
-}
-
 // -------------------------------------------------
 // config the command
 // -------------------------------------------------
@@ -67,6 +62,18 @@ func PrintCmdline(c *Cmd) {
 // Config the command
 func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
 	fn(c)
+	return c
+}
+
+// WithDryRun on exec command
+func (c *Cmd) WithDryRun(dryRun bool) *Cmd {
+	c.DryRun = dryRun
+	return c
+}
+
+// PrintCmdline on exec command
+func (c *Cmd) PrintCmdline() *Cmd {
+	c.BeforeRun = PrintCmdline
 	return c
 }
 
@@ -99,7 +106,7 @@ func (c *Cmd) lookPath(name string) {
 			c.Path = lp
 		}
 		if err != nil {
-			goutil.Panicf("look %q path error: %s", name, err.Error())
+			goutil.Panicf("cmdr: look %q path error: %v", name, err)
 		}
 	}
 }
@@ -116,8 +123,8 @@ func (c *Cmd) WithWorkDir(dir string) *Cmd {
 	return c
 }
 
-// WorkDirOnNot set, returns the current object
-func (c *Cmd) WorkDirOnNot(dir string) *Cmd {
+// WorkDirOnNE set workdir on input is not empty
+func (c *Cmd) WorkDirOnNE(dir string) *Cmd {
 	if c.Dir == "" {
 		c.Dir = dir
 	}
@@ -327,6 +334,10 @@ func (c *Cmd) Output() (string, error) {
 		c.BeforeRun(c)
 	}
 
+	if c.DryRun {
+		return "DRY-RUN: ok", nil
+	}
+
 	output, err := c.Cmd.Output()
 
 	if c.AfterRun != nil {
@@ -339,6 +350,10 @@ func (c *Cmd) Output() (string, error) {
 func (c *Cmd) CombinedOutput() (string, error) {
 	if c.BeforeRun != nil {
 		c.BeforeRun(c)
+	}
+
+	if c.DryRun {
+		return "DRY-RUN: ok", nil
 	}
 
 	output, err := c.Cmd.CombinedOutput()
@@ -358,14 +373,17 @@ func (c *Cmd) MustRun() {
 
 // FlushRun runs command and flush output to stdout
 func (c *Cmd) FlushRun() error {
-	c.ToOSStdoutStderr()
-	return c.Run()
+	return c.ToOSStdoutStderr().Run()
 }
 
 // Run runs command
 func (c *Cmd) Run() error {
 	if c.BeforeRun != nil {
 		c.BeforeRun(c)
+	}
+
+	if c.DryRun {
+		return nil
 	}
 
 	// do running
@@ -375,12 +393,12 @@ func (c *Cmd) Run() error {
 		c.AfterRun(c, err)
 	}
 	return err
-
-	// if IsWindows() {
-	// 	return c.Spawn()
-	// }
-	// return c.Exec()
 }
+
+// if IsWindows() {
+// 	return c.Spawn()
+// }
+// return c.Exec()
 
 // Spawn runs command with spawn(3)
 // func (c *Cmd) Spawn() error {

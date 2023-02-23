@@ -5,6 +5,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"runtime"
 
 	"github.com/gookit/goutil/internal/comfunc"
 )
@@ -46,6 +47,9 @@ func ExpandPath(pathStr string) string {
 
 // Realpath returns the shortest path name equivalent to path by purely lexical processing.
 func Realpath(pathStr string) string {
+	if runtime.GOOS == "windows" {
+		return filepath.Clean(pathStr)
+	}
 	return path.Clean(pathStr)
 }
 

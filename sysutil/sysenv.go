@@ -118,6 +118,15 @@ func HasExecutable(binName string) bool {
 	return err == nil
 }
 
+// Getenv get ENV value by key name, can with default value
+func Getenv(name string, def ...string) string {
+	val := os.Getenv(name)
+	if val == "" && len(def) > 0 {
+		val = def[0]
+	}
+	return val
+}
+
 // Environ like os.Environ, but will returns key-value map[string]string data.
 func Environ() map[string]string {
 	return comfunc.Environ()
