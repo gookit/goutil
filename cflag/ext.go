@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/strutil/textutil"
@@ -71,6 +72,11 @@ type EnumString struct {
 	enum []string
 }
 
+// NewEnumString instance
+func NewEnumString(enum ...string) EnumString {
+	return EnumString{enum: enum}
+}
+
 // String to string
 func (s *EnumString) String() string {
 	return s.val
@@ -79,6 +85,12 @@ func (s *EnumString) String() string {
 // SetEnum values
 func (s *EnumString) SetEnum(enum []string) {
 	s.enum = enum
+}
+
+// WithEnum values
+func (s *EnumString) WithEnum(enum []string) *EnumString {
+	s.enum = enum
+	return s
 }
 
 // Set new value, will check value is right
@@ -136,6 +148,52 @@ func (s *String) Ints(sep string) []int {
 	return strutil.Ints(string(*s), sep)
 }
 
+// KVString The kv-string flag, allow input multi.
+// Implemented the flag.Value interface.
+//
+// Example:
+//
+//	--var name=inhere => string map {name:inhere}
+//	--var name=inhere --var age=234 => string map {name:inhere, age:234}
+type KVString struct {
+	maputil.SMap
+	Sep string
+}
+
+// NewKVString instance
+func NewKVString() KVString {
+	return KVString{
+		Sep:  comdef.EqualStr,
+		SMap: make(maputil.SMap),
+	}
+}
+
+// String to string
+func (s *KVString) String() string {
+	return s.SMap.String()
+}
+
+// SetData value
+func (s *KVString) SetData(mp map[string]string) {
+	s.SMap = mp
+}
+
+// Data map get
+func (s *KVString) Data() maputil.SMap {
+	return s.SMap
+}
+
+// Set new value, will check value is right
+func (s *KVString) Set(value string) error {
+	if value != "" {
+		key, val := strutil.SplitKV(value, s.Sep)
+		if key != "" {
+			s.SMap[key] = val
+		}
+	}
+	return nil
+}
+
 // ConfString The config-string flag, INI format, like nginx-config.
 // Implemented the flag.Value interface.
 //
@@ -166,9 +224,8 @@ func (s *ConfString) Data() maputil.SMap {
 func (s *ConfString) Set(value string) error {
 	if value != "" {
 		s.val = value
-
-		// parse to map
 		mp, err := textutil.ParseInlineINI(value)
+
 		if err != nil {
 			return err
 		}

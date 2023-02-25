@@ -30,8 +30,13 @@ func NewParser(line string) *LineParser {
 // ParseLine input command line text. alias of the StringToOSArgs()
 func ParseLine(line string) []string {
 	p := &LineParser{Line: line}
-
 	return p.Parse()
+}
+
+// WithParseEnv with parse ENV var
+func (p *LineParser) WithParseEnv() *LineParser {
+	p.ParseEnv = true
+	return p
 }
 
 // AlsoEnvParse input command line text to os.Args, will parse ENV var
