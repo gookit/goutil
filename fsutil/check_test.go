@@ -11,7 +11,11 @@ import (
 //goland:noinspection GoBoolExpressions
 func TestFsUtil_common(t *testing.T) {
 	assert.Eq(t, "", fsutil.FileExt("testdata/testjpg"))
+	assert.Eq(t, "", fsutil.Suffix("testdata/testjpg"))
+	assert.Eq(t, "", fsutil.Extname("testdata/testjpg"))
+	assert.Eq(t, ".jpg", fsutil.FileExt("testdata/test.jpg"))
 	assert.Eq(t, ".jpg", fsutil.Suffix("testdata/test.jpg"))
+	assert.Eq(t, "jpg", fsutil.Extname("testdata/test.jpg"))
 
 	// IsZipFile
 	assert.False(t, fsutil.IsZipFile("testdata/test.jpg"))

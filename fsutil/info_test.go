@@ -1,7 +1,7 @@
 package fsutil_test
 
 import (
-	"os"
+	"io/fs"
 	"strings"
 	"testing"
 
@@ -29,7 +29,7 @@ func TestFindInDir(t *testing.T) {
 	assert.NoErr(t, err)
 
 	files := make([]string, 0, 8)
-	err = fsutil.FindInDir("testdata", func(fPath string, fi os.FileInfo) error {
+	err = fsutil.FindInDir("testdata", func(fPath string, de fs.DirEntry) error {
 		files = append(files, fPath)
 		return nil
 	})
@@ -39,16 +39,16 @@ func TestFindInDir(t *testing.T) {
 	assert.True(t, len(files) > 0)
 
 	files = files[:0]
-	err = fsutil.FindInDir("testdata", func(fPath string, fi os.FileInfo) error {
+	err = fsutil.FindInDir("testdata", func(fPath string, de fs.DirEntry) error {
 		files = append(files, fPath)
 		return nil
-	}, func(fPath string, fi os.FileInfo) bool {
-		return !strings.HasPrefix(fi.Name(), ".")
+	}, func(fPath string, de fs.DirEntry) bool {
+		return !strings.HasPrefix(de.Name(), ".")
 	})
 	assert.NoErr(t, err)
 	assert.True(t, len(files) > 0)
 
-	err = fsutil.FindInDir("testdata", func(fPath string, fi os.FileInfo) error {
+	err = fsutil.FindInDir("testdata", func(fPath string, de fs.DirEntry) error {
 		return errorx.Raw("handle error")
 	})
 	assert.Err(t, err)
