@@ -2,6 +2,7 @@ package sysutil_test
 
 import (
 	"os"
+	"runtime"
 	"testing"
 
 	"github.com/gookit/goutil/sysutil"
@@ -14,7 +15,10 @@ func TestBasic_usage(t *testing.T) {
 }
 
 func TestProcessExists(t *testing.T) {
-	pid := os.Getpid()
-
-	assert.True(t, sysutil.ProcessExists(pid))
+	if runtime.GOOS != "windows" {
+		pid := os.Getpid()
+		assert.True(t, sysutil.ProcessExists(pid))
+	} else {
+		t.Skip("on Windows")
+	}
 }
