@@ -2,6 +2,7 @@ package fsutil_test
 
 import (
 	"bytes"
+	"runtime"
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
@@ -37,7 +38,12 @@ func TestTempDir(t *testing.T) {
 }
 
 func TestRealpath(t *testing.T) {
-	assert.Eq(t, "/path/to/dir", fsutil.Realpath("/path/to/some/../dir"))
+	inPath := "/path/to/some/../dir"
+	if runtime.GOOS == "windows" {
+		assert.Eq(t, "\\path\\to\\dir", fsutil.Realpath(inPath))
+	} else {
+		assert.Eq(t, "/path/to/dir", fsutil.Realpath(inPath))
+	}
 
 	dir, file := fsutil.SplitPath("/path/to/dir/some.txt")
 	assert.Eq(t, "/path/to/dir/", dir)
