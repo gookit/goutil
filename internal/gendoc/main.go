@@ -24,8 +24,6 @@ var (
 	hidden = []string{
 		"netutil",
 		"comdef",
-		"common",
-		"numbers",
 		"internal",
 	}
 	nameMap = map[string]string{
@@ -193,6 +191,12 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		if strings.HasSuffix(filename, "_windows.go") {
 			continue
 		}
+		if strings.HasSuffix(filename, "_darwin.go") {
+			continue
+		}
+		// if strings.HasSuffix(filename, "_linux.go") {
+		// 	continue
+		// }
 
 		idx := strings.IndexRune(filename, '/')
 		dir := filename[:idx] // sub pkg name.

@@ -168,16 +168,6 @@ func NewKVString() KVString {
 	}
 }
 
-// String to string
-func (s *KVString) String() string {
-	return s.SMap.String()
-}
-
-// SetData value
-func (s *KVString) SetData(mp map[string]string) {
-	s.SMap = mp
-}
-
 // Data map get
 func (s *KVString) Data() maputil.SMap {
 	return s.SMap

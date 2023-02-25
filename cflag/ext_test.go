@@ -34,3 +34,16 @@ func TestConfString_Set(t *testing.T) {
 	assert.Eq(t, "inhere", cs.Str("name"))
 	assert.Eq(t, 123, cs.Int("age"))
 }
+
+func TestKVString_Set(t *testing.T) {
+	kv := cflag.NewKVString()
+	assert.Empty(t, kv.Data())
+
+	assert.NoErr(t, kv.Set("age=234"))
+	assert.NotEmpty(t, kv.Data())
+	assert.Eq(t, 234, kv.Int("age"))
+	assert.Eq(t, "{age:234}", kv.String())
+
+	assert.NoErr(t, kv.Set("name=inhere"))
+	assert.Eq(t, "inhere", kv.Str("name"))
+}

@@ -1252,13 +1252,6 @@ func IsMac() bool
 func IsDarwin() bool 
 func IsLinux() bool 
 func OpenURL(URL string) error 
-// source at sysutil/sysutil_linux.go
-func IsWin() bool 
-func IsWindows() bool 
-func IsMac() bool 
-func IsDarwin() bool 
-func IsLinux() bool 
-func OpenURL(URL string) error 
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error 
 func ProcessExists(pid int) bool 
