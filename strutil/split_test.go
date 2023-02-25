@@ -36,7 +36,7 @@ func TestCut(t *testing.T) {
 	assert.Eq(t, "hi", b)
 	assert.Eq(t, "inhere", a)
 
-	b, a = strutil.SplitKV(" name = inhere \n", ",")
+	b, a = strutil.SplitKV(" name = inhere \n", "=")
 	assert.Eq(t, "name", b)
 	assert.Eq(t, "inhere", a)
 
