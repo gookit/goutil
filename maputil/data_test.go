@@ -65,6 +65,16 @@ func TestData_SetByPath(t *testing.T) {
 	assert.NoErr(t, err)
 	// dump.P(mp)
 	assert.Eq(t, "v2", mp.Get("k5.b"))
+
+	mp.Load(map[string]any{"k2": "val2", "k3": "val3"})
+	assert.Eq(t, "val2", mp.Str("k2"))
+	assert.Eq(t, "val3", mp.Str("k3"))
+
+	// sub
+	assert.Nil(t, mp.Sub("not-exists"))
+	sub := mp.Sub("k5")
+	assert.Eq(t, "v0", sub.Get("a"))
+	assert.Eq(t, "v2", sub.Get("b"))
 }
 
 func TestData_SetByPath_case2(t *testing.T) {
