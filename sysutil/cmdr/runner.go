@@ -5,6 +5,7 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/cliutil/cmdline"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
@@ -151,26 +152,32 @@ func (r *Runner) AddCmd(cmds ...*Cmd) *Runner {
 
 // GitCmd quick a git command task
 func (r *Runner) GitCmd(subCmd string, args ...string) *Runner {
-	r.AddTask(&Task{
+	return r.AddTask(&Task{
 		Cmd: NewGitCmd(subCmd, args...),
 	})
-	return r
 }
 
 // CmdWithArgs a command task
 func (r *Runner) CmdWithArgs(cmdName string, args ...string) *Runner {
-	r.AddTask(&Task{
+	return r.AddTask(&Task{
 		Cmd: NewCmd(cmdName, args...),
 	})
-	return r
 }
 
 // CmdWithAnys a command task
 func (r *Runner) CmdWithAnys(cmdName string, args ...any) *Runner {
-	r.AddTask(&Task{
+	return r.AddTask(&Task{
 		Cmd: NewCmd(cmdName, arrutil.SliceToStrings(args)...),
 	})
-	return r
+}
+
+// AddCmdline as a command task
+func (r *Runner) AddCmdline(line string) *Runner {
+	bin, args := cmdline.NewParser(line).BinAndArgs()
+
+	return r.AddTask(&Task{
+		Cmd: NewCmd(bin, args...),
+	})
 }
 
 // Run all tasks

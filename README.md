@@ -206,6 +206,9 @@ func New(fns ...func(c *CFlags)) *CFlags
 func NewEmpty(fns ...func(c *CFlags)) *CFlags 
 func WithDesc(desc string) func(c *CFlags) 
 func WithVersion(version string) func(c *CFlags) 
+// source at cflag/ext.go
+func NewEnumString(enum ...string) EnumString 
+func NewKVString() KVString 
 // source at cflag/optarg.go
 func NewArg(name, desc string, required bool) *FlagArg 
 // source at cflag/util.go
@@ -654,13 +657,15 @@ func Dir(fpath string) string
 func PathName(fpath string) string 
 func Name(fpath string) string 
 func FileExt(fpath string) string 
+func Extname(fpath string) string 
 func Suffix(fpath string) string 
 func Expand(pathStr string) string 
 func ExpandPath(pathStr string) string 
-func Realpath(pathStr string) string 
 func SplitPath(pathStr string) (dir, name string) 
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
+// source at fsutil/info_nonwin.go
+func Realpath(pathStr string) string 
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error 
 func MkDirs(perm os.FileMode, dirPaths ...string) error 
@@ -784,6 +789,8 @@ func GetByPath(path string, mp map[string]any) (val any, ok bool)
 func Keys(mp any) (keys []string) 
 func Values(mp any) (values []any) 
 // source at maputil/maputil.go
+func SimpleMerge(src, dst map[string]any) map[string]any 
+func DeepMerge(src, dst map[string]any, deep int) map[string]any 
 func MergeSMap(src, dst map[string]string, ignoreCase bool) map[string]string 
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string 
 func MakeByPath(path string, val any) (mp map[string]any) 
@@ -1007,6 +1014,7 @@ func BytePos(s string, bt byte) int
 func IEqual(s1, s2 string) bool 
 func NoCaseEq(s, t string) bool 
 func IContains(s, sub string) bool 
+func ContainsByte(s string, c byte) bool 
 func ContainsOne(s string, subs []string) bool 
 func HasOneSub(s string, subs []string) bool 
 func ContainsAll(s string, subs []string) bool 
@@ -1172,6 +1180,7 @@ func Cut(s, sep string) (before string, after string, found bool)
 func QuietCut(s, sep string) (before string, after string) 
 func MustCut(s, sep string) (before string, after string) 
 func TrimCut(s, sep string) (string, string) 
+func SplitKV(s, sep string) (string, string) 
 func SplitValid(s, sep string) (ss []string) 
 func Split(s, sep string) (ss []string) 
 func SplitNValid(s, sep string, n int) (ss []string) 
@@ -1220,6 +1229,7 @@ func IsShellSpecialVar(c uint8) bool
 func FindExecutable(binName string) (string, error) 
 func Executable(binName string) (string, error) 
 func HasExecutable(binName string) bool 
+func Getenv(name string, def ...string) string 
 func Environ() map[string]string 
 func EnvPaths() []string 
 func SearchPath(keywords string, limit int) []string 
@@ -1232,15 +1242,25 @@ func Workdir() string
 func BinDir() string 
 func BinFile() string 
 func Open(fileOrUrl string) error 
-// source at sysutil/sysutil_nonwin.go
+func OpenBrowser(fileOrUrl string) error 
+func OpenFile(path string) error 
+// source at sysutil/sysutil_darwin.go
 func IsWin() bool 
 func IsWindows() bool 
 func IsMac() bool 
 func IsDarwin() bool 
 func IsLinux() bool 
+func OpenURL(URL string) error 
+// source at sysutil/sysutil_linux.go
+func IsWin() bool 
+func IsWindows() bool 
+func IsMac() bool 
+func IsDarwin() bool 
+func IsLinux() bool 
+func OpenURL(URL string) error 
+// source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error 
 func ProcessExists(pid int) bool 
-func OpenBrowser(URL string) error 
 // source at sysutil/user.go
 func MustFindUser(uname string) *user.User 
 func LoginUser() *user.User 
