@@ -55,6 +55,11 @@ func IContains(s, sub string) bool {
 	return strings.Contains(strings.ToLower(s), strings.ToLower(sub))
 }
 
+// ContainsByte in given string.
+func ContainsByte(s string, c byte) bool {
+	return strings.IndexByte(s, c) >= 0
+}
+
 // ContainsOne substr(s) in the given string. alias of HasOneSub()
 func ContainsOne(s string, subs []string) bool { return HasOneSub(s, subs) }
 

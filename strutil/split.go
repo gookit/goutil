@@ -36,6 +36,9 @@ func TrimCut(s, sep string) (string, string) {
 	return strings.TrimSpace(before), strings.TrimSpace(after)
 }
 
+// SplitKV split string to key and value.
+func SplitKV(s, sep string) (string, string) { return TrimCut(s, sep) }
+
 // SplitValid string to slice. will trim each item and filter empty string node.
 func SplitValid(s, sep string) (ss []string) { return Split(s, sep) }
 
