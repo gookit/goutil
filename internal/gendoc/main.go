@@ -43,10 +43,10 @@ var (
 		"std":     "standard",
 	}
 
-	allowLang = map[string]int{
-		"en":    1,
-		"zh-CN": 1,
-	}
+	// allowLang = map[string]int{
+	// 	"en":    1,
+	// 	"zh-CN": 1,
+	// }
 )
 
 type genOptsSt struct {
@@ -62,7 +62,6 @@ func (o genOptsSt) filePattern() string {
 	if baseDir == "/" || baseDir == "./" {
 		return baseDir + "*/*.go"
 	}
-
 	return strings.TrimRight(baseDir, "/") + "/*/*.go"
 }
 
@@ -111,6 +110,7 @@ func main() {
 		"./internal/template",
 		"template file dir, use for generate, will inject metadata to the template.\nsee ./internal/template/*.tpl;;t",
 	)
+	cmd.StringVar(&genOpts.template, "template", "", "the template file")
 
 	cmd.Func = handle
 	cmd.Example = `

@@ -52,7 +52,7 @@ type RunFn func(ctx *structs.Data) error
 // QuickRun struct
 type QuickRun struct {
 	ctx *structs.Data
-	err error
+	// err error
 	fns []RunFn
 }
 

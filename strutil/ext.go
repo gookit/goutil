@@ -29,6 +29,7 @@ func Similarity(s, t string, rate float32) (float32, bool) {
 }
 
 // Similar by minDifferRate
+//
 // Usage:
 //
 //	c := NewComparator("hello", "he")
@@ -101,6 +102,7 @@ func (b *Builder) WriteByteNE(c byte) {
 	_ = b.WriteByte(c)
 }
 
+// WriteString to builder
 func (b *Builder) WriteString(s string) {
 	_, _ = b.Builder.WriteString(s)
 }
