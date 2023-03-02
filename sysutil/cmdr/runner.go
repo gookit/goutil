@@ -86,8 +86,11 @@ type Runner struct {
 	Errs errorx.ErrMap
 
 	// TODO Concurrent run
-	// common workdir
-	// wordDir string
+
+	// Workdir common workdir
+	Workdir string
+	// EnvMap will append to task.Cmd on run
+	EnvMap map[string]string
 
 	// Params for add custom params
 	Params maputil.Map
@@ -211,14 +214,23 @@ func (r *Runner) Run() error {
 
 // RunTask command
 func (r *Runner) RunTask(task *Task) (goon bool) {
+	if len(r.EnvMap) > 0 {
+		task.Cmd.AppendEnv(r.EnvMap)
+	}
+
 	if r.OutToStd && !task.Cmd.HasStdout() {
 		task.Cmd.ToOSStdoutStderr()
+	}
+
+	// common workdir
+	if r.Workdir != "" && task.Cmd.Dir == "" {
+		task.Cmd.WithWorkDir(r.Workdir)
 	}
 
 	// do running
 	if err := task.Run(); err != nil {
 		r.Errs[task.ID] = err
-		color.Errorf("Task #%d run error: %s\n", task.Index()+1, err)
+		color.Errorf("Task#%d run error: %s\n", task.Index()+1, err)
 
 		// not ignore error, stop.
 		if !r.IgnoreErr {
