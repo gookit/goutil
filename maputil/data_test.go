@@ -11,11 +11,12 @@ import (
 
 func TestData_usage(t *testing.T) {
 	mp := maputil.Data{
-		"k1": 23,
-		"k2": "ab",
-		"k3": "true",
-		"k4": false,
-		"k5": map[string]string{"a": "b"},
+		"k1":    23,
+		"k2":    "ab",
+		"k3":    "true",
+		"k4":    false,
+		"k5":    map[string]string{"a": "b"},
+		"anyMp": map[string]any{"b": 23},
 	}
 
 	assert.True(t, mp.Has("k1"))
@@ -23,6 +24,8 @@ func TestData_usage(t *testing.T) {
 	assert.False(t, mp.Bool("k4"))
 	assert.False(t, mp.IsEmtpy())
 	assert.Eq(t, 23, mp.Get("k1"))
+	assert.Eq(t, "b", mp.Get("k5.a"))
+	assert.Eq(t, 23, mp.Get("anyMp.b"))
 
 	// int
 	assert.Eq(t, 23, mp.Int("k1"))
@@ -52,6 +55,7 @@ func TestData_usage(t *testing.T) {
 
 	assert.Nil(t, mp.StringMap("notExists"))
 	assert.Eq(t, map[string]string{"a": "b"}, mp.StringMap("k5"))
+	assert.Eq(t, map[string]string{"b": "23"}, mp.StringMap("anyMp"))
 }
 
 func TestData_SetByPath(t *testing.T) {
@@ -60,6 +64,8 @@ func TestData_SetByPath(t *testing.T) {
 		"k5": map[string]any{"a": "v0"},
 	}
 	assert.Nil(t, mp.Get("k5.b"))
+	assert.Len(t, mp.Keys(), 2)
+	assert.NotEmpty(t, mp.ToStringMap())
 
 	err := mp.SetByPath("k5.b", "v2")
 	assert.NoErr(t, err)

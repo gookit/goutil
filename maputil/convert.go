@@ -21,12 +21,11 @@ func KeyToLower(src map[string]string) map[string]string {
 
 // ToStringMap convert map[string]any to map[string]string
 func ToStringMap(src map[string]any) map[string]string {
-	newMp := make(map[string]string, len(src))
+	strMp := make(map[string]string, len(src))
 	for k, v := range src {
-		newMp[k] = strutil.MustString(v)
+		strMp[k] = strutil.MustString(v)
 	}
-
-	return newMp
+	return strMp
 }
 
 // CombineToSMap combine two string-slice to SMap(map[string]string)
