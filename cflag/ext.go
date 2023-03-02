@@ -1,8 +1,10 @@
 package cflag
 
 import (
+	"flag"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/comdef"
@@ -11,12 +13,76 @@ import (
 	"github.com/gookit/goutil/strutil/textutil"
 )
 
+// RepeatableFlag interface.
+type RepeatableFlag interface {
+	flag.Value
+	// IsRepeatable mark option flag can be set multi times
+	IsRepeatable() bool
+}
+
 /*************************************************************************
  * options: some special flag vars
  * - implemented flag.Value interface
  *************************************************************************/
 
-// Ints The int flag list, implemented flag.Value interface
+// IntValue int, allow limit min and max value TODO
+type IntValue struct {
+	val string
+	// validate
+	Min, Max int
+}
+
+// IntsString The ints-string flag. eg: --get 1,2,3
+//
+// Implemented the flag.Value interface
+type IntsString struct {
+	val  string // input
+	ints []int
+	// value and size validate
+	ValueFn func(val int) error
+	SizeFn  func(ln int) error
+}
+
+// String input value to string
+func (o *IntsString) String() string {
+	return o.val
+}
+
+// Get value
+func (o *IntsString) Get() any {
+	return o.ints
+}
+
+// Ints value
+func (o *IntsString) Ints() []int {
+	return o.ints
+}
+
+// Set new value
+func (o *IntsString) Set(value string) error {
+	intVal, err := strconv.Atoi(value)
+	if err != nil {
+		return err
+	}
+
+	if o.ValueFn != nil {
+		if err = o.ValueFn(intVal); err != nil {
+			return err
+		}
+	}
+	if o.SizeFn != nil {
+		if err = o.SizeFn(len(o.ints) + 1); err != nil {
+			return err
+		}
+	}
+
+	o.ints = append(o.ints, intVal)
+	return nil
+}
+
+// Ints The int flag list, repeatable
+//
+// implemented flag.Value interface
 type Ints []int
 
 // String to string
@@ -30,16 +96,22 @@ func (s *Ints) Set(value string) error {
 	if err == nil {
 		*s = append(*s, intVal)
 	}
-
 	return err
 }
 
-// Strings The string flag list, implemented flag.Value interface
+// IsRepeatable on input
+func (s *Ints) IsRepeatable() bool {
+	return true
+}
+
+// Strings The string flag list, repeatable
+//
+// implemented flag.Value interface
 type Strings []string
 
-// String to string
+// String input value to string
 func (s *Strings) String() string {
-	return fmt.Sprintf("%v", *s)
+	return strings.Join(*s, ",")
 }
 
 // Set new value
@@ -48,10 +120,16 @@ func (s *Strings) Set(value string) error {
 	return nil
 }
 
-// Booleans The bool flag list, implemented flag.Value interface
+// IsRepeatable on input
+func (s *Strings) IsRepeatable() bool {
+	return true
+}
+
+// Booleans The bool flag list, repeatable
+// implemented flag.Value interface
 type Booleans []bool
 
-// String to string
+// String input value to string
 func (s *Booleans) String() string {
 	return fmt.Sprintf("%v", *s)
 }
@@ -62,11 +140,16 @@ func (s *Booleans) Set(value string) error {
 	if err == nil {
 		*s = append(*s, boolVal)
 	}
-
 	return err
 }
 
-// EnumString The string flag list, implemented flag.Value interface
+// IsRepeatable on input
+func (s *Booleans) IsRepeatable() bool {
+	return true
+}
+
+// EnumString The string flag list.
+// implemented flag.Value interface
 type EnumString struct {
 	val  string
 	enum []string
@@ -77,7 +160,12 @@ func NewEnumString(enum ...string) EnumString {
 	return EnumString{enum: enum}
 }
 
-// String to string
+// Get value
+func (s *EnumString) Get() any {
+	return s.val
+}
+
+// String input value to string
 func (s *EnumString) String() string {
 	return s.val
 }
@@ -93,14 +181,24 @@ func (s *EnumString) WithEnum(enum []string) *EnumString {
 	return s
 }
 
+// EnumString to string
+func (s *EnumString) EnumString() string {
+	return strings.Join(s.enum, ",")
+}
+
 // Set new value, will check value is right
 func (s *EnumString) Set(value string) error {
-	s.val = value
-
 	if !arrutil.InStrings(value, s.enum) {
 		return fmt.Errorf("value must one of the: %v", s.enum)
 	}
+
+	s.val = value
 	return nil
+}
+
+// Enum to string
+func (s *EnumString) Enum() []string {
+	return s.enum
 }
 
 // String a special string
@@ -122,13 +220,18 @@ func (s *EnumString) Set(value string) error {
 //	names.Ints(",") -> []int{23,34,56}
 type String string
 
+// Get value
+func (s *String) Get() any {
+	return s
+}
+
 // Set value
 func (s *String) Set(val string) error {
 	*s = String(val)
 	return nil
 }
 
-// String to string
+// String input value to string
 func (s *String) String() string {
 	return string(*s)
 }
@@ -149,6 +252,7 @@ func (s *String) Ints(sep string) []int {
 }
 
 // KVString The kv-string flag, allow input multi.
+//
 // Implemented the flag.Value interface.
 //
 // Example:
@@ -168,6 +272,11 @@ func NewKVString() KVString {
 	}
 }
 
+// Get value
+func (s *KVString) Get() any {
+	return s.SMap
+}
+
 // Data map get
 func (s *KVString) Data() maputil.SMap {
 	return s.SMap
@@ -184,7 +293,13 @@ func (s *KVString) Set(value string) error {
 	return nil
 }
 
+// IsRepeatable on input
+func (s *KVString) IsRepeatable() bool {
+	return true
+}
+
 // ConfString The config-string flag, INI format, like nginx-config.
+//
 // Implemented the flag.Value interface.
 //
 // Example:
@@ -207,6 +322,11 @@ func (s *ConfString) SetData(mp map[string]string) {
 
 // Data map get
 func (s *ConfString) Data() maputil.SMap {
+	return s.SMap
+}
+
+// Get value
+func (s *ConfString) Get() any {
 	return s.SMap
 }
 
