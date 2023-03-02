@@ -35,25 +35,42 @@ func (r *VarReplacer) WithFormat(format string) *VarReplacer {
 func (r *VarReplacer) Init() *VarReplacer {
 	if !r.init {
 		r.lLen, r.rLen = len(r.Left), len(r.Right)
-		r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s.-]+)` + regexp.QuoteMeta(r.Right))
+		if r.Right != "" {
+			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s.-]+)` + regexp.QuoteMeta(r.Right))
+		} else {
+			// no right tag. eg: $name, $user.age
+			// r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w.-]+)`)
+			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `(\w[\w-]*(?:\.[\w-]+)*)`)
+		}
 	}
 
 	return r
 }
 
-// Replace vars in the text contents
+// Replace any-map vars in the text contents
 func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 	if len(tplVars) == 0 || !strings.Contains(s, r.Left) {
 		return s
 	}
-
-	r.Init()
 
 	varMap := make(map[string]string, len(tplVars)*2)
 	maputil.FlatWithFunc(tplVars, func(path string, val reflect.Value) {
 		varMap[path] = strutil.QuietString(val.Interface())
 	})
 
+	return r.Init().doReplace(s, varMap)
+}
+
+// RenderSimple string-map vars in the text contents
+func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
+	if len(varMap) == 0 || !strings.Contains(s, r.Left) {
+		return s
+	}
+	return r.Init().doReplace(s, varMap)
+}
+
+// Replace string-map vars in the text contents
+func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
 	return r.varReg.ReplaceAllStringFunc(s, func(sub string) string {
 		varName := strings.TrimSpace(sub[r.lLen : len(sub)-r.rLen])
 		if val, ok := varMap[varName]; ok {

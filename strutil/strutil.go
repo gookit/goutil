@@ -19,11 +19,11 @@ func OrCond(cond bool, s1, s2 string) string {
 }
 
 // OrElse return s OR nv(new-value) on s is empty
-func OrElse(s, newVal string) string {
+func OrElse(s, orVal string) string {
 	if s != "" {
 		return s
 	}
-	return newVal
+	return orVal
 }
 
 // OrHandle return fn(s) on s is not empty.

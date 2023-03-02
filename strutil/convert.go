@@ -41,6 +41,8 @@ var (
 func Quote(s string) string { return strconv.Quote(s) }
 
 // Unquote remove start and end quotes by single-quote or double-quote
+//
+// tip: strconv.Unquote cannot unquote single-quote
 func Unquote(s string) string {
 	ln := len(s)
 	if ln < 2 {

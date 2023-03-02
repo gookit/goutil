@@ -9,7 +9,6 @@ import (
 )
 
 func TestReplaceVars(t *testing.T) {
-	format := ""
 	tplVars := map[string]any{
 		"name":   "inhere",
 		"key_01": "inhere",
@@ -33,7 +32,7 @@ func TestReplaceVars(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(strutil.JoinAny(" ", "case", i), func(t *testing.T) {
-			if got := textutil.ReplaceVars(tt.tplText, tplVars, format); got != tt.want {
+			if got := textutil.ReplaceVars(tt.tplText, tplVars, ""); got != tt.want {
 				t.Errorf("ReplaceVars() = %v, want = %v", got, tt.want)
 			}
 		})
@@ -41,7 +40,44 @@ func TestReplaceVars(t *testing.T) {
 
 	// custom format
 	assert.Equal(t, "hi inhere", textutil.ReplaceVars("hi {$name}", tplVars, "{$,}"))
+	assert.Equal(t, "hi inhere age is 230", textutil.ReplaceVars("hi $name age is $info.age", tplVars, "$,"))
 	assert.Equal(t, "hi {$name}", textutil.ReplaceVars("hi {$name}", nil, "{$,}"))
+}
+
+func TestRenderSMap(t *testing.T) {
+	tplVars := map[string]string{
+		"name":   "inhere",
+		"age":    "234",
+		"key_01": "inhere",
+		"key-02": "inhere",
+	}
+
+	tests := []struct {
+		tplText string
+		want    string
+	}{
+		{"hi inhere", "hi inhere"},
+		{"hi {{name}}", "hi inhere"},
+		{"hi {{ name}}", "hi inhere"},
+		{"hi {{name }}", "hi inhere"},
+		{"hi {{ name }}", "hi inhere"},
+		{"hi {{ key_01 }}", "hi inhere"},
+		{"hi {{ key-02 }}", "hi inhere"},
+	}
+
+	for i, tt := range tests {
+		t.Run(strutil.JoinAny(" ", "case", i), func(t *testing.T) {
+			if got := textutil.RenderSMap(tt.tplText, tplVars, ""); got != tt.want {
+				t.Errorf("RenderSMap() = %v, want = %v", got, tt.want)
+			}
+		})
+	}
+
+	// custom format
+	assert.Equal(t, "hi inhere", textutil.RenderSMap("hi {$name}", tplVars, "{$,}"))
+	assert.Equal(t, "hi inhere age is 234", textutil.RenderSMap("hi $name age is $age", tplVars, "$,"))
+	assert.Equal(t, "hi inhere age is 234.", textutil.RenderSMap("hi $name age is $age.", tplVars, "$,"))
+	assert.Equal(t, "hi {$name}", textutil.RenderSMap("hi {$name}", nil, "{$,}"))
 }
 
 func TestIsMatchAll(t *testing.T) {

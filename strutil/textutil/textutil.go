@@ -17,6 +17,13 @@ func ReplaceVars(text string, vars map[string]any, format string) string {
 	return NewVarReplacer(format).Replace(text, vars)
 }
 
+// RenderSMap by regex replace given tpl vars.
+//
+// If format is empty, will use {const defaultVarFormat}
+func RenderSMap(text string, vars map[string]string, format string) string {
+	return NewVarReplacer(format).RenderSimple(text, vars)
+}
+
 // IsMatchAll keywords in the give text string.
 //
 // TIP: can use ^ for exclude match.
