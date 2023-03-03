@@ -3,6 +3,8 @@ package fsutil
 import (
 	"io"
 	"os"
+
+	"github.com/gookit/goutil/basefn"
 )
 
 // ************************************************************
@@ -13,14 +15,13 @@ import (
 //
 // data type allow: string, []byte, io.Reader
 //
-// Tip: file flag default is FsCWAFlags
+// Tip: file flag default is FsCWTFlags (override write)
 //
 // Usage:
 //
-//	fsutil.PutContents(filePath, contents, fsutil.FsCWTFlags)
+//	fsutil.PutContents(filePath, contents, fsutil.FsCWAFlags) // append write
 func PutContents(filePath string, data any, fileFlag ...int) (int, error) {
-	// create and open file
-	f, err := QuickOpenFile(filePath, fileFlag...)
+	f, err := QuickOpenFile(filePath, basefn.FirstOr(fileFlag, FsCWTFlags))
 	if err != nil {
 		return 0, err
 	}
@@ -32,17 +33,13 @@ func PutContents(filePath string, data any, fileFlag ...int) (int, error) {
 //
 // data type allow: string, []byte, io.Reader
 //
-// Tip: file flag default is FsCWTFlags
+// Tip: file flag default is FsCWTFlags (override write)
 //
 // Usage:
 //
 //	fsutil.WriteFile(filePath, contents, fsutil.DefaultFilePerm, fsutil.FsCWAFlags)
 func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) error {
-	flag := FsCWTFlags
-	if len(fileFlag) > 0 {
-		flag = fileFlag[0]
-	}
-
+	flag := basefn.FirstOr(fileFlag, FsCWTFlags)
 	f, err := OpenFile(filePath, flag, perm)
 	if err != nil {
 		return err

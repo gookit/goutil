@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -82,4 +83,17 @@ func ReaderMimeType(r io.Reader) (mime string) {
 // JoinPaths elements, alias of filepath.Join()
 func JoinPaths(elem ...string) string {
 	return filepath.Join(elem...)
+}
+
+// SlashPath alias of filepath.ToSlash
+func SlashPath(path string) string {
+	return filepath.ToSlash(path)
+}
+
+// UnixPath like of filepath.ToSlash, but always replace
+func UnixPath(path string) string {
+	if !strings.ContainsRune(path, '\\') {
+		return path
+	}
+	return strings.ReplaceAll(path, "\\", "/")
 }

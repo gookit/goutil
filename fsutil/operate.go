@@ -8,6 +8,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/gookit/goutil/basefn"
 )
 
 // Mkdir alias of os.MkdirAll()
@@ -57,13 +59,6 @@ const (
 	FsRFlags   = os.O_RDONLY                             // read-only
 )
 
-func fsFlagsOr(fileFlags []int, fileFlag int) int {
-	if len(fileFlags) > 0 {
-		return fileFlags[0]
-	}
-	return fileFlag
-}
-
 // OpenFile like os.OpenFile, but will auto create dir.
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	fileDir := path.Dir(filepath)
@@ -80,12 +75,20 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 
 /* TODO MustOpenFile() */
 
-// QuickOpenFile like os.OpenFile, open for write, if not exists, will create it.
-//
-// Tip: file flag default is FsCWAFlags
+// QuickOpenFile like os.OpenFile, open for append write. if not exists, will create it.
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) {
-	flag := fsFlagsOr(fileFlag, FsCWAFlags)
+	flag := basefn.FirstOr(fileFlag, FsCWAFlags)
 	return OpenFile(filepath, flag, DefaultFilePerm)
+}
+
+// OpenAppendFile like os.OpenFile, open for append write. if not exists, will create it.
+func OpenAppendFile(filepath string) (*os.File, error) {
+	return OpenFile(filepath, FsCWAFlags, DefaultFilePerm)
+}
+
+// OpenTruncFile like os.OpenFile, open for override write. if not exists, will create it.
+func OpenTruncFile(filepath string) (*os.File, error) {
+	return OpenFile(filepath, FsCWTFlags, DefaultFilePerm)
 }
 
 // OpenReadFile like os.OpenFile, open file for read contents
@@ -107,11 +110,7 @@ func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*
 		}
 	}
 
-	flag := FsCWTFlags
-	if len(fileFlag) > 0 {
-		flag = fileFlag[0]
-	}
-
+	flag := basefn.FirstOr(fileFlag, FsCWAFlags)
 	return os.OpenFile(fpath, flag, filePerm)
 }
 
@@ -193,7 +192,6 @@ func Unzip(archive, targetDir string) (err error) {
 	}
 
 	for _, file := range reader.File {
-
 		if strings.Contains(file.Name, "..") {
 			return fmt.Errorf("illegal file path in zip: %v", file.Name)
 		}
