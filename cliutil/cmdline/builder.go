@@ -13,8 +13,12 @@ type LineBuilder struct {
 // NewBuilder create
 func NewBuilder(binFile string, args ...string) *LineBuilder {
 	b := &LineBuilder{}
-	b.AddArg(binFile)
+
+	if binFile != "" {
+		b.AddArg(binFile)
+	}
 	b.AddArray(args)
+
 	return b
 }
 
@@ -52,6 +56,7 @@ func (b *LineBuilder) WriteString(a string) (int, error) {
 
 	// add sep on first write.
 	if b.buf != nil {
+		b.buf = make([]byte, 24)
 		b.buf = append(b.buf, ' ')
 	}
 
