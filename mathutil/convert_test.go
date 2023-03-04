@@ -91,6 +91,7 @@ func TestToInt(t *testing.T) {
 	for _, in := range errTests {
 		is.Eq(int64(0), mathutil.MustInt64(in))
 		is.Eq(int64(0), mathutil.QuietInt64(in))
+		is.Eq(int64(0), mathutil.SafeInt64(in))
 	}
 }
 

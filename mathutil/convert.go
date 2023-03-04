@@ -172,6 +172,12 @@ func Int64(in any) (int64, error) {
 	return ToInt64(in)
 }
 
+// SafeInt64 convert value to int64, will ignore error
+func SafeInt64(in any) int64 {
+	i64, _ := ToInt64(in)
+	return i64
+}
+
 // QuietInt64 convert value to int64, will ignore error
 func QuietInt64(in any) int64 {
 	i64, _ := ToInt64(in)
