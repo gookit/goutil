@@ -26,7 +26,7 @@ func NewVarReplacer(format string) *VarReplacer {
 
 // WithFormat custom var template
 func (r *VarReplacer) WithFormat(format string) *VarReplacer {
-	r.Left, r.Right = strutil.MustCut(strutil.OrElse(format, defaultVarFormat), ",")
+	r.Left, r.Right = strutil.QuietCut(strutil.OrElse(format, defaultVarFormat), ",")
 	r.Init()
 	return r
 }

@@ -75,7 +75,7 @@ func TestRenderSMap(t *testing.T) {
 
 	// custom format
 	assert.Equal(t, "hi inhere", textutil.RenderSMap("hi {$name}", tplVars, "{$,}"))
-	assert.Equal(t, "hi inhere age is 234", textutil.RenderSMap("hi $name age is $age", tplVars, "$,"))
+	assert.Equal(t, "hi inhere age is 234", textutil.RenderSMap("hi $name age is $age", tplVars, "$"))
 	assert.Equal(t, "hi inhere age is 234.", textutil.RenderSMap("hi $name age is $age.", tplVars, "$,"))
 	assert.Equal(t, "hi {$name}", textutil.RenderSMap("hi {$name}", nil, "{$,}"))
 }
