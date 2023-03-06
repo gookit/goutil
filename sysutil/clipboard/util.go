@@ -48,6 +48,11 @@ var (
 // std instance
 var std = New()
 
+// Std get
+func Std() *Clipboard {
+	return std
+}
+
 // Reset clipboard data
 func Reset() error {
 	return std.Reset()

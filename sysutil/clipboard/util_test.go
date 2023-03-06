@@ -10,11 +10,12 @@ import (
 func TestGetReaderBin(t *testing.T) {
 	assert.NotEmpty(t, clipboard.GetReaderBin())
 	assert.NotEmpty(t, clipboard.GetWriterBin())
+	assert.NotEmpty(t, clipboard.Std())
 }
 
 func TestClipboard_read_write(t *testing.T) {
 	err := clipboard.WriteString("")
-	assert.ErrMsg(t, err, "not write contents")
+	assert.ErrMsg(t, err, "clipboard: empty contents for write")
 
 	if !clipboard.Available() {
 		assert.False(t, clipboard.Available())
