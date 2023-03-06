@@ -44,3 +44,10 @@ func TestLineBuild(t *testing.T) {
 	b.AddArgs("myapp", "-a", `the 'val0' of option`)
 	assert.Eq(t, `myapp -a "the 'val0' of option"`, b.String())
 }
+
+func TestLineBuild_hasQuote(t *testing.T) {
+	line := "git log --pretty=format:'one two three'"
+	args := cmdline.ParseLine(line)
+	// dump.P(args)
+	assert.Eq(t, line, cmdline.LineBuild("", args))
+}
