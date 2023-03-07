@@ -52,12 +52,16 @@ func Valid(ss ...string) string {
 //
 //	strings.NewReplacer("old1", "new1", "old2", "new2").Replace(str)
 func Replaces(str string, pairs map[string]string) string {
+	return NewReplacer(pairs).Replace(str)
+}
+
+// NewReplacer instance
+func NewReplacer(pairs map[string]string) *strings.Replacer {
 	ss := make([]string, len(pairs)*2)
 	for old, newVal := range pairs {
 		ss = append(ss, old, newVal)
 	}
-
-	return strings.NewReplacer(ss...).Replace(str)
+	return strings.NewReplacer(ss...)
 }
 
 // PrettyJSON get pretty Json string

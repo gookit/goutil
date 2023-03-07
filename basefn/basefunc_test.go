@@ -18,6 +18,9 @@ func TestPanicf(t *testing.T) {
 	assert.Panics(t, func() {
 		basefn.Panicf("hi %s", "inhere")
 	})
+	assert.Panics(t, func() {
+		basefn.MustOK(errors.New("a error"))
+	})
 }
 
 func TestErrOnFail(t *testing.T) {
@@ -29,6 +32,8 @@ func TestErrOnFail(t *testing.T) {
 func TestOrValue(t *testing.T) {
 	assert.Eq(t, "ab", basefn.OrValue(true, "ab", "dc"))
 	assert.Eq(t, "dc", basefn.OrValue(false, "ab", "dc"))
+	assert.Eq(t, 1, basefn.FirstOr([]int{1, 2}, 3))
+	assert.Eq(t, 3, basefn.FirstOr(nil, 3))
 }
 
 func TestOrReturn(t *testing.T) {

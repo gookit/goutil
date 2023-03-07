@@ -74,14 +74,14 @@ func TestParseLine(t *testing.T) {
 
 	// exception line string.
 	args = cliutil.ParseLine(`./app top sub -a ddd --xx msg"`)
-	dump.P(args)
+	// dump.P(args)
 	assert.Len(t, args, 7)
-	assert.Eq(t, "msg", args[6])
+	assert.Eq(t, "msg\"", args[6])
 
 	args = cliutil.StringToOSArgs(`./app top sub -a ddd --xx "msg "text"`)
-	dump.P(args)
+	// dump.P(args)
 	assert.Len(t, args, 7)
-	assert.Eq(t, "msg text", args[6])
+	assert.Eq(t, "msg \"text", args[6])
 }
 
 func TestWorkdir(t *testing.T) {

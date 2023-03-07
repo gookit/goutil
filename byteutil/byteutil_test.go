@@ -27,3 +27,8 @@ func TestStrOrErr(t *testing.T) {
 	assert.Err(t, err)
 	assert.Eq(t, "", str)
 }
+
+func TestMd5(t *testing.T) {
+	assert.NotEmpty(t, byteutil.Md5("abc"))
+	assert.NotEmpty(t, byteutil.Md5([]int{12, 34}))
+}
