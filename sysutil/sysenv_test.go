@@ -14,13 +14,17 @@ func TestSysenv_common(t *testing.T) {
 	ss := sysutil.EnvPaths()
 	assert.NotEmpty(t, ss)
 	assert.NotEmpty(t, sysutil.Environ())
-	assert.NotEmpty(t, sysutil.EnvironWith(nil))
+	assert.NotEmpty(t, sysutil.EnvMapWith(nil))
+	assert.NotEmpty(t, sysutil.EnvMapWith(map[string]string{"NEW_KEY": "value"}))
 
 	ss = sysutil.SearchPath("go", 3)
 	assert.NotEmpty(t, ss)
 	// dump.P(ss)
 	ss = sysutil.SearchPath("o", 3)
 	assert.NotEmpty(t, ss)
+
+	assert.Empty(t, sysutil.Getenv("NOT_EXISTS_ENV"))
+	assert.Equal(t, "defVal", sysutil.Getenv("NOT_EXISTS_ENV", "defVal"))
 }
 
 func TestCurrentShell(t *testing.T) {

@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-💪 Useful utils package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
+💪 Useful utils(**500+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 
@@ -27,7 +27,6 @@
 - [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
-  - [process](./sysutil/process) Provide some process handle util functions.
 
 **Advance packages:**
 
@@ -43,6 +42,7 @@
 - sys util:
   - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
   - [cmdr](./sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
+  - [process](./sysutil/process) Provide some process handle util functions.
 - [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
   - [assert](./testutil/assert) Asserts functions for help testing
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods

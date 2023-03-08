@@ -494,7 +494,7 @@ func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 // Gte asserts that the give(intX) should not be greater than or equals to min
 func Gte(t TestingT, give, min int, fmtAndArgs ...any) bool {
 	t.Helper()
-	return Gt(t, give, min+1, fmtAndArgs...)
+	return Gt(t, give, min-1, fmtAndArgs...)
 }
 
 // IsType assert data type equals

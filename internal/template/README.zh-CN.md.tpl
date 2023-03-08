@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-`goutil` Go 常用功能的扩展工具库。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
+`goutil` Go 常用功能的扩展工具库(**500+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
@@ -27,7 +27,6 @@
 - [`structs`](./structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](./strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](./sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
-  - [process](./sysutil/process) 提供一些进程操作相关的实用功能。
 
 **扩展工具包**
 
@@ -41,6 +40,7 @@
 - sysutil:
   - [clipboard](sysutil/clipboard) 提供简单的剪贴板读写操作工具库
   - [cmdr](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
+  - [process](./sysutil/process) 提供一些进程操作相关的实用功能。
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
   - [assert](testutil/assert) 用于帮助测试的断言函数工具包
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法

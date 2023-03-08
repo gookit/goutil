@@ -130,8 +130,8 @@ func Getenv(name string, def ...string) string {
 // Environ like os.Environ, but will returns key-value map[string]string data.
 func Environ() map[string]string { return comfunc.Environ() }
 
-// EnvironWith like os.Environ, but will return key-value map[string]string data.
-func EnvironWith(newEnv map[string]string) map[string]string {
+// EnvMapWith like os.Environ, but will return key-value map[string]string data.
+func EnvMapWith(newEnv map[string]string) map[string]string {
 	envMp := comfunc.Environ()
 	for name, value := range newEnv {
 		envMp[name] = value
