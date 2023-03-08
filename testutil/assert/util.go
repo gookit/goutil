@@ -17,6 +17,14 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// isEmpty value check
+func isEmpty(v any) bool {
+	if v == nil {
+		return true
+	}
+	return reflects.IsEmpty(reflect.ValueOf(v))
+}
+
 func checkEqualArgs(expected, actual any) error {
 	if expected == nil && actual == nil {
 		return nil

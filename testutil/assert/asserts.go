@@ -54,7 +54,7 @@ func False(t TestingT, give bool, fmtAndArgs ...any) bool {
 
 // Empty asserts that the give should be empty
 func Empty(t TestingT, give any, fmtAndArgs ...any) bool {
-	empty := stdutil.IsEmpty(give)
+	empty := isEmpty(give)
 	if !empty {
 		t.Helper()
 		return fail(t, fmt.Sprintf("Should be empty, but was:\n%#v", give), fmtAndArgs)
@@ -65,7 +65,7 @@ func Empty(t TestingT, give any, fmtAndArgs ...any) bool {
 
 // NotEmpty asserts that the give should not be empty
 func NotEmpty(t TestingT, give any, fmtAndArgs ...any) bool {
-	nEmpty := !stdutil.IsEmpty(give)
+	nEmpty := !isEmpty(give)
 	if !nEmpty {
 		t.Helper()
 		return fail(t, fmt.Sprintf("Should not be empty, but was:\n%#v", give), fmtAndArgs)
@@ -474,7 +474,13 @@ func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
 	return fail(t, fmt.Sprintf("Given should later than or equal %d(but was %d)", max, gInt), fmtAndArgs)
 }
 
-// Gt asserts that the give(intX) should not be greater than max
+// Lte asserts that the give(intX) should not be less than or equals to max
+func Lte(t TestingT, give, max int, fmtAndArgs ...any) bool {
+	t.Helper()
+	return Lt(t, give, max+1, fmtAndArgs...)
+}
+
+// Gt asserts that the give(intX) should not be greater than min
 func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 	gInt, err := mathutil.ToInt(give)
 	if err == nil && gInt >= min {
@@ -483,6 +489,12 @@ func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 
 	t.Helper()
 	return fail(t, fmt.Sprintf("Given should gater than or equal %d(but was %d)", min, gInt), fmtAndArgs)
+}
+
+// Gte asserts that the give(intX) should not be greater than or equals to min
+func Gte(t TestingT, give, min int, fmtAndArgs ...any) bool {
+	t.Helper()
+	return Gt(t, give, min+1, fmtAndArgs...)
 }
 
 // IsType assert data type equals

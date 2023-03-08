@@ -33,3 +33,9 @@ func TestNewIOReader(t *testing.T) {
 	r = stdio.NewIOReader(strings.NewReader("hi"))
 	assert.Eq(t, "hi", stdio.ReadString(r))
 }
+
+func TestWriteBytes(t *testing.T) {
+	stdio.WriteBytes([]byte("hi,"))
+	stdio.WriteString("inhere.")
+	stdio.Writeln("welcome")
+}

@@ -111,6 +111,13 @@ func (as *Assertions) Err(err error, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// Error asserts that the given is a not nil error
+func (as *Assertions) Error(err error, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Err(as.t, err, fmtAndArgs...)
+	return as
+}
+
 // ErrIs asserts that the given error is equals wantErr
 func (as *Assertions) ErrIs(err, wantErr error, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
@@ -153,6 +160,15 @@ func (as *Assertions) Eq(want, give any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// Equal asserts that the want should equal to the given
+//
+// Alias of Eq()
+func (as *Assertions) Equal(want, give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Eq(as.t, want, give, fmtAndArgs...)
+	return as
+}
+
 // Neq asserts that the want should not be equal to the given.
 // alias of NotEq()
 func (as *Assertions) Neq(want, give any, fmtAndArgs ...any) *Assertions {
@@ -168,6 +184,15 @@ func (as *Assertions) NotEq(want, give any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// NotEqual asserts that the want should not be equal to the given
+//
+// Alias of NotEq()
+func (as *Assertions) NotEqual(want, give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NotEq(as.t, want, give, fmtAndArgs...)
+	return as
+}
+
 // Lt asserts that the give(intX) should not be less than max
 func (as *Assertions) Lt(give, max int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
@@ -175,10 +200,24 @@ func (as *Assertions) Lt(give, max int, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
-// Gt asserts that the give(intX) should not be greater than max
+// Lte asserts that the give(intX) should not be less than or equal to max
+func (as *Assertions) Lte(give, max int, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Lte(as.t, give, max, fmtAndArgs...)
+	return as
+}
+
+// Gt asserts that the give(intX) should not be greater than min
 func (as *Assertions) Gt(give, min int, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Gt(as.t, give, min, fmtAndArgs...)
+	return as
+}
+
+// Gte asserts that the give(intX) should not be greater than or equal to min
+func (as *Assertions) Gte(give, min int, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Gte(as.t, give, min, fmtAndArgs...)
 	return as
 }
 

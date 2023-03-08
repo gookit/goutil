@@ -70,3 +70,9 @@ func WriteBytes(bs []byte) {
 func WriteString(s string) {
 	_, _ = os.Stdout.WriteString(s)
 }
+
+// Writeln to stdout
+func Writeln(s string) {
+	_, _ = os.Stdout.WriteString(s)
+	_, _ = os.Stdout.Write([]byte("\n"))
+}
