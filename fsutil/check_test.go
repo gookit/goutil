@@ -18,6 +18,7 @@ func TestFsUtil_common(t *testing.T) {
 	assert.Eq(t, "jpg", fsutil.Extname("testdata/test.jpg"))
 
 	// IsZipFile
+	assert.False(t, fsutil.IsZipFile("testdata/not-exists-file"))
 	assert.False(t, fsutil.IsZipFile("testdata/test.jpg"))
 	assert.Eq(t, "test.jpg", fsutil.PathName("testdata/test.jpg"))
 
@@ -58,4 +59,27 @@ func TestIsDir(t *testing.T) {
 func TestIsAbsPath(t *testing.T) {
 	assert.True(t, fsutil.IsAbsPath("/data/some.txt"))
 	assert.NoErr(t, fsutil.DeleteIfFileExist("/not-exist"))
+}
+
+func TestGlobMatch(t *testing.T) {
+	tests := []struct {
+		p, s string
+		want bool
+	}{
+		{"a*", "abc", true},
+		{"ab.*.ef", "ab.cd.ef", true},
+		{"ab.*.*", "ab.cd.ef", true},
+		{"ab.cd.*", "ab.cd.ef", true},
+		{"ab.*", "ab.cd.ef", true},
+		{"a*/b", "a/c/b", false},
+		{"a*", "a/c/b", false},
+		{"a**", "a/c/b", false},
+	}
+
+	for _, tt := range tests {
+		assert.Eq(t, tt.want, fsutil.PathMatch(tt.p, tt.s), "case %v", tt)
+	}
+
+	assert.False(t, fsutil.PathMatch("ab", "abc"))
+	assert.True(t, fsutil.PathMatch("ab*", "abc"))
 }

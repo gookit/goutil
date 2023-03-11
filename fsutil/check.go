@@ -120,3 +120,12 @@ func IsZipFile(filepath string) bool {
 
 	return bytes.Equal(buf, []byte("PK\x03\x04"))
 }
+
+// PathMatch check for a string.
+func PathMatch(pattern, s string) bool {
+	ok, err := path.Match(pattern, s)
+	if err != nil {
+		ok = false
+	}
+	return ok
+}
