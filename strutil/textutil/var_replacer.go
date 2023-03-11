@@ -61,7 +61,15 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 	return r.Init().doReplace(s, varMap)
 }
 
-// RenderSimple string-map vars in the text contents
+// ReplaceSMap string-map vars in the text contents
+func (r *VarReplacer) ReplaceSMap(s string, varMap map[string]string) string {
+	if len(varMap) == 0 || !strings.Contains(s, r.Left) {
+		return s
+	}
+	return r.Init().doReplace(s, varMap)
+}
+
+// RenderSimple string-map vars in the text contents. alias of ReplaceSMap()
 func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
 	if len(varMap) == 0 || !strings.Contains(s, r.Left) {
 		return s

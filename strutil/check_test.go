@@ -182,6 +182,7 @@ func TestVersionCompare(t *testing.T) {
 
 	assert.True(t, strutil.VersionCompare("1.0", "1.0", ""))
 	assert.True(t, strutil.VersionCompare("1.0", "1.0", "="))
+	assert.True(t, strutil.Compare("1.0", "2.0", "!="))
 
 	assert.False(t, strutil.Compare("2020-12-16", "2021-12-17", ">="))
 }
@@ -192,10 +193,13 @@ func TestGlobMatch(t *testing.T) {
 		want bool
 	}{
 		{"a*", "abc", true},
+		{"a*", "ab.cd.ef", true},
 		{"ab.*.ef", "ab.cd.ef", true},
+		{"ab.*.ef", "ab.cd.efg", false},
 		{"ab.*.*", "ab.cd.ef", true},
 		{"ab.cd.*", "ab.cd.ef", true},
 		{"ab.*", "ab.cd.ef", true},
+		{"a*/b", "acd/b", true},
 		{"a*/b", "a/c/b", false},
 		{"a*", "a/c/b", false},
 		{"a**", "a/c/b", false},
@@ -208,6 +212,37 @@ func TestGlobMatch(t *testing.T) {
 	assert.True(t, strutil.QuickMatch("ab", "abc"))
 	assert.True(t, strutil.QuickMatch("abc", "abc"))
 	assert.False(t, strutil.GlobMatch("ab", "abc"))
-	assert.True(t, strutil.GlobMatch("ab*", "abc"))
+	assert.True(t, strutil.PathMatch("ab*", "abc"))
 	assert.True(t, strutil.QuickMatch("ab*", "abc"))
+}
+
+func TestMatchNodePath(t *testing.T) {
+	tests := []struct {
+		p, s string
+		want bool
+	}{
+		{"a*", "abc", true},
+		{"ab.*.ef", "ab.cd.ef", true},
+		{"ab.*.*", "ab.cd.ef", true},
+		{"ab.cd.*", "ab.cd.ef", true},
+		{"a*.b", "acd.b", true},
+		{"a**", "a.c.b", true},
+		{"ab", "abc", false},
+		{"a*", "ab.cd.ef", false},
+		{"ab.*.ef", "ab.cd.efg", false},
+		{"ab.*", "ab.cd.ef", false},
+		{"a*.b", "a.c.b", false},
+		{"a*", "a.c.b", false},
+	}
+
+	for i, tt := range tests {
+		assert.Eq(t, tt.want, strutil.MatchNodePath(tt.p, tt.s, "."), "case#%d %v", i, tt)
+	}
+}
+
+func TestHasEmpty(t *testing.T) {
+	assert.False(t, strutil.HasEmpty("ab", "cd", "ef"))
+	assert.True(t, strutil.HasEmpty("ab", "", "ef"))
+	assert.False(t, strutil.IsAllEmpty("ab", "", "ef"))
+	assert.True(t, strutil.IsAllEmpty("", ""))
 }

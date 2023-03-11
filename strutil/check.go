@@ -200,8 +200,44 @@ func QuickMatch(pattern, s string) bool {
 	return strings.Contains(s, pattern)
 }
 
+// PathMatch check for a string.
+func PathMatch(pattern, s string) bool { return GlobMatch(pattern, s) }
+
 // GlobMatch check for a string.
 func GlobMatch(pattern, s string) bool {
+	ok, err := path.Match(pattern, s)
+	if err != nil {
+		ok = false
+	}
+	return ok
+}
+
+// MatchNodePath check for a string.
+//
+// Use on pattern:
+//   - `*` match any to sep
+//   - `**` match any to end. only allow at start or end on pattern.
+//
+// Example:
+//
+//	strutil.MatchNodePath()
+func MatchNodePath(pattern, s string, sep string) bool {
+	if pattern == "**" || pattern == s {
+		return true
+	}
+	if pattern == "" {
+		return len(s) == 0
+	}
+
+	if i := strings.Index(pattern, "**"); i >= 0 {
+		if i == 0 { // at start
+			return strings.HasSuffix(s, pattern[2:])
+		}
+		return strings.HasPrefix(s, pattern[:len(pattern)-2])
+	}
+
+	pattern = strings.Replace(pattern, sep, "/", -1)
+	s = strings.Replace(s, sep, "/", -1)
 	ok, err := path.Match(pattern, s)
 	if err != nil {
 		ok = false
