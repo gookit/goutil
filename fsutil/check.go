@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path"
+	"path/filepath"
 )
 
 // perm for create dir or file
@@ -71,9 +72,7 @@ func IsFile(path string) bool {
 }
 
 // IsAbsPath is abs path.
-func IsAbsPath(aPath string) bool {
-	return path.IsAbs(aPath)
-}
+func IsAbsPath(aPath string) bool { return filepath.IsAbs(aPath) }
 
 // ImageMimeTypes refer net/http package
 var ImageMimeTypes = map[string]string{
