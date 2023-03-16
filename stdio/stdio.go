@@ -61,9 +61,20 @@ func NewScanner(in any) *bufio.Scanner {
 	}
 }
 
+// WriteByte to stdout
+func WriteByte(b byte) {
+	_, _ = os.Stdout.Write([]byte{b})
+}
+
 // WriteBytes to stdout
 func WriteBytes(bs []byte) {
 	_, _ = os.Stdout.Write(bs)
+}
+
+// WritelnBytes to stdout
+func WritelnBytes(bs []byte) {
+	_, _ = os.Stdout.Write(bs)
+	_, _ = os.Stdout.Write([]byte("\n"))
 }
 
 // WriteString to stdout
