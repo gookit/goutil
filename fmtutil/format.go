@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/gookit/goutil/basefn"
 )
 
 // data size
@@ -23,16 +25,7 @@ const (
 //	fl, err := file.Stat()
 //	fmtSize := DataSize(fl.Size())
 func DataSize(size uint64) string {
-	switch {
-	case size < 1024:
-		return fmt.Sprintf("%dB", size)
-	case size < 1024*1024:
-		return fmt.Sprintf("%.2fK", float64(size)/1024)
-	case size < 1024*1024*1024:
-		return fmt.Sprintf("%.2fM", float64(size)/1024/1024)
-	default:
-		return fmt.Sprintf("%.2fG", float64(size)/1024/1024/1024)
-	}
+	return basefn.DataSize(size)
 }
 
 // SizeToString alias of the DataSize
