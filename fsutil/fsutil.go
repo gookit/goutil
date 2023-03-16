@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gookit/goutil/internal/comfunc"
 )
 
 const (
@@ -96,4 +98,26 @@ func UnixPath(path string) string {
 		return path
 	}
 	return strings.ReplaceAll(path, "\\", "/")
+}
+
+// ToAbsPath convert process.
+//
+// TIP: will don't check path
+func ToAbsPath(p string) string {
+	if len(p) == 0 {
+		return ""
+	}
+	if filepath.IsAbs(p) {
+		return p
+	}
+
+	if p[0] == '~' {
+		return comfunc.ExpandHome(p)
+	}
+
+	wd, err := os.Getwd()
+	if err != nil {
+		return p
+	}
+	return filepath.Join(wd, p)
 }

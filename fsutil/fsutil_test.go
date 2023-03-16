@@ -43,6 +43,16 @@ func TestSplitPath(t *testing.T) {
 	assert.Eq(t, "some.txt", file)
 }
 
+func TestToAbsPath(t *testing.T) {
+	assert.Eq(t, "", fsutil.ToAbsPath(""))
+	assert.Eq(t, "/path/to/dir/", fsutil.ToAbsPath("/path/to/dir/"))
+	assert.Neq(t, "~/path/to/dir", fsutil.ToAbsPath("~/path/to/dir"))
+	assert.Neq(t, ".", fsutil.ToAbsPath("."))
+	assert.Neq(t, "..", fsutil.ToAbsPath(".."))
+	assert.Neq(t, "./", fsutil.ToAbsPath("./"))
+	assert.Neq(t, "../", fsutil.ToAbsPath("../"))
+}
+
 func TestSlashPath(t *testing.T) {
 	assert.Eq(t, "/path/to/dir", fsutil.SlashPath("/path/to/dir"))
 	assert.Eq(t, "/path/to/dir", fsutil.UnixPath("/path/to/dir"))
