@@ -8,8 +8,8 @@ import (
 	"strings"
 )
 
-// ExpandPath will parse first `~` as user home dir path.
-func ExpandPath(pathStr string) string {
+// ExpandHome will parse first `~` as user home dir path.
+func ExpandHome(pathStr string) string {
 	if len(pathStr) == 0 {
 		return pathStr
 	}
@@ -26,7 +26,6 @@ func ExpandPath(pathStr string) string {
 	if err != nil {
 		return pathStr
 	}
-
 	return homeDir + pathStr[1:]
 }
 
@@ -106,6 +105,5 @@ func HasShellEnv(shell string) bool {
 	if err != nil {
 		return false
 	}
-
 	return strings.TrimSpace(out) == "OK"
 }

@@ -34,6 +34,7 @@ func TestUserDir(t *testing.T) {
 
 	rawPath := "~/.kite"
 	assert.LenGt(t, sysutil.ExpandPath(rawPath), len(rawPath))
+	assert.Neq(t, rawPath, sysutil.ExpandHome(rawPath))
 }
 
 func TestWorkdir(t *testing.T) {
