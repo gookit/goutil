@@ -3,6 +3,8 @@ package httpreq
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -65,6 +67,13 @@ func AddHeaders(req *http.Request, header http.Header) {
 	}
 }
 
+// AddHeaderMap to reqeust instance.
+func AddHeaderMap(req *http.Request, headerMap map[string]string) {
+	for k, v := range headerMap {
+		req.Header.Set(k, v)
+	}
+}
+
 // HeaderToStringMap convert
 func HeaderToStringMap(rh http.Header) map[string]string {
 	if len(rh) == 0 {
@@ -97,6 +106,54 @@ func ToQueryValues(data any) url.Values {
 	}
 
 	return uv
+}
+
+// IsNoBodyMethod check
+func IsNoBodyMethod(method string) bool {
+	return method != "POST" && method != "PUT" && method != "PATCH"
+}
+
+// ToRequestBody convert handle
+//
+// Allow type for data:
+//   - string
+//   - []byte
+//   - map[string]string
+//   - map[string][]string/url.Values
+//   - io.Reader(eg: bytes.Buffer, strings.Reader)
+func ToRequestBody(data any) io.Reader {
+	var reqBody io.Reader
+	switch typVal := data.(type) {
+	case io.Reader:
+		reqBody = typVal
+	case map[string]string:
+		reqBody = bytes.NewBufferString(ToQueryValues(typVal).Encode())
+	case map[string][]string:
+		reqBody = bytes.NewBufferString(url.Values(typVal).Encode())
+	case url.Values:
+		reqBody = bytes.NewBufferString(typVal.Encode())
+	case string:
+		reqBody = bytes.NewBufferString(typVal)
+	case []byte:
+		reqBody = bytes.NewBuffer(typVal)
+	default:
+		// auto encode body data to json
+		if data != nil {
+			buf := &bytes.Buffer{}
+			enc := json.NewEncoder(buf)
+			// close escape  &, <, >  TO  \u0026, \u003c, \u003e
+			enc.SetEscapeHTML(false)
+			if err := enc.Encode(data); err != nil {
+				panic("auto encode data error=" + err.Error())
+			}
+
+			reqBody = buf
+		}
+
+		// nobody
+	}
+
+	return reqBody
 }
 
 // RequestToString convert http Request to string

@@ -3,10 +3,8 @@ package httpreq
 
 import (
 	"bytes"
-	"encoding/json"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -56,6 +54,9 @@ var emptyOpt = &ReqOption{}
 func ConfigStd(fn func(hc *http.Client)) {
 	fn(std.client.(*http.Client))
 }
+
+// Std instance
+func Std() *ReqClient { return std }
 
 // Get quick send a GET request by default client
 func Get(url string, opt *ReqOption) (*http.Response, error) {
@@ -155,36 +156,7 @@ func (h *ReqClient) StringBody(s string) *ReqClient {
 // Allow type:
 //   - string, []byte, map[string][]string/url.Values, io.Reader(eg: bytes.Buffer, strings.Reader)
 func (h *ReqClient) AnyBody(data any) *ReqClient {
-	var reqBody io.Reader
-	switch typBody := data.(type) {
-	case io.Reader:
-		reqBody = typBody
-	case map[string][]string:
-		reqBody = bytes.NewBufferString(url.Values(typBody).Encode())
-	case url.Values:
-		reqBody = bytes.NewBufferString(typBody.Encode())
-	case string:
-		reqBody = bytes.NewBufferString(typBody)
-	case []byte:
-		reqBody = bytes.NewBuffer(typBody)
-	default:
-		// auto encode body data to json
-		if data != nil {
-			buf := &bytes.Buffer{}
-			enc := json.NewEncoder(buf)
-			// close escape  &, <, >  TO  \u0026, \u003c, \u003e
-			enc.SetEscapeHTML(false)
-			if err := enc.Encode(data); err != nil {
-				panic("auto encode data error=" + err.Error())
-			}
-
-			reqBody = buf
-		}
-
-		// nobody
-	}
-
-	h.body = reqBody
+	h.body = ToRequestBody(data)
 	return h
 }
 
@@ -211,17 +183,7 @@ func (h *ReqClient) Send(url string) (*http.Response, error) {
 
 // SendWithOpt request and return http response
 func (h *ReqClient) SendWithOpt(url string, opt *ReqOption) (*http.Response, error) {
-	if opt == nil {
-		opt = emptyOpt
-	}
-
 	cli := h
-	if opt.Timeout > 0 {
-		cli = New().Client(&http.Client{
-			Timeout: time.Duration(opt.Timeout) * time.Millisecond,
-		})
-	}
-
 	if len(cli.baseURL) > 0 {
 		if !strings.HasPrefix(url, "http") {
 			url = cli.baseURL + url
@@ -234,6 +196,21 @@ func (h *ReqClient) SendWithOpt(url string, opt *ReqOption) (*http.Response, err
 	req, err := http.NewRequest(cli.method, url, cli.body)
 	if err != nil {
 		return nil, err
+	}
+	return h.SendRequest(req, opt)
+}
+
+// SendRequest request and return http response
+func (h *ReqClient) SendRequest(req *http.Request, opt *ReqOption) (*http.Response, error) {
+	if opt == nil {
+		opt = emptyOpt
+	}
+
+	cli := h
+	if opt.Timeout > 0 {
+		cli = New().Client(&http.Client{
+			Timeout: time.Duration(opt.Timeout) * time.Millisecond,
+		})
 	}
 
 	if len(cli.headerMap) > 0 {
