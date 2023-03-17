@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -16,12 +17,20 @@ type VarReplacer struct {
 	init        bool
 	Left, Right string
 	lLen, rLen  int
-	varReg      *regexp.Regexp
+
+	parseEnv bool
+	varReg   *regexp.Regexp
 }
 
 // NewVarReplacer instance
 func NewVarReplacer(format string) *VarReplacer {
 	return (&VarReplacer{}).WithFormat(format)
+}
+
+// WithParseEnv custom var template
+func (r *VarReplacer) WithParseEnv() *VarReplacer {
+	r.parseEnv = true
+	return r
 }
 
 // WithFormat custom var template
@@ -55,7 +64,15 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 
 	varMap := make(map[string]string, len(tplVars)*2)
 	maputil.FlatWithFunc(tplVars, func(path string, val reflect.Value) {
-		varMap[path] = strutil.QuietString(val.Interface())
+		if val.Kind() == reflect.String {
+			if r.parseEnv {
+				varMap[path] = comfunc.ParseEnvVar(val.String(), nil)
+			} else {
+				varMap[path] = val.String()
+			}
+		} else {
+			varMap[path] = strutil.QuietString(val.Interface())
+		}
 	})
 
 	return r.Init().doReplace(s, varMap)
@@ -63,10 +80,7 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 
 // ReplaceSMap string-map vars in the text contents
 func (r *VarReplacer) ReplaceSMap(s string, varMap map[string]string) string {
-	if len(varMap) == 0 || !strings.Contains(s, r.Left) {
-		return s
-	}
-	return r.Init().doReplace(s, varMap)
+	return r.RenderSimple(s, varMap)
 }
 
 // RenderSimple string-map vars in the text contents. alias of ReplaceSMap()
@@ -74,6 +88,13 @@ func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
 	if len(varMap) == 0 || !strings.Contains(s, r.Left) {
 		return s
 	}
+
+	if r.parseEnv {
+		for name, val := range varMap {
+			varMap[name] = comfunc.ParseEnvVar(val, nil)
+		}
+	}
+
 	return r.Init().doReplace(s, varMap)
 }
 
