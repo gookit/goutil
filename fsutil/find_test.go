@@ -28,6 +28,40 @@ func TestSearchNameUp(t *testing.T) {
 	assert.Empty(t, p)
 }
 
+type dirEnt struct {
+	typ   fs.FileMode
+	isDir bool
+	name  string
+}
+
+func (d *dirEnt) Name() string {
+	return d.name
+}
+
+func (d *dirEnt) IsDir() bool {
+	return d.isDir
+}
+
+func (d *dirEnt) Type() fs.FileMode {
+	return d.typ
+}
+
+func (d *dirEnt) Info() (fs.FileInfo, error) {
+	panic("implement me")
+}
+
+func TestApplyFilters(t *testing.T) {
+	e1 := &dirEnt{name: "some-backup"}
+	f1 := fsutil.ExcludeSuffix("-backup")
+
+	assert.False(t, f1("", e1))
+	assert.True(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{f1}))
+	assert.True(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.OnlyFindDir}))
+	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.OnlyFindFile}))
+	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.ExcludeDotFile}))
+	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.IncludeSuffix("-backup")}))
+}
+
 func TestFindInDir(t *testing.T) {
 	err := fsutil.FindInDir("path-not-exist", nil)
 	assert.NoErr(t, err)
