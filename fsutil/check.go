@@ -72,7 +72,15 @@ func IsFile(path string) bool {
 }
 
 // IsAbsPath is abs path.
-func IsAbsPath(aPath string) bool { return filepath.IsAbs(aPath) }
+func IsAbsPath(aPath string) bool {
+	if len(aPath) > 0 {
+		if aPath[0] == '/' {
+			return true
+		}
+		return filepath.IsAbs(aPath)
+	}
+	return false
+}
 
 // ImageMimeTypes refer net/http package
 var ImageMimeTypes = map[string]string{

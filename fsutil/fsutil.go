@@ -100,17 +100,15 @@ func UnixPath(path string) string {
 	return strings.ReplaceAll(path, "\\", "/")
 }
 
-// ToAbsPath convert process.
+// ToAbsPath convert process. will expand home dir
 //
 // TIP: will don't check path
 func ToAbsPath(p string) string {
-	if len(p) == 0 {
-		return ""
-	}
-	if filepath.IsAbs(p) {
+	if len(p) == 0 || IsAbsPath(p) {
 		return p
 	}
 
+	// expand home dir
 	if p[0] == '~' {
 		return comfunc.ExpandHome(p)
 	}
