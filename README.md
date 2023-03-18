@@ -188,6 +188,9 @@ func OrValue[T any](cond bool, okVal, elVal T) T
 func OrReturn[T any](cond bool, okFn, elseFn func() T) T 
 func CallOn(cond bool, fn ErrFunc) error 
 func CallOrElse(cond bool, okFn, elseFn ErrFunc) error 
+// source at basefn/extfunc.go
+func DataSize(size uint64) string 
+func HowLongAgo(sec int64) string 
 ```
 
 ### Bytes Utils
@@ -201,6 +204,8 @@ func NewBuffer() *Buffer
 func FirstLine(bs []byte) []byte 
 func StrOrErr(bs []byte, err error) (string, error) 
 func SafeString(bs []byte, err error) string 
+func String(b []byte) string 
+func ToString(b []byte) string 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
 // source at byteutil/check.go
@@ -639,6 +644,8 @@ runtime.goexit()
 > Package `github.com/gookit/goutil/fmtutil`
 
 ```go
+// source at fmtutil/fmtutil.go
+func StringOrJSON(v any) ([]byte, error) 
 // source at fmtutil/format.go
 func DataSize(size uint64) string 
 func SizeToString(size uint64) string 
@@ -664,6 +671,19 @@ func IsFile(path string) bool
 func IsAbsPath(aPath string) bool 
 func IsImageFile(path string) bool 
 func IsZipFile(filepath string) bool 
+func PathMatch(pattern, s string) bool 
+// source at fsutil/find.go
+func SearchNameUp(dirPath, name string) string 
+func SearchNameUpx(dirPath, name string) (string, bool) 
+func WalkDir(dir string, fn fs.WalkDirFunc) error 
+func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
+func OnlyFindDir(_ string, ent fs.DirEntry) bool 
+func OnlyFindFile(_ string, ent fs.DirEntry) bool 
+func IncludeSuffix(ss ...string) FilterFunc 
+func ExcludeDotFile(_ string, ent fs.DirEntry) bool 
+func ExcludeSuffix(ss ...string) FilterFunc 
+func ApplyFilters(fPath string, ent fs.DirEntry, filters []FilterFunc) bool 
+func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
 // source at fsutil/fsutil.go
 func OSTempFile(pattern string) (*os.File, error) 
 func TempFile(dir, pattern string) (*os.File, error) 
@@ -674,6 +694,7 @@ func ReaderMimeType(r io.Reader) (mime string)
 func JoinPaths(elem ...string) string 
 func SlashPath(path string) string 
 func UnixPath(path string) string 
+func ToAbsPath(p string) string 
 // source at fsutil/info.go
 func Dir(fpath string) string 
 func PathName(fpath string) string 
@@ -683,9 +704,8 @@ func Extname(fpath string) string
 func Suffix(fpath string) string 
 func Expand(pathStr string) string 
 func ExpandPath(pathStr string) string 
+func ResolvePath(pathStr string) string 
 func SplitPath(pathStr string) (dir, name string) 
-func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
-func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
 // source at fsutil/info_nonwin.go
 func Realpath(pathStr string) string 
 // source at fsutil/operate.go
@@ -940,7 +960,9 @@ func ReadString(r io.Reader) string
 func MustReadReader(r io.Reader) []byte 
 func NewIOReader(in any) io.Reader 
 func NewScanner(in any) *bufio.Scanner 
+func WriteByte(b byte) 
 func WriteBytes(bs []byte) 
+func WritelnBytes(bs []byte) 
 func WriteString(s string) 
 func Writeln(s string) 
 // source at stdio/writer.go
@@ -1053,6 +1075,7 @@ func HasPrefix(s string, prefix string) bool
 func IsStartOf(s, prefix string) bool 
 func HasSuffix(s string, suffix string) bool 
 func IsEndOf(s, suffix string) bool 
+func HasOneSuffix(s string, suffixes []string) bool 
 func IsValidUtf8(s string) bool 
 func IsSpace(c byte) bool 
 func IsEmpty(s string) bool 
@@ -1066,7 +1089,9 @@ func IsVersion(s string) bool
 func Compare(s1, s2, op string) bool 
 func VersionCompare(v1, v2, op string) bool 
 func QuickMatch(pattern, s string) bool 
+func PathMatch(pattern, s string) bool 
 func GlobMatch(pattern, s string) bool 
+func MatchNodePath(pattern, s string, sep string) bool 
 // source at strutil/convert.go
 func Quote(s string) string 
 func Unquote(s string) string 
@@ -1295,6 +1320,7 @@ func UserDir(subPath string) string
 func UserCacheDir(subPath string) string 
 func UserConfigDir(subPath string) string 
 func ExpandPath(path string) string 
+func ExpandHome(path string) string 
 // source at sysutil/user_nonwin.go
 func ChangeUserByName(newUname string) (err error) 
 func ChangeUserUidGid(newUid int, newGid int) (err error) 

@@ -2,6 +2,7 @@ package cmdr
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/arrutil"
@@ -9,6 +10,7 @@ import (
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/strutil/textutil"
 )
 
 // Task struct
@@ -46,6 +48,24 @@ func (t *Task) ensureID(idx int) {
 	t.ID = id
 }
 
+var rpl = textutil.NewVarReplacer("$").DisableFlatten()
+
+// RunWith command
+func (t *Task) RunWith(ctx maputil.Data) error {
+	cmdVars := ctx.StringMap("cmdVars")
+
+	if len(cmdVars) > 0 {
+		// rpl := strutil.NewReplacer(cmdVars)
+		for i, val := range t.Cmd.Args {
+			if strings.ContainsRune(val, '$') {
+				t.Cmd.Args[i] = rpl.RenderSimple(val, cmdVars)
+			}
+		}
+	}
+
+	return t.Run()
+}
+
 // Run command
 func (t *Task) Run() error {
 	if t.BeforeRun != nil {
@@ -75,6 +95,9 @@ func (t *Task) Cmdline() string {
 func (t *Task) IsSuccess() bool {
 	return t.err == nil
 }
+
+// RunnerHookFn func
+type RunnerHookFn func(r *Runner, t *Task) bool
 
 // Runner use for batch run multi task commands
 type Runner struct {
@@ -116,10 +139,17 @@ func NewRunner(fns ...func(rr *Runner)) *Runner {
 		Params: make(maputil.Map),
 	}
 
+	rr.OutToStd = true
 	for _, fn := range fns {
 		fn(rr)
 	}
 	return rr
+}
+
+// WithOutToStd set
+func (r *Runner) WithOutToStd() *Runner {
+	r.OutToStd = true
+	return r
 }
 
 // Add multitask at once
@@ -212,6 +242,11 @@ func (r *Runner) Run() error {
 	return r.Errs
 }
 
+// StepRun one command
+func (r *Runner) StepRun() error {
+	return nil // TODO
+}
+
 // RunTask command
 func (r *Runner) RunTask(task *Task) (goon bool) {
 	if len(r.EnvMap) > 0 {
@@ -228,7 +263,7 @@ func (r *Runner) RunTask(task *Task) (goon bool) {
 	}
 
 	// do running
-	if err := task.Run(); err != nil {
+	if err := task.RunWith(r.Params); err != nil {
 		r.Errs[task.ID] = err
 		color.Errorf("Task#%d run error: %s\n", task.Index()+1, err)
 

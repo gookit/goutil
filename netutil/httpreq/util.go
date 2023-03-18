@@ -156,6 +156,18 @@ func ToRequestBody(data any) io.Reader {
 	return reqBody
 }
 
+// HeaderToString convert http Header to string
+func HeaderToString(h http.Header) string {
+	var sb strings.Builder
+	for key, values := range h {
+		sb.WriteString(key)
+		sb.WriteString(": ")
+		sb.WriteString(strings.Join(values, ";"))
+		sb.WriteByte('\n')
+	}
+	return sb.String()
+}
+
 // RequestToString convert http Request to string
 func RequestToString(r *http.Request) string {
 	buf := &bytes.Buffer{}

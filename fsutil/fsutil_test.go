@@ -27,7 +27,7 @@ func TestMimeType(t *testing.T) {
 	buf.Reset()
 
 	assert.True(t, fsutil.IsImageFile("testdata/test.jpg"))
-	assert.True(t, fsutil.IsImageFile("testdata/not-exists"))
+	assert.False(t, fsutil.IsImageFile("testdata/not-exists"))
 }
 
 func TestTempDir(t *testing.T) {
