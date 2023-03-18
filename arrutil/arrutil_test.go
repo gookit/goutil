@@ -123,4 +123,7 @@ func TestUnique(t *testing.T) {
 	assert.Eq(t, []int{2, 3, 4}, arrutil.Unique[int]([]int{2, 3, 2, 4}))
 	assert.Eq(t, []uint{2, 3, 4}, arrutil.Unique([]uint{2, 3, 2, 4}))
 	assert.Eq(t, []string{"ab", "bc", "cd"}, arrutil.Unique([]string{"ab", "bc", "ab", "cd"}))
+
+	assert.Eq(t, 1, arrutil.IndexOf(3, []int{2, 3, 4}))
+	assert.Eq(t, -1, arrutil.IndexOf(5, []int{2, 3, 4}))
 }

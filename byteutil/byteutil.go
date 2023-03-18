@@ -2,6 +2,7 @@ package byteutil
 
 import (
 	"bytes"
+	"unsafe"
 )
 
 // FirstLine from command output
@@ -26,4 +27,14 @@ func SafeString(bs []byte, err error) string {
 		return ""
 	}
 	return string(bs)
+}
+
+// String convert bytes to string
+func String(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
+
+// ToString convert bytes to string
+func ToString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
 }

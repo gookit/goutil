@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/gookit/color v1.5.2
-	github.com/gookit/goutil v0.6.0-00010101000000-000000000000
+	github.com/gookit/goutil v0.6.6-00010101000000-000000000000
 	github.com/kortschak/utter v1.0.1
 	github.com/kr/pretty v0.2.1
 )
