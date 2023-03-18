@@ -169,6 +169,8 @@ func TestData_SetByKeys(t *testing.T) {
 	assert.Nil(t, mp.Get("k3"))
 	assert.Nil(t, mp.Get("k5.b"))
 
+	assert.NoErr(t, mp.SetByKeys([]string{}, "v3"))
+
 	err := mp.SetByKeys([]string{"k3"}, "v3")
 	assert.NoErr(t, err)
 	assert.Eq(t, "v3", mp.Str("k3"))

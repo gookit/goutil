@@ -23,7 +23,7 @@ func KeyToLower(src map[string]string) map[string]string {
 func ToStringMap(src map[string]any) map[string]string {
 	strMp := make(map[string]string, len(src))
 	for k, v := range src {
-		strMp[k] = strutil.MustString(v)
+		strMp[k] = strutil.SafeString(v)
 	}
 	return strMp
 }
