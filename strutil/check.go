@@ -113,6 +113,16 @@ func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffi
 // IsEndOf alias of the strings.HasSuffix
 func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
 
+// HasOneSuffix the string end withs one of the subs
+func HasOneSuffix(s string, suffixes []string) bool {
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(s, suffix) {
+			return true
+		}
+	}
+	return false
+}
+
 // IsValidUtf8 valid utf8 string check
 func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
 

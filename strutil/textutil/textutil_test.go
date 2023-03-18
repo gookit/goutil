@@ -80,6 +80,25 @@ func TestRenderSMap(t *testing.T) {
 	assert.Equal(t, "hi {$name}", textutil.RenderSMap("hi {$name}", nil, "{$,}"))
 }
 
+func TestVarReplacer_ParseVars(t *testing.T) {
+	vp := textutil.NewVarReplacer("")
+	str := "hi {{ name }}, age {{age}}, age {{age }}"
+	ss := vp.ParseVars(str)
+
+	assert.NotEmpty(t, ss)
+	assert.Len(t, ss, 2)
+	assert.Contains(t, ss, "name")
+	assert.Contains(t, ss, "age")
+
+	tplVars := map[string]any{
+		"name": "inhere",
+		"age":  234,
+	}
+	assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
+	vp.DisableFlatten()
+	assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
+}
+
 func TestIsMatchAll(t *testing.T) {
 	str := "hi inhere, age is 120"
 	assert.True(t, textutil.IsMatchAll(str, []string{"hi", "inhere"}))
