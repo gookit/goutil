@@ -30,7 +30,8 @@ func TestConfString_Set(t *testing.T) {
 	cs = cflag.ConfString{}
 	err := cs.Set("name=inhere;age=123")
 	assert.NoErr(t, err)
-	assert.NotEmpty(t, cs.Data())
+	assert.NotEmpty(t, cs.Get())
+	assert.NotEmpty(t, cs.String())
 	assert.Eq(t, "inhere", cs.Str("name"))
 	assert.Eq(t, 123, cs.Int("age"))
 }
@@ -41,8 +42,11 @@ func TestKVString_Set(t *testing.T) {
 
 	assert.NoErr(t, kv.Set("age=234"))
 	assert.NotEmpty(t, kv.Data())
+	assert.NotEmpty(t, kv.Get())
 	assert.Eq(t, 234, kv.Int("age"))
 	assert.Eq(t, "{age:234}", kv.String())
+	assert.False(t, kv.IsEmpty())
+	assert.True(t, kv.IsRepeatable())
 
 	assert.NoErr(t, kv.Set("name=inhere"))
 	assert.Eq(t, "inhere", kv.Str("name"))

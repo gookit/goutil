@@ -255,6 +255,13 @@ func (s *String) Ints(sep string) []int {
 //
 // Implemented the flag.Value interface.
 //
+// Usage:
+//
+//		type myOpts struct {
+//			vars cflag.KVString
+//		}
+//	 var mo &myOpts{ vars: cflag.NewKVString() }
+//
 // Example:
 //
 //	--var name=inhere => string map {name:inhere}
@@ -266,10 +273,16 @@ type KVString struct {
 
 // NewKVString instance
 func NewKVString() KVString {
-	return KVString{
-		Sep:  comdef.EqualStr,
-		SMap: make(maputil.SMap),
+	return *(&KVString{}).Init()
+}
+
+// Init settings
+func (s *KVString) Init() *KVString {
+	if s.Sep == "" {
+		s.Sep = comdef.EqualStr
+		s.SMap = make(maputil.SMap)
 	}
+	return s
 }
 
 // Get value
@@ -285,6 +298,8 @@ func (s *KVString) Data() maputil.SMap {
 // Set new value, will check value is right
 func (s *KVString) Set(value string) error {
 	if value != "" {
+		s.Init()
+
 		key, val := strutil.SplitKV(value, s.Sep)
 		if key != "" {
 			s.SMap[key] = val
