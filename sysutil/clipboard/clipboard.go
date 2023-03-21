@@ -198,7 +198,7 @@ func (c *Clipboard) ReadTo(w io.Writer) error {
 
 // Available check
 func (c *Clipboard) Available() bool {
-	return c.writeable && c.readable
+	return c.writeable && c.readable && available()
 }
 
 // Writeable check
