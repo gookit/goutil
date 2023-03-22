@@ -91,7 +91,9 @@ func (h *ReqClient) BaseURL(baseURL string) *ReqClient {
 
 // Method with custom method
 func (h *ReqClient) Method(method string) *ReqClient {
-	h.method = method
+	if method != "" {
+		h.method = method
+	}
 	return h
 }
 

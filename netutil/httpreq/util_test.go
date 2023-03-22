@@ -14,7 +14,18 @@ import (
 func TestBuildBasicAuth(t *testing.T) {
 	val := httpreq.BuildBasicAuth("inhere", "abcd&123")
 
+	assert.Eq(t, "Basic aW5oZXJlOmFiY2QmMTIz", val)
 	assert.Contains(t, val, "Basic ")
+}
+
+func TestBasicAuthConf_Value(t *testing.T) {
+	bac := httpreq.BasicAuthConf{
+		Username: "user",
+		Password: "pass",
+	}
+	assert.Eq(t, "user:pass", bac.String())
+	assert.Eq(t, "Basic dXNlcjpwYXNz", bac.Value())
+	assert.True(t, bac.IsValid())
 }
 
 func TestAddHeaders(t *testing.T) {
@@ -44,6 +55,11 @@ func TestToQueryValues(t *testing.T) {
 
 	vs = httpreq.ToQueryValues(map[string]any{"field1": 234, "field2": "value2"})
 	assert.StrContains(t, vs.Encode(), "field1=234")
+	assert.Eq(t, "field1=234&field2=value2", vs.Encode())
+	assert.StrContains(t, "abc.com?field1=234&field2=value2", httpreq.AppendQueryToURL("abc.com", vs))
+
+	vs = httpreq.ToQueryValues(vs)
+	assert.Eq(t, "field1=234&field2=value2", vs.Encode())
 }
 
 func TestRequestToString(t *testing.T) {

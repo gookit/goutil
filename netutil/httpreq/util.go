@@ -12,6 +12,27 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// BasicAuthConf struct
+type BasicAuthConf struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// IsValid value
+func (ba *BasicAuthConf) IsValid() bool {
+	return ba.Password != "" && ba.Username != ""
+}
+
+// Value build to auth header "Authorization".
+func (ba *BasicAuthConf) Value() string {
+	return BuildBasicAuth(ba.Username, ba.Password)
+}
+
+// String build to auth header "Authorization".
+func (ba *BasicAuthConf) String() string {
+	return ba.Username + ":" + ba.Password
+}
+
 // IsOK check response status code is 200
 func IsOK(statusCode int) bool {
 	return statusCode == http.StatusOK
@@ -51,6 +72,8 @@ func IsServerError(statusCode int) bool {
 }
 
 // BuildBasicAuth returns the base64 encoded username:password for basic auth.
+// Then set to header "Authorization".
+//
 // copied from net/http.
 func BuildBasicAuth(username, password string) string {
 	auth := username + ":" + password
@@ -87,7 +110,7 @@ func HeaderToStringMap(rh http.Header) map[string]string {
 	return mp
 }
 
-// ToQueryValues convert string-map to url.Values
+// ToQueryValues convert string-map or any-map to url.Values
 func ToQueryValues(data any) url.Values {
 	// use url.Values directly if we have it
 	if uv, ok := data.(url.Values); ok {
@@ -106,6 +129,18 @@ func ToQueryValues(data any) url.Values {
 	}
 
 	return uv
+}
+
+// AppendQueryToURL appends the given query data to the given url.
+func AppendQueryToURL(urlStr string, query url.Values) string {
+	if len(query) == 0 {
+		return urlStr
+	}
+
+	if strings.ContainsRune(urlStr, '?') {
+		return urlStr + "&" + query.Encode()
+	}
+	return urlStr + "?" + query.Encode()
 }
 
 // IsNoBodyMethod check
