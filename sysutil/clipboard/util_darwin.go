@@ -11,3 +11,5 @@ func GetWriterBin() string {
 func GetReaderBin() string {
 	return ReaderOnMac
 }
+
+func available() bool { return true }
