@@ -13,6 +13,9 @@ import (
 
 const defaultVarFormat = "{{,}}"
 
+// FallbackFn type
+type FallbackFn = func(name string) (val string, ok bool)
+
 // VarReplacer struct
 type VarReplacer struct {
 	init bool
@@ -24,12 +27,28 @@ type VarReplacer struct {
 	// flatten sub map in vars
 	flatSubs bool
 	parseEnv bool
+	// support parse default value. eg: {{ name | inhere }}
+	parseDef bool
 	missVars []string
+	// NotFound handler
+	NotFound FallbackFn
 }
 
 // NewVarReplacer instance
-func NewVarReplacer(format string) *VarReplacer {
-	return (&VarReplacer{flatSubs: true}).WithFormat(format)
+func NewVarReplacer(format string, opFns ...func(vp *VarReplacer)) *VarReplacer {
+	vp := &VarReplacer{flatSubs: true}
+	for _, fn := range opFns {
+		fn(vp)
+	}
+	return vp.WithFormat(format)
+}
+
+// NewFullReplacer instance
+func NewFullReplacer(format string) *VarReplacer {
+	return NewVarReplacer(format, func(vp *VarReplacer) {
+		vp.WithParseEnv()
+		vp.WithParseDefault()
+	})
 }
 
 // DisableFlatten on the input vars map
@@ -38,9 +57,21 @@ func (r *VarReplacer) DisableFlatten() *VarReplacer {
 	return r
 }
 
+// WithParseDefault value on the input template contents
+func (r *VarReplacer) WithParseDefault() *VarReplacer {
+	r.parseDef = true
+	return r
+}
+
 // WithParseEnv on the input vars value
 func (r *VarReplacer) WithParseEnv() *VarReplacer {
 	r.parseEnv = true
+	return r
+}
+
+// OnNotFound var handle
+func (r *VarReplacer) OnNotFound(fn FallbackFn) *VarReplacer {
+	r.NotFound = fn
 	return r
 }
 
@@ -56,10 +87,9 @@ func (r *VarReplacer) Init() *VarReplacer {
 	if !r.init {
 		r.lLen, r.rLen = len(r.Left), len(r.Right)
 		if r.Right != "" {
-			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s.-]+)` + regexp.QuoteMeta(r.Right))
+			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s.-|]+)` + regexp.QuoteMeta(r.Right))
 		} else {
 			// no right tag. eg: $name, $user.age
-			// r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w.-]+)`)
 			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `(\w[\w-]*(?:\.[\w-]+)*)`)
 		}
 	}
@@ -83,7 +113,10 @@ func (r *VarReplacer) Render(s string, tplVars map[string]any) string {
 
 // Replace any-map vars in the text contents
 func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
-	if len(tplVars) == 0 || !strings.Contains(s, r.Left) {
+	if !strings.Contains(s, r.Left) {
+		return s
+	}
+	if !r.parseDef && len(tplVars) == 0 {
 		return s
 	}
 
@@ -136,15 +169,30 @@ func (r *VarReplacer) MissVars() []string {
 
 // Replace string-map vars in the text contents
 func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
-	r.missVars = make([]string, 0) // clear each replace
+	r.missVars = make([]string, 0) // clear on each replace
 
 	return r.varReg.ReplaceAllStringFunc(s, func(sub string) string {
-		varName := strings.TrimSpace(sub[r.lLen : len(sub)-r.rLen])
-		if val, ok := varMap[varName]; ok {
+		name := strings.TrimSpace(sub[r.lLen : len(sub)-r.rLen])
+
+		var defVal string
+		if r.parseDef && strings.ContainsRune(name, '|') {
+			name, defVal = strutil.TrimCut(name, "|")
+		}
+
+		if val, ok := varMap[name]; ok {
 			return val
 		}
 
-		r.missVars = append(r.missVars, varName)
+		if r.NotFound != nil {
+			if val, ok := r.NotFound(name); ok {
+				return val
+			}
+		}
+
+		if len(defVal) > 0 {
+			return defVal
+		}
+		r.missVars = append(r.missVars, name)
 		return sub
 	})
 }

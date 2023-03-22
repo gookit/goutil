@@ -44,6 +44,31 @@ func TestReplaceVars(t *testing.T) {
 	assert.Equal(t, "hi {$name}", textutil.ReplaceVars("hi {$name}", nil, "{$,}"))
 }
 
+func TestNewFullReplacer(t *testing.T) {
+	vp := textutil.NewFullReplacer("")
+
+	tplVars := map[string]any{
+		"name": "inhere",
+		"info": map[string]any{"age": 230, "sex": "man"},
+	}
+
+	tpl := "hi, {{ name }}, {{ age | 23 }}"
+	str := vp.Render(tpl, nil)
+	assert.Eq(t, "hi, {{ name }}, 23", str)
+
+	str = vp.Render(tpl, tplVars)
+	assert.Eq(t, "hi, inhere, 23", str)
+
+	vp.OnNotFound(func(name string) (val string, ok bool) {
+		if name == "name" {
+			return "tom", true
+		}
+		return
+	})
+	str = vp.Render(tpl, nil)
+	assert.Eq(t, "hi, tom, 23", str)
+}
+
 func TestRenderSMap(t *testing.T) {
 	tplVars := map[string]string{
 		"name":   "inhere",
