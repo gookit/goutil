@@ -11,6 +11,7 @@ import (
 
 func TestSlashPath_nw(t *testing.T) {
 	assert.Eq(t, "path/to/dir", fsutil.JoinPaths("path", "to", "dir"))
+	assert.Eq(t, "path/to/dir", fsutil.JoinSubPaths("path", "to", "dir"))
 }
 
 func TestRealpath_nw(t *testing.T) {

@@ -87,6 +87,14 @@ func JoinPaths(elem ...string) string {
 	return filepath.Join(elem...)
 }
 
+// JoinSubPaths elements, like the filepath.Join()
+func JoinSubPaths(basePath string, elem ...string) string {
+	paths := make([]string, len(elem)+1)
+	paths[0] = basePath
+	copy(paths[1:], elem)
+	return filepath.Join(paths...)
+}
+
 // SlashPath alias of filepath.ToSlash
 func SlashPath(path string) string {
 	return filepath.ToSlash(path)
