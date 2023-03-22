@@ -280,6 +280,8 @@ func NewKVString() KVString {
 func (s *KVString) Init() *KVString {
 	if s.Sep == "" {
 		s.Sep = comdef.EqualStr
+	}
+	if s.SMap == nil {
 		s.SMap = make(maputil.SMap)
 	}
 	return s
