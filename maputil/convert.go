@@ -33,6 +33,20 @@ func CombineToSMap(keys, values []string) SMap {
 	return arrutil.CombineToSMap(keys, values)
 }
 
+// ToAnyMap convert map[TYPE1]TYPE2 to map[string]any
+func ToAnyMap(mp any) map[string]any {
+	rv := reflect.Indirect(reflect.ValueOf(mp))
+	if rv.Kind() != reflect.Map {
+		panic("not a map value")
+	}
+
+	anyMp := make(map[string]any, rv.Len())
+	for _, key := range rv.MapKeys() {
+		anyMp[key.String()] = rv.MapIndex(key).Interface()
+	}
+	return anyMp
+}
+
 // HTTPQueryString convert map[string]any data to http query string.
 func HTTPQueryString(data map[string]any) string {
 	ss := make([]string, 0, len(data))

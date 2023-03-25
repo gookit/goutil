@@ -101,14 +101,26 @@ func Keys(mp any) (keys []string) {
 
 // Values get all values from the given map.
 func Values(mp any) (values []any) {
-	rftVal := reflect.Indirect(reflect.ValueOf(mp))
-	if rftVal.Kind() != reflect.Map {
+	rv := reflect.Indirect(reflect.ValueOf(mp))
+	if rv.Kind() != reflect.Map {
 		return
 	}
 
-	values = make([]any, 0, rftVal.Len())
-	for _, key := range rftVal.MapKeys() {
-		values = append(values, rftVal.MapIndex(key).Interface())
+	values = make([]any, 0, rv.Len())
+	for _, key := range rv.MapKeys() {
+		values = append(values, rv.MapIndex(key).Interface())
 	}
 	return
+}
+
+// EachAnyMap iterates the given map and calls the given function for each item.
+func EachAnyMap(mp any, fn func(key string, val any)) {
+	rv := reflect.Indirect(reflect.ValueOf(mp))
+	if rv.Kind() != reflect.Map {
+		panic("not a map value")
+	}
+
+	for _, key := range rv.MapKeys() {
+		fn(key.String(), rv.MapIndex(key).Interface())
+	}
 }

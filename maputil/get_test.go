@@ -126,3 +126,20 @@ func TestValues(t *testing.T) {
 
 	assert.Len(t, ret, 0)
 }
+
+func TestEachAnyMap(t *testing.T) {
+	mp := map[string]any{
+		"key0": "v0",
+		"key1": "v1",
+		"key2": 34,
+	}
+
+	maputil.EachAnyMap(mp, func(k string, v any) {
+		assert.NotEmpty(t, k)
+		assert.NotEmpty(t, v)
+	})
+
+	assert.Panics(t, func() {
+		maputil.EachAnyMap(1, nil)
+	})
+}
