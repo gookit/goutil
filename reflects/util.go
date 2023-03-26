@@ -82,6 +82,27 @@ func SetValue(rv reflect.Value, val any) error {
 	return err
 }
 
+// EachMap process any map data
+func EachMap(mp reflect.Value, fn func(key, val reflect.Value)) {
+	if fn == nil {
+		return
+	}
+	if mp.Kind() != reflect.Map {
+		panic("only allow map value data")
+	}
+
+	for _, key := range mp.MapKeys() {
+		fn(key, mp.MapIndex(key))
+	}
+}
+
+// EachStrAnyMap process any map data as string key and any value
+func EachStrAnyMap(mp reflect.Value, fn func(key string, val any)) {
+	EachMap(mp, func(key, val reflect.Value) {
+		fn(String(key), val.Interface())
+	})
+}
+
 // FlatFunc custom collect handle func
 type FlatFunc func(path string, val reflect.Value)
 

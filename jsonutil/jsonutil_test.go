@@ -95,6 +95,12 @@ func TestWriteReadFile(t *testing.T) {
 	err := jsonutil.WriteFile("testdata/test.json", &user)
 	assert.NoErr(t, err)
 
+	err = jsonutil.WritePretty("testdata/test2.json", &user)
+	assert.NoErr(t, err)
+
+	// err = jsonutil.WritePretty("/path/to/not-exist.json", &user)
+	// assert.Err(t, err)
+
 	err = jsonutil.ReadFile("testdata/test.json", &user)
 	assert.NoErr(t, err)
 
