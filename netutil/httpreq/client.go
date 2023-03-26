@@ -3,6 +3,7 @@ package httpreq
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -13,7 +14,9 @@ import (
 
 // ReqOption struct
 type ReqOption struct {
-	// HeaderMap data. eg: traceid, parentid
+	// Method for request
+	Method string
+	// HeaderMap data. eg: traceid
 	HeaderMap map[string]string
 	// Timeout unit: ms
 	Timeout int
@@ -23,6 +26,8 @@ type ReqOption struct {
 	EncodeJSON bool
 	// Logger for request
 	Logger ReqLogger
+	// Context for request
+	Context context.Context
 }
 
 // Req alias of ReqClient
@@ -116,14 +121,14 @@ func (h *ReqClient) ContentType(cType string) *ReqClient {
 	return h.WithHeader(httpctype.Key, cType)
 }
 
-// BeforeSend add callback before send.
-func (h *ReqClient) BeforeSend(fn func(req *http.Request)) *ReqClient {
+// OnBeforeSend add callback before send.
+func (h *ReqClient) OnBeforeSend(fn func(req *http.Request)) *ReqClient {
 	h.beforeSend = fn
 	return h
 }
 
-// AfterSend add callback after send.
-func (h *ReqClient) AfterSend(fn func(resp *http.Response)) *ReqClient {
+// OnAfterSend add callback after send.
+func (h *ReqClient) OnAfterSend(fn func(resp *http.Response)) *ReqClient {
 	h.afterSend = fn
 	return h
 }

@@ -36,9 +36,9 @@ func TestHttpReq_Send(t *testing.T) {
 }
 
 func TestHttpReq_MustSend(t *testing.T) {
-	cli := httpreq.New().BeforeSend(func(req *http.Request) {
+	cli := httpreq.New().OnBeforeSend(func(req *http.Request) {
 		assert.Eq(t, http.MethodPost, req.Method)
-	}).AfterSend(func(resp *http.Response) {
+	}).OnAfterSend(func(resp *http.Response) {
 		bodyStr, _ := io.ReadAll(resp.Body)
 		assert.StrContains(t, string(bodyStr), "hi,goutil")
 	})

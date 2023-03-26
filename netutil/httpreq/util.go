@@ -131,8 +131,27 @@ func ToQueryValues(data any) url.Values {
 	return uv
 }
 
-// AppendQueryToURL appends the given query data to the given url.
-func AppendQueryToURL(urlStr string, query url.Values) string {
+// AppendQueryToURL appends the given query string to the given url.
+func AppendQueryToURL(reqURL *url.URL, uv url.Values) error {
+	urlValues, err := url.ParseQuery(reqURL.RawQuery)
+	if err != nil {
+		return err
+	}
+
+	for key, values := range uv {
+		for _, value := range values {
+			urlValues.Add(key, value)
+		}
+	}
+
+	// url.Values format to a sorted "url encoded" string.
+	// e.g. "key=val&foo=bar"
+	reqURL.RawQuery = urlValues.Encode()
+	return nil
+}
+
+// AppendQueryToURLString appends the given query data to the given url.
+func AppendQueryToURLString(urlStr string, query url.Values) string {
 	if len(query) == 0 {
 		return urlStr
 	}
@@ -209,6 +228,8 @@ func RequestToString(r *http.Request) string {
 	buf.WriteString(r.Method)
 	buf.WriteByte(' ')
 	buf.WriteString(r.URL.String())
+	buf.WriteByte(' ')
+	buf.WriteString(r.Proto)
 	buf.WriteByte('\n')
 
 	for key, values := range r.Header {
@@ -222,7 +243,6 @@ func RequestToString(r *http.Request) string {
 		buf.WriteByte('\n')
 		_, _ = buf.ReadFrom(r.Body)
 	}
-
 	return buf.String()
 }
 

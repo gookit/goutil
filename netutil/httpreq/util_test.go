@@ -56,7 +56,7 @@ func TestToQueryValues(t *testing.T) {
 	vs = httpreq.ToQueryValues(map[string]any{"field1": 234, "field2": "value2"})
 	assert.StrContains(t, vs.Encode(), "field1=234")
 	assert.Eq(t, "field1=234&field2=value2", vs.Encode())
-	assert.StrContains(t, "abc.com?field1=234&field2=value2", httpreq.AppendQueryToURL("abc.com", vs))
+	assert.StrContains(t, "abc.com?field1=234&field2=value2", httpreq.AppendQueryToURLString("abc.com", vs))
 
 	vs = httpreq.ToQueryValues(vs)
 	assert.Eq(t, "field1=234&field2=value2", vs.Encode())
