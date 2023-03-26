@@ -8,6 +8,12 @@ import (
 	"strings"
 )
 
+// Workdir get
+func Workdir() string {
+	dir, _ := os.Getwd()
+	return dir
+}
+
 // ExpandHome will parse first `~` as user home dir path.
 func ExpandHome(pathStr string) string {
 	if len(pathStr) == 0 {

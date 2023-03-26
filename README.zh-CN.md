@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-`goutil` Go 常用功能的扩展工具库(**500+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
+`goutil` Go 常用功能的扩展工具库(**600+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
@@ -693,6 +693,7 @@ func TempDir(dir, pattern string) (string, error)
 func MimeType(path string) (mime string) 
 func ReaderMimeType(r io.Reader) (mime string) 
 func JoinPaths(elem ...string) string 
+func JoinSubPaths(basePath string, elem ...string) string 
 func SlashPath(path string) string 
 func UnixPath(path string) string 
 func ToAbsPath(p string) string 
@@ -794,6 +795,7 @@ func main() {
 ```go
 // source at jsonutil/jsonutil.go
 func WriteFile(filePath string, data any) error 
+func WritePretty(filePath string, data any) error 
 func ReadFile(filePath string, v any) error 
 func Pretty(v any) (string, error) 
 func Encode(v any) ([]byte, error) 
@@ -819,6 +821,7 @@ func HasAllKeys(mp any, keys ...any) (ok bool, noKey any)
 func KeyToLower(src map[string]string) map[string]string 
 func ToStringMap(src map[string]any) map[string]string 
 func CombineToSMap(keys, values []string) SMap 
+func ToAnyMap(mp any) map[string]any 
 func HTTPQueryString(data map[string]any) string 
 func ToString(mp map[string]any) string 
 func ToString2(mp any) string 
@@ -833,6 +836,7 @@ func QuietGet(mp map[string]any, path string) (val any)
 func GetByPath(path string, mp map[string]any) (val any, ok bool) 
 func Keys(mp any) (keys []string) 
 func Values(mp any) (values []any) 
+func EachAnyMap(mp any, fn func(key string, val any)) 
 // source at maputil/maputil.go
 func SimpleMerge(src, dst map[string]any) map[string]any 
 func DeepMerge(src, dst map[string]any, deep int) map[string]any 
@@ -887,7 +891,9 @@ func QuietString(val any) string
 func String(val any) string 
 func TryToString(val any, defaultAsErr bool) (str string, err error) 
 // source at mathutil/mathutil.go
+func Min[T comdef.XintOrFloat](x, y T) T 
 func Max[T comdef.XintOrFloat](x, y T) T 
+func SwapMin[T comdef.XintOrFloat](x, y T) (T, T) 
 func SwapMax[T comdef.XintOrFloat](x, y T) (T, T) 
 func MaxInt(x, y int) int 
 func SwapMaxInt(x, y int) (int, int) 
@@ -939,6 +945,8 @@ func Indirect(v reflect.Value) reflect.Value
 func Len(v reflect.Value) int 
 func SliceSubKind(typ reflect.Type) reflect.Kind 
 func SetValue(rv reflect.Value, val any) error 
+func EachMap(mp reflect.Value, fn func(key, val reflect.Value)) 
+func EachStrAnyMap(mp reflect.Value, fn func(key string, val any)) 
 func FlatMap(rv reflect.Value, fn FlatFunc) 
 // source at reflects/value.go
 func Wrap(rv reflect.Value) Value 
@@ -1222,6 +1230,7 @@ func RuneWidth(r rune) int
 func TextWidth(s string) int 
 func Utf8Width(s string) int 
 func RunesWidth(rs []rune) (w int) 
+func Truncate(s string, w int, tail string) string 
 func TextTruncate(s string, w int, tail string) string 
 func Utf8Truncate(s string, w int, tail string) string 
 func TextSplit(s string, w int) []string 
@@ -1300,16 +1309,16 @@ func BinFile() string
 func Open(fileOrUrl string) error 
 func OpenBrowser(fileOrUrl string) error 
 func OpenFile(path string) error 
-// source at sysutil/sysutil_linux.go
+// source at sysutil/sysutil_nonwin.go
+func Kill(pid int, signal syscall.Signal) error 
+func ProcessExists(pid int) bool 
+// source at sysutil/sysutil_unix.go
 func IsWin() bool 
 func IsWindows() bool 
 func IsMac() bool 
 func IsDarwin() bool 
 func IsLinux() bool 
 func OpenURL(URL string) error 
-// source at sysutil/sysutil_nonwin.go
-func Kill(pid int, signal syscall.Signal) error 
-func ProcessExists(pid int) bool 
 // source at sysutil/user.go
 func MustFindUser(uname string) *user.User 
 func LoginUser() *user.User 
