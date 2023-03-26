@@ -87,7 +87,7 @@ func (r *VarReplacer) Init() *VarReplacer {
 	if !r.init {
 		r.lLen, r.rLen = len(r.Left), len(r.Right)
 		if r.Right != "" {
-			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s.-|]+)` + regexp.QuoteMeta(r.Right))
+			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `([\w\s\|.-]+)` + regexp.QuoteMeta(r.Right))
 		} else {
 			// no right tag. eg: $name, $user.age
 			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `(\w[\w-]*(?:\.[\w-]+)*)`)

@@ -61,7 +61,7 @@ func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) {
 	}
 
 	if obj.Kind() != reflect.Struct {
-		return mp, errors.New("must be an struct")
+		return mp, errors.New("must be an struct value")
 	}
 
 	opt := &MapOptions{TagName: defaultFieldTag}
