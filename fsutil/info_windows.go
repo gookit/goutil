@@ -1,6 +1,8 @@
 package fsutil
 
 import (
+	"path/filepath"
+
 	"github.com/gookit/goutil/internal/comfunc"
 )
 

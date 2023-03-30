@@ -78,23 +78,26 @@ var curShell string
 //
 // eg "/bin/zsh" "/bin/bash".
 // if onlyName=true, will return "zsh", "bash"
-func CurrentShell(onlyName bool) (path string) {
+func CurrentShell(onlyName bool) (binPath string) {
 	var err error
 	if curShell == "" {
-		path, err = ShellExec("echo $SHELL")
-		if err != nil {
-			return ""
+		binPath = os.Getenv("SHELL")
+		if len(binPath) == 0 {
+			binPath, err = ShellExec("echo $SHELL")
+			if err != nil {
+				return ""
+			}
 		}
 
-		path = strings.TrimSpace(path)
+		binPath = strings.TrimSpace(binPath)
 		// cache result
-		curShell = path
+		curShell = binPath
 	} else {
-		path = curShell
+		binPath = curShell
 	}
 
-	if onlyName && len(path) > 0 {
-		path = filepath.Base(path)
+	if onlyName && len(binPath) > 0 {
+		binPath = filepath.Base(binPath)
 	}
 	return
 }

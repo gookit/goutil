@@ -15,8 +15,12 @@ func Workdir() string {
 
 // BinDir get
 func BinDir() string {
-	binFile := os.Args[0]
-	return path.Dir(binFile)
+	return path.Dir(os.Args[0])
+}
+
+// BinName get
+func BinName() string {
+	return path.Base(os.Args[0])
 }
 
 // BinFile get
