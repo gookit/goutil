@@ -29,6 +29,9 @@ type VarReplacer struct {
 	parseEnv bool
 	// support parse default value. eg: {{ name | inhere }}
 	parseDef bool
+	// keepMissVars list. default False: will clear on each replace
+	keepMissVars bool
+	// missing vars list
 	missVars []string
 	// NotFound handler
 	NotFound FallbackFn
@@ -46,14 +49,19 @@ func NewVarReplacer(format string, opFns ...func(vp *VarReplacer)) *VarReplacer 
 // NewFullReplacer instance
 func NewFullReplacer(format string) *VarReplacer {
 	return NewVarReplacer(format, func(vp *VarReplacer) {
-		vp.WithParseEnv()
-		vp.WithParseDefault()
+		vp.WithParseEnv().WithParseDefault().KeepMissingVars()
 	})
 }
 
 // DisableFlatten on the input vars map
 func (r *VarReplacer) DisableFlatten() *VarReplacer {
 	r.flatSubs = false
+	return r
+}
+
+// KeepMissingVars on the replacement handle
+func (r *VarReplacer) KeepMissingVars() *VarReplacer {
+	r.keepMissVars = true
 	return r
 }
 
@@ -167,9 +175,16 @@ func (r *VarReplacer) MissVars() []string {
 	return r.missVars
 }
 
+// ResetMissVars list
+func (r *VarReplacer) ResetMissVars() {
+	r.missVars = make([]string, 0)
+}
+
 // Replace string-map vars in the text contents
 func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
-	r.missVars = make([]string, 0) // clear on each replace
+	if !r.keepMissVars {
+		r.missVars = make([]string, 0) // clear on each replace
+	}
 
 	return r.varReg.ReplaceAllStringFunc(s, func(sub string) string {
 		name := strings.TrimSpace(sub[r.lLen : len(sub)-r.rLen])
