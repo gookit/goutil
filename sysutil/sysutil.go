@@ -3,7 +3,6 @@ package sysutil
 
 import (
 	"os"
-	"path"
 	"path/filepath"
 )
 
@@ -15,12 +14,12 @@ func Workdir() string {
 
 // BinDir get
 func BinDir() string {
-	return path.Dir(os.Args[0])
+	return filepath.Dir(os.Args[0])
 }
 
 // BinName get
 func BinName() string {
-	return path.Base(os.Args[0])
+	return filepath.Base(os.Args[0])
 }
 
 // BinFile get

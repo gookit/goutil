@@ -254,11 +254,14 @@ func ResponseToString(w *http.Response) string {
 	buf.WriteString(w.Status)
 	buf.WriteByte('\n')
 
-	for key, values := range w.Header {
-		buf.WriteString(key)
-		buf.WriteString(": ")
-		buf.WriteString(strings.Join(values, ";"))
+	if len(w.Header) > 0 {
 		buf.WriteByte('\n')
+		for key, values := range w.Header {
+			buf.WriteString(key)
+			buf.WriteString(": ")
+			buf.WriteString(strings.Join(values, ";"))
+			buf.WriteByte('\n')
+		}
 	}
 
 	if w.Body != nil {

@@ -20,6 +20,8 @@ type ReqOption struct {
 	HeaderMap map[string]string
 	// Timeout unit: ms
 	Timeout int
+	// TCancelFunc will auto set it on Timeout > 0
+	TCancelFunc context.CancelFunc
 	// ContentType header
 	ContentType string
 	// EncodeJSON req body
