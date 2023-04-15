@@ -2,12 +2,13 @@ package fmtutil
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"strings"
 	"unicode"
 
 	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/byteutil"
+	"github.com/gookit/goutil/strutil"
 )
 
 // data size
@@ -95,15 +96,19 @@ func StringsToInts(ss []string) (ints []int, err error) {
 }
 
 // ArgsWithSpaces it like Println, will add spaces for each argument
-func ArgsWithSpaces(args []any) (message string) {
-	if ln := len(args); ln == 0 {
-		message = ""
+func ArgsWithSpaces(vs []any) (message string) {
+	if ln := len(vs); ln == 0 {
+		return ""
 	} else if ln == 1 {
-		message = fmt.Sprint(args[0])
+		return strutil.SafeString(vs[0])
 	} else {
-		message = fmt.Sprintln(args...)
-		// clear last "\n"
-		message = message[:len(message)-1]
+		bs := make([]byte, 0, ln*8)
+		for i := range vs {
+			if i > 0 { // add space
+				bs = append(bs, ' ')
+			}
+			bs = byteutil.AppendAny(bs, vs[i])
+		}
+		return string(bs)
 	}
-	return
 }
