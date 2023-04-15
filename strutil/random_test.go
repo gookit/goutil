@@ -63,4 +63,7 @@ func TestRandomString(t *testing.T) {
 	fmt.Println(s)
 	assert.NoErr(t, err)
 	assert.True(t, len(s) > 3)
+
+	assert.NotEmpty(t, strutil.RandWithTpl(8, ""))
+	assert.NotEmpty(t, strutil.RandWithTpl(8, strutil.AlphaBet))
 }

@@ -1,7 +1,6 @@
 package strutil
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -171,7 +170,7 @@ func AnyToString(val any, defaultAsErr bool) (str string, err error) {
 		str = string(value)
 	case time.Duration:
 		str = value.String()
-	case json.Number:
+	case fmt.Stringer:
 		str = value.String()
 	default:
 		if defaultAsErr {
