@@ -169,7 +169,7 @@ func AnyToString(val any, defaultAsErr bool) (str string, err error) {
 	case []byte:
 		str = string(value)
 	case time.Duration:
-		str = value.String()
+		str = strconv.FormatInt(int64(value), 10)
 	case fmt.Stringer:
 		str = value.String()
 	default:

@@ -133,12 +133,25 @@ func (t *Time) Datetime() string {
 }
 
 // TplFormat use input template format time to date.
+//
+// alias of DateFormat()
 func (t *Time) TplFormat(template string) string {
 	return t.DateFormat(template)
 }
 
 // DateFormat use input template format time to date.
-// see ToLayout()
+//
+// Example:
+//
+//	tn := timex.Now()
+//	tn.DateFormat("Y-m-d H:i:s") // Output: 2019-01-01 12:12:12
+//	tn.DateFormat("Y-m-d H:i") // Output: 2019-01-01 12:12
+//	tn.DateFormat("Y-m-d") // Output: 2019-01-01
+//	tn.DateFormat("Y-m") // Output: 2019-01
+//	tn.DateFormat("y-m-d") // Output: 19-01-01
+//	tn.DateFormat("ymd") // Output: 190101
+//
+// see ToLayout() for convert template to layout.
 func (t *Time) DateFormat(template string) string {
 	return t.Format(ToLayout(template))
 }

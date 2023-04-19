@@ -6,7 +6,8 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// char to Go date layout eg: "2006-01-02 15:04:05",
+// char to Go date layout
+// eg: "Y-m-d H:i:s" => "2006-01-02 15:04:05",
 //
 // # More see time.stdLongMonth
 //
@@ -56,7 +57,7 @@ var charMap = map[byte][]byte{
 
 // ToLayout convert chars date template to Go date layout.
 //
-// Chars see charMap
+// template chars see timex.charMap
 func ToLayout(template string) string {
 	if template == "" {
 		return DefaultLayout
