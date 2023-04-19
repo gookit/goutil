@@ -55,6 +55,20 @@ func ReadString(in any) string {
 	return string(GetContents(in))
 }
 
+// ReadStringOrErr read contents from path or io.Reader, will panic on in type error
+func ReadStringOrErr(in any) (string, error) {
+	r, err := NewIOReader(in)
+	if err != nil {
+		return "", err
+	}
+
+	bs, err := io.ReadAll(r)
+	if err != nil {
+		return "", err
+	}
+	return string(bs), nil
+}
+
 // ReadAll read contents from path or io.Reader, will panic on in type error
 func ReadAll(in any) []byte { return GetContents(in) }
 
@@ -65,6 +79,15 @@ func GetContents(in any) []byte {
 		panic(err)
 	}
 	return MustReadReader(r)
+}
+
+// ReadOrErr read contents from path or io.Reader, will panic on in type error
+func ReadOrErr(in any) ([]byte, error) {
+	r, err := NewIOReader(in)
+	if err != nil {
+		return nil, err
+	}
+	return io.ReadAll(r)
 }
 
 // ReadExistFile read file contents if existed, will panic on error

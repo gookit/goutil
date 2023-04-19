@@ -20,4 +20,8 @@ func TestMustCopyFile(t *testing.T) {
 	fsutil.MustCopyFile(srcPath, dstPath)
 	assert.Eq(t, []byte("hello"), fsutil.GetContents(dstPath))
 	assert.Eq(t, "hello", fsutil.ReadString(dstPath))
+
+	str, err := fsutil.ReadStringOrErr(dstPath)
+	assert.NoErr(t, err)
+	assert.Eq(t, "hello", str)
 }

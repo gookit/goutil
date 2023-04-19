@@ -10,10 +10,19 @@ import (
 
 func TestDiscardReader(t *testing.T) {
 	sr := strings.NewReader("hello")
+	bs, err := fsutil.ReadOrErr(sr)
+	assert.NoErr(t, err)
+	assert.Eq(t, []byte("hello"), bs)
+
+	sr = strings.NewReader("hello")
+	assert.Eq(t, []byte("hello"), fsutil.GetContents(sr))
+
+	sr = strings.NewReader("hello")
 	fsutil.DiscardReader(sr)
 
 	assert.Empty(t, fsutil.ReadReader(sr))
 	assert.Empty(t, fsutil.ReadAll(sr))
+
 }
 
 func TestGetContents(t *testing.T) {
