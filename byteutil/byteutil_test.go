@@ -6,6 +6,7 @@ import (
 
 	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/timex"
 )
 
 func TestFirstLine(t *testing.T) {
@@ -31,4 +32,12 @@ func TestStrOrErr(t *testing.T) {
 func TestMd5(t *testing.T) {
 	assert.NotEmpty(t, byteutil.Md5("abc"))
 	assert.NotEmpty(t, byteutil.Md5([]int{12, 34}))
+}
+
+func TestAppendAny(t *testing.T) {
+	assert.Eq(t, []byte("123"), byteutil.AppendAny(nil, 123))
+	assert.Eq(t, []byte("123"), byteutil.AppendAny([]byte{}, 123))
+	assert.Eq(t, []byte("123"), byteutil.AppendAny([]byte("1"), 23))
+	assert.Eq(t, []byte("1<nil>"), byteutil.AppendAny([]byte("1"), nil))
+	assert.Eq(t, "3600000000000", string(byteutil.AppendAny([]byte{}, timex.OneHour)))
 }

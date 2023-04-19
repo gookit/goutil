@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fmtutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/timex"
 )
 
 func TestDataSize(t *testing.T) {
@@ -65,6 +67,30 @@ func TestArgsWithSpaces(t *testing.T) {
 	assert.Eq(t, "", fmtutil.ArgsWithSpaces([]any{}))
 	assert.Eq(t, "abc", fmtutil.ArgsWithSpaces([]any{"abc"}))
 	assert.Eq(t, "23 abc", fmtutil.ArgsWithSpaces([]any{23, "abc"}))
+
+	tests := []struct {
+		args []any
+		want string
+	}{
+		{nil, ""},
+		{[]any{"a", "b", "c"}, "a b c"},
+		{[]any{"a", "b", "c", 1, 2, 3}, "a b c 1 2 3"},
+		{[]any{"a", 1, nil}, "a 1 <nil>"},
+		{[]any{12, int8(12), int16(12), int32(12), int64(12)}, "12 12 12 12 12"},
+		{[]any{uint(12), uint8(12), uint16(12), uint32(12), uint64(12)}, "12 12 12 12 12"},
+		{[]any{float32(12.12), 12.12}, "12.12 12.12"},
+		{[]any{true, false}, "true false"},
+		{[]any{[]byte("abc"), []byte("123")}, "abc 123"},
+		{[]any{timex.OneHour}, "3600000000000"},
+		{[]any{errorx.Raw("a error message")}, "a error message"},
+		{[]any{[]int{1, 2, 3}}, "[1 2 3]"},
+	}
+
+	for _, tt := range tests {
+		assert.Eq(t, tt.want, fmtutil.ArgsWithSpaces(tt.args))
+	}
+
+	assert.NotEmpty(t, fmtutil.ArgsWithSpaces([]any{timex.Now().T()}))
 }
 
 func TestStringsToInts(t *testing.T) {
