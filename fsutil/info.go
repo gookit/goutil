@@ -17,7 +17,12 @@ func PathName(fpath string) string { return path.Base(fpath) }
 // Name get file/dir name from full path.
 //
 // eg: path/to/main.go => main.go
-func Name(fpath string) string { return filepath.Base(fpath) }
+func Name(fpath string) string {
+	if fpath == "" {
+		return ""
+	}
+	return filepath.Base(fpath)
+}
 
 // FileExt get filename ext. alias of path.Ext()
 //

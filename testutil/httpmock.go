@@ -85,13 +85,13 @@ func NewHttpRequest(method, path string, data *MD) *http.Request {
 //	body := strings.NewReader("string ...")
 //	res := MockRequest(handler, "POST", "/path", &MD{
 //		Body: body,
-//		Headers: M{"x-head": "val"}
+//		HeaderM: M{"x-head": "val"}
 //	})
 //
 //	// with data 2
 //	res := MockRequest(handler, "POST", "/path", &MD{
 //		BodyString: "data string",
-//		Headers: M{"x-head": "val"}
+//		HeaderM: M{"x-head": "val"}
 //	})
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder {
 	// w.Result() will return http.Response
