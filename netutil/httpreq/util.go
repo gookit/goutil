@@ -255,7 +255,6 @@ func ResponseToString(w *http.Response) string {
 	buf.WriteByte('\n')
 
 	if len(w.Header) > 0 {
-		buf.WriteByte('\n')
 		for key, values := range w.Header {
 			buf.WriteString(key)
 			buf.WriteString(": ")
