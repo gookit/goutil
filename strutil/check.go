@@ -202,6 +202,31 @@ func VersionCompare(v1, v2, op string) bool {
 	}
 }
 
+// SimpleMatch all sub-string in the give text string.
+//
+// Difference the ContainsAll, start with ^ for exclude contains check.
+func SimpleMatch(s string, keywords []string) bool {
+	for _, keyword := range keywords {
+		if keyword == "" {
+			continue
+		}
+
+		// exclude
+		if keyword[0] == '^' && len(keyword) > 1 {
+			if strings.Contains(s, keyword[1:]) {
+				return false
+			}
+			continue
+		}
+
+		// include
+		if !strings.Contains(s, keyword) {
+			return false
+		}
+	}
+	return true
+}
+
 // QuickMatch check for a string. pattern can be a sub string.
 func QuickMatch(pattern, s string) bool {
 	if strings.ContainsRune(pattern, '*') {
