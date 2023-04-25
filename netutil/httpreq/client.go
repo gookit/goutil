@@ -7,13 +7,15 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/gookit/goutil/netutil/httpctype"
 )
 
-// ReqOption struct
-type ReqOption struct {
+// ReqOption alias of Option
+type ReqOption = Option
+
+// Option struct
+type Option struct {
 	// Method for request
 	Method string
 	// HeaderMap data. eg: traceid
@@ -30,6 +32,14 @@ type ReqOption struct {
 	Logger ReqLogger
 	// Context for request
 	Context context.Context
+}
+
+// NewOpt create a new Option
+func NewOpt(opt *Option) *Option {
+	if opt == nil {
+		opt = &Option{}
+	}
+	return opt
 }
 
 // Req alias of ReqClient
@@ -52,10 +62,6 @@ type ReqClient struct {
 	beforeSend func(req *http.Request)
 	afterSend  func(resp *http.Response)
 }
-
-// default std client
-var std = New().Client(&http.Client{Timeout: 500 * time.Millisecond})
-var emptyOpt = &ReqOption{}
 
 // ConfigStd req client
 func ConfigStd(fn func(hc *http.Client)) {
@@ -211,15 +217,11 @@ func (h *ReqClient) SendWithOpt(url string, opt *ReqOption) (*http.Response, err
 
 // SendRequest request and return http response
 func (h *ReqClient) SendRequest(req *http.Request, opt *ReqOption) (*http.Response, error) {
-	if opt == nil {
-		opt = emptyOpt
-	}
-
 	cli := h
+	opt = NewOpt(opt)
+
 	if opt.Timeout > 0 {
-		cli = New().Client(&http.Client{
-			Timeout: time.Duration(opt.Timeout) * time.Millisecond,
-		})
+		cli = NewClient(opt.Timeout)
 	}
 
 	if len(cli.headerMap) > 0 {
