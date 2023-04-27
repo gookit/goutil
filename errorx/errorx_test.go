@@ -34,6 +34,15 @@ func TestNew(t *testing.T) {
 	// fmt.Printf("%#v\n", err)
 }
 
+func TestRawGoErr(t *testing.T) {
+	assert.Err(t, errorx.E("error message"))
+	assert.Err(t, errorx.Err("error message"))
+	assert.Err(t, errorx.Raw("error message"))
+	assert.Err(t, errorx.Ef("error %s", "message"))
+	assert.Err(t, errorx.Errf("error %s", "message"))
+	assert.Err(t, errorx.Rawf("error %s", "message"))
+}
+
 func TestNewf(t *testing.T) {
 	err := errorx.Newf("error %s", "message")
 	assert.Err(t, err)
@@ -129,7 +138,7 @@ func TestWithPrev_errorx_l2(t *testing.T) {
 func TestStacked_goerr(t *testing.T) {
 	assert.Nil(t, errorx.Stacked(nil))
 
-	err1 := errorx.Raw("first error message")
+	err1 := errorx.E("first error message")
 	assert.Err(t, err1)
 
 	err2 := errorx.Stacked(err1)
