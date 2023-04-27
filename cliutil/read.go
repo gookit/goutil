@@ -101,6 +101,15 @@ func ReadPassword(question ...string) string {
 	return string(bs)
 }
 
+// Confirm with user input
+func Confirm(tip string) bool {
+	ans, err := ReadFirst(tip + " [y/N] ")
+	if err != nil {
+		return false
+	}
+	return InputIsYes(ans)
+}
+
 // InputIsYes answer: yes, y, Yes, Y
 func InputIsYes(ans string) bool {
 	return len(ans) > 0 && (ans[0] == 'y' || ans[0] == 'Y')

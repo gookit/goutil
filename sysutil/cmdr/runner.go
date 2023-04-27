@@ -287,6 +287,14 @@ func (r *Runner) Len() int {
 	return len(r.tasks)
 }
 
+// Reset instance
+func (r *Runner) Reset() *Runner {
+	r.prev = nil
+	r.tasks = make([]*Task, 0)
+	r.idMap = make(map[string]int, 0)
+	return r
+}
+
 // TaskIDs get
 func (r *Runner) TaskIDs() []string {
 	ss := make([]string, 0, len(r.idMap))
