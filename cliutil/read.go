@@ -15,13 +15,13 @@ var (
 	// Input global input stream
 	Input io.Reader = os.Stdin
 	// Output global output stream
-	// Output io.Writer = os.Stdout
+	Output io.Writer = os.Stdout
 )
 
 // ReadInput read user input form Stdin
 func ReadInput(question string) (string, error) {
 	if len(question) > 0 {
-		color.Print(question)
+		color.Fprint(Output, question)
 	}
 
 	scanner := bufio.NewScanner(Input)
@@ -41,7 +41,7 @@ func ReadInput(question string) (string, error) {
 //	ans, _ := cliutil.ReadLine("your name?")
 func ReadLine(question string) (string, error) {
 	if len(question) > 0 {
-		color.Print(question)
+		color.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)
@@ -66,7 +66,7 @@ func ReadFirst(question string) (string, error) {
 //	ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
 func ReadFirstByte(question string) (byte, error) {
 	if len(question) > 0 {
-		color.Print(question)
+		color.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)
@@ -76,12 +76,29 @@ func ReadFirstByte(question string) (byte, error) {
 // ReadFirstRune read first rune char
 func ReadFirstRune(question string) (rune, error) {
 	if len(question) > 0 {
-		color.Print(question)
+		color.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)
 	answer, _, err := reader.ReadRune()
 	return answer, err
+}
+
+// ReadAsBool check user inputted answer is right
+//
+// Usage:
+//
+//	ok := ReadAsBool("are you OK? [y/N]", false)
+func ReadAsBool(tip string, defVal bool) bool {
+	fChar, err := ReadFirstByte(tip)
+	if err != nil {
+		panic(err)
+	}
+
+	if fChar != 0 {
+		return ByteIsYes(fChar)
+	}
+	return defVal
 }
 
 // ReadPassword from console terminal
@@ -102,12 +119,16 @@ func ReadPassword(question ...string) string {
 }
 
 // Confirm with user input
-func Confirm(tip string) bool {
-	ans, err := ReadFirst(tip + " [y/N] ")
-	if err != nil {
-		return false
+func Confirm(tip string, defVal ...bool) bool {
+	mark := " [y/N]: "
+
+	var defV bool
+	if len(defVal) > 0 && defVal[0] {
+		defV = true
+		mark = " [Y/n]: "
 	}
-	return InputIsYes(ans)
+
+	return ReadAsBool(tip+mark, defV)
 }
 
 // InputIsYes answer: yes, y, Yes, Y
