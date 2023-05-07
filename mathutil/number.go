@@ -25,7 +25,8 @@ func ElapsedTime(startTime time.Time) string {
 	return fmt.Sprintf("%.3f", time.Since(startTime).Seconds()*1000)
 }
 
-// DataSize format value. alias format.DataSize()
+// DataSize format value to data size string. eg: 1024 => 1KB, 1024*1024 => 1MB
+// alias format.DataSize()
 func DataSize(size uint64) string {
 	return basefn.DataSize(size)
 }
