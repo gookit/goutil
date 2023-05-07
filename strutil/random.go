@@ -10,14 +10,17 @@ import (
 
 // some consts string chars
 const (
-	Numbers   = "0123456789"
-	HexChars  = "0123456789abcdef"
+	Numbers  = "0123456789"
+	HexChars = "0123456789abcdef"
+
 	AlphaBet  = "abcdefghijklmnopqrstuvwxyz"
 	AlphaBet1 = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
+
 	AlphaNum  = "abcdefghijklmnopqrstuvwxyz0123456789"
 	AlphaNum2 = "abcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	AlphaNum3 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 
+	Base62Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	Base64Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 )
 

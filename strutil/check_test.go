@@ -250,5 +250,7 @@ func TestHasEmpty(t *testing.T) {
 func TestSimpleMatch(t *testing.T) {
 	str := "hi inhere, age is 120"
 	assert.True(t, strutil.SimpleMatch(str, []string{"hi", "inhere"}))
+	assert.True(t, strutil.SimpleMatch(str, []string{"hi", "inhere", "120$"}))
 	assert.False(t, strutil.SimpleMatch(str, []string{"hi", "^inhere"}))
+	assert.False(t, strutil.SimpleMatch(str, []string{"hi", "inhere$"}))
 }

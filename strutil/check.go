@@ -204,19 +204,28 @@ func VersionCompare(v1, v2, op string) bool {
 
 // SimpleMatch all sub-string in the give text string.
 //
-// Difference the ContainsAll, start with ^ for exclude contains check.
+// Difference the ContainsAll:
+//
+//   - start with ^ for exclude contains check.
+//   - end with $ for check end with keyword.
 func SimpleMatch(s string, keywords []string) bool {
 	for _, keyword := range keywords {
-		if keyword == "" {
+		kln := len(keyword)
+		if kln == 0 {
 			continue
 		}
 
 		// exclude
-		if keyword[0] == '^' && len(keyword) > 1 {
+		if kln > 1 && keyword[0] == '^' {
 			if strings.Contains(s, keyword[1:]) {
 				return false
 			}
 			continue
+		}
+
+		// end with
+		if kln > 1 && keyword[kln-1] == '$' {
+			return strings.HasSuffix(s, keyword[:kln-1])
 		}
 
 		// include

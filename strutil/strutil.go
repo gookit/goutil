@@ -11,6 +11,7 @@ import (
 )
 
 // OrCond return s1 on cond is True, OR return s2.
+// Like: cond ? s1 : s2
 func OrCond(cond bool, s1, s2 string) string {
 	if cond {
 		return s1
@@ -18,7 +19,7 @@ func OrCond(cond bool, s1, s2 string) string {
 	return s2
 }
 
-// OrElse return s OR nv(new-value) on s is empty
+// OrElse return s OR orVal(new-value) on s is empty
 func OrElse(s, orVal string) string {
 	if s != "" {
 		return s
