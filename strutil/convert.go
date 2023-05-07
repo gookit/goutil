@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 	"unsafe"
 
 	"github.com/gookit/goutil/comdef"
@@ -447,4 +448,48 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 func ToDuration(s string) (time.Duration, error) {
 	return time.ParseDuration(s)
+}
+
+// SafeByteSize converts size string like 1GB/1g or 12mb/12M into an unsigned integer number of bytes
+func SafeByteSize(sizeStr string) uint64 {
+	size, _ := ToByteSize(sizeStr)
+	return size
+}
+
+// ToByteSize converts size string like 1GB/1g or 12mb/12M into an unsigned integer number of bytes
+func ToByteSize(sizeStr string) (uint64, error) {
+	sizeStr = strings.TrimSpace(sizeStr)
+	lastPos := len(sizeStr) - 1
+	if lastPos < 1 {
+		return 0, nil
+	}
+
+	if sizeStr[lastPos] == 'b' || sizeStr[lastPos] == 'B' {
+		// last second char is k,m,g,t
+		lastSec := sizeStr[lastPos-1]
+		if lastSec > 'A' {
+			lastPos--
+		}
+	}
+
+	multiplier := float64(1)
+	switch unicode.ToLower(rune(sizeStr[lastPos])) {
+	case 'k':
+		multiplier = 1 << 10
+	case 'm':
+		multiplier = 1 << 20
+	case 'g':
+		multiplier = 1 << 30
+	case 't':
+		multiplier = 1 << 40
+	default: // b
+		multiplier = 1
+	}
+
+	sizeNum := strings.TrimSpace(sizeStr[:lastPos])
+	size, err := strconv.ParseFloat(sizeNum, 64)
+	if size < 0 {
+		return 0, err
+	}
+	return uint64(size * multiplier), nil
 }

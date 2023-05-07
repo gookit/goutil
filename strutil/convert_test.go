@@ -297,3 +297,37 @@ func TestQuote(t *testing.T) {
 	is.Eq("a single-quoted string", strutil.Unquote("'a single-quoted string'"))
 	is.Eq("a double-quoted string", strutil.Unquote(`"a double-quoted string"`))
 }
+
+func TestToByteSize(t *testing.T) {
+	u64 := uint64(0)
+	assert.Eq(t, u64, strutil.SafeByteSize("0"))
+	assert.Eq(t, u64, strutil.SafeByteSize("0b"))
+	assert.Eq(t, u64, strutil.SafeByteSize("0B"))
+	assert.Eq(t, u64, strutil.SafeByteSize("0M"))
+
+	tests := []struct {
+		bytes uint64
+		sizeS string
+	}{
+		{346, "346"},
+		{346, "346B"},
+		{3471, "3.39K"},
+		{346777, "338.65 Kb"},
+		{12341739, "11.77 M"},
+		{1202590842, "1.12GB"},
+		{1234567890123, "1.12 TB"},
+	}
+
+	for _, tt := range tests {
+		assert.Eq(t, tt.bytes, strutil.SafeByteSize(tt.sizeS))
+	}
+
+	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1M"))
+	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1MB"))
+	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1m"))
+	assert.Eq(t, uint64(10485760), strutil.SafeByteSize("10mb"))
+
+	assert.Eq(t, uint64(1024*1024*1024), strutil.SafeByteSize("1G"))
+	assert.Eq(t, uint64(1288490188), strutil.SafeByteSize("1.2GB"))
+	assert.Eq(t, uint64(1288490188), strutil.SafeByteSize("1.2 GB"))
+}

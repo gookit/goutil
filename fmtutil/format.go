@@ -3,8 +3,6 @@ package fmtutil
 import (
 	"encoding/json"
 	"strconv"
-	"strings"
-	"unicode"
 
 	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/byteutil"
@@ -37,42 +35,8 @@ func StringToByte(sizeStr string) uint64 { return ParseByte(sizeStr) }
 
 // ParseByte converts size string like 1GB/1g or 12mb/12M into an unsigned integer number of bytes
 func ParseByte(sizeStr string) uint64 {
-	sizeStr = strings.TrimSpace(sizeStr)
-	lastPos := len(sizeStr) - 1
-	if lastPos < 1 {
-		return 0
-	}
-
-	if sizeStr[lastPos] == 'b' || sizeStr[lastPos] == 'B' {
-		// last second char is k,m,g
-		lastSec := sizeStr[lastPos-1]
-		if lastSec > 'A' {
-			lastPos--
-		}
-	}
-
-	multiplier := float64(1)
-	switch unicode.ToLower(rune(sizeStr[lastPos])) {
-	case 'k':
-		multiplier = 1 << 10
-		sizeStr = strings.TrimSpace(sizeStr[:lastPos])
-	case 'm':
-		multiplier = 1 << 20
-		sizeStr = strings.TrimSpace(sizeStr[:lastPos])
-	case 'g':
-		multiplier = 1 << 30
-		sizeStr = strings.TrimSpace(sizeStr[:lastPos])
-	default: // b
-		multiplier = 1
-		sizeStr = strings.TrimSpace(sizeStr[:lastPos])
-	}
-
-	size, _ := strconv.ParseFloat(sizeStr, 64)
-	if size < 0 {
-		return 0
-	}
-
-	return uint64(size * multiplier)
+	val, _ := strutil.ToByteSize(sizeStr)
+	return val
 }
 
 // PrettyJSON get pretty Json string

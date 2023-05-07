@@ -42,6 +42,7 @@ func TestParseByte(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Eq(t, tt.bytes, fmtutil.StringToByte(tt.sizeS))
+		assert.Eq(t, tt.bytes, fmtutil.ParseByte(tt.sizeS))
 	}
 }
 
