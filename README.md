@@ -201,11 +201,13 @@ func HowLongAgo(sec int64) string
 // source at byteutil/buffer.go
 func NewBuffer() *Buffer 
 // source at byteutil/byteutil.go
+func Random(length int) ([]byte, error) 
 func FirstLine(bs []byte) []byte 
 func StrOrErr(bs []byte, err error) (string, error) 
 func SafeString(bs []byte, err error) string 
 func String(b []byte) string 
 func ToString(b []byte) string 
+func AppendAny(dst []byte, v any) []byte 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
 // source at byteutil/check.go
@@ -319,7 +321,9 @@ func ReadLine(question string) (string, error)
 func ReadFirst(question string) (string, error) 
 func ReadFirstByte(question string) (byte, error) 
 func ReadFirstRune(question string) (rune, error) 
+func ReadAsBool(tip string, defVal bool) bool 
 func ReadPassword(question ...string) string 
+func Confirm(tip string, defVal ...bool) bool 
 func InputIsYes(ans string) bool 
 func ByteIsYes(ans byte) bool 
 ```
@@ -551,7 +555,10 @@ func Config(fns ...func(opt *ErrStackOpt))
 func SkipDepth(skipDepth int) func(opt *ErrStackOpt) 
 func TraceDepth(traceDepth int) func(opt *ErrStackOpt) 
 // source at errorx/util.go
+func Err(msg string) error 
 func Raw(msg string) error 
+func Ef(tpl string, vars ...any) error 
+func Errf(tpl string, vars ...any) error 
 func Rawf(tpl string, vars ...any) error 
 func Cause(err error) error 
 func Unwrap(err error) error 
@@ -653,7 +660,7 @@ func StringToByte(sizeStr string) uint64
 func ParseByte(sizeStr string) uint64 
 func PrettyJSON(v any) (string, error) 
 func StringsToInts(ss []string) (ints []int, err error) 
-func ArgsWithSpaces(args []any) (message string) 
+func ArgsWithSpaces(vs []any) (message string) 
 // source at fmtutil/time.go
 func HowLongAgo(sec int64) string 
 ```
@@ -737,8 +744,10 @@ func MustReadFile(filePath string) []byte
 func ReadReader(r io.Reader) []byte 
 func MustReadReader(r io.Reader) []byte 
 func ReadString(in any) string 
+func ReadStringOrErr(in any) (string, error) 
 func ReadAll(in any) []byte 
 func GetContents(in any) []byte 
+func ReadOrErr(in any) ([]byte, error) 
 func ReadExistFile(filePath string) []byte 
 func TextScanner(in any) *scanner.Scanner 
 func LineScanner(in any) *bufio.Scanner 
@@ -759,30 +768,23 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io/fs"
 
-	"github.com/gookit/goutil/fsutil/finder"
+	"github.com/gookit/goutil/fsutil"
 )
 
 func main() {
-	f := finder.EmptyFinder()
+	// find all files in dir
+	fsutil.FindInDir("./", func(filePath string, de fs.DirEntry) error {
+		fmt.Println(filePath)
+		return nil
+	})
 
-	f.
-		AddDir("./testdata").
-		AddFile("finder.go").
-		NoDotFile().
-		// NoDotDir().
-		Find().
-		Each(func(filePath string) {
-			fmt.Println(filePath)
-		})
-
-	finder.NewFinder([]string{"./testdata"}).
-		AddFile("finder.go").
-		NoDotDir().
-		EachStat(func(fi os.FileInfo, filePath string) {
-			fmt.Println(filePath, "=>", fi.ModTime())
-		})
+	// find files with filters
+	fsutil.FindInDir("./", func(filePath string, de fs.DirEntry) error {
+		fmt.Println(filePath)
+		return nil
+	}, fsutil.ExcludeDotFile)
 }
 ```
 
@@ -921,6 +923,9 @@ func RandomIntWithSeed(min, max int, seed int64) int
 // source at reflects/check.go
 func HasChild(v reflect.Value) bool 
 func IsArrayOrSlice(k reflect.Kind) bool 
+func IsAnyInt(k reflect.Kind) bool 
+func IsIntx(k reflect.Kind) bool 
+func IsUintX(k reflect.Kind) bool 
 func IsNil(v reflect.Value) bool 
 func IsFunc(val any) bool 
 func IsEqual(src, dst any) bool 
@@ -958,9 +963,9 @@ func ValueOf(v any) Value
 
 ```go
 // source at stdio/ioutil.go
-func QuietFprint(w io.Writer, ss ...string) 
+func QuietFprint(w io.Writer, a ...any) 
 func QuietFprintf(w io.Writer, tpl string, vs ...any) 
-func QuietFprintln(w io.Writer, ss ...string) 
+func QuietFprintln(w io.Writer, a ...any) 
 func QuietWriteString(w io.Writer, ss ...string) 
 // source at stdio/stdio.go
 func DiscardReader(src io.Reader) 
@@ -1096,6 +1101,7 @@ func IsAllEmpty(ss ...string) bool
 func IsVersion(s string) bool 
 func Compare(s1, s2, op string) bool 
 func VersionCompare(v1, v2, op string) bool 
+func SimpleMatch(s string, keywords []string) bool 
 func QuickMatch(pattern, s string) bool 
 func PathMatch(pattern, s string) bool 
 func GlobMatch(pattern, s string) bool 
@@ -1144,6 +1150,8 @@ func ToOSArgs(s string) []string
 func MustToTime(s string, layouts ...string) time.Time 
 func ToTime(s string, layouts ...string) (t time.Time, err error) 
 func ToDuration(s string) (time.Duration, error) 
+func SafeByteSize(sizeStr string) uint64 
+func ToByteSize(sizeStr string) (uint64, error) 
 // source at strutil/crypto.go
 func Md5(src any) string 
 func MD5(src any) string 
@@ -1194,6 +1202,7 @@ func IndentBytes(b, prefix []byte) []byte
 // source at strutil/id.go
 func MicroTimeID() string 
 func MicroTimeHexID() string 
+func DatetimeNo(prefix string) string 
 // source at strutil/padding.go
 func Padding(s, pad string, length int, pos PosFlag) string 
 func PadLeft(s, pad string, length int) string 
@@ -1216,6 +1225,7 @@ func RandomCharsV2(ln int) string
 func RandomCharsV3(ln int) string 
 func RandomBytes(length int) ([]byte, error) 
 func RandomString(length int) (string, error) 
+func RandWithTpl(n int, letters string) string 
 // source at strutil/runes.go
 func RuneIsWord(c rune) bool 
 func RuneIsLower(c rune) bool 
@@ -1304,6 +1314,7 @@ func OsGoInfo() (*GoInfo, error)
 // source at sysutil/sysutil.go
 func Workdir() string 
 func BinDir() string 
+func BinName() string 
 func BinFile() string 
 func Open(fileOrUrl string) error 
 func OpenBrowser(fileOrUrl string) error 

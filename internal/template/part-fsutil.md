@@ -8,29 +8,22 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io/fs"
 
-	"github.com/gookit/goutil/fsutil/finder"
+	"github.com/gookit/goutil/fsutil"
 )
 
 func main() {
-	f := finder.EmptyFinder()
+	// find all files in dir
+	fsutil.FindInDir("./", func(filePath string, de fs.DirEntry) error {
+		fmt.Println(filePath)
+		return nil
+	})
 
-	f.
-		AddDir("./testdata").
-		AddFile("finder.go").
-		NoDotFile().
-		// NoDotDir().
-		Find().
-		Each(func(filePath string) {
-			fmt.Println(filePath)
-		})
-
-	finder.NewFinder([]string{"./testdata"}).
-		AddFile("finder.go").
-		NoDotDir().
-		EachStat(func(fi os.FileInfo, filePath string) {
-			fmt.Println(filePath, "=>", fi.ModTime())
-		})
+	// find files with filters
+	fsutil.FindInDir("./", func(filePath string, de fs.DirEntry) error {
+		fmt.Println(filePath)
+		return nil
+	}, fsutil.ExcludeDotFile)
 }
 ```

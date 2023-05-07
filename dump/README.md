@@ -97,6 +97,8 @@ type Options struct {
 
 ## Functions API
 
+> **Note**: doc by run `go doc ./dump`
+
 ```go
 func Clear(vs ...interface{})
 func Config(fn func(opts *Options))

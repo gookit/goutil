@@ -111,6 +111,8 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 ## Functions API
 
+> **Note**: doc by run `go doc ./fsutil`
+
 ```go
 func BinDir() string
 func BinFile() string
