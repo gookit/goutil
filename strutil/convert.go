@@ -470,6 +470,8 @@ func ToByteSize(sizeStr string) (uint64, error) {
 		if lastSec > 'A' {
 			lastPos--
 		}
+	} else if IsNumChar(sizeStr[lastPos]) { // not unit suffix. eg: 346
+		return strconv.ParseUint(sizeStr, 10, 32)
 	}
 
 	multiplier := float64(1)

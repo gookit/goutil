@@ -244,11 +244,10 @@ func QuickMatch(pattern, s string) bool {
 	return strings.Contains(s, pattern)
 }
 
-// PathMatch check for a string.
-func PathMatch(pattern, s string) bool { return GlobMatch(pattern, s) }
-
-// GlobMatch check for a string.
-func GlobMatch(pattern, s string) bool {
+// PathMatch check for a string match the pattern. alias of the path.Match()
+//
+// TIP: `*` can match any char, not contain `/`.
+func PathMatch(pattern, s string) bool {
 	ok, err := path.Match(pattern, s)
 	if err != nil {
 		ok = false
@@ -256,7 +255,26 @@ func GlobMatch(pattern, s string) bool {
 	return ok
 }
 
-// MatchNodePath check for a string.
+// GlobMatch check for a string match the pattern.
+//
+// Difference with PathMatch() is: `*` can match any char, contain `/`.
+func GlobMatch(pattern, s string) bool {
+	// replace `/` to `S` for path.Match
+	if strings.Contains(pattern, "/") {
+		pattern = strings.Replace(pattern, "/", "S", -1)
+	}
+	if strings.Contains(s, "/") {
+		s = strings.Replace(s, "/", "S", -1)
+	}
+
+	ok, err := path.Match(pattern, s)
+	if err != nil {
+		ok = false
+	}
+	return ok
+}
+
+// MatchNodePath check for a string match the pattern.
 //
 // Use on pattern:
 //   - `*` match any to sep
@@ -281,7 +299,10 @@ func MatchNodePath(pattern, s string, sep string) bool {
 	}
 
 	pattern = strings.Replace(pattern, sep, "/", -1)
-	s = strings.Replace(s, sep, "/", -1)
+	if strings.Contains(s, sep) {
+		s = strings.Replace(s, sep, "/", -1)
+	}
+
 	ok, err := path.Match(pattern, s)
 	if err != nil {
 		ok = false

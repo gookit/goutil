@@ -200,9 +200,9 @@ func TestGlobMatch(t *testing.T) {
 		{"ab.cd.*", "ab.cd.ef", true},
 		{"ab.*", "ab.cd.ef", true},
 		{"a*/b", "acd/b", true},
-		{"a*/b", "a/c/b", false},
-		{"a*", "a/c/b", false},
-		{"a**", "a/c/b", false},
+		// {"a*/b", "a/c/b", false},
+		// {"a*", "a/c/b", false},
+		// {"a**", "a/c/b", false},
 	}
 
 	for _, tt := range tests {
@@ -212,8 +212,20 @@ func TestGlobMatch(t *testing.T) {
 	assert.True(t, strutil.QuickMatch("ab", "abc"))
 	assert.True(t, strutil.QuickMatch("abc", "abc"))
 	assert.False(t, strutil.GlobMatch("ab", "abc"))
-	assert.True(t, strutil.PathMatch("ab*", "abc"))
 	assert.True(t, strutil.QuickMatch("ab*", "abc"))
+	assert.True(t, strutil.PathMatch("ab*", "abc"))
+}
+
+func TestPathMatch_GlobMatch_diff(t *testing.T) {
+	// different of the PathMatch and GlobMatch
+	assert.True(t, strutil.GlobMatch("a*/b", "a/c/b"))
+	assert.False(t, strutil.PathMatch("a*/b", "a/c/b"))
+
+	assert.True(t, strutil.GlobMatch("a*", "a/c/b"))
+	assert.False(t, strutil.PathMatch("a*", "a/c/b"))
+
+	assert.True(t, strutil.GlobMatch("a**", "a/c/b"))
+	assert.False(t, strutil.PathMatch("a**", "a/c/b"))
 }
 
 func TestMatchNodePath(t *testing.T) {
