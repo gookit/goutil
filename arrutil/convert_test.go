@@ -126,6 +126,19 @@ func TestJoinSlice(t *testing.T) {
 	assert.Eq(t, "a,23,b", arrutil.JoinSlice(",", "a", 23, "b"))
 }
 
+func TestCombineToMap(t *testing.T) {
+	keys := []string{"key0", "key1"}
+
+	mp := arrutil.CombineToMap(keys, []int{1, 2})
+	assert.Len(t, mp, 2)
+	assert.Eq(t, 1, mp["key0"])
+	assert.Eq(t, 2, mp["key1"])
+
+	mp = arrutil.CombineToMap(keys, []int{1})
+	assert.Len(t, mp, 1)
+	assert.Eq(t, 1, mp["key0"])
+}
+
 func TestCombineToSMap(t *testing.T) {
 	keys := []string{"key0", "key1"}
 
