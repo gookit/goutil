@@ -66,9 +66,9 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 	rt := rv.Type()
 
 	for i := 0; i < rt.NumField(); i++ {
-		ft := rt.Field(i)
+		sf := rt.Field(i)
 		// skip don't exported field
-		if ft.Name[0] >= 'a' && ft.Name[0] <= 'z' {
+		if IsUnexported(sf.Name) {
 			continue
 		}
 
@@ -85,7 +85,22 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 			continue
 		}
 
-		val := ft.Tag.Get(opt.TagName)
+		// handle for pointer field
+		if fv.Kind() == reflect.Pointer {
+			if fv.IsNil() {
+				fv.Set(reflect.New(fv.Type().Elem()))
+			}
+
+			fv = fv.Elem()
+			if fv.Kind() == reflect.Struct {
+				if err := initDefaults(fv, opt); err != nil {
+					return err
+				}
+				continue
+			}
+		}
+
+		val := sf.Tag.Get(opt.TagName)
 		if err := initDefaultValue(fv, val, opt.ParseEnv); err != nil {
 			return err
 		}
@@ -139,15 +154,17 @@ type SetOptions struct {
 	//
 	// see InitDefaults()
 	ParseDefault bool
+
 	// DefaultValTag name. tag: default
 	DefaultValTag string
+
 	// ParseDefaultEnv parse env var on default tag. eg: `default:"${APP_ENV}"`
 	//
 	// default: false
 	ParseDefaultEnv bool
 }
 
-// SetValues set data values to struct ptr
+// SetValues set values to struct ptr from map data.
 //
 // TIPS:
 //
@@ -196,7 +213,6 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 			if err != nil {
 				return err
 			}
-
 			name = info.Get("name")
 		}
 
@@ -206,7 +222,6 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		// set field value by default tag.
 		if !ok && fv.IsZero() {
 			defVal := ft.Tag.Get(opt.DefaultValTag)
-
 			if err := initDefaultValue(fv, defVal, opt.ParseDefaultEnv); err != nil {
 				return err
 			}

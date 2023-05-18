@@ -114,21 +114,44 @@ func TestInitDefaults_convTypeError(t *testing.T) {
 	// dump.P(u)
 }
 
+type ExtraDefault struct {
+	City   string `default:"chengdu"`
+	Github string `default:"https://github.com/inhere"`
+}
+
 func TestInitDefaults_nestStruct(t *testing.T) {
-	type Extra struct {
-		City   string `default:"chengdu"`
-		Github string `default:"https://github.com/inhere"`
-	}
 	type User struct {
 		Name  string `default:"inhere"`
 		Age   int    `default:"30"`
-		Extra Extra
+		Extra ExtraDefault
 	}
 
 	u := &User{}
 	err := structs.InitDefaults(u)
 	dump.P(u)
 	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 30, u.Age)
+	assert.Eq(t, "chengdu", u.Extra.City)
+	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
+}
+
+func TestInitDefaults_nestPtrStruct(t *testing.T) {
+	// test for pointer struct field
+	type User struct {
+		Name  string `default:"inhere"`
+		Age   int    `default:"30"`
+		Extra *ExtraDefault
+	}
+
+	u := &User{}
+	err := structs.InitDefaults(u)
+	dump.P(u)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 30, u.Age)
+	assert.Eq(t, "chengdu", u.Extra.City)
+	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
 }
 
 func TestInitDefaults_fieldPtr(t *testing.T) {
