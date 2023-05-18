@@ -38,9 +38,13 @@ func TestToAnyMap(t *testing.T) {
 	assert.Len(t, mp, 2)
 	assert.Eq(t, "v0", mp["a"])
 
-	assert.Panics(t, func() {
-		maputil.ToAnyMap(123)
-	})
+	src1 := map[string]any{"a": "v0", "b": "23"}
+	mp = maputil.ToAnyMap(src1)
+	assert.Len(t, mp, 2)
+	assert.Eq(t, "v0", mp["a"])
+
+	_, err := maputil.TryAnyMap(123)
+	assert.Err(t, err)
 }
 
 func TestHTTPQueryString(t *testing.T) {

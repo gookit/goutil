@@ -1,10 +1,12 @@
 package maputil
 
 import (
+	"errors"
 	"reflect"
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
 )
@@ -33,18 +35,33 @@ func CombineToSMap(keys, values []string) SMap {
 	return arrutil.CombineToSMap(keys, values)
 }
 
+// CombineToMap combine two any slice to map[K]V. alias of arrutil.CombineToMap
+func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V {
+	return arrutil.CombineToMap(keys, values)
+}
+
 // ToAnyMap convert map[TYPE1]TYPE2 to map[string]any
 func ToAnyMap(mp any) map[string]any {
+	amp, _ := TryAnyMap(mp)
+	return amp
+}
+
+// TryAnyMap convert map[TYPE1]TYPE2 to map[string]any
+func TryAnyMap(mp any) (map[string]any, error) {
+	if aMp, ok := mp.(map[string]any); ok {
+		return aMp, nil
+	}
+
 	rv := reflect.Indirect(reflect.ValueOf(mp))
 	if rv.Kind() != reflect.Map {
-		panic("not a map value")
+		return nil, errors.New("input is not a map value")
 	}
 
 	anyMp := make(map[string]any, rv.Len())
 	for _, key := range rv.MapKeys() {
 		anyMp[key.String()] = rv.MapIndex(key).Interface()
 	}
-	return anyMp
+	return anyMp, nil
 }
 
 // HTTPQueryString convert map[string]any data to http query string.
