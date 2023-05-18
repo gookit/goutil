@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gookit/color"
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
@@ -231,21 +232,33 @@ func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 	return true
 }
 
+// NotContainsKey asserts that the given map is not contains key
+func NotContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
+	if maputil.HasKey(mp, key) {
+		t.Helper()
+		return fail(t,
+			fmt.Sprintf(
+				"Map should not contains the key: %#v\nMap data:\n%v",
+				key,
+				maputil.FormatIndent(mp, "  "),
+			),
+			fmtAndArgs,
+		)
+	}
+
+	return true
+}
+
 // ContainsKeys asserts that the map is contains all given keys
 //
 // Usage:
 //
 //	ContainsKeys(t, map[string]any{...}, []string{"key1", "key2"})
 func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
-	rfKeys := reflect.ValueOf(keys)
-	if rfKeys.Kind() != reflect.Slice {
+	anyKeys, err := arrutil.AnyToSlice(keys)
+	if err != nil {
 		t.Helper()
-		return fail(t, "input keys must be slice for ContainsKeys()", fmtAndArgs)
-	}
-
-	var anyKeys []any
-	for i := 0; i < rfKeys.Len(); i++ {
-		anyKeys = append(anyKeys, rfKeys.Index(i).Interface())
+		return fail(t, err.Error(), fmtAndArgs)
 	}
 
 	ok, noKey := maputil.HasAllKeys(mp, anyKeys...)
@@ -255,6 +268,34 @@ func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 			fmt.Sprintf(
 				"Map should contains the key: %#v\nMap data:\n%v",
 				noKey,
+				maputil.FormatIndent(mp, "  "),
+			),
+			fmtAndArgs,
+		)
+	}
+
+	return true
+}
+
+// NotContainsKeys asserts that the map is not contains all given keys
+//
+// Usage:
+//
+//	NotContainsKeys(t, map[string]any{...}, []string{"key1", "key2"})
+func NotContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
+	anyKeys, err := arrutil.AnyToSlice(keys)
+	if err != nil {
+		t.Helper()
+		return fail(t, err.Error(), fmtAndArgs)
+	}
+
+	ok, hasKey := maputil.HasOneKey(mp, anyKeys...)
+	if ok {
+		t.Helper()
+		return fail(t,
+			fmt.Sprintf(
+				"Map should not contains the key: %#v\nMap data:\n%v",
+				hasKey,
 				maputil.FormatIndent(mp, "  "),
 			),
 			fmtAndArgs,
