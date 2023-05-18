@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 	"strconv"
+	"unsafe"
 )
 
 // Elem returns the value that the interface v contains
@@ -59,6 +60,35 @@ func SliceSubKind(typ reflect.Type) reflect.Kind {
 		return typ.Elem().Kind()
 	}
 	return reflect.Invalid
+}
+
+// UnexportedValue quickly get unexported value by reflect.Value
+//
+// NOTE: this method is unsafe, use it carefully.
+// should ensure rv is addressable by field.CanAddr()
+//
+// refer: https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields
+func UnexportedValue(rv reflect.Value) any {
+	if rv.CanAddr() {
+		// create new value from addr, now can be read and set.
+		return reflect.NewAt(rv.Type(), unsafe.Pointer(rv.UnsafeAddr())).Elem().Interface()
+	}
+
+	// If the rv is not addressable this trick won't work, but you can create an addressable copy like this
+	rs2 := reflect.New(rv.Type()).Elem()
+	rs2.Set(rv)
+	rv = rs2.Field(0)
+	rv = reflect.NewAt(rv.Type(), unsafe.Pointer(rv.UnsafeAddr())).Elem()
+	// Now rv can be read. TIP: Setting will succeed but only affects the temporary copy.
+	return rv.Interface()
+}
+
+// SetUnexportedValue quickly set unexported field value by reflect
+//
+// NOTE: this method is unsafe, use it carefully.
+// should ensure rv is addressable by field.CanAddr()
+func SetUnexportedValue(rv reflect.Value, value any) {
+	reflect.NewAt(rv.Type(), unsafe.Pointer(rv.UnsafeAddr())).Elem().Set(reflect.ValueOf(value))
 }
 
 // SetValue to a reflect.Value
