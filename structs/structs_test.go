@@ -21,5 +21,5 @@ func TestIsExported(t *testing.T) {
 	assert.True(t, structs.IsUnexported("name"))
 	assert.True(t, structs.IsUnexported("_name"))
 	assert.True(t, structs.IsUnexported("abc12"))
-	assert.True(t, structs.IsUnexported("123abcd"))
+	assert.False(t, structs.IsUnexported("123abcd"))
 }
