@@ -198,7 +198,8 @@ func (d *Dumper) printOne(v any) {
 // print reflect value
 func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	// if is a ptr, get real type and value
-	if t.Kind() == reflect.Ptr {
+	isPtr := t.Kind() == reflect.Ptr
+	if isPtr {
 		if v.IsNil() {
 			d.printf("%s<nil>,\n", t.String())
 			return
@@ -254,8 +255,9 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		eleNum := v.Len()
 		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
 
-		d.indentPrint(t.String(), " [ ", lenTip, "\n")
+		d.write(!isPtr, t.String(), " [ ", lenTip, "\n")
 		d.msValue = false
+
 		for i := 0; i < eleNum; i++ {
 			sv := v.Index(i)
 			d.advance(1)
@@ -274,7 +276,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			break // don't print v again
 		}
 
-		d.indentPrint(d.ColorTheme.msType(t.String()), " {\n")
+		d.write(!isPtr, d.ColorTheme.msType(t.String()), " {\n")
 		d.msValue = false
 
 		fldNum := v.NumField()
@@ -304,7 +306,8 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.indentPrint("},\n")
 	case reflect.Map:
 		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(v.Len()))
-		d.indentPrint(d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
+
+		d.write(!isPtr, d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
 		d.msValue = false
 
 		for _, key := range v.MapKeys() {
@@ -412,8 +415,8 @@ func (d *Dumper) printf(f string, v ...any) {
 	}
 }
 
-func (d *Dumper) indentPrint(v ...any) {
-	if !d.msValue {
+func (d *Dumper) write(indent bool, v ...any) {
+	if indent && !d.msValue {
 		_, _ = d.Output.Write(d.indentBytes)
 	}
 
@@ -422,4 +425,8 @@ func (d *Dumper) indentPrint(v ...any) {
 	} else {
 		color.Fprint(d.Output, v...)
 	}
+}
+
+func (d *Dumper) indentPrint(v ...any) {
+	d.write(true, v...)
 }

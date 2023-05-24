@@ -65,7 +65,7 @@ func (a *FlagArg) check() error {
 	return nil
 }
 
-// HelpDesc string
+// HelpDesc string build
 func (a *FlagArg) HelpDesc() string {
 	desc := strutil.UpperFirst(a.Desc)
 	if a.Required {
@@ -73,7 +73,7 @@ func (a *FlagArg) HelpDesc() string {
 	}
 
 	if a.defVal != "" {
-		desc += "(Default:" + a.defVal + ")"
+		desc += "(default: <mga>" + a.defVal + "</>)"
 	}
 	return desc
 }

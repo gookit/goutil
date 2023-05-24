@@ -100,7 +100,6 @@ func SetUnexportedValue(rv reflect.Value, value any) {
 func SetValue(rv reflect.Value, val any) error {
 	// get real type of the ptr value
 	if rv.Kind() == reflect.Ptr {
-		// init if is nil
 		if rv.IsNil() {
 			elemTyp := rv.Type().Elem()
 			rv.Set(reflect.New(elemTyp))
