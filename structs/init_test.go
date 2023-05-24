@@ -47,24 +47,6 @@ func TestInitDefaults(t *testing.T) {
 	assert.ErrMsg(t, err, "must be provider an struct value")
 }
 
-func TestInitDefaults_sliceField(t *testing.T) {
-	type InitSliceFld struct {
-		Name   string   `default:"inhere"`
-		Age    int      `default:""`
-		Tags   []string `default:"php,go"`
-		TagIds []int64  `default:"34,456"`
-	}
-
-	u := &InitSliceFld{}
-	err := structs.InitDefaults(u)
-	dump.P(u)
-
-	assert.NoErr(t, err)
-	assert.Eq(t, "inhere", u.Name)
-	assert.Eq(t, []string{"php", "go"}, u.Tags)
-	assert.Eq(t, []int64{34, 456}, u.TagIds)
-}
-
 func TestInitDefaults_parseEnv(t *testing.T) {
 	type App struct {
 		Name  string `default:"${ APP_NAME | my-app }"`
@@ -136,7 +118,7 @@ func TestInitDefaults_nestStruct(t *testing.T) {
 	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
 }
 
-func TestInitDefaults_nestPtrStruct(t *testing.T) {
+func TestInitDefaults_ptrStructField(t *testing.T) {
 	// test for pointer struct field
 	type User struct {
 		Name  string `default:"inhere"`
@@ -154,7 +136,55 @@ func TestInitDefaults_nestPtrStruct(t *testing.T) {
 	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
 }
 
-func TestInitDefaults_fieldPtr(t *testing.T) {
+func TestInitDefaults_sliceField(t *testing.T) {
+	type InitSliceFld struct {
+		Name   string   `default:"inhere"`
+		Age    int      `default:""`
+		Tags   []string `default:"php,go"`
+		TagIds []int64  `default:"34,456"`
+	}
+
+	u := &InitSliceFld{}
+	err := structs.InitDefaults(u)
+	dump.P(u)
+
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, []string{"php", "go"}, u.Tags)
+	assert.Eq(t, []int64{34, 456}, u.TagIds)
+}
+
+func TestInitDefaults_InitStructSlice(t *testing.T) {
+	// test for slice struct field
+	type User struct {
+		Name  string `default:"inhere"`
+		Age   int    `default:"30"`
+		Extra []ExtraDefault
+	}
+
+	u := &User{}
+	err := structs.Init(u, structs.InitStructSlice)
+	dump.P(u)
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, u.Extra)
+	assert.Eq(t, "chengdu", u.Extra[0].City)
+
+	// test for slice struct field
+	type User1 struct {
+		Name  string          `default:"inhere"`
+		Age   int             `default:"30"`
+		Extra []*ExtraDefault `default:""`
+	}
+
+	u1 := &User1{}
+	err = structs.Init(u1)
+	dump.P(u1)
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, u1.Extra)
+	assert.Eq(t, "chengdu", u1.Extra[0].City)
+}
+
+func TestInitDefaults_ptrField(t *testing.T) {
 	type User struct {
 		Name string `default:"inhere"`
 		Age  *int   `default:"30"`
@@ -168,78 +198,4 @@ func TestInitDefaults_fieldPtr(t *testing.T) {
 	assert.Eq(t, "inhere", u.Name)
 	assert.Eq(t, 30, *u.Age)
 	assert.Eq(t, "sh", u.City)
-}
-
-func TestSetValues(t *testing.T) {
-	data := map[string]any{
-		"Name": "inhere",
-		"Age":  234,
-		"Tags": []string{"php", "go"},
-		"city": "chengdu",
-	}
-
-	type User struct {
-		Name string
-		Age  int
-		Tags []string
-		city string
-	}
-
-	u := &User{}
-	err := structs.SetValues(u, data)
-	assert.NoErr(t, err)
-	assert.Eq(t, "inhere", u.Name)
-	assert.Eq(t, 234, u.Age)
-	assert.Eq(t, []string{"php", "go"}, u.Tags)
-	assert.Eq(t, "", u.city)
-	// dump.P(u)
-
-	err = structs.SetValues(u, nil)
-	assert.NoErr(t, err)
-}
-
-func TestSetValues_useFieldTag(t *testing.T) {
-	data := map[string]any{
-		"name": "inhere",
-		"age":  234,
-		"tags": []string{"php", "go"},
-		"city": "chengdu",
-	}
-
-	type User struct {
-		Name string   `json:"name"`
-		Age  int      `json:"age"`
-		Tags []string `json:"tags"`
-		City string   `json:"city"`
-	}
-
-	u := &User{}
-	err := structs.SetValues(u, data)
-	dump.P(u)
-	assert.NoErr(t, err)
-	assert.Eq(t, "inhere", u.Name)
-	assert.Eq(t, 234, u.Age)
-	assert.Eq(t, []string{"php", "go"}, u.Tags)
-	assert.Eq(t, "chengdu", u.City)
-}
-
-func TestSetValues_useDefaultTag(t *testing.T) {
-	data := map[string]any{
-		"name": "inhere",
-		// "age":  234,
-		// "city": "chengdu",
-	}
-
-	type User struct {
-		Name string `json:"name"`
-		Age  int    `json:"age" default:"345"`
-		City string `json:"city" default:"shanghai"`
-	}
-
-	u := &User{}
-	err := structs.SetValues(u, data)
-	assert.NoErr(t, err)
-	assert.Eq(t, "inhere", u.Name)
-	assert.Eq(t, 345, u.Age)
-	assert.Eq(t, "shanghai", u.City)
 }
