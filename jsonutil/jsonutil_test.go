@@ -108,6 +108,32 @@ func TestWriteReadFile(t *testing.T) {
 	assert.Eq(t, 200, user.Age)
 }
 
+func TestIsJsonFast(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected bool
+	}{
+		{"empty string", "", false},
+		{"single character", "a", false},
+		{"two characters object", "{}", true},
+		{"two characters slice", "[]", true},
+		{"invalid json", "{a}", false},
+		{"valid json object", `{"a": 1}`, true},
+		{"valid json array", `[1]`, true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Eq(t, tc.expected, jsonutil.IsJSON(tc.input))
+
+			if jsonutil.IsJSONFast(tc.input) != tc.expected {
+				t.Errorf("expected %v but got %v", tc.expected, !tc.expected)
+			}
+		})
+	}
+}
+
 func TestStripComments(t *testing.T) {
 	is := assert.New(t)
 

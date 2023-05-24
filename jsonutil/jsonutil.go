@@ -100,6 +100,35 @@ func Mapping(src, dst any) error {
 	return Decode(bts, dst)
 }
 
+// IsJSON check if the string is valid JSON. (Note: uses json.Unmarshal)
+func IsJSON(s string) bool {
+	if s == "" {
+		return false
+	}
+
+	var js json.RawMessage
+	return json.Unmarshal([]byte(s), &js) == nil
+}
+
+// IsJSONFast simple and fast check input string is valid JSON.
+func IsJSONFast(s string) bool {
+	ln := len(s)
+	if ln < 2 {
+		return false
+	}
+	if ln == 2 {
+		return s == "{}" || s == "[]"
+	}
+
+	// object
+	if s[0] == '{' {
+		return s[ln-1] == '}' && s[1] == '"'
+	}
+
+	// array
+	return s[0] == '[' && s[ln-1] == ']'
+}
+
 // `(?s:` enable match multi line
 var jsonMLComments = regexp.MustCompile(`(?s:/\*.*?\*/\s*)`)
 
