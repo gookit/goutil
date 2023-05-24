@@ -67,3 +67,24 @@ func TestIsEmptyValue(t *testing.T) {
 	rv := reflect.ValueOf(T{}).Field(0)
 	is.True(reflects.IsEmptyValue(rv))
 }
+
+func TestIsSimpleKind(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    reflect.Kind
+		expected bool
+	}{
+		{"invalid kind", reflect.Invalid, false},
+		{"string kind", reflect.String, true},
+		{"float64 kind", reflect.Float64, true},
+		{"bool kind", reflect.Bool, true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if reflects.IsSimpleKind(tc.input) != tc.expected {
+				t.Errorf("expected %v but got %v", tc.expected, !tc.expected)
+			}
+		})
+	}
+}

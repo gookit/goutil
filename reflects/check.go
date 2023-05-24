@@ -5,7 +5,7 @@ import (
 	"reflect"
 )
 
-// HasChild check. eg: array, slice, map, struct
+// HasChild type check. eg: array, slice, map, struct
 func HasChild(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Array, reflect.Slice, reflect.Map, reflect.Struct:
@@ -17,6 +17,14 @@ func HasChild(v reflect.Value) bool {
 // IsArrayOrSlice check. eg: array, slice
 func IsArrayOrSlice(k reflect.Kind) bool {
 	return k == reflect.Slice || k == reflect.Array
+}
+
+// IsSimpleKind kind in: string, bool, intX, uintX, floatX
+func IsSimpleKind(k reflect.Kind) bool {
+	if reflect.String == k {
+		return true
+	}
+	return k > reflect.Invalid && k <= reflect.Float64
 }
 
 // IsAnyInt check is intX or uintX type

@@ -179,6 +179,11 @@ func TestSetValue(t *testing.T) {
 		rv := reflect.ValueOf("val")
 		_ = reflects.SetValue(rv, "new val")
 	})
+
+	// test for SetRValue()
+	rv = reflect.ValueOf(&iVal)
+	reflects.SetRValue(rv, reflect.ValueOf(456))
+	assert.Eq(t, 456, iVal)
 }
 
 func TestSetValue_map(t *testing.T) {
