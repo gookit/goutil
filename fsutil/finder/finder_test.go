@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil/finder"
+	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -14,23 +15,21 @@ func TestEmptyFinder(t *testing.T) {
 
 	f.
 		AddDir("./testdata").
-		AddFile("finder.go").
 		NoDotFile().
+		CacheResult().
 		// NoDotDir().
-		Find().
-		Each(func(filePath string) {
+		EachPath(func(filePath string) {
 			fmt.Println(filePath)
 		})
 
-	assert.NotEmpty(t, f.FilePaths())
+	assert.NotEmpty(t, f.FindPaths())
 
 	f.Reset()
-	assert.Empty(t, f.FilePaths())
+	assert.Empty(t, f.FindPaths())
 }
 
 func TestNewFinder(t *testing.T) {
-	finder.NewFinder([]string{"./testdata"}).
-		AddFile("finder.go").
+	finder.NewFinder("./testdata").
 		NoDotDir().
 		EachStat(func(fi os.FileInfo, filePath string) {
 			fmt.Println(filePath, "=>", fi.ModTime())
@@ -38,59 +37,58 @@ func TestNewFinder(t *testing.T) {
 }
 
 func TestDotFileFilterFunc(t *testing.T) {
-	f := finder.EmptyFinder().
-		AddDir("./testdata").
-		Find()
+	f := finder.NewEmpty().
+		AddDir("./testdata")
+	assert.NotEmpty(t, f.String())
+
 	fmt.Println("no limits:")
 	fmt.Println(f)
 
 	fileName := ".env"
-	assert.Contains(t, f.String(), fileName)
+	assert.Contains(t, f.FindPaths(), fileName)
 
 	f = finder.EmptyFinder().
 		AddDir("./testdata").
-		NoDotFile().
-		Find()
+		NoDotFile()
+
 	fmt.Println("NoDotFile limits:")
 	fmt.Println(f)
-	assert.NotContains(t, f.String(), fileName)
+	assert.NotContains(t, f.FindPaths(), fileName)
 
 	f = finder.EmptyFinder().
 		AddDir("./testdata").
-		WithFilter(finder.DotFileFilterFunc(false)).
-		Find()
+		WithFilter(finder.DotFileFilter(false))
 
-	fmt.Println("DotFileFilterFunc limits:")
+	fmt.Println("DotFileFilter limits:")
 	fmt.Println(f)
-	assert.NotContains(t, f.String(), fileName)
+	assert.NotContains(t, f.FindPaths(), fileName)
 }
 
 func TestDotDirFilterFunc(t *testing.T) {
 	f := finder.EmptyFinder().
-		AddDir("./testdata").
-		Find()
+		AddDir("./testdata")
+
 	fmt.Println("no limits:")
 	fmt.Println(f)
 
 	dirName := ".dotdir"
-	assert.Contains(t, f.String(), dirName)
+	assert.Contains(t, f.FindPaths(), dirName)
 
 	f = finder.EmptyFinder().
 		AddDir("./testdata").
-		NoDotDir().
-		Find()
+		NoDotDir()
+
 	fmt.Println("NoDotDir limits:")
-	fmt.Println(f)
-	assert.NotContains(t, f.String(), dirName)
+	fmt.Println(f.Config())
+	assert.NotContains(t, f.FindPaths(), dirName)
 
-	f = finder.EmptyFinder().
+	f = finder.NewEmpty().
 		AddDir("./testdata").
-		WithDirFilter(finder.DotDirFilterFunc(false)).
-		Find()
+		WithDirFilter(finder.DotDirFilter(false))
 
-	fmt.Println("DotDirFilterFunc limits:")
+	fmt.Println("DotDirFilter limits:")
 	fmt.Println(f)
-	assert.NotContains(t, f.String(), dirName)
+	assert.NotContains(t, f.FindPaths(), dirName)
 }
 
 var testFiles = []string{
@@ -102,12 +100,14 @@ var testFiles = []string{
 }
 
 func TestExtFilterFunc(t *testing.T) {
-	fn := finder.ExtFilterFunc([]string{".log"}, true)
-	assert.True(t, fn("info.log", ""))
-	assert.False(t, fn("info.tmp", ""))
+	ent := &testutil.DirEnt{}
 
-	fn = finder.ExtFilterFunc([]string{".log"}, false)
-	assert.False(t, fn("info.log", ""))
-	assert.True(t, fn("info.tmp", ""))
+	fn := finder.ExtFilter(true, ".log")
+	assert.True(t, fn(finder.NewElem("info.log", ent)))
+	assert.False(t, fn(finder.NewElem("info.tmp", ent)))
+
+	fn = finder.ExtFilter(false, ".log")
+	assert.False(t, fn(finder.NewElem("info.log", ent)))
+	assert.True(t, fn(finder.NewElem("info.tmp", ent)))
 
 }

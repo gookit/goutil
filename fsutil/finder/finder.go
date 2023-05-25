@@ -2,96 +2,102 @@
 package finder
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
-// TODO use excludeDotFlag 1 file 2 dir 1|2 both
-type exDotFlag uint8
-
-const (
-	ExDotFile exDotFlag = 1
-	ExDotDir  exDotFlag = 2
-)
-
 // FileFinder struct
 type FileFinder struct {
-	// r *FindResults
-
-	// dir paths for find file.
-	dirPaths []string
-	// file paths for handle.
-	srcFiles []string
-
-	// builtin include filters
-	includeDirs []string // include dir names. eg: {"model"}
-	includeExts []string // include ext names. eg: {".go", ".md"}
-
-	// builtin exclude filters
-	excludeDirs  []string // exclude dir names. eg: {"test"}
-	excludeExts  []string // exclude ext names. eg: {".go", ".md"}
-	excludeNames []string // exclude file names. eg: {"go.mod"}
-
-	// builtin dot filters.
-	// TODO use excludeDotFlag 1 file 2 dir 1|2 both
-	// excludeDotFlag exDotFlag
-	excludeDotDir  bool
-	excludeDotFile bool
-
-	// fileFlags int
-
-	dirFilters  []DirFilter  // filters for filter dir paths
-	fileFilters []FileFilter // filters for filter file paths
-
-	// mark has been run find()
-	founded bool
-	// founded file paths.
-	filePaths []string
-
-	// the founded file instances
-	// osFiles map[string]*os.File
-	osInfos map[string]os.FileInfo
-
-	// handlers on found
-	pathHandler func(filePath string)
-	statHandler func(fi os.FileInfo, filePath string)
+	// config for finder
+	c *Config
+	// last error
+	err error
+	// ch - founded file elem chan
+	ch chan Elem
+	// caches - cache found file elem. if config.CacheResult is true
+	caches []Elem
 }
 
+// NewEmpty new empty FileFinder instance
+func NewEmpty() *FileFinder { return New([]string{}) }
+
 // EmptyFinder new empty FileFinder instance
-func EmptyFinder() *FileFinder {
-	return &FileFinder{}
+func EmptyFinder() *FileFinder { return NewEmpty() }
+
+// New instance with source dir paths.
+func New(dirs []string, fls ...Filter) *FileFinder {
+	c := NewConfig(dirs...)
+	c.Filters = fls
+
+	return NewWithConfig(c)
 }
 
 // NewFinder new instance with source dir paths.
-func NewFinder(dirPaths []string, filePaths ...string) *FileFinder {
+func NewFinder(dirPaths ...string) *FileFinder {
+	return New(dirPaths)
+}
+
+// NewWithConfig new instance with config.
+func NewWithConfig(c *Config) *FileFinder {
 	return &FileFinder{
-		dirPaths:  dirPaths,
-		filePaths: filePaths,
+		c: c,
 	}
+}
+
+// WithConfig on the finder
+func (f *FileFinder) WithConfig(c *Config) *FileFinder {
+	f.c = c
+	return f
+}
+
+// ConfigFn the finder
+func (f *FileFinder) ConfigFn(fns ...func(c *Config)) *FileFinder {
+	if f.c == nil {
+		f.c = &Config{}
+	}
+
+	for _, fn := range fns {
+		fn(f.c)
+	}
+	return f
 }
 
 // AddDirPath add source dir for find
 func (f *FileFinder) AddDirPath(dirPaths ...string) *FileFinder {
-	f.dirPaths = append(f.dirPaths, dirPaths...)
+	f.c.DirPaths = append(f.c.DirPaths, dirPaths...)
 	return f
 }
 
 // AddDir add source dir for find. alias of AddDirPath()
 func (f *FileFinder) AddDir(dirPaths ...string) *FileFinder {
-	f.dirPaths = append(f.dirPaths, dirPaths...)
+	f.c.DirPaths = append(f.c.DirPaths, dirPaths...)
+	return f
+}
+
+// CacheResult cache result for find result.
+func (f *FileFinder) CacheResult(enable ...bool) *FileFinder {
+	if len(enable) > 0 {
+		f.c.CacheResult = enable[0]
+	} else {
+		f.c.CacheResult = true
+	}
 	return f
 }
 
 // ExcludeDotDir exclude dot dir names. eg: ".idea"
 func (f *FileFinder) ExcludeDotDir(exclude ...bool) *FileFinder {
 	if len(exclude) > 0 {
-		f.excludeDotDir = exclude[0]
+		f.c.ExcludeDotDir = exclude[0]
 	} else {
-		f.excludeDotDir = true
+		f.c.ExcludeDotDir = true
 	}
 	return f
+}
+
+// WithoutDotDir exclude dot dir names. alias of ExcludeDotDir().
+func (f *FileFinder) WithoutDotDir(exclude ...bool) *FileFinder {
+	return f.ExcludeDotDir(exclude...)
 }
 
 // NoDotDir exclude dot dir names. alias of ExcludeDotDir().
@@ -102,11 +108,16 @@ func (f *FileFinder) NoDotDir(exclude ...bool) *FileFinder {
 // ExcludeDotFile exclude dot dir names. eg: ".gitignore"
 func (f *FileFinder) ExcludeDotFile(exclude ...bool) *FileFinder {
 	if len(exclude) > 0 {
-		f.excludeDotFile = exclude[0]
+		f.c.ExcludeDotFile = exclude[0]
 	} else {
-		f.excludeDotFile = true
+		f.c.ExcludeDotFile = true
 	}
 	return f
+}
+
+// WithoutDotFile exclude dot dir names. alias of ExcludeDotFile().
+func (f *FileFinder) WithoutDotFile(exclude ...bool) *FileFinder {
+	return f.ExcludeDotFile(exclude...)
 }
 
 // NoDotFile exclude dot dir names. alias of ExcludeDotFile().
@@ -116,132 +127,182 @@ func (f *FileFinder) NoDotFile(exclude ...bool) *FileFinder {
 
 // ExcludeDir exclude dir names.
 func (f *FileFinder) ExcludeDir(dirs ...string) *FileFinder {
-	f.excludeDirs = append(f.excludeDirs, dirs...)
+	f.c.ExcludeDirs = append(f.c.ExcludeDirs, dirs...)
 	return f
 }
 
 // ExcludeName exclude file names.
 func (f *FileFinder) ExcludeName(files ...string) *FileFinder {
-	f.excludeNames = append(f.excludeNames, files...)
+	f.c.ExcludeNames = append(f.c.ExcludeNames, files...)
 	return f
 }
 
-// AddFilter for filter filepath or dirpath
-func (f *FileFinder) AddFilter(filterFuncs ...any) *FileFinder {
-	return f.WithFilter(filterFuncs...)
+// AddFilter for filter filepath or dir path
+func (f *FileFinder) AddFilter(filters ...Filter) *FileFinder {
+	return f.WithFilter(filters...)
 }
 
-// WithFilter add filter func for filtering filepath or dirpath
-func (f *FileFinder) WithFilter(filterFuncs ...any) *FileFinder {
-	for _, filterFunc := range filterFuncs {
-		if fileFilter, ok := filterFunc.(FileFilter); ok {
-			f.fileFilters = append(f.fileFilters, fileFilter)
-		} else if dirFilter, ok := filterFunc.(DirFilter); ok {
-			f.dirFilters = append(f.dirFilters, dirFilter)
-		}
-	}
+// WithFilter add filter func for filtering filepath or dir path
+func (f *FileFinder) WithFilter(filters ...Filter) *FileFinder {
+	f.c.Filters = append(f.c.Filters, filters...)
 	return f
 }
 
 // AddFileFilter for filter filepath
-func (f *FileFinder) AddFileFilter(filterFuncs ...FileFilter) *FileFinder {
-	f.fileFilters = append(f.fileFilters, filterFuncs...)
-	return f
+func (f *FileFinder) AddFileFilter(filters ...Filter) *FileFinder {
+	return f.WithFileFilter(filters...)
 }
 
 // WithFileFilter for filter func for filtering filepath
-func (f *FileFinder) WithFileFilter(filterFuncs ...FileFilter) *FileFinder {
-	f.fileFilters = append(f.fileFilters, filterFuncs...)
+func (f *FileFinder) WithFileFilter(filters ...Filter) *FileFinder {
+	f.c.FileFilters = append(f.c.FileFilters, filters...)
 	return f
 }
 
 // AddDirFilter for filter file contents
-func (f *FileFinder) AddDirFilter(filterFuncs ...DirFilter) *FileFinder {
-	f.dirFilters = append(f.dirFilters, filterFuncs...)
-	return f
+func (f *FileFinder) AddDirFilter(fls ...Filter) *FileFinder {
+	return f.WithDirFilter(fls...)
 }
 
 // WithDirFilter for filter func for filtering file contents
-func (f *FileFinder) WithDirFilter(filterFuncs ...DirFilter) *FileFinder {
-	f.dirFilters = append(f.dirFilters, filterFuncs...)
+func (f *FileFinder) WithDirFilter(filters ...Filter) *FileFinder {
+	f.c.DirFilters = append(f.c.DirFilters, filters...)
 	return f
 }
 
-// // AddBodyFilter for filter file contents
-// func (f *FileFinder) AddBodyFilter(filterFuncs ...BodyFilter) *FileFinder {
-// 	f.bodyFilters = append(f.bodyFilters, filterFuncs...)
-// 	return f
-// }
+// AddBodyFilter for filter file contents
+func (f *FileFinder) AddBodyFilter(fls ...BodyFilter) *FileFinder {
+	return f.WithBodyFilter(fls...)
+}
+
+// WithBodyFilter for filter func for filtering file contents
+func (f *FileFinder) WithBodyFilter(fls ...BodyFilter) *FileFinder {
+	f.c.BodyFilters = append(f.c.BodyFilters, fls...)
+	return f
+}
+
+// Find files in given dir paths. will return a channel, you can use it to get the result.
 //
-// // WithBodyFilter for filter func for filtering file contents
-// func (f *FileFinder) WithBodyFilter(filterFuncs ...BodyFilter) *FileFinder {
-// 	f.bodyFilters = append(f.bodyFilters, filterFuncs...)
-// 	return f
-// }
-
-// AddFilePaths set founded files
-func (f *FileFinder) AddFilePaths(filePaths []string) {
-	f.filePaths = append(f.filePaths, filePaths...)
-}
-
-// AddFilePath add source file
-func (f *FileFinder) AddFilePath(filePaths ...string) *FileFinder {
-	f.filePaths = append(f.filePaths, filePaths...)
-	return f
-}
-
-// AddFile add source file. alias of AddFilePath()
-func (f *FileFinder) AddFile(filePaths ...string) *FileFinder {
-	f.filePaths = append(f.filePaths, filePaths...)
-	return f
-}
-
-// FindAll find and return founded file paths.
-func (f *FileFinder) FindAll() []string {
+// Usage:
+//
+//	f := NewFinder("/path/to/dir").Find()
+//	for el := range f {
+//		fmt.Println(el.Path())
+//	}
+func (f *FileFinder) Find() <-chan Elem {
 	f.find()
-	return f.filePaths
+	return f.ch
 }
 
-// Find files in given dir paths.
-func (f *FileFinder) Find() *FileFinder {
+// Results find and return founded file Elem. alias of Find()
+//
+// Usage:
+//
+//	rs := NewFinder("/path/to/dir").Results()
+//	for el := range rs {
+//		fmt.Println(el.Path())
+//	}
+func (f *FileFinder) Results() <-chan Elem {
 	f.find()
-	return f
+	return f.ch
+}
+
+// FindPaths find and return founded file paths.
+func (f *FileFinder) FindPaths() []string {
+	f.find()
+
+	paths := make([]string, 0, 8*len(f.c.DirPaths))
+	for el := range f.ch {
+		paths = append(paths, el.Path())
+	}
+	return paths
+}
+
+// Each file or dir Elem.
+func (f *FileFinder) Each(fn func(el Elem)) {
+	f.EachElem(fn)
+}
+
+// EachElem file or dir Elem.
+func (f *FileFinder) EachElem(fn func(el Elem)) {
+	f.find()
+	for el := range f.ch {
+		fn(el)
+	}
+}
+
+// EachPath file paths.
+func (f *FileFinder) EachPath(fn func(filePath string)) {
+	f.EachElem(func(el Elem) {
+		fn(el.Path())
+	})
+}
+
+// EachFile each file os.File
+func (f *FileFinder) EachFile(fn func(file *os.File)) {
+	f.EachElem(func(el Elem) {
+		file, err := os.Open(el.Path())
+		if err == nil {
+			fn(file)
+		} else {
+			f.err = err
+		}
+	})
+}
+
+// EachStat each file os.FileInfo
+func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
+	f.EachElem(func(el Elem) {
+		fi, err := el.Info()
+		if err == nil {
+			fn(fi, el.Path())
+		} else {
+			f.err = err
+		}
+	})
+}
+
+// EachContents handle each found file contents
+func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
+	f.EachElem(func(el Elem) {
+		bs, err := os.ReadFile(el.Path())
+		if err == nil {
+			fn(string(bs), el.Path())
+		} else {
+			f.err = err
+		}
+	})
 }
 
 // do finding
 func (f *FileFinder) find() {
-	if f.founded {
-		return
+	f.err = nil
+	f.ch = make(chan Elem, 8)
+
+	if f.c == nil {
+		f.c = NewConfig()
 	}
 
-	// mark found
-	f.founded = true
-	for _, filePath := range f.filePaths {
-		fi, err := os.Stat(filePath)
-		if err != nil {
-			continue // ignore I/O error
-		}
-		if fi.IsDir() {
-			continue // ignore I/O error
+	go func() {
+		defer close(f.ch)
+
+		// read from caches
+		if f.c.CacheResult && len(f.caches) > 0 {
+			for _, el := range f.caches {
+				f.ch <- el
+			}
+			return
 		}
 
-		// call handler
-		if f.pathHandler != nil {
-			f.pathHandler(filePath)
+		// do finding
+		for _, dirPath := range f.c.DirPaths {
+			f.findDir(dirPath, f.c)
 		}
-		if f.statHandler != nil {
-			f.statHandler(fi, filePath)
-		}
-	}
-
-	// do finding
-	for _, dirPath := range f.dirPaths {
-		f.findInDir(dirPath)
-	}
+	}()
 }
 
 // code refer filepath.glob()
-func (f *FileFinder) findInDir(dirPath string) {
+func (f *FileFinder) findDir(dirPath string, c *Config) {
 	dfi, err := os.Stat(dirPath)
 	if err != nil {
 		return // ignore I/O error
@@ -250,124 +311,119 @@ func (f *FileFinder) findInDir(dirPath string) {
 		return // ignore I/O error
 	}
 
-	// sort.Strings(names)
-	// names, _ := d.Readdirnames(-1)
-	stats, err := ioutil.ReadDir(dirPath)
+	des, err := os.ReadDir(dirPath)
 	if err != nil {
 		return // ignore I/O error
 	}
 
-	for _, fi := range stats {
-		baseName := fi.Name()
+	c.curDepth++
+	for _, ent := range des {
+		baseName := ent.Name()
 		fullPath := filepath.Join(dirPath, baseName)
 
+		ok := false
+		el := NewElem(fullPath, ent)
+
+		// apply generic filters
+		for _, filter := range c.Filters {
+			if filter.Apply(el) { // 有一个满足即可
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			continue
+		}
+
 		// --- dir
-		if fi.IsDir() {
-			if f.excludeDotDir && baseName[0] == '.' {
+		if ent.IsDir() {
+			if c.ExcludeDotDir && baseName[0] == '.' {
 				continue
 			}
 
-			ok := true
-			for _, df := range f.dirFilters {
-				ok = df.FilterDir(fullPath, baseName)
-				if ok { // 有一个满足即可
+			// apply dir filters
+			ok = false
+			for _, df := range c.DirFilters {
+				if df.Apply(el) { // 有一个满足即可
+					ok = true
 					break
 				}
 			}
 
-			// find in sub dir.
 			if ok {
-				f.findInDir(fullPath)
+				if c.FindFlags&FlagDir > 0 {
+					if c.CacheResult {
+						f.caches = append(f.caches, el)
+					}
+					f.ch <- el
+				}
+
+				// find in sub dir.
+				if c.curDepth < c.MaxDepth {
+					f.findDir(fullPath, c)
+				}
 			}
 			continue
 		}
 
-		// --- file
-		if f.excludeDotFile && baseName[0] == '.' {
+		if c.FindFlags&FlagDir > 0 {
+			continue
+		}
+
+		// --- type: file
+		if c.ExcludeDotFile && baseName[0] == '.' {
 			continue
 		}
 
 		// use custom filter functions
-		ok := true
-		for _, ff := range f.fileFilters {
-			if ok = ff.FilterFile(fullPath, baseName); ok { // 有一个满足即可
+		ok = false
+		for _, ff := range c.FileFilters {
+			if ff.Apply(el) { // 有一个满足即可
+				ok = true
 				break
 			}
 		}
 
-		// append
-		if ok {
-			f.filePaths = append(f.filePaths, fullPath)
-
-			// call handler
-			if f.pathHandler != nil {
-				f.pathHandler(fullPath)
+		// write to consumer
+		if ok && c.FindFlags&FlagFile > 0 {
+			if c.CacheResult {
+				f.caches = append(f.caches, el)
 			}
-			if f.statHandler != nil {
-				f.statHandler(fi, fullPath)
-			}
+			f.ch <- el
 		}
 	}
 }
 
-// EachFile each file os.File
-func (f *FileFinder) EachFile(fn func(file *os.File)) {
-	f.Each(func(filePath string) {
-		file, err := os.Open(filePath)
-		if err != nil {
-			return
-		}
-		fn(file)
-	})
-}
-
-// Each file paths.
-func (f *FileFinder) Each(fn func(filePath string)) {
-	f.pathHandler = fn
-	if f.founded {
-		for _, filePath := range f.filePaths {
-			fn(filePath)
-		}
-		return
-	}
-
-	f.find()
-}
-
-// EachStat each file os.FileInfo
-func (f *FileFinder) EachStat(fn func(fi os.FileInfo, filePath string)) {
-	f.statHandler = fn
-	f.find()
-}
-
-// EachContents handle each found file contents
-func (f *FileFinder) EachContents(fn func(contents, filePath string)) {
-	f.Each(func(filePath string) {
-		bts, err := os.ReadFile(filePath)
-		if err != nil {
-			return
-		}
-
-		fn(string(bts), filePath)
-	})
-}
-
-// Reset data setting.
+// Reset filters config setting and results info.
 func (f *FileFinder) Reset() {
-	f.founded = false
-	f.filePaths = f.filePaths[:0]
+	c := NewConfig(f.c.DirPaths...)
+	c.ExcludeDotDir = f.c.ExcludeDotDir
+	c.FindFlags = f.c.FindFlags
+	c.MaxDepth = f.c.MaxDepth
+	c.curDepth = 0
 
-	f.excludeNames = make([]string, 0)
-	f.excludeExts = make([]string, 0)
-	f.excludeDirs = make([]string, 0)
+	f.c = c
+	f.err = nil
+	f.ch = make(chan Elem, 8)
+	f.caches = []Elem{}
 }
 
-// FilePaths get
-func (f *FileFinder) FilePaths() []string {
-	return f.filePaths
+// Err get last error
+func (f *FileFinder) Err() error {
+	return f.err
 }
 
-// String all file paths
+// CacheNum get
+func (f *FileFinder) CacheNum() int {
+	return len(f.caches)
+}
+
+// Config get
+func (f *FileFinder) Config() Config {
+	return *f.c
+}
+
+// String all dir paths
 func (f *FileFinder) String() string {
-	return strings.Join(f.filePaths, "\n")
+	return strings.Join(f.c.DirPaths, ",")
 }
