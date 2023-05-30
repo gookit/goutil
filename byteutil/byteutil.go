@@ -103,3 +103,13 @@ func AppendAny(dst []byte, v any) []byte {
 	}
 	return dst
 }
+
+// Cut bytes. like the strings.Cut()
+func Cut(bs []byte, sep byte) (before, after []byte, found bool) {
+	if i := bytes.IndexByte(bs, sep); i >= 0 {
+		return bs[:i], bs[i+1:], true
+	}
+
+	before = bs
+	return
+}

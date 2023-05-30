@@ -41,3 +41,16 @@ func TestAppendAny(t *testing.T) {
 	assert.Eq(t, []byte("1<nil>"), byteutil.AppendAny([]byte("1"), nil))
 	assert.Eq(t, "3600000000000", string(byteutil.AppendAny([]byte{}, timex.OneHour)))
 }
+
+func TestCut(t *testing.T) {
+	// test for byteutil.Cut()
+	b, a, ok := byteutil.Cut([]byte("age=123"), '=')
+	assert.True(t, ok)
+	assert.Eq(t, []byte("age"), b)
+	assert.Eq(t, []byte("123"), a)
+
+	b, a, ok = byteutil.Cut([]byte("age=123"), 'x')
+	assert.False(t, ok)
+	assert.Eq(t, []byte("age=123"), b)
+	assert.Empty(t, a)
+}
