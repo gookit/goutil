@@ -5,6 +5,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 )
 
 // Environ like os.Environ, but will returns key-value map[string]string data.
@@ -99,4 +100,23 @@ func FormatTplAndArgs(fmtAndArgs []any) string {
 		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
 	}
 	return fmt.Sprint(fmtAndArgs...)
+}
+
+var durStrReg = regexp.MustCompile(`^(-?\d+)(ns|us|µs|ms|s|m|h)$`)
+
+// IsDuration check the string is a duration string.
+func IsDuration(s string) bool {
+	if s == "0" {
+		return true
+	}
+	return durStrReg.MatchString(s)
+}
+
+// ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
+// Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+func ToDuration(s string) (time.Duration, error) {
+	if s == "now" {
+		return 0, nil
+	}
+	return time.ParseDuration(s)
 }

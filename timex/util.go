@@ -1,9 +1,13 @@
 package timex
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
-	"github.com/gookit/goutil/fmtutil"
+	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/strutil"
 )
 
 // NowUnix is short of time.Now().Unix()
@@ -11,48 +15,33 @@ func NowUnix() int64 {
 	return time.Now().Unix()
 }
 
-// SetLocalByName set local by tz name. eg: UTC, PRC
-func SetLocalByName(tzName string) error {
-	location, err := time.LoadLocation(tzName)
-	if err != nil {
-		return err
-	}
-
-	time.Local = location
-	return nil
-}
-
-// Format use default layout
-func Format(t time.Time) string {
-	return t.Format(DefaultLayout)
-}
+// Format convert time to string use default layout
+func Format(t time.Time) string { return t.Format(DefaultLayout) }
 
 // FormatBy given default layout
-func FormatBy(t time.Time, layout string) string {
-	return t.Format(layout)
+func FormatBy(t time.Time, layout string) string { return t.Format(layout) }
+
+// Date format time by given date template. see ToLayout() for template parse.
+func Date(t time.Time, template ...string) string { return Datetime(t, template...) }
+
+// Datetime convert time to string use template. see ToLayout() for template parse.
+func Datetime(t time.Time, template ...string) string {
+	return FormatByTpl(t, basefn.FirstOr(template, DefaultTemplate))
 }
 
-// Date format time by given date template.
-// see ToLayout()
-func Date(t time.Time, template string) string {
-	return FormatByTpl(t, template)
-}
-
-// DateFormat format time by given date template.
-// see ToLayout()
+// DateFormat format time by given date template. see ToLayout()
 func DateFormat(t time.Time, template string) string {
 	return FormatByTpl(t, template)
 }
 
-// FormatByTpl format time by given date template.
-// see ToLayout()
+// FormatByTpl format time by given date template. see ToLayout()
 func FormatByTpl(t time.Time, template string) string {
 	return t.Format(ToLayout(template))
 }
 
 // FormatUnix time seconds use default layout
-func FormatUnix(sec int64) string {
-	return time.Unix(sec, 0).Format(DefaultLayout)
+func FormatUnix(sec int64, layout ...string) string {
+	return time.Unix(sec, 0).Format(basefn.FirstOr(layout, DefaultLayout))
 }
 
 // FormatUnixBy format time seconds use given layout
@@ -62,101 +51,230 @@ func FormatUnixBy(sec int64, layout string) string {
 
 // FormatUnixByTpl format time seconds use given date template.
 // see ToLayout()
-func FormatUnixByTpl(sec int64, template string) string {
-	return time.Unix(sec, 0).Format(ToLayout(template))
-}
-
-// NowAddDay add some day time from now
-func NowAddDay(day int) time.Time {
-	return time.Now().AddDate(0, 0, day)
-}
-
-// NowAddHour add some hour time from now
-func NowAddHour(hour int) time.Time {
-	return time.Now().Add(time.Duration(hour) * OneHour)
-}
-
-// NowAddMinutes add some minutes time from now
-func NowAddMinutes(minutes int) time.Time {
-	return time.Now().Add(time.Duration(minutes) * OneMin)
-}
-
-// NowAddSeconds add some seconds time from now
-func NowAddSeconds(seconds int) time.Time {
-	return time.Now().Add(time.Duration(seconds) * time.Second)
-}
-
-// NowHourStart time
-func NowHourStart() time.Time {
-	return HourStart(time.Now())
-}
-
-// NowHourEnd time
-func NowHourEnd() time.Time {
-	return HourEnd(time.Now())
-}
-
-// AddDay add some day time for given time
-func AddDay(t time.Time, day int) time.Time {
-	return t.AddDate(0, 0, day)
-}
-
-// AddHour add some hour time for given time
-func AddHour(t time.Time, hour int) time.Time {
-	return t.Add(time.Duration(hour) * OneHour)
-}
-
-// AddMinutes add some minutes time for given time
-func AddMinutes(t time.Time, minutes int) time.Time {
-	return t.Add(time.Duration(minutes) * OneMin)
-}
-
-// AddSeconds add some seconds time for given time
-func AddSeconds(t time.Time, seconds int) time.Time {
-	return t.Add(time.Duration(seconds) * time.Second)
-}
-
-// HourStart time for given time
-func HourStart(t time.Time) time.Time {
-	y, m, d := t.Date()
-	return time.Date(y, m, d, t.Hour(), 0, 0, 0, t.Location())
-}
-
-// HourEnd time for given time
-func HourEnd(t time.Time) time.Time {
-	y, m, d := t.Date()
-	return time.Date(y, m, d, t.Hour(), 59, 59, int(time.Second-time.Nanosecond), t.Location())
-}
-
-// DayStart time for given time
-func DayStart(t time.Time) time.Time {
-	y, m, d := t.Date()
-	return time.Date(y, m, d, 0, 0, 0, 0, t.Location())
-}
-
-// DayEnd time for given time
-func DayEnd(t time.Time) time.Time {
-	y, m, d := t.Date()
-	return time.Date(y, m, d, 23, 59, 59, int(time.Second-time.Nanosecond), t.Location())
-}
-
-// TodayStart time
-func TodayStart() time.Time {
-	return DayStart(time.Now())
-}
-
-// TodayEnd time
-func TodayEnd() time.Time {
-	return DayEnd(time.Now())
+func FormatUnixByTpl(sec int64, template ...string) string {
+	layout := ToLayout(basefn.FirstOr(template, DefaultTemplate))
+	return time.Unix(sec, 0).Format(layout)
 }
 
 // HowLongAgo format given timestamp to string.
 func HowLongAgo(sec int64) string {
-	return fmtutil.HowLongAgo(sec)
+	return basefn.HowLongAgo(sec)
 }
+
+// ToTime parse a datetime string. alias of strutil.ToTime()
+func ToTime(s string, layouts ...string) (time.Time, error) {
+	return strutil.ToTime(s, layouts...)
+}
+
+// ToDur parse a duration string. alias of ToDuration()
+func ToDur(s string) (time.Duration, error) { return ToDuration(s) }
 
 // ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 func ToDuration(s string) (time.Duration, error) {
-	return time.ParseDuration(s)
+	return comfunc.ToDuration(s)
+}
+
+// IsDuration check the string is a valid duration string. alias of basefn.IsDuration()
+func IsDuration(s string) bool { return comfunc.IsDuration(s) }
+
+// TryToTime parse a date string or duration string to time.Time.
+func TryToTime(s string, bt time.Time) (time.Time, error) {
+	if s == "now" {
+		return time.Now(), nil
+	}
+
+	// if s is a duration string, add it to bt(base time)
+	if IsDuration(s) {
+		dur, err := ToDuration(s)
+		if err != nil {
+			return ZeroTime, err
+		}
+		return bt.Add(dur), nil
+	}
+
+	// as a date string, parse it to time.Time
+	return ToTime(s)
+}
+
+// InRange check the dst time is in the range of start and end.
+//
+// if start is zero, only check dst < end,
+// if end is zero, only check dst > start.
+func InRange(dst, start, end time.Time) bool {
+	if start.IsZero() && end.IsZero() {
+		return false
+	}
+
+	if start.IsZero() {
+		return dst.Before(end)
+	}
+	if end.IsZero() {
+		return dst.After(start)
+	}
+
+	return dst.After(start) && dst.Before(end)
+}
+
+// ParseRangeOpt is the option for ParseRange
+type ParseRangeOpt struct {
+	// BaseTime is the base time for relative time string.
+	// if is zero, use time.Now() as base time.
+	BaseTime time.Time
+	// OneAsEnd is the option for one time range.
+	//  - False: "-1h" => "-1h,0"; "1h" => "+1h, feature"
+	//  - True:  "-1h" => "zero,-1h"; "1h" => "zero,1h"
+	OneAsEnd bool
+	// SepChar is the separator char for time range string. default is '~'
+	SepChar byte
+	// KeywordFn is the function for parse keyword time string.
+	KeywordFn func(string) (time.Time, time.Time, error)
+}
+
+func ensureOpt(opt *ParseRangeOpt) *ParseRangeOpt {
+	if opt == nil {
+		opt = &ParseRangeOpt{BaseTime: time.Now(), SepChar: '~'}
+	} else {
+		if opt.BaseTime.IsZero() {
+			opt.BaseTime = time.Now()
+		}
+		if opt.SepChar == 0 {
+			opt.SepChar = '~'
+		}
+	}
+
+	return opt
+}
+
+// ParseRange parse time range expression string to time.Time range.
+//   - "0" is alias of "now"
+//
+// Expression format:
+//
+//	 	"-5h~-1h"       => 5 hours ago to 1 hour ago
+//	 	"1h~5h"         => 1 hour after to 5 hours after
+//	 	"-1h~1h"        => 1 hour ago to 1 hour after
+//	 	"-1h"            => 1 hour ago to feature. eq "-1h,"
+//	 	"-1h~0"          => 1 hour ago to now.
+//	 	"< -1h"           => 1 hour ago. eq ",-1h"
+//	 	"> 1h" OR "1h"     => 1 hour after to feature
+//	 	// keyword: now, today, yesterday, tomorrow
+//		"today"          => today start to today end
+//		"yesterday"      => yesterday start to yesterday end
+//		"tomorrow"       => tomorrow start to tomorrow end
+//
+// Usage:
+//
+//	start, end, err := ParseRange("-1h~1h", nil)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	fmt.Println(start, end)
+func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error) {
+	opt = ensureOpt(opt)
+	expr = strings.Trim(expr, " "+string(opt.SepChar))
+	if expr == "" {
+		err = fmt.Errorf("invalid time range expr %q", expr)
+		return
+	}
+
+	// parse time range. eg: "5h~1h"
+	if strings.IndexByte(expr, opt.SepChar) > -1 {
+		s1, s2 := strutil.TrimCut(expr, string(opt.SepChar))
+		if s1 == "" || s2 == "" {
+			err = fmt.Errorf("invalid time range expr: %s", expr)
+			return
+		}
+
+		if s1 != "" {
+			start, err = TryToTime(s1, opt.BaseTime)
+			if err != nil {
+				return
+			}
+		}
+
+		if s2 != "" {
+			end, err = TryToTime(s2, opt.BaseTime)
+		}
+		return
+	}
+
+	// single time. eg: "5h", "1h", "-1h"
+	if IsDuration(expr) {
+		tt, err1 := TryToTime(expr, opt.BaseTime)
+		if err1 != nil {
+			err = err1
+			return
+		}
+
+		if opt.OneAsEnd {
+			end = tt
+		} else {
+			start = tt
+		}
+		return
+	}
+
+	// with compare operator. eg: "<1h", ">1h"
+	if expr[0] == '<' || expr[0] == '>' {
+		tt, err1 := TryToTime(strings.Trim(expr[1:], " ="), opt.BaseTime)
+		if err1 != nil {
+			err = err1
+			return
+		}
+
+		if expr[0] == '<' {
+			end = tt
+		} else {
+			start = tt
+		}
+		return
+	}
+
+	// parse keyword time string
+	switch expr {
+	case "0":
+		if opt.OneAsEnd {
+			end = opt.BaseTime
+		} else {
+			start = opt.BaseTime
+		}
+	case "now":
+		if opt.OneAsEnd {
+			end = time.Now()
+		} else {
+			start = time.Now()
+		}
+	case "today":
+		start = DayStart(opt.BaseTime)
+		end = DayEnd(opt.BaseTime)
+	case "yesterday":
+		yd := opt.BaseTime.AddDate(0, 0, -1)
+		start = DayStart(yd)
+		end = DayEnd(yd)
+	case "tomorrow":
+		td := opt.BaseTime.AddDate(0, 0, 1)
+		start = DayStart(td)
+		end = DayEnd(td)
+	default:
+		// single datetime. eg: "2019-01-01"
+		tt, err1 := TryToTime(expr, opt.BaseTime)
+		if err1 != nil {
+			if opt.KeywordFn == nil {
+				err = fmt.Errorf("invalid keyword time string: %s", expr)
+				return
+			}
+
+			start, end, err = opt.KeywordFn(expr)
+			return
+		}
+
+		if opt.OneAsEnd {
+			end = tt
+		} else {
+			start = tt
+		}
+	}
+
+	return
 }

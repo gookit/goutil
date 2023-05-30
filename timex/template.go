@@ -6,6 +6,13 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// some common datetime templates
+const (
+	DefaultTemplate = "Y-m-d H:i:s"
+	TemplateWithMs3 = "Y-m-d H:i:s.v" // end with ".000"
+	TemplateWithMs6 = "Y-m-d H:i:s.u" // end with ".000000"
+)
+
 // char to Go date layout
 // eg: "Y-m-d H:i:s" => "2006-01-02 15:04:05",
 //
@@ -41,10 +48,10 @@ var charMap = map[byte][]byte{
 	'S': []byte("05"), // 00 to 59
 	's': []byte("5"),  // 0 to 59
 	// Time
-	'a': []byte("pm"),      // am or pm
-	'A': []byte("PM"),      // AM or PM
-	'v': []byte(".000"),    // Milliseconds eg: 654
-	'u': []byte(".000000"), // Microseconds eg: 654321
+	'a': []byte("pm"),     // am or pm
+	'A': []byte("PM"),     // AM or PM
+	'v': []byte("000"),    // Milliseconds eg: 654
+	'u': []byte("000000"), // Microseconds eg: 654321
 	// Timezone
 	'e': []byte("MST"),    // Timezone identifier. eg: UTC, GMT, Atlantic/Azores
 	'Z': []byte("Z07"),    // Timezone abbreviation, if known; otherwise the GMT offset. Examples: EST, MDT, +05

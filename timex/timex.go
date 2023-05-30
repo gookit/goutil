@@ -7,7 +7,7 @@ package timex
 import (
 	"time"
 
-	"github.com/gookit/goutil/fmtutil"
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -33,6 +33,8 @@ const (
 var (
 	// DefaultLayout template for format time
 	DefaultLayout = "2006-01-02 15:04:05"
+	// ZeroTime zero time instance
+	ZeroTime = time.Time{}
 )
 
 // TimeX alias of Time
@@ -187,6 +189,29 @@ func (t *Time) DayAfter(day int) *Time {
 	return t.AddDay(day)
 }
 
+// AddDur some duration time
+func (t *Time) AddDur(dur time.Duration) *Time {
+	return &Time{
+		Time:   t.Add(dur),
+		Layout: DefaultLayout,
+	}
+}
+
+// AddString add duration time string.
+//
+// Example:
+//
+//	tn := timex.Now() // example as "2019-01-01 12:12:12"
+//	nt := tn.AddString("1h")
+//	nt.Datetime() // Output: 2019-01-01 13:12:12
+func (t *Time) AddString(dur string) *Time {
+	d, err := ToDuration(dur)
+	if err != nil {
+		panic(err)
+	}
+	return t.AddDur(d)
+}
+
 // AddHour add some hour time
 func (t *Time) AddHour(hours int) *Time {
 	return t.AddSeconds(hours * OneHourSec)
@@ -306,14 +331,14 @@ func (t *Time) IsAfterUnix(ux int64) bool {
 	return t.After(time.Unix(ux, 0))
 }
 
-// Timestamp value. alias t.Unix()
+// Timestamp value. alias of t.Unix()
 func (t Time) Timestamp() int64 {
 	return t.Unix()
 }
 
 // HowLongAgo format diff time to string.
 func (t Time) HowLongAgo(before time.Time) string {
-	return fmtutil.HowLongAgo(t.Unix() - before.Unix())
+	return basefn.HowLongAgo(t.Unix() - before.Unix())
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.

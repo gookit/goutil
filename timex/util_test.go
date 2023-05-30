@@ -25,10 +25,6 @@ func TestUtil_basic(t *testing.T) {
 
 	tt = timex.NowHourEnd()
 	assert.Eq(t, "59:59", timex.DateFormat(tt, "I:S"))
-
-	dur, err1 := timex.ToDuration("3s")
-	assert.NoErr(t, err1)
-	assert.Eq(t, 3*timex.Second, dur)
 }
 
 func TestNowAddDay(t *testing.T) {
@@ -84,4 +80,96 @@ func TestToLayout(t *testing.T) {
 	assert.Eq(t, timex.DefaultLayout, timex.ToLayout(""))
 	assert.Eq(t, time.RFC3339, timex.ToLayout("c"))
 	assert.Eq(t, time.RFC3339, timex.ToLayout("Y-m-dTH:I:SP"))
+}
+
+func TestToDur(t *testing.T) {
+	dur, err := timex.ToDur("3s")
+	assert.NoErr(t, err)
+	assert.Eq(t, 3*timex.Second, dur)
+
+	dur, err = timex.ToDur("now")
+	assert.NoErr(t, err)
+	assert.Eq(t, time.Duration(0), dur)
+
+	dur, err = timex.ToDuration("0")
+	assert.NoErr(t, err)
+	assert.Eq(t, time.Duration(0), dur)
+
+	assert.True(t, timex.IsDuration("3s"))
+	assert.True(t, timex.IsDuration("3m"))
+	assert.True(t, timex.IsDuration("-3h"))
+	assert.True(t, timex.IsDuration("0"))
+}
+
+func TestTryToTime(t *testing.T) {
+	tn := timex.Now()
+
+	// duration string
+	durTests := []struct {
+		in  string
+		out string
+		ok  bool
+	}{
+		{"now", tn.Datetime(), true},
+		{"0", tn.Datetime(), true},
+		{"3s", tn.AddSeconds(3).Datetime(), true},
+		{"3m", tn.AddMinutes(3).Datetime(), true},
+	}
+
+	for _, item := range durTests {
+		tt, err := timex.TryToTime(item.in, tn.T())
+		if item.ok {
+			assert.NoErr(t, err)
+		} else {
+			assert.Err(t, err)
+		}
+
+		assert.Eq(t, item.out, timex.Format(tt))
+	}
+
+	bt := timex.ZeroTime
+	assert.True(t, bt.IsZero())
+	assert.Neq(t, 0, bt.Unix())
+
+	noErrTests := []struct {
+		in  string
+		out string
+	}{
+		// date string
+		{"2020-01-02 15:04:05", "2020-01-02 15:04:05"},
+		{"2020-01-02", "2020-01-02 00:00:00"},
+		{"2020-01-02 15:04", "2020-01-02 15:04:00"},
+		{"2020-01-02 15", "2020-01-02 15:00:00"},
+		{"2020-01-02 15:04:05.123", "2020-01-02 15:04:05"},
+		{"2020-01-02 15:04:05.123456", "2020-01-02 15:04:05"},
+		{"2020-01-02 15:04:05.123456789", "2020-01-02 15:04:05"},
+		{"2020-01-02T15:04:05.123456789+08:00", "2020-01-02 15:04:05"},
+	}
+
+	for _, item := range noErrTests {
+		tt, err := timex.TryToTime(item.in, bt)
+		assert.NoErr(t, err)
+		assert.Eq(t, item.out, timex.Format(tt))
+	}
+}
+
+func TestParseRange(t *testing.T) {
+	tests := []struct {
+		input string
+		start int64
+		end   int64
+	}{
+		// {"2020-01-02 15:04:05", 1577977445, 0},
+		// {"2020-01-02 15:04:05~2020-01-03 15:04:05", 1577977445, 1578063845},
+		{"2020-01-02 15:04:06~", 1577977446, 0},
+		{"~2020-01-02 15:04:07", 0, 1577946245},
+		{"~", 0, 0},
+	}
+
+	for _, item := range tests {
+		start, end, err := timex.ParseRange(item.input, nil)
+		assert.NoErr(t, err)
+		assert.Eq(t, item.start, start.Unix(), "start for %q", item.input)
+		assert.Eq(t, item.end, end.Unix(), "end for %q", item.input)
+	}
 }
