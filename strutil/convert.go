@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode"
 	"unsafe"
 
 	"github.com/gookit/goutil/comdef"
@@ -20,7 +19,7 @@ var (
 	// ErrDateLayout error
 	ErrDateLayout = errors.New("invalid date layout string")
 	// ErrInvalidParam error
-	ErrInvalidParam = errors.New("invalid input parameter")
+	ErrInvalidParam = errors.New("invalid input for parse time")
 
 	// some regex for convert string.
 	toSnakeReg  = regexp.MustCompile("[A-Z][a-z]")
@@ -365,133 +364,8 @@ func ToSlice(s string, sep ...string) []string {
 // 	return cliutil.StringToOSArgs(s) // error: import cycle not allowed
 // }
 
-// MustToTime convert date string to time.Time
-func MustToTime(s string, layouts ...string) time.Time {
-	t, err := ToTime(s, layouts...)
-	if err != nil {
-		panic(err)
-	}
-	return t
-}
-
-// auto match use some commonly layouts.
-// key is layout length.
-var layoutMap = map[int][]string{
-	6:  {"200601", "060102", time.Kitchen},
-	8:  {"20060102"},
-	10: {"2006-01-02"},
-	13: {"2006-01-02 15"},
-	15: {time.Stamp},
-	16: {"2006-01-02 15:04"},
-	19: {"2006-01-02 15:04:05", time.RFC822, time.StampMilli},
-	20: {"2006-01-02 15:04:05Z"},
-	21: {time.RFC822Z},
-	22: {time.StampMicro},
-	24: {time.ANSIC},
-	25: {time.RFC3339, time.StampNano},
-	// 26: {time.Layout}, // must go >= 1.19
-	28: {time.UnixDate},
-	29: {time.RFC1123},
-	30: {time.RFC850},
-	31: {time.RFC1123Z},
-	35: {time.RFC3339Nano},
-}
-
-// ToTime convert date string to time.Time
-func ToTime(s string, layouts ...string) (t time.Time, err error) {
-	// custom layout
-	if len(layouts) > 0 {
-		if len(layouts[0]) > 0 {
-			return time.Parse(layouts[0], s)
-		}
-
-		err = ErrDateLayout
-		return
-	}
-
-	// auto match use some commonly layouts.
-	strLn := len(s)
-	maybeLayouts, ok := layoutMap[strLn]
-	if !ok {
-		err = ErrInvalidParam
-		return
-	}
-
-	var hasAlphaT bool
-	if pos := strings.IndexByte(s, 'T'); pos > 0 && pos < 12 {
-		hasAlphaT = true
-	}
-
-	hasSlashR := strings.IndexByte(s, '/') > 0
-	for _, layout := range maybeLayouts {
-		// date string has "T". eg: "2006-01-02T15:04:05"
-		if hasAlphaT {
-			layout = strings.Replace(layout, " ", "T", 1)
-		}
-
-		// date string has "/". eg: "2006/01/02 15:04:05"
-		if hasSlashR {
-			layout = strings.Replace(layout, "-", "/", -1)
-		}
-
-		t, err = time.Parse(layout, s)
-		if err == nil {
-			return
-		}
-	}
-
-	// t, err = time.ParseInLocation(layout, s, time.Local)
-	return
-}
-
 // ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 func ToDuration(s string) (time.Duration, error) {
-	return time.ParseDuration(s)
-}
-
-// SafeByteSize converts size string like 1GB/1g or 12mb/12M into an unsigned integer number of bytes
-func SafeByteSize(sizeStr string) uint64 {
-	size, _ := ToByteSize(sizeStr)
-	return size
-}
-
-// ToByteSize converts size string like 1GB/1g or 12mb/12M into an unsigned integer number of bytes
-func ToByteSize(sizeStr string) (uint64, error) {
-	sizeStr = strings.TrimSpace(sizeStr)
-	lastPos := len(sizeStr) - 1
-	if lastPos < 1 {
-		return 0, nil
-	}
-
-	if sizeStr[lastPos] == 'b' || sizeStr[lastPos] == 'B' {
-		// last second char is k,m,g,t
-		lastSec := sizeStr[lastPos-1]
-		if lastSec > 'A' {
-			lastPos--
-		}
-	} else if IsNumChar(sizeStr[lastPos]) { // not unit suffix. eg: 346
-		return strconv.ParseUint(sizeStr, 10, 32)
-	}
-
-	multiplier := float64(1)
-	switch unicode.ToLower(rune(sizeStr[lastPos])) {
-	case 'k':
-		multiplier = 1 << 10
-	case 'm':
-		multiplier = 1 << 20
-	case 'g':
-		multiplier = 1 << 30
-	case 't':
-		multiplier = 1 << 40
-	default: // b
-		multiplier = 1
-	}
-
-	sizeNum := strings.TrimSpace(sizeStr[:lastPos])
-	size, err := strconv.ParseFloat(sizeNum, 64)
-	if size < 0 {
-		return 0, err
-	}
-	return uint64(size * multiplier), nil
+	return comfunc.ToDuration(s)
 }

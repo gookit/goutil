@@ -6,7 +6,6 @@ import (
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
-	"github.com/gookit/goutil/timex"
 )
 
 func TestStringJoin(t *testing.T) {
@@ -232,52 +231,6 @@ func TestStr2Array(t *testing.T) {
 	is.Len(ss, 0)
 }
 
-func TestToTime(t *testing.T) {
-	is := assert.New(t)
-	tests := map[string]string{
-		"20180927":             "2018-09-27 00:00:00 +0000 UTC",
-		"2018-09-27":           "2018-09-27 00:00:00 +0000 UTC",
-		"2018-09-27 12":        "2018-09-27 12:00:00 +0000 UTC",
-		"2018-09-27T12":        "2018-09-27 12:00:00 +0000 UTC",
-		"2018-09-27 12:34":     "2018-09-27 12:34:00 +0000 UTC",
-		"2018-09-27T12:34":     "2018-09-27 12:34:00 +0000 UTC",
-		"2018-09-27 12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
-		"2018-09-27T12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
-		"2018/09/27 12:34:45":  "2018-09-27 12:34:45 +0000 UTC",
-		"2018/09/27T12:34:45Z": "2018-09-27 12:34:45 +0000 UTC",
-		"2018-10-16 12:34:01":  "2018-10-16 12:34:01 +0000 UTC",
-	}
-
-	for sample, want := range tests {
-		tm, err := strutil.ToTime(sample)
-		is.Nil(err, "sample %s => want %s", sample, want)
-		is.Eq(want, tm.String())
-	}
-
-	tm, err := strutil.ToTime("invalid")
-	is.Err(err)
-	is.True(tm.IsZero())
-
-	tm, err = strutil.ToTime("invalid", "")
-	is.Err(err)
-	is.True(tm.IsZero())
-
-	tm, err = strutil.ToTime("2018-09-27T15:34", "2018-09-27 15:34:23")
-	is.Err(err)
-	is.True(tm.IsZero())
-
-	tm = strutil.MustToTime("2018-09-27T15:34")
-	is.Eq("2018-09-27T15:34", timex.FormatByTpl(tm, "Y-m-dTH:I"))
-
-	is.Panics(func() {
-		strutil.MustToTime("invalid")
-	})
-
-	dur, err1 := strutil.ToDuration("3s")
-	is.NoErr(err1)
-	is.Eq(3*timex.Second, dur)
-}
-
 //	func TestToOSArgs(t *testing.T) {
 //		args := strutil.ToOSArgs(`./app top sub -a ddd --xx "abc
 //
@@ -309,6 +262,8 @@ func TestToByteSize(t *testing.T) {
 		bytes uint64
 		sizeS string
 	}{
+		{1, "1"},
+		{5, "5"},
 		{346, "346"},
 		{346, "346B"},
 		{3471, "3.39K"},
@@ -322,6 +277,7 @@ func TestToByteSize(t *testing.T) {
 		assert.Eq(t, tt.bytes, strutil.SafeByteSize(tt.sizeS))
 	}
 
+	assert.Eq(t, uint64(1), strutil.SafeByteSize("1"))
 	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1M"))
 	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1MB"))
 	assert.Eq(t, uint64(1024*1024), strutil.SafeByteSize("1m"))
@@ -330,4 +286,8 @@ func TestToByteSize(t *testing.T) {
 	assert.Eq(t, uint64(1024*1024*1024), strutil.SafeByteSize("1G"))
 	assert.Eq(t, uint64(1288490188), strutil.SafeByteSize("1.2GB"))
 	assert.Eq(t, uint64(1288490188), strutil.SafeByteSize("1.2 GB"))
+
+	size, err := strutil.ToByteSize("invalid")
+	assert.Err(t, err)
+	assert.Eq(t, uint64(0), size)
 }
