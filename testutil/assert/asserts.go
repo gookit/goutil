@@ -507,7 +507,7 @@ func NotEq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 // Lt asserts that the give(intX) should not be less than max
 func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
 	gInt, err := mathutil.ToInt(give)
-	if err == nil && gInt <= max {
+	if err == nil && gInt < max {
 		return true
 	}
 
@@ -524,7 +524,7 @@ func Lte(t TestingT, give, max int, fmtAndArgs ...any) bool {
 // Gt asserts that the give(intX) should not be greater than min
 func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
 	gInt, err := mathutil.ToInt(give)
-	if err == nil && gInt >= min {
+	if err == nil && gInt > min {
 		return true
 	}
 
