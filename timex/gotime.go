@@ -2,6 +2,25 @@ package timex
 
 import "time"
 
+// some time layout or time
+const (
+	DatetimeLayout = "2006-01-02 15:04:05"
+	LayoutWithMs3  = "2006-01-02 15:04:05.000"
+	LayoutWithMs6  = "2006-01-02 15:04:05.000000"
+	DateOnlyLayout = "2006-01-02"
+	TimeOnlyLayout = "15:04:05"
+
+	// ZeroUnix zero unix timestamp
+	ZeroUnix int64 = -62135596800
+)
+
+var (
+	// DefaultLayout template for format time
+	DefaultLayout = DatetimeLayout
+	// ZeroTime zero time instance
+	ZeroTime = time.Time{}
+)
+
 // SetLocalByName set local by tz name. eg: UTC, PRC
 func SetLocalByName(tzName string) error {
 	location, err := time.LoadLocation(tzName)

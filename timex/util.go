@@ -79,7 +79,12 @@ func ToDuration(s string) (time.Duration, error) {
 func IsDuration(s string) bool { return comfunc.IsDuration(s) }
 
 // TryToTime parse a date string or duration string to time.Time.
+//
+// if s is empty, return zero time.
 func TryToTime(s string, bt time.Time) (time.Time, error) {
+	if s == "" {
+		return ZeroTime, nil
+	}
 	if s == "now" {
 		return time.Now(), nil
 	}
@@ -151,17 +156,17 @@ func ensureOpt(opt *ParseRangeOpt) *ParseRangeOpt {
 //
 // Expression format:
 //
-//	 	"-5h~-1h"       => 5 hours ago to 1 hour ago
-//	 	"1h~5h"         => 1 hour after to 5 hours after
-//	 	"-1h~1h"        => 1 hour ago to 1 hour after
-//	 	"-1h"            => 1 hour ago to feature. eq "-1h,"
-//	 	"-1h~0"          => 1 hour ago to now.
-//	 	"< -1h"           => 1 hour ago. eq ",-1h"
-//	 	"> 1h" OR "1h"     => 1 hour after to feature
-//	 	// keyword: now, today, yesterday, tomorrow
-//		"today"          => today start to today end
-//		"yesterday"      => yesterday start to yesterday end
-//		"tomorrow"       => tomorrow start to tomorrow end
+//	"-5h~-1h"       	=> 5 hours ago to 1 hour ago
+//	"1h~5h"         	=> 1 hour after to 5 hours after
+//	"-1h~1h"        	=> 1 hour ago to 1 hour after
+//	"-1h"            	=> 1 hour ago to feature. eq "-1h,"
+//	"-1h~0"          	=> 1 hour ago to now.
+//	"< -1h" OR "~-1h"   => 1 hour ago. eq ",-1h"
+//	"> 1h" OR "1h"     	=> 1 hour after to feature
+//	// keyword: now, today, yesterday, tomorrow
+//	"today"          => today start to today end
+//	"yesterday"      => yesterday start to yesterday end
+//	"tomorrow"       => tomorrow start to tomorrow end
 //
 // Usage:
 //
@@ -172,7 +177,7 @@ func ensureOpt(opt *ParseRangeOpt) *ParseRangeOpt {
 //	fmt.Println(start, end)
 func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error) {
 	opt = ensureOpt(opt)
-	expr = strings.Trim(expr, " "+string(opt.SepChar))
+	expr = strings.TrimSpace(expr)
 	if expr == "" {
 		err = fmt.Errorf("invalid time range expr %q", expr)
 		return
@@ -181,7 +186,7 @@ func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err erro
 	// parse time range. eg: "5h~1h"
 	if strings.IndexByte(expr, opt.SepChar) > -1 {
 		s1, s2 := strutil.TrimCut(expr, string(opt.SepChar))
-		if s1 == "" || s2 == "" {
+		if s1 == "" && s2 == "" {
 			err = fmt.Errorf("invalid time range expr: %s", expr)
 			return
 		}

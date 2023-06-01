@@ -83,11 +83,38 @@ func TestToLayout(t *testing.T) {
 }
 
 func TestToDur(t *testing.T) {
-	dur, err := timex.ToDur("3s")
-	assert.NoErr(t, err)
-	assert.Eq(t, 3*timex.Second, dur)
+	tests := []struct {
+		in  string
+		out time.Duration
+		ok  bool
+	}{
+		{"", time.Duration(0), false},
+		{"0", time.Duration(0), true},
+		{"now", time.Duration(0), false},
+		{"3s", 3 * timex.Second, true},
+		{"3sec", 3 * timex.Second, true},
+		{"3m", 3 * timex.Minute, true},
+		{"3min", 3 * timex.Minute, true},
+		{"3h", 3 * timex.Hour, true},
+		{"3hours", 3 * timex.Hour, true},
+		{"3d", 3 * timex.Day, true},
+		{"3day", 3 * timex.Day, true},
+		{"1w", 1 * timex.Week, true},
+		{"1week", 1 * timex.Week, true},
+	}
 
-	dur, err = timex.ToDur("now")
+	for _, item := range tests {
+		dur, err := timex.ToDur(item.in)
+		if item.ok {
+			assert.NoErr(t, err)
+		} else {
+			assert.Err(t, err)
+		}
+
+		assert.Eq(t, item.out, dur)
+	}
+
+	dur, err := timex.ToDur("now")
 	assert.NoErr(t, err)
 	assert.Eq(t, time.Duration(0), dur)
 
@@ -153,23 +180,98 @@ func TestTryToTime(t *testing.T) {
 	}
 }
 
+func TestInRange(t *testing.T) {
+	tests := []struct {
+		start, end string
+		out        bool
+	}{
+		{"-5s", "5s", true},
+		{"", "-2s", false},
+	}
+
+	now := time.Now()
+	for _, item := range tests {
+		startT, err := timex.TryToTime(item.start, now)
+		assert.NoErr(t, err)
+		endT, err := timex.TryToTime(item.end, now)
+		assert.NoErr(t, err)
+		assert.Eq(t, item.out, timex.InRange(now, startT, endT))
+	}
+}
+
 func TestParseRange(t *testing.T) {
 	tests := []struct {
 		input string
 		start int64
 		end   int64
+		ok    bool
 	}{
-		// {"2020-01-02 15:04:05", 1577977445, 0},
-		// {"2020-01-02 15:04:05~2020-01-03 15:04:05", 1577977445, 1578063845},
-		{"2020-01-02 15:04:06~", 1577977446, 0},
-		{"~2020-01-02 15:04:07", 0, 1577946245},
-		{"~", 0, 0},
+		// date string
+		{"2020-01-02 15:04:05", 1577977445, timex.ZeroUnix, true},
+		{"2020-01-02 15:04:05~2020-01-03 15:04:05", 1577977445, 1578063845, true},
+		{"2020-01-02 15:04:06~", 1577977446, timex.ZeroUnix, true},
+		{"~2020-01-02 15:04:07", timex.ZeroUnix, 1577977447, true},
+		// duration string
+		{"-5s", 1672671840, timex.ZeroUnix, true},
+		{"> 5s", 1672671850, timex.ZeroUnix, true},
+		{"-5s~5s", 1672671840, 1672671850, true},
+		{"~5s", timex.ZeroUnix, 1672671850, true},
+		{"< 5s", timex.ZeroUnix, 1672671850, true},
+		{"1h", 1672675445, timex.ZeroUnix, true},
+		{"1hour", 1672675445, timex.ZeroUnix, true},
+		// invalid
+		{"~", timex.ZeroUnix, timex.ZeroUnix, false},
+		{" ", timex.ZeroUnix, timex.ZeroUnix, false},
+	}
+
+	bt, err := timex.FromDate("2023-01-02 15:04:05")
+	assert.NoError(t, err)
+	opt := &timex.ParseRangeOpt{
+		BaseTime: bt.T(),
 	}
 
 	for _, item := range tests {
-		start, end, err := timex.ParseRange(item.input, nil)
-		assert.NoErr(t, err)
+		start, end, err := timex.ParseRange(item.input, opt)
+		assert.Eq(t, item.ok, err == nil, "err for %q", item.input)
 		assert.Eq(t, item.start, start.Unix(), "start for %q", item.input)
 		assert.Eq(t, item.end, end.Unix(), "end for %q", item.input)
 	}
+
+	t.Run("keyword now", func(t *testing.T) {
+		start, end, err := timex.ParseRange("now", nil)
+		assert.NoError(t, err)
+		assert.Eq(t, timex.Now().Unix(), start.Unix())
+		assert.Eq(t, timex.ZeroUnix, end.Unix())
+
+		start, end, err = timex.ParseRange("~now", nil)
+		assert.NoError(t, err)
+		assert.Eq(t, timex.ZeroUnix, start.Unix())
+		assert.Eq(t, timex.Now().Unix(), end.Unix())
+	})
+
+	t.Run("keyword today", func(t *testing.T) {
+		now := timex.Now()
+		start, end, err := timex.ParseRange("today", nil)
+		assert.NoError(t, err)
+		assert.Eq(t, now.DayStart().Unix(), start.Unix())
+		assert.Eq(t, now.DayEnd().Unix(), end.Unix())
+
+		start, end, err = timex.ParseRange("~today", nil)
+		assert.Error(t, err)
+		assert.Eq(t, timex.ZeroUnix, start.Unix())
+		assert.Eq(t, timex.ZeroUnix, end.Unix())
+	})
+
+	t.Run("keyword yesterday", func(t *testing.T) {
+		yd := timex.Now().DayAgo(1)
+		start, end, err := timex.ParseRange("yesterday", nil)
+		assert.NoError(t, err)
+		assert.Eq(t, yd.DayStart().Unix(), start.Unix())
+		assert.Eq(t, yd.DayEnd().Unix(), end.Unix())
+
+		start, end, err = timex.ParseRange("~yesterday", nil)
+		assert.Error(t, err)
+		assert.Eq(t, timex.ZeroUnix, start.Unix())
+		assert.Eq(t, timex.ZeroUnix, end.Unix())
+	})
 }

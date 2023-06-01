@@ -48,10 +48,22 @@ func TestToTime(t *testing.T) {
 	is.Panics(func() {
 		strutil.MustToTime("invalid")
 	})
+}
+
+func TestToDuration(t *testing.T) {
+	is := assert.New(t)
 
 	dur, err1 := strutil.ToDuration("3s")
 	is.NoErr(err1)
 	is.Eq(3*timex.Second, dur)
+
+	dur, err1 = strutil.ToDuration("3sec")
+	is.NoErr(err1)
+	is.Eq(3*timex.Second, dur)
+
+	dur, err1 = strutil.ToDuration("-3sec")
+	is.NoErr(err1)
+	is.Eq(-3*timex.Second, dur)
 }
 
 func TestParseSizeRange(t *testing.T) {

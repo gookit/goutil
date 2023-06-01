@@ -20,21 +20,14 @@ const (
 	OneWeekSec = 7 * 86400
 
 	Second  = time.Second
+	Minute  = time.Minute
 	OneMin  = time.Minute
+	Hour    = time.Hour
 	OneHour = time.Hour
+	Day     = 24 * time.Hour
 	OneDay  = 24 * time.Hour
+	Week    = 7 * 24 * time.Hour
 	OneWeek = 7 * 24 * time.Hour
-
-	DatetimeLayout = "2006-01-02 15:04:05"
-	DateOnlyLayout = "2006-01-02"
-	TimeOnlyLayout = "15:04:05"
-)
-
-var (
-	// DefaultLayout template for format time
-	DefaultLayout = "2006-01-02 15:04:05"
-	// ZeroTime zero time instance
-	ZeroTime = time.Time{}
 )
 
 // TimeX alias of Time
@@ -89,14 +82,12 @@ func FromDate(s string, template ...string) (*Time, error) {
 	return FromString(s)
 }
 
-// FromString create from datetime string.
-// see strutil.ToTime()
+// FromString create from datetime string. see strutil.ToTime()
 func FromString(s string, layouts ...string) (*Time, error) {
 	t, err := strutil.ToTime(s, layouts...)
 	if err != nil {
 		return nil, err
 	}
-
 	return New(t), nil
 }
 
