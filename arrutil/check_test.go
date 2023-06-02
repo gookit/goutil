@@ -109,3 +109,15 @@ func TestContains(t *testing.T) {
 		is.False(arrutil.Contains(list, val))
 	}
 }
+
+func TestSome(t *testing.T) {
+	type Item struct{ id int }
+	list := []Item{
+		{id: 1},
+		{id: 2},
+		{id: 3},
+	}
+	index, find := arrutil.Some(list, func(index int, item Item) bool { return item.id == 2 })
+	assert.True(t, find)
+	assert.True(t, index == 1)
+}
