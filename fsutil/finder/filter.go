@@ -2,7 +2,6 @@ package finder
 
 import (
 	"bytes"
-	"io/fs"
 
 	"github.com/gookit/goutil/fsutil"
 )
@@ -19,38 +18,6 @@ type FilterFunc func(elem Elem) bool
 // Apply check file path. return False will filter this file.
 func (fn FilterFunc) Apply(elem Elem) bool {
 	return fn(elem)
-}
-
-// ------------------ raw filter wrapper ------------------
-
-// RawFilter for filter file path.
-type RawFilter interface {
-	// Apply check file path. return False will filter this file.
-	Apply(fPath string, ent fs.DirEntry) bool
-}
-
-// RawFilterFunc for filter file info, return False will filter this file
-type RawFilterFunc func(fPath string, ent fs.DirEntry) bool
-
-// Apply check file path. return False will filter this file.
-func (fn RawFilterFunc) Apply(fPath string, ent fs.DirEntry) bool {
-	return fn(fPath, ent)
-}
-
-// WrapRawFilter wrap a RawFilter to Filter
-func WrapRawFilter(rf RawFilter) Filter {
-	return FilterFunc(func(elem Elem) bool {
-		return rf.Apply(elem.Path(), elem)
-	})
-}
-
-// WrapRawFilters wrap RawFilter list to Filter list
-func WrapRawFilters(rfs ...RawFilter) []Filter {
-	fls := make([]Filter, len(rfs))
-	for i, rf := range rfs {
-		fls[i] = WrapRawFilter(rf)
-	}
-	return fls
 }
 
 // ------------------ Multi filter wrapper ------------------
@@ -117,6 +84,20 @@ type BodyFilters struct {
 }
 
 // NewBodyFilters create a new body filters
+//
+// Usage:
+//
+//		bf := finder.NewBodyFilters(
+//			finder.BodyFilterFunc(func(filePath string, buf *bytes.Buffer) bool {
+//				// filter file contents
+//				return true
+//			}),
+//		)
+//
+//	 es := finder.NewFinder('path/to/dir').WithFileFilter(bf).Elems()
+//	 for el := range es {
+//			fmt.Println(el.Path())
+//	 }
 func NewBodyFilters(fls ...BodyFilter) *BodyFilters {
 	return &BodyFilters{
 		Filters: fls,
@@ -129,14 +110,14 @@ func (mf *BodyFilters) AddFilter(fls ...BodyFilter) {
 }
 
 // Apply check file path. return False will filter this file.
-func (mf *BodyFilters) Apply(fPath string, ent fs.DirEntry) bool {
-	if ent.IsDir() {
+func (mf *BodyFilters) Apply(el Elem) bool {
+	if el.IsDir() {
 		return false
 	}
 
 	// read file contents
 	buf := bytes.NewBuffer(nil)
-	file, err := fsutil.OpenReadFile(fPath)
+	file, err := fsutil.OpenReadFile(el.Path())
 	if err != nil {
 		return false
 	}
@@ -150,7 +131,7 @@ func (mf *BodyFilters) Apply(fPath string, ent fs.DirEntry) bool {
 
 	// apply filters
 	for _, fl := range mf.Filters {
-		if !fl.Apply(fPath, buf) {
+		if !fl.Apply(el.Path(), buf) {
 			return false
 		}
 	}

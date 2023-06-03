@@ -2,6 +2,8 @@ package finder
 
 import (
 	"io/fs"
+
+	"github.com/gookit/goutil/strutil"
 )
 
 // Elem of find file/dir result
@@ -39,4 +41,9 @@ func (e *elem) Info() (fs.FileInfo, error) {
 		e.stat, e.sErr = e.DirEntry.Info()
 	}
 	return e.stat, e.sErr
+}
+
+// String get string representation
+func (e *elem) String() string {
+	return strutil.OrCond(e.IsDir(), "dir: ", "file: ") + e.Path()
 }
