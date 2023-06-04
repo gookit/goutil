@@ -148,6 +148,6 @@ func TestFileFinder_ExcludeName(t *testing.T) {
 
 	names := f.FindNames()
 	fmt.Println(names)
-	assert.Contains(t, names, "filter.go")
+	assert.Contains(t, names, "matcher.go")
 	assert.NotContains(t, names, "elem.go")
 }

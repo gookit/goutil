@@ -49,7 +49,7 @@ func TestDateFormat(t *testing.T) {
 		{"2006-01-02 15:04", "Y-m-d H:I"},
 		{"01/02 15:04:05", "m/d H:I:S"},
 		{"06/01/02 15:04:05", "y/m/d H:I:S"},
-		{"06/01/02 15:04:05.000", "y/m/d H:I:Sv"},
+		{"06/01/02 15:04:05.000", "y/m/d H:I:S.v"},
 	}
 
 	for i, item := range tests {
@@ -60,7 +60,7 @@ func TestDateFormat(t *testing.T) {
 		}
 	}
 
-	assert.Eq(t, now.Format("01/02 15:04:05.000000"), timex.Date(now, "m/d H:I:Su"))
+	assert.Eq(t, now.Format("01/02 15:04:05.000000"), timex.Date(now, "m/d H:I:S.u"))
 }
 
 func TestFormatUnix(t *testing.T) {
@@ -114,8 +114,8 @@ func TestToDur(t *testing.T) {
 		assert.Eq(t, item.out, dur)
 	}
 
-	dur, err := timex.ToDur("now")
-	assert.NoErr(t, err)
+	dur, err := timex.ToDur("invalid")
+	assert.Err(t, err)
 	assert.Eq(t, time.Duration(0), dur)
 
 	dur, err = timex.ToDuration("0")
