@@ -5,9 +5,15 @@ import (
 	"os"
 	"testing"
 
+	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/fsutil/finder"
 	"github.com/gookit/goutil/testutil/assert"
 )
+
+func TestMain(m *testing.M) {
+	_, _ = fsutil.PutContents("./testdata/test.txt", "hello, in test.txt")
+	m.Run()
+}
 
 func TestFinder_findFile(t *testing.T) {
 	f := finder.EmptyFinder().
