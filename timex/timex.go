@@ -19,15 +19,18 @@ const (
 	OneDaySec  = 86400
 	OneWeekSec = 7 * 86400
 
+	Microsecond = time.Microsecond
+	Millisecond = time.Millisecond
+
 	Second  = time.Second
-	Minute  = time.Minute
 	OneMin  = time.Minute
-	Hour    = time.Hour
+	Minute  = time.Minute
 	OneHour = time.Hour
-	Day     = 24 * time.Hour
+	Hour    = time.Hour
 	OneDay  = 24 * time.Hour
-	Week    = 7 * 24 * time.Hour
+	Day     = OneDay
 	OneWeek = 7 * 24 * time.Hour
+	Week    = OneWeek
 )
 
 // TimeX alias of Time

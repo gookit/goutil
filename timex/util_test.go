@@ -274,4 +274,13 @@ func TestParseRange(t *testing.T) {
 		assert.Eq(t, timex.ZeroUnix, start.Unix())
 		assert.Eq(t, timex.ZeroUnix, end.Unix())
 	})
+
+	t.Run("auto sort", func(t *testing.T) {
+		opt := &timex.ParseRangeOpt{
+			AutoSort: true,
+		}
+		start, end, err := timex.ParseRange("2020-01-02 15:04:05~2020-01-01 15:04:05", opt)
+		assert.NoError(t, err)
+		assert.Gt(t, end.Unix(), start.Unix())
+	})
 }

@@ -130,8 +130,12 @@ type ParseRangeOpt struct {
 	//  - False: "-1h" => "-1h,0"; "1h" => "+1h, feature"
 	//  - True:  "-1h" => "zero,-1h"; "1h" => "zero,1h"
 	OneAsEnd bool
+	// AutoSort is the option for sort the time range.
+	AutoSort bool
 	// SepChar is the separator char for time range string. default is '~'
 	SepChar byte
+	// BeforeFn hook for before parse time string.
+	BeforeFn func(string) string
 	// KeywordFn is the function for parse keyword time string.
 	KeywordFn func(string) (time.Time, time.Time, error)
 }
@@ -200,7 +204,14 @@ func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err erro
 
 		if s2 != "" {
 			end, err = TryToTime(s2, opt.BaseTime)
+			// auto sort range time
+			if opt.AutoSort && err == nil {
+				if !start.IsZero() && start.After(end) {
+					start, end = end, start
+				}
+			}
 		}
+
 		return
 	}
 
