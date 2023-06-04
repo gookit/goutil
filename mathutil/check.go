@@ -46,21 +46,21 @@ func Compare(srcVal, dstVal any, op string) (ok bool) {
 
 // CompInt compare int,uint value. returns `srcVal op(=,!=,<,<=,>,>=) dstVal`
 func CompInt[T comdef.Xint](srcVal, dstVal T, op string) (ok bool) {
-	return CompIntOrFloat(srcVal, dstVal, op)
+	return CompValue(srcVal, dstVal, op)
 }
 
 // CompInt64 compare int64 value. returns `srcVal op(=,!=,<,<=,>,>=) dstVal`
 func CompInt64(srcVal, dstVal int64, op string) bool {
-	return CompIntOrFloat(srcVal, dstVal, op)
+	return CompValue(srcVal, dstVal, op)
 }
 
 // CompFloat compare float64,float32 value. returns `srcVal op(=,!=,<,<=,>,>=) dstVal`
 func CompFloat[T comdef.Float](srcVal, dstVal T, op string) (ok bool) {
-	return CompIntOrFloat(srcVal, dstVal, op)
+	return CompValue(srcVal, dstVal, op)
 }
 
-// CompIntOrFloat compare intX,uintX,floatX value. returns `srcVal op(=,!=,<,<=,>,>=) dstVal`
-func CompIntOrFloat[T comdef.XintOrFloat](srcVal, dstVal T, op string) (ok bool) {
+// CompValue compare intX,uintX,floatX value. returns `srcVal op(=,!=,<,<=,>,>=) dstVal`
+func CompValue[T comdef.XintOrFloat](srcVal, dstVal T, op string) (ok bool) {
 	switch op {
 	case "<", "lt":
 		ok = srcVal < dstVal
