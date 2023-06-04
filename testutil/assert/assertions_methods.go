@@ -194,28 +194,28 @@ func (as *Assertions) NotEqual(want, give any, fmtAndArgs ...any) *Assertions {
 }
 
 // Lt asserts that the give(intX) should not be less than max
-func (as *Assertions) Lt(give, max int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Lt(give, max any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Lt(as.t, give, max, fmtAndArgs...)
 	return as
 }
 
 // Lte asserts that the give(intX) should not be less than or equal to max
-func (as *Assertions) Lte(give, max int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Lte(give, max any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Lte(as.t, give, max, fmtAndArgs...)
 	return as
 }
 
 // Gt asserts that the give(intX) should not be greater than min
-func (as *Assertions) Gt(give, min int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Gt(give, min any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Gt(as.t, give, min, fmtAndArgs...)
 	return as
 }
 
 // Gte asserts that the give(intX) should not be greater than or equal to min
-func (as *Assertions) Gte(give, min int, fmtAndArgs ...any) *Assertions {
+func (as *Assertions) Gte(give, min any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Gte(as.t, give, min, fmtAndArgs...)
 	return as

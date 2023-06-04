@@ -51,7 +51,7 @@ func MkParentDir(fpath string) error {
 //	open/create files
 // ************************************************************
 
-// some flag consts for open file
+// some commonly flag consts for open file
 const (
 	FsCWAFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND // create, append write-only
 	FsCWTFlags = os.O_CREATE | os.O_WRONLY | os.O_TRUNC  // create, override write-only
@@ -60,6 +60,10 @@ const (
 )
 
 // OpenFile like os.OpenFile, but will auto create dir.
+//
+// Usage:
+//
+//	file, err := OpenFile("path/to/file.txt", FsCWFlags, 0666)
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	fileDir := path.Dir(filepath)
 	if err := os.MkdirAll(fileDir, DefaultDirPerm); err != nil {
@@ -73,22 +77,37 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 	return file, nil
 }
 
-/* TODO MustOpenFile() */
+// MustOpenFile like os.OpenFile, but will auto create dir.
+//
+// Usage:
+//
+//	file := MustOpenFile("path/to/file.txt", FsCWFlags, 0666)
+func MustOpenFile(filepath string, flag int, perm os.FileMode) *os.File {
+	file, err := OpenFile(filepath, flag, perm)
+	if err != nil {
+		panic(err)
+	}
+	return file
+}
 
 // QuickOpenFile like os.OpenFile, open for append write. if not exists, will create it.
+//
+// Alias of OpenAppendFile()
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) {
 	flag := basefn.FirstOr(fileFlag, FsCWAFlags)
 	return OpenFile(filepath, flag, DefaultFilePerm)
 }
 
 // OpenAppendFile like os.OpenFile, open for append write. if not exists, will create it.
-func OpenAppendFile(filepath string) (*os.File, error) {
-	return OpenFile(filepath, FsCWAFlags, DefaultFilePerm)
+func OpenAppendFile(filepath string, filePerm ...os.FileMode) (*os.File, error) {
+	perm := basefn.FirstOr(filePerm, DefaultFilePerm)
+	return OpenFile(filepath, FsCWAFlags, perm)
 }
 
 // OpenTruncFile like os.OpenFile, open for override write. if not exists, will create it.
-func OpenTruncFile(filepath string) (*os.File, error) {
-	return OpenFile(filepath, FsCWTFlags, DefaultFilePerm)
+func OpenTruncFile(filepath string, filePerm ...os.FileMode) (*os.File, error) {
+	perm := basefn.FirstOr(filePerm, DefaultFilePerm)
+	return OpenFile(filepath, FsCWTFlags, perm)
 }
 
 // OpenReadFile like os.OpenFile, open file for read contents

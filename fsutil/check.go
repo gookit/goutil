@@ -44,7 +44,7 @@ func PathExists(path string) bool {
 
 // IsDir reports whether the named directory exists.
 func IsDir(path string) bool {
-	if path == "" {
+	if path == "" || len(path) > 468 {
 		return false
 	}
 
@@ -61,7 +61,7 @@ func FileExists(path string) bool {
 
 // IsFile reports whether the named file or directory exists.
 func IsFile(path string) bool {
-	if path == "" {
+	if path == "" || len(path) > 468 {
 		return false
 	}
 
@@ -128,7 +128,7 @@ func IsZipFile(filepath string) bool {
 	return bytes.Equal(buf, []byte("PK\x03\x04"))
 }
 
-// PathMatch check for a string.
+// PathMatch check for a string. alias of path.Match()
 func PathMatch(pattern, s string) bool {
 	ok, err := path.Match(pattern, s)
 	if err != nil {

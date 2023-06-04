@@ -504,38 +504,44 @@ func NotEq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	return true
 }
 
-// Lt asserts that the give(intX) should not be less than max
-func Lt(t TestingT, give, max int, fmtAndArgs ...any) bool {
-	gInt, err := mathutil.ToInt(give)
-	if err == nil && gInt < max {
+// Lt asserts that the give(intX,uintX,floatX) should not be less than max
+func Lt(t TestingT, give, max any, fmtAndArgs ...any) bool {
+	if mathutil.Compare(give, max, "lt") {
 		return true
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given should later than or equal %d(but was %d)", max, gInt), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should later than %v", give, max), fmtAndArgs)
 }
 
-// Lte asserts that the give(intX) should not be less than or equals to max
-func Lte(t TestingT, give, max int, fmtAndArgs ...any) bool {
-	t.Helper()
-	return Lt(t, give, max+1, fmtAndArgs...)
-}
-
-// Gt asserts that the give(intX) should not be greater than min
-func Gt(t TestingT, give, min int, fmtAndArgs ...any) bool {
-	gInt, err := mathutil.ToInt(give)
-	if err == nil && gInt > min {
+// Lte asserts that the give(intX,uintX,floatX) should not be less than or equals to max
+func Lte(t TestingT, give, max any, fmtAndArgs ...any) bool {
+	if mathutil.Compare(give, max, "lte") {
 		return true
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given should gater than or equal %d(but was %d)", min, gInt), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should later than %v", give, max), fmtAndArgs)
 }
 
-// Gte asserts that the give(intX) should not be greater than or equals to min
-func Gte(t TestingT, give, min int, fmtAndArgs ...any) bool {
+// Gt asserts that the give(intX,uintX,floatX) should not be greater than min
+func Gt(t TestingT, give, min any, fmtAndArgs ...any) bool {
+	if mathutil.Compare(give, min, "gt") {
+		return true
+	}
+
 	t.Helper()
-	return Gt(t, give, min-1, fmtAndArgs...)
+	return fail(t, fmt.Sprintf("Given %v should gater than %v", give, min), fmtAndArgs)
+}
+
+// Gte asserts that the give(intX,uintX,floatX) should not be greater than or equals to min
+func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
+	if mathutil.Compare(give, min, "gte") {
+		return true
+	}
+
+	t.Helper()
+	return fail(t, fmt.Sprintf("Given %v should gater than or equal %v", give, min), fmtAndArgs)
 }
 
 // IsType assert data type equals
