@@ -135,8 +135,9 @@ func SliceToInt64s(arr []any) []int64
 func StringsAsInts(ss []string) []int 
 func StringsToInts(ss []string) (ints []int, err error) 
 func StringsTryInts(ss []string) (ints []int, err error) 
-func MustToStrings(arr any) []string 
+func AnyToSlice(sl any) (ls []any, err error) 
 func AnyToStrings(arr any) []string 
+func MustToStrings(arr any) []string 
 func StringsToSlice(ss []string) []any 
 func ToStrings(arr any) (ret []string, err error) 
 func SliceToStrings(arr []any) []string 
@@ -145,6 +146,7 @@ func ConvType[T any, R any](arr []T, newElemTyp R) ([]R, error)
 func AnyToString(arr any) string 
 func SliceToString(arr ...any) string 
 func ToString(arr []any) string 
+func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V 
 func CombineToSMap(keys, values []string) map[string]string 
 // source at arrutil/format.go
 func NewFormatter(arr any) *ArrFormatter 
@@ -208,6 +210,7 @@ func SafeString(bs []byte, err error) string
 func String(b []byte) string 
 func ToString(b []byte) string 
 func AppendAny(dst []byte, v any) []byte 
+func Cut(bs []byte, sep byte) (before, after []byte, found bool) 
 // source at byteutil/bytex.go
 func Md5(src any) []byte 
 // source at byteutil/check.go
@@ -722,9 +725,10 @@ func MkDirs(perm os.FileMode, dirPaths ...string) error
 func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error 
 func MkParentDir(fpath string) error 
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) 
+func MustOpenFile(filepath string, flag int, perm os.FileMode) *os.File 
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) 
-func OpenAppendFile(filepath string) (*os.File, error) 
-func OpenTruncFile(filepath string) (*os.File, error) 
+func OpenAppendFile(filepath string, filePerm ...os.FileMode) (*os.File, error) 
+func OpenTruncFile(filepath string, filePerm ...os.FileMode) (*os.File, error) 
 func OpenReadFile(filepath string) (*os.File, error) 
 func CreateFile(fpath string, filePerm, dirPerm os.FileMode, fileFlag ...int) (*os.File, error) 
 func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File 
@@ -807,6 +811,8 @@ func Decode(bts []byte, ptr any) error
 func DecodeString(str string, ptr any) error 
 func DecodeReader(r io.Reader, ptr any) error 
 func Mapping(src, dst any) error 
+func IsJSON(s string) bool 
+func IsJSONFast(s string) bool 
 func StripComments(src string) string 
 ```
 
@@ -817,12 +823,15 @@ func StripComments(src string) string
 ```go
 // source at maputil/check.go
 func HasKey(mp, key any) (ok bool) 
+func HasOneKey(mp any, keys ...any) (ok bool, key any) 
 func HasAllKeys(mp any, keys ...any) (ok bool, noKey any) 
 // source at maputil/convert.go
 func KeyToLower(src map[string]string) map[string]string 
 func ToStringMap(src map[string]any) map[string]string 
 func CombineToSMap(keys, values []string) SMap 
+func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V 
 func ToAnyMap(mp any) map[string]any 
+func TryAnyMap(mp any) (map[string]any, error) 
 func HTTPQueryString(data map[string]any) string 
 func ToString(mp map[string]any) string 
 func ToString2(mp any) string 
@@ -857,8 +866,13 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```go
 // source at mathutil/check.go
 func Compare(srcVal, dstVal any, op string) (ok bool) 
-func CompInt64(srcI64, dstI64 int64, op string) (ok bool) 
-func CompFloat(srcF64, dstF64 float64, op string) (ok bool) 
+func CompInt[T comdef.Xint](srcVal, dstVal T, op string) (ok bool) 
+func CompInt64(srcVal, dstVal int64, op string) bool 
+func CompFloat[T comdef.Float](srcVal, dstVal T, op string) (ok bool) 
+func CompValue[T comdef.XintOrFloat](srcVal, dstVal T, op string) (ok bool) 
+func InRange[T comdef.IntOrFloat](val, min, max T) bool 
+func OutRange[T comdef.IntOrFloat](val, min, max T) bool 
+func InUintRange[T comdef.Uint](val, min, max T) bool 
 // source at mathutil/convert.go
 func Int(in any) (int, error) 
 func QuietInt(in any) int 
@@ -923,6 +937,7 @@ func RandomIntWithSeed(min, max int, seed int64) int
 // source at reflects/check.go
 func HasChild(v reflect.Value) bool 
 func IsArrayOrSlice(k reflect.Kind) bool 
+func IsSimpleKind(k reflect.Kind) bool 
 func IsAnyInt(k reflect.Kind) bool 
 func IsIntx(k reflect.Kind) bool 
 func IsUintX(k reflect.Kind) bool 
@@ -948,7 +963,11 @@ func Elem(v reflect.Value) reflect.Value
 func Indirect(v reflect.Value) reflect.Value 
 func Len(v reflect.Value) int 
 func SliceSubKind(typ reflect.Type) reflect.Kind 
+func SliceElemKind(typ reflect.Type) reflect.Kind 
+func UnexportedValue(rv reflect.Value) any 
+func SetUnexportedValue(rv reflect.Value, value any) 
 func SetValue(rv reflect.Value, val any) error 
+func SetRValue(rv, val reflect.Value) 
 func EachMap(mp reflect.Value, fn func(key, val reflect.Value)) 
 func EachStrAnyMap(mp reflect.Value, fn func(key string, val any)) 
 func FlatMap(rv reflect.Value, fn FlatFunc) 
@@ -1035,18 +1054,26 @@ func NewAliases(checker func(alias string)) *Aliases
 func ToMap(st any, optFns ...MapOptFunc) map[string]any 
 func MustToMap(st any, optFns ...MapOptFunc) map[string]any 
 func TryToMap(st any, optFns ...MapOptFunc) (map[string]any, error) 
+func ToSMap(st any, optFns ...MapOptFunc) map[string]string 
+func TryToSMap(st any, optFns ...MapOptFunc) (map[string]string, error) 
+func MustToSMap(st any, optFns ...MapOptFunc) map[string]string 
 func ToString(st any, optFns ...MapOptFunc) string 
+func WithMapTagName(tagName string) MapOptFunc 
+func MergeAnonymous(opt *MapOptions) 
+func ExportPrivate(opt *MapOptions) 
 func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) 
+// source at structs/copy.go
+func MapStruct(srcSt, dstSt any) 
 // source at structs/data.go
 func NewData() *Data 
 func NewOrderedMap(len int) *OrderedMap 
-// source at structs/setval.go
+// source at structs/init.go
+func InitStructSlice(opt *InitOptions) 
+func Init(ptr any, optFns ...InitOptFunc) error 
 func InitDefaults(ptr any, optFns ...InitOptFunc) error 
-func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error 
 // source at structs/structs.go
-func MapStruct(srcSt, dstSt any) 
-func IsExported(fieldName string) bool 
-func IsUnexported(fieldName string) bool 
+func IsExported(name string) bool 
+func IsUnexported(name string) bool 
 // source at structs/tags.go
 func ParseTags(st any, tagNames []string) (map[string]maputil.SMap, error) 
 func ParseReflectTags(rt reflect.Type, tagNames []string) (map[string]maputil.SMap, error) 
@@ -1057,6 +1084,14 @@ func ParseTagValueDefine(sep string, defines []string) TagValFunc
 func ParseTagValueNamed(field, tagVal string, keys ...string) (mp maputil.SMap, err error) 
 // source at structs/value.go
 func NewValue(val any) *Value 
+// source at structs/wrapper.go
+func Wrap(src any) *Wrapper 
+func NewWrapper(src any) *Wrapper 
+func WrapValue(rv reflect.Value) *Wrapper 
+// source at structs/writer.go
+func NewWriter(ptr any) *Wrapper 
+func WithParseDefault(opt *SetOptions) 
+func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error 
 ```
 
 ### Strings
@@ -1105,6 +1140,7 @@ func SimpleMatch(s string, keywords []string) bool
 func QuickMatch(pattern, s string) bool 
 func PathMatch(pattern, s string) bool 
 func GlobMatch(pattern, s string) bool 
+func LikeMatch(pattern, s string) bool 
 func MatchNodePath(pattern, s string, sep string) bool 
 // source at strutil/convert.go
 func Quote(s string) string 
@@ -1147,11 +1183,7 @@ func Strings(s string, sep ...string) []string
 func ToStrings(s string, sep ...string) []string 
 func ToSlice(s string, sep ...string) []string 
 func ToOSArgs(s string) []string 
-func MustToTime(s string, layouts ...string) time.Time 
-func ToTime(s string, layouts ...string) (t time.Time, err error) 
 func ToDuration(s string) (time.Duration, error) 
-func SafeByteSize(sizeStr string) uint64 
-func ToByteSize(sizeStr string) (uint64, error) 
 // source at strutil/crypto.go
 func Md5(src any) string 
 func MD5(src any) string 
@@ -1219,6 +1251,12 @@ func Repeat(s string, times int) string
 func RepeatRune(char rune, times int) []rune 
 func RepeatBytes(char byte, times int) []byte 
 func RepeatChars[T byte | rune](char T, times int) []T 
+// source at strutil/parse.go
+func MustToTime(s string, layouts ...string) time.Time 
+func ToTime(s string, layouts ...string) (t time.Time, err error) 
+func ParseSizeRange(expr string, opt *ParseSizeOpt) (min, max uint64, err error) 
+func SafeByteSize(sizeStr string) uint64 
+func ToByteSize(sizeStr string) (uint64, error) 
 // source at strutil/random.go
 func RandomChars(ln int) string 
 func RandomCharsV2(ln int) string 
@@ -1361,6 +1399,8 @@ func MockOsEnv(mp map[string]string, fn func())
 func ClearOSEnv() 
 func RevertOSEnv() 
 func MockCleanOsEnv(mp map[string]string, fn func()) 
+// source at testutil/fsmock.go
+func NewDirEnt(fpath string, isDir ...bool) *DirEnt 
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request 
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder 
@@ -1381,6 +1421,26 @@ func NewTestWriter() *TestWriter
 
 Provides an enhanced time.Time implementation, and add more commonly used functional methods.
 ```go
+// source at timex/gotime.go
+func SetLocalByName(tzName string) error 
+func NowAddDay(day int) time.Time 
+func NowAddHour(hour int) time.Time 
+func NowAddMinutes(minutes int) time.Time 
+func NowAddSec(seconds int) time.Time 
+func NowAddSeconds(seconds int) time.Time 
+func NowHourStart() time.Time 
+func NowHourEnd() time.Time 
+func AddDay(t time.Time, day int) time.Time 
+func AddHour(t time.Time, hour int) time.Time 
+func AddMinutes(t time.Time, minutes int) time.Time 
+func AddSeconds(t time.Time, seconds int) time.Time 
+func AddSec(t time.Time, seconds int) time.Time 
+func HourStart(t time.Time) time.Time 
+func HourEnd(t time.Time) time.Time 
+func DayStart(t time.Time) time.Time 
+func DayEnd(t time.Time) time.Time 
+func TodayStart() time.Time 
+func TodayEnd() time.Time 
 // source at timex/template.go
 func ToLayout(template string) string 
 // source at timex/timex.go
@@ -1395,33 +1455,23 @@ func FromString(s string, layouts ...string) (*Time, error)
 func LocalByName(tzName string) *Time 
 // source at timex/util.go
 func NowUnix() int64 
-func SetLocalByName(tzName string) error 
 func Format(t time.Time) string 
 func FormatBy(t time.Time, layout string) string 
-func Date(t time.Time, template string) string 
+func Date(t time.Time, template ...string) string 
+func Datetime(t time.Time, template ...string) string 
 func DateFormat(t time.Time, template string) string 
 func FormatByTpl(t time.Time, template string) string 
-func FormatUnix(sec int64) string 
+func FormatUnix(sec int64, layout ...string) string 
 func FormatUnixBy(sec int64, layout string) string 
-func FormatUnixByTpl(sec int64, template string) string 
-func NowAddDay(day int) time.Time 
-func NowAddHour(hour int) time.Time 
-func NowAddMinutes(minutes int) time.Time 
-func NowAddSeconds(seconds int) time.Time 
-func NowHourStart() time.Time 
-func NowHourEnd() time.Time 
-func AddDay(t time.Time, day int) time.Time 
-func AddHour(t time.Time, hour int) time.Time 
-func AddMinutes(t time.Time, minutes int) time.Time 
-func AddSeconds(t time.Time, seconds int) time.Time 
-func HourStart(t time.Time) time.Time 
-func HourEnd(t time.Time) time.Time 
-func DayStart(t time.Time) time.Time 
-func DayEnd(t time.Time) time.Time 
-func TodayStart() time.Time 
-func TodayEnd() time.Time 
+func FormatUnixByTpl(sec int64, template ...string) string 
 func HowLongAgo(sec int64) string 
+func ToTime(s string, layouts ...string) (time.Time, error) 
+func ToDur(s string) (time.Duration, error) 
 func ToDuration(s string) (time.Duration, error) 
+func IsDuration(s string) bool 
+func TryToTime(s string, bt time.Time) (time.Time, error) 
+func InRange(dst, start, end time.Time) bool 
+func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error) 
 ```
 #### Timex Usage
 
