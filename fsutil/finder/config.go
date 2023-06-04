@@ -15,15 +15,16 @@ type FindFlag uint8
 const (
 	FlagFile FindFlag = iota + 1 // only find files(default)
 	FlagDir
+	FlagBoth = FlagFile | FlagDir
 )
 
 // ToFlag convert string to FindFlag
 func ToFlag(s string) FindFlag {
 	switch strings.ToLower(s) {
-	case "dir", "d":
+	case "dirs", "dir", "d":
 		return FlagDir
 	case "both", "b":
-		return FlagFile | FlagDir
+		return FlagBoth
 	default:
 		return FlagFile
 	}
@@ -49,20 +50,20 @@ type Config struct {
 	// ExcludeDotFile exclude dot dir. default is false
 	ExcludeDotFile bool
 
-	// Filters generic include filters for filter file/dir elems
-	Filters []Filter
-	// ExFilters generic exclude filters for filter file/dir elems
-	ExFilters []Filter
-	// DirFilters include filters for dir elems
-	DirFilters []Filter
-	// DirFilters exclude filters for dir elems
-	DirExFilters []Filter
-	// FileFilters include filters for file elems
-	FileFilters []Filter
-	// FileExFilters exclude filters for file elems
-	FileExFilters []Filter
+	// Matchers generic include matchers for file/dir elems
+	Matchers []Matcher
+	// ExMatchers generic exclude matchers for file/dir elems
+	ExMatchers []Matcher
+	// DirMatchers include matchers for dir elems
+	DirMatchers []Matcher
+	// DirExMatchers exclude matchers for dir elems
+	DirExMatchers []Matcher
+	// FileMatchers include matchers for file elems
+	FileMatchers []Matcher
+	// FileExMatchers exclude matchers for file elems
+	FileExMatchers []Matcher
 
-	// commonly settings for build filters
+	// commonly settings for build matchers
 
 	// IncludeDirs include dir name list. eg: {"model"}
 	IncludeDirs []string
@@ -97,58 +98,63 @@ func NewConfig(dirs ...string) *Config {
 	}
 }
 
+// NewEmptyConfig create a new Config
+func NewEmptyConfig() *Config {
+	return &Config{FindFlags: FlagFile}
+}
+
 // NewFinder create a new Finder by config
 func (c *Config) NewFinder() *Finder {
 	return NewWithConfig(c.Init())
 }
 
-// Init build filters by config and append to Filters.
+// Init build matchers by config and append to Matchers.
 func (c *Config) Init() *Config {
 	if c.init {
 		return c
 	}
 
-	// generic filters
+	// generic matchers
 	if len(c.IncludeNames) > 0 {
-		c.Filters = append(c.Filters, WithNames(c.IncludeNames))
+		c.Matchers = append(c.Matchers, MatchNames(c.IncludeNames))
 	}
 
 	if len(c.IncludePaths) > 0 {
-		c.Filters = append(c.Filters, WithPaths(c.IncludePaths))
+		c.Matchers = append(c.Matchers, MatchPaths(c.IncludePaths))
 	}
 
 	if len(c.ExcludePaths) > 0 {
-		c.ExFilters = append(c.ExFilters, ExcludePaths(c.ExcludePaths))
+		c.ExMatchers = append(c.ExMatchers, MatchPaths(c.ExcludePaths))
 	}
 
 	if len(c.ExcludeNames) > 0 {
-		c.ExFilters = append(c.ExFilters, ExcludeNames(c.ExcludeNames))
+		c.ExMatchers = append(c.ExMatchers, MatchNames(c.ExcludeNames))
 	}
 
-	// dir filters
+	// dir matchers
 	if len(c.IncludeDirs) > 0 {
-		c.DirFilters = append(c.DirFilters, IncludeNames(c.IncludeDirs))
+		c.DirMatchers = append(c.DirMatchers, MatchNames(c.IncludeDirs))
 	}
 
 	if len(c.ExcludeDirs) > 0 {
-		c.DirExFilters = append(c.DirExFilters, ExcludeNames(c.ExcludeDirs))
+		c.DirExMatchers = append(c.DirExMatchers, MatchNames(c.ExcludeDirs))
 	}
 
-	// file filters
+	// file matchers
 	if len(c.IncludeExts) > 0 {
-		c.FileFilters = append(c.FileFilters, IncludeExts(c.IncludeExts))
+		c.FileMatchers = append(c.FileMatchers, MatchExts(c.IncludeExts))
 	}
 
 	if len(c.IncludeFiles) > 0 {
-		c.FileFilters = append(c.FileFilters, IncludeNames(c.IncludeFiles))
+		c.FileMatchers = append(c.FileMatchers, MatchNames(c.IncludeFiles))
 	}
 
 	if len(c.ExcludeExts) > 0 {
-		c.FileExFilters = append(c.FileExFilters, ExcludeExts(c.ExcludeExts))
+		c.FileExMatchers = append(c.FileExMatchers, MatchExts(c.ExcludeExts))
 	}
 
 	if len(c.ExcludeFiles) > 0 {
-		c.FileExFilters = append(c.FileExFilters, ExcludeNames(c.ExcludeFiles))
+		c.FileExMatchers = append(c.FileExMatchers, MatchNames(c.ExcludeFiles))
 	}
 
 	return c
@@ -165,9 +171,7 @@ func (f *Finder) WithConfig(c *Config) *Finder {
 }
 
 // ConfigFn the finder. alias of WithConfigFn()
-func (f *Finder) ConfigFn(fns ...func(c *Config)) *Finder {
-	return f.WithConfigFn(fns...)
-}
+func (f *Finder) ConfigFn(fns ...func(c *Config)) *Finder { return f.WithConfigFn(fns...) }
 
 // WithConfigFn the finder
 func (f *Finder) WithConfigFn(fns ...func(c *Config)) *Finder {
@@ -189,6 +193,9 @@ func (f *Finder) AddScanDirs(dirPaths []string) *Finder {
 
 // AddScanDir add source dir for find. alias of AddScanDirs()
 func (f *Finder) AddScanDir(dirPaths ...string) *Finder { return f.AddScanDirs(dirPaths) }
+
+// AddScan add source dir for find. alias of AddScanDirs()
+func (f *Finder) AddScan(dirPaths ...string) *Finder { return f.AddScanDirs(dirPaths) }
 
 // ScanDir add source dir for find. alias of AddScanDirs()
 func (f *Finder) ScanDir(dirPaths ...string) *Finder { return f.AddScanDirs(dirPaths) }
@@ -390,100 +397,101 @@ func (f *Finder) NoDotFile(exclude ...bool) *Finder {
 }
 
 //
-// --------- add filters to finder ---------
+// --------- add matchers to finder ---------
 //
 
-// Includes add include match filters
-func (f *Finder) Includes(fls []Filter) *Finder {
-	f.c.Filters = append(f.c.Filters, fls...)
+// Includes add include match matchers
+func (f *Finder) Includes(fls []Matcher) *Finder {
+	f.c.Matchers = append(f.c.Matchers, fls...)
 	return f
 }
 
-// Include add include match filters. alias of Includes()
-func (f *Finder) Include(fls ...Filter) *Finder { return f.Includes(fls) }
+// Collect add include match matchers. alias of Includes()
+func (f *Finder) Collect(fls ...Matcher) *Finder { return f.Includes(fls) }
 
-// With add include match filters. alias of Includes()
-func (f *Finder) With(fls ...Filter) *Finder { return f.Includes(fls) }
+// Include add include match matchers. alias of Includes()
+func (f *Finder) Include(fls ...Matcher) *Finder { return f.Includes(fls) }
 
-// Adds include match filters. alias of Includes()
-func (f *Finder) Adds(fls []Filter) *Finder { return f.Includes(fls) }
+// With add include match matchers. alias of Includes()
+func (f *Finder) With(fls ...Matcher) *Finder { return f.Includes(fls) }
 
-// Add include match filters. alias of Includes()
-func (f *Finder) Add(fls ...Filter) *Finder { return f.Includes(fls) }
+// Adds include match matchers. alias of Includes()
+func (f *Finder) Adds(fls []Matcher) *Finder { return f.Includes(fls) }
 
-// Excludes add exclude match filters
-func (f *Finder) Excludes(fls []Filter) *Finder {
-	f.c.ExFilters = append(f.c.ExFilters, fls...)
+// Add include match matchers. alias of Includes()
+func (f *Finder) Add(fls ...Matcher) *Finder { return f.Includes(fls) }
+
+// Excludes add exclude match matchers
+func (f *Finder) Excludes(fls []Matcher) *Finder {
+	f.c.ExMatchers = append(f.c.ExMatchers, fls...)
 	return f
 }
 
-// Exclude add exclude match filters. alias of Excludes()
-func (f *Finder) Exclude(fls ...Filter) *Finder { return f.Excludes(fls) }
+// Exclude add exclude match matchers. alias of Excludes()
+func (f *Finder) Exclude(fls ...Matcher) *Finder { return f.Excludes(fls) }
 
-// Without add exclude match filters. alias of Excludes()
-func (f *Finder) Without(fls ...Filter) *Finder { return f.Excludes(fls) }
+// Without add exclude match matchers. alias of Excludes()
+func (f *Finder) Without(fls ...Matcher) *Finder { return f.Excludes(fls) }
 
-// Nots add exclude match filters. alias of Excludes()
-func (f *Finder) Nots(fls []Filter) *Finder { return f.Excludes(fls) }
+// Nots add exclude match matchers. alias of Excludes()
+func (f *Finder) Nots(fls []Matcher) *Finder { return f.Excludes(fls) }
 
-// Not add exclude match filters. alias of Excludes()
-func (f *Finder) Not(fls ...Filter) *Finder { return f.Excludes(fls) }
+// Not add exclude match matchers. alias of Excludes()
+func (f *Finder) Not(fls ...Matcher) *Finder { return f.Excludes(fls) }
 
-// WithFilters add include filters
-func (f *Finder) WithFilters(fls []Filter) *Finder {
-	f.c.Filters = append(f.c.Filters, fls...)
+// WithMatchers add include matchers
+func (f *Finder) WithMatchers(fls []Matcher) *Finder {
+	f.c.Matchers = append(f.c.Matchers, fls...)
 	return f
 }
 
-// WithFilter add include filters
-func (f *Finder) WithFilter(fls ...Filter) *Finder { return f.WithFilters(fls) }
+// WithFilter add include matchers
+func (f *Finder) WithFilter(fls ...Matcher) *Finder { return f.WithMatchers(fls) }
 
-// MatchFiles add include file filters
-func (f *Finder) MatchFiles(fls []Filter) *Finder {
-	f.c.FileFilters = append(f.c.FileFilters, fls...)
+// MatchFiles add include file matchers
+func (f *Finder) MatchFiles(fls []Matcher) *Finder {
+	f.c.FileMatchers = append(f.c.FileMatchers, fls...)
 	return f
 }
 
-// MatchFile add include file filters
-func (f *Finder) MatchFile(fls ...Filter) *Finder { return f.MatchFiles(fls) }
+// MatchFile add include file matchers
+func (f *Finder) MatchFile(fls ...Matcher) *Finder { return f.MatchFiles(fls) }
 
-// AddFiles add include file filters
-func (f *Finder) AddFiles(fls []Filter) *Finder { return f.MatchFiles(fls) }
+// AddFiles add include file matchers
+func (f *Finder) AddFiles(fls []Matcher) *Finder { return f.MatchFiles(fls) }
 
-// AddFile add include file filters
-func (f *Finder) AddFile(fls ...Filter) *Finder { return f.MatchFiles(fls) }
+// AddFile add include file matchers
+func (f *Finder) AddFile(fls ...Matcher) *Finder { return f.MatchFiles(fls) }
 
-// NotFiles add exclude file filters
-func (f *Finder) NotFiles(fls []Filter) *Finder {
-	f.c.FileExFilters = append(f.c.FileExFilters, fls...)
+// NotFiles add exclude file matchers
+func (f *Finder) NotFiles(fls []Matcher) *Finder {
+	f.c.FileExMatchers = append(f.c.FileExMatchers, fls...)
 	return f
 }
 
-// NotFile add exclude file filters
-func (f *Finder) NotFile(fls ...Filter) *Finder { return f.NotFiles(fls) }
+// NotFile add exclude file matchers
+func (f *Finder) NotFile(fls ...Matcher) *Finder { return f.NotFiles(fls) }
 
-// MatchDirs add exclude dir filters
-func (f *Finder) MatchDirs(fls []Filter) *Finder {
-	f.c.DirFilters = append(f.c.DirFilters, fls...)
+// MatchDirs add exclude dir matchers
+func (f *Finder) MatchDirs(fls []Matcher) *Finder {
+	f.c.DirMatchers = append(f.c.DirMatchers, fls...)
 	return f
 }
 
-// MatchDir add exclude dir filters
-func (f *Finder) MatchDir(fls ...Filter) *Finder { return f.MatchDirs(fls) }
+// MatchDir add exclude dir matchers
+func (f *Finder) MatchDir(fls ...Matcher) *Finder { return f.MatchDirs(fls) }
 
-// WithDirs add exclude dir filters
-func (f *Finder) WithDirs(fls []Filter) *Finder { return f.MatchDirs(fls) }
+// WithDirs add exclude dir matchers
+func (f *Finder) WithDirs(fls []Matcher) *Finder { return f.MatchDirs(fls) }
 
-// WithDir add exclude dir filters
-func (f *Finder) WithDir(fls ...Filter) *Finder { return f.MatchDirs(fls) }
+// WithDir add exclude dir matchers
+func (f *Finder) WithDir(fls ...Matcher) *Finder { return f.MatchDirs(fls) }
 
-// NotDirs add exclude dir filters
-func (f *Finder) NotDirs(fls []Filter) *Finder {
-	f.c.DirExFilters = append(f.c.DirExFilters, fls...)
+// NotDirs add exclude dir matchers
+func (f *Finder) NotDirs(fls []Matcher) *Finder {
+	f.c.DirExMatchers = append(f.c.DirExMatchers, fls...)
 	return f
 }
 
-// NotDir add exclude dir filters
-func (f *Finder) NotDir(fls ...Filter) *Finder {
-	return f.NotDirs(fls)
-}
+// NotDir add exclude dir matchers
+func (f *Finder) NotDir(fls ...Matcher) *Finder { return f.NotDirs(fls) }

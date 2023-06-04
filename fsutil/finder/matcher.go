@@ -6,30 +6,30 @@ import (
 	"github.com/gookit/goutil/fsutil"
 )
 
-// Filter for filter file path.
-type Filter interface {
-	// Apply check find elem. return False will filter this file.
+// Matcher for match file path.
+type Matcher interface {
+	// Apply check find elem. return False will skip this file.
 	Apply(elem Elem) bool
 }
 
-// FilterFunc for filter file info, return False will filter this file
-type FilterFunc func(elem Elem) bool
+// MatcherFunc for match file info, return False will skip this file
+type MatcherFunc func(elem Elem) bool
 
-// Apply check file path. return False will filter this file.
-func (fn FilterFunc) Apply(elem Elem) bool {
+// Apply check file path. return False will skip this file.
+func (fn MatcherFunc) Apply(elem Elem) bool {
 	return fn(elem)
 }
 
-// ------------------ Multi filter wrapper ------------------
+// ------------------ Multi matcher wrapper ------------------
 
-// MultiFilter wrapper for multi filters
+// MultiFilter wrapper for multi matchers
 type MultiFilter struct {
-	Before  Filter
-	Filters []Filter
+	Before  Matcher
+	Filters []Matcher
 }
 
-// AddFilter add filters
-func (mf *MultiFilter) AddFilter(fls ...Filter) {
+// Add matchers
+func (mf *MultiFilter) Add(fls ...Matcher) {
 	mf.Filters = append(mf.Filters, fls...)
 }
 
@@ -47,54 +47,54 @@ func (mf *MultiFilter) Apply(el Elem) bool {
 	return true
 }
 
-// NewDirFilters create a new dir filters
-func NewDirFilters(fls ...Filter) *MultiFilter {
+// NewDirFilters create a new dir matchers
+func NewDirFilters(fls ...Matcher) *MultiFilter {
 	return &MultiFilter{
-		Before:  OnlyDirFilter,
+		Before:  MatchDir,
 		Filters: fls,
 	}
 }
 
-// NewFileFilters create a new dir filters
-func NewFileFilters(fls ...Filter) *MultiFilter {
+// NewFileFilters create a new dir matchers
+func NewFileFilters(fls ...Matcher) *MultiFilter {
 	return &MultiFilter{
-		Before:  OnlyFileFilter,
+		Before:  MatchFile,
 		Filters: fls,
 	}
 }
 
-// ------------------ Body Filter ------------------
+// ------------------ Body Matcher ------------------
 
 // BodyFilter for filter file contents.
 type BodyFilter interface {
 	Apply(filePath string, buf *bytes.Buffer) bool
 }
 
-// BodyFilterFunc for filter file contents.
-type BodyFilterFunc func(filePath string, buf *bytes.Buffer) bool
+// BodyMatcherFunc for filter file contents.
+type BodyMatcherFunc func(filePath string, buf *bytes.Buffer) bool
 
 // Apply for filter file contents.
-func (fn BodyFilterFunc) Apply(filePath string, buf *bytes.Buffer) bool {
+func (fn BodyMatcherFunc) Apply(filePath string, buf *bytes.Buffer) bool {
 	return fn(filePath, buf)
 }
 
-// BodyFilters multi body filters as Filter
+// BodyFilters multi body matchers as Matcher
 type BodyFilters struct {
 	Filters []BodyFilter
 }
 
-// NewBodyFilters create a new body filters
+// NewBodyFilters create a new body matchers
 //
 // Usage:
 //
 //		bf := finder.NewBodyFilters(
-//			finder.BodyFilterFunc(func(filePath string, buf *bytes.Buffer) bool {
+//			finder.BodyMatcherFunc(func(filePath string, buf *bytes.Buffer) bool {
 //				// filter file contents
 //				return true
 //			}),
 //		)
 //
-//	 es := finder.NewFinder('path/to/dir').WithFileFilter(bf).Elems()
+//	 es := finder.NewFinder('path/to/dir').Add(bf).Elems()
 //	 for el := range es {
 //			fmt.Println(el.Path())
 //	 }
@@ -104,7 +104,7 @@ func NewBodyFilters(fls ...BodyFilter) *BodyFilters {
 	}
 }
 
-// AddFilter add filters
+// AddFilter add matchers
 func (mf *BodyFilters) AddFilter(fls ...BodyFilter) {
 	mf.Filters = append(mf.Filters, fls...)
 }
@@ -129,7 +129,7 @@ func (mf *BodyFilters) Apply(el Elem) bool {
 	}
 	file.Close()
 
-	// apply filters
+	// apply matchers
 	for _, fl := range mf.Filters {
 		if !fl.Apply(el.Path(), buf) {
 			return false

@@ -1,4 +1,5 @@
-// Package finder provide a finder tool for find files
+// Package finder provide a finding tool for find files or dirs,
+// and with some built-in matchers.
 package finder
 
 import (
@@ -33,16 +34,18 @@ func New(dirs []string) *Finder {
 // NewFinder new instance with source dir paths.
 func NewFinder(dirPaths ...string) *Finder { return New(dirPaths) }
 
-// NewEmpty new empty Finder instance
-func NewEmpty() *Finder { return New([]string{}) }
-
-// EmptyFinder new empty Finder instance. alias of NewEmpty()
-func EmptyFinder() *Finder { return NewEmpty() }
-
 // NewWithConfig new instance with config.
 func NewWithConfig(c *Config) *Finder {
 	return &Finder{c: c}
 }
+
+// NewEmpty new empty Finder instance
+func NewEmpty() *Finder {
+	return &Finder{c: NewEmptyConfig()}
+}
+
+// EmptyFinder new empty Finder instance. alias of NewEmpty()
+func EmptyFinder() *Finder { return NewEmpty() }
 
 //
 // --------- do finding ---------
@@ -213,23 +216,23 @@ func (f *Finder) findDir(dirPath string, c *Config) {
 		el := NewElem(fullPath, ent)
 
 		// apply generic filters
-		if !applyExFilters(el, c.ExFilters) {
+		if !applyExMatchers(el, c.ExMatchers) {
 			continue
 		}
 
 		// --- dir: apply dir filters
 		if isDir {
-			if !applyExFilters(el, c.DirExFilters) {
+			if !applyExMatchers(el, c.DirExMatchers) {
 				continue
 			}
 
-			if len(c.Filters) > 0 {
-				ok = applyFilters(el, c.Filters)
-				if !ok && len(c.DirFilters) > 0 {
-					ok = applyFilters(el, c.DirFilters)
+			if len(c.Matchers) > 0 {
+				ok = applyMatchers(el, c.Matchers)
+				if !ok && len(c.DirMatchers) > 0 {
+					ok = applyMatchers(el, c.DirMatchers)
 				}
 			} else {
-				ok = applyFilters(el, c.DirFilters)
+				ok = applyMatchers(el, c.DirMatchers)
 			}
 
 			if ok && c.FindFlags&FlagDir > 0 {
@@ -238,6 +241,10 @@ func (f *Finder) findDir(dirPath string, c *Config) {
 				}
 				f.num++
 				f.ch <- el
+
+				if c.FindFlags == FlagDir {
+					continue // only find subdir on ok=false
+				}
 			}
 
 			// find in sub dir.
@@ -254,17 +261,17 @@ func (f *Finder) findDir(dirPath string, c *Config) {
 		}
 
 		// apply file filters
-		if !applyExFilters(el, c.FileExFilters) {
+		if !applyExMatchers(el, c.FileExMatchers) {
 			continue
 		}
 
-		if len(c.Filters) > 0 {
-			ok = applyFilters(el, c.Filters)
-			if !ok && len(c.FileFilters) > 0 {
-				ok = applyFilters(el, c.FileFilters)
+		if len(c.Matchers) > 0 {
+			ok = applyMatchers(el, c.Matchers)
+			if !ok && len(c.FileMatchers) > 0 {
+				ok = applyMatchers(el, c.FileMatchers)
 			}
 		} else {
-			ok = applyFilters(el, c.FileFilters)
+			ok = applyMatchers(el, c.FileMatchers)
 		}
 
 		// write to consumer
@@ -278,7 +285,7 @@ func (f *Finder) findDir(dirPath string, c *Config) {
 	}
 }
 
-func applyFilters(el Elem, fls []Filter) bool {
+func applyMatchers(el Elem, fls []Matcher) bool {
 	for _, f := range fls {
 		if f.Apply(el) {
 			return true
@@ -287,7 +294,7 @@ func applyFilters(el Elem, fls []Filter) bool {
 	return len(fls) == 0
 }
 
-func applyExFilters(el Elem, fls []Filter) bool {
+func applyExMatchers(el Elem, fls []Matcher) bool {
 	for _, f := range fls {
 		if f.Apply(el) {
 			return false

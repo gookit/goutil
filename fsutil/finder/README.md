@@ -2,7 +2,7 @@
 
 [![GoDoc](https://godoc.org/github.com/goutil/fsutil/finder?status.svg)](https://godoc.org/github.com/goutil/fsutil/finder)
 
-`finder` provide a finder tool for find files, dirs.
+`finder` provide a finding tool for find files or dirs, and with some built-in matchers.
 
 ## Usage
 
@@ -16,16 +16,40 @@ import (
 
 func main() {
 	ff := finder.NewFinder()
-	ff.AddPath("/tmp")
-	ff.AddPath("/usr/local")
-	ff.AddPath("/usr/local/bin")
-	ff.AddPath("/usr/local/lib")
-	ff.AddPath("/usr/local/libexec")
-	ff.AddPath("/usr/local/sbin")
-	ff.AddPath("/usr/local/share")
+	ff.AddScan("/tmp", "/usr/local", "/usr/local/share")
+	ff.ExcludeDir("abc", "def").ExcludeFile("*.log", "*.tmp")
 
 	ss := ff.FindPaths()
 	dump.P(ss)
 }
+```
+
+## Built-in Matchers
+
+```go
+func FileSize(min, max uint64) MatcherFunc
+func GlobMatch(patterns ...string) MatcherFunc
+func GlobMatches(patterns []string) MatcherFunc
+func HumanModTime(expr string) MatcherFunc
+func HumanSize(expr string) MatcherFunc
+func MatchDotDir() MatcherFunc
+func MatchDotFile() MatcherFunc
+func MatchExt(exts ...string) MatcherFunc
+func MatchExts(exts []string) MatcherFunc
+func MatchModTime(start, end time.Time) MatcherFunc
+func MatchMtime(start, end time.Time) MatcherFunc
+func MatchName(names ...string) MatcherFunc
+func MatchNames(names []string) MatcherFunc
+func MatchPath(subPaths []string) MatcherFunc
+func MatchPaths(subPaths []string) MatcherFunc
+func MatchPrefix(prefixes ...string) MatcherFunc
+func MatchPrefixes(prefixes []string) MatcherFunc
+func MatchSuffix(suffixes ...string) MatcherFunc
+func MatchSuffixes(suffixes []string) MatcherFunc
+func NameLike(patterns ...string) MatcherFunc
+func NameLikes(patterns []string) MatcherFunc
+func RegexMatch(pattern string) MatcherFunc
+func SizeRange(min, max uint64) MatcherFunc
+func StartWithDot() MatcherFunc
 ```
 

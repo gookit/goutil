@@ -6,7 +6,7 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// Elem of find file/dir result
+// Elem of find file/dir path result
 type Elem interface {
 	fs.DirEntry
 	// Path get file/dir path. eg: "/path/to/file.go"

@@ -110,17 +110,19 @@ func TestFileFinder_NoDotFile(t *testing.T) {
 		NoDotFile()
 	assert.NotContains(t, f.FindPaths(), fileName)
 
-	t.Run("WithoutDotFile", func(t *testing.T) {
+	t.Run("Not MatchDotFile", func(t *testing.T) {
 		f = finder.EmptyFinder().
 			ScanDir("./testdata").
-			Not(finder.WithoutDotFile())
+			Not(finder.MatchDotFile())
 
 		assert.NotContains(t, f.FindPaths(), fileName)
 	})
 }
 
 func TestFileFinder_IncludeName(t *testing.T) {
-	f := finder.NewFinder(".").IncludeName("elem.go").WithNames([]string{"not-exist.file"})
+	f := finder.NewFinder(".").
+		IncludeName("elem.go").
+		WithNames([]string{"not-exist.file"})
 
 	names := f.FindNames()
 	assert.Len(t, names, 1)
@@ -142,7 +144,7 @@ func TestFileFinder_ExcludeName(t *testing.T) {
 		WithMaxDepth(1).
 		ExcludeName("elem.go").
 		WithoutNames([]string{"config.go"})
-	// f.Exclude(finder.WithoutSuffix("_test.go"), finder.WithoutExt(".md"))
+	f.Exclude(finder.MatchSuffix("_test.go"), finder.MatchExt(".md"))
 
 	names := f.FindNames()
 	fmt.Println(names)
