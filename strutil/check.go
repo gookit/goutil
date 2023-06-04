@@ -274,6 +274,29 @@ func GlobMatch(pattern, s string) bool {
 	return ok
 }
 
+// LikeMatch simple check for a string match the pattern. pattern like the SQL LIKE.
+func LikeMatch(pattern, s string) bool {
+	ln := len(pattern)
+	if ln < 2 {
+		return false
+	}
+
+	// eg `%abc` `%abc%`
+	if pattern[0] == '%' {
+		if ln > 2 && pattern[ln-1] == '%' {
+			return strings.Contains(s, pattern[1:ln-1])
+		} else {
+			return strings.HasSuffix(s, pattern[1:])
+		}
+	}
+
+	// eg `abc%`
+	if pattern[ln-1] == '%' {
+		return strings.HasPrefix(s, pattern[:ln-1])
+	}
+	return pattern == s
+}
+
 // MatchNodePath check for a string match the pattern.
 //
 // Use on pattern:

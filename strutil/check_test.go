@@ -266,3 +266,28 @@ func TestSimpleMatch(t *testing.T) {
 	assert.False(t, strutil.SimpleMatch(str, []string{"hi", "^inhere"}))
 	assert.False(t, strutil.SimpleMatch(str, []string{"hi", "inhere$"}))
 }
+
+func TestLikeMatch(t *testing.T) {
+	tests := []struct {
+		p, s string
+		ok   bool
+	}{
+		{"a%", "abc", true},
+		{"%a%", "abc", true},
+		{"a%", "ab.cd.ef", true},
+		{"%c", "abc", true},
+		{"%c", "cdf", false},
+		{"%c%", "cdf", true},
+		{"%cd%", "cdf", true},
+		{"%d%", "cdf", true},
+		{"%df%", "cdf", true},
+		{"%c", "", false},
+		{"abc", "abc", true},
+		{"abc", "def", false},
+	}
+
+	for _, tt := range tests {
+		assert.Eq(t, tt.ok, strutil.LikeMatch(tt.p, tt.s))
+	}
+
+}
