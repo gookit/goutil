@@ -47,7 +47,9 @@ func TestIsEmpty(t *testing.T) {
 	is.True(reflects.IsEmpty(reflect.ValueOf(uint(0))))
 	is.True(reflects.IsEmpty(reflect.ValueOf(float32(0))))
 
-	type T struct{ v any }
+	type T struct {
+		v any //lint:ignore U1000 for test
+	}
 	rv := reflect.ValueOf(T{}).Field(0)
 	is.True(reflects.IsEmpty(rv))
 }
@@ -63,7 +65,9 @@ func TestIsEmptyValue(t *testing.T) {
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(uint(0))))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(float32(0))))
 
-	type T struct{ v any }
+	type T struct {
+		v any //lint:ignore U1000 for test
+	}
 	rv := reflect.ValueOf(T{}).Field(0)
 	is.True(reflects.IsEmptyValue(rv))
 }

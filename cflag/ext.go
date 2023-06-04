@@ -27,7 +27,7 @@ type RepeatableFlag interface {
 
 // IntValue int, allow limit min and max value TODO
 type IntValue struct {
-	val string
+	val string //lint:ignore U1000 is TODO
 	// validate
 	Min, Max int
 }
@@ -36,7 +36,7 @@ type IntValue struct {
 //
 // Implemented the flag.Value interface
 type IntsString struct {
-	val  string // input
+	val  string //nolint:unused
 	ints []int
 	// value and size validate
 	ValueFn func(val int) error

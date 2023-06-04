@@ -180,10 +180,7 @@ func RegexMatch(pattern string) MatcherFunc {
 	reg := regexp.MustCompile(pattern)
 
 	return func(el Elem) bool {
-		if reg.MatchString(el.Name()) {
-			return true
-		}
-		return false
+		return reg.MatchString(el.Name())
 	}
 }
 

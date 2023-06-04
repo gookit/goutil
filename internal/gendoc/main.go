@@ -57,6 +57,7 @@ type genOptsSt struct {
 	tplDir   string
 }
 
+//lint:ignore U1000 for test
 func (o genOptsSt) filePattern() string {
 	baseDir := genOpts.baseDir
 	if baseDir == "/" || baseDir == "./" {

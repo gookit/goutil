@@ -22,6 +22,7 @@ func TestInitDefaults(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Eq(t, "inhere", u.Name)
 	assert.Eq(t, 0, u.Age)
+	assert.Eq(t, "", u.city)
 	// dump.P(u)
 
 	type User1 struct {
@@ -116,6 +117,12 @@ func TestInitDefaults_nestStruct(t *testing.T) {
 	assert.Eq(t, 30, u.Age)
 	assert.Eq(t, "chengdu", u.Extra.City)
 	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
+
+	u = &User{Extra: ExtraDefault{Github: "some url"}}
+	err = structs.InitDefaults(u)
+	dump.P(u)
+	assert.NoErr(t, err)
+	assert.Eq(t, "chengdu", u.Extra.City)
 }
 
 func TestInitDefaults_ptrStructField(t *testing.T) {
