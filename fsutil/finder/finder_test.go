@@ -105,23 +105,25 @@ func TestFinder_OnlyFindDir(t *testing.T) {
 
 func TestFileFinder_NoDotFile(t *testing.T) {
 	f := finder.NewEmpty().
+		CacheResult().
 		ScanDir("./testdata")
 	assert.NotEmpty(t, f.String())
 
-	fileName := "testdata/.env"
-	assert.Contains(t, f.FindPaths(), fileName)
+	fileName := ".env"
+	assert.NotEmpty(t, f.FindPaths())
+	assert.Contains(t, f.FindNames(), fileName)
 
 	f = finder.EmptyFinder().
 		ScanDir("./testdata").
 		NoDotFile()
-	assert.NotContains(t, f.FindPaths(), fileName)
+	assert.NotContains(t, f.FindNames(), fileName)
 
 	t.Run("Not MatchDotFile", func(t *testing.T) {
 		f = finder.EmptyFinder().
 			ScanDir("./testdata").
 			Not(finder.MatchDotFile())
 
-		assert.NotContains(t, f.FindPaths(), fileName)
+		assert.NotContains(t, f.FindNames(), fileName)
 	})
 }
 

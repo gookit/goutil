@@ -210,11 +210,6 @@ func (f *Finder) CacheResult(enable ...bool) *Finder {
 	return f
 }
 
-// WithCacheResult cache result for find result. alias of CacheResult()
-func (f *Finder) WithCacheResult(enable ...bool) *Finder {
-	return f.CacheResult(enable...)
-}
-
 // WithFlags set find flags.
 func (f *Finder) WithFlags(flags FindFlag) *Finder {
 	f.c.FindFlags = flags
