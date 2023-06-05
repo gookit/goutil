@@ -93,6 +93,15 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 
 		// skip on field has value
 		if !fv.IsZero() {
+			// special: handle for pointer struct field
+			if fv.Kind() == reflect.Pointer {
+				fv = fv.Elem()
+				if fv.Kind() == reflect.Struct {
+					if err := initDefaults(fv, opt); err != nil {
+						return err
+					}
+				}
+			}
 			continue
 		}
 

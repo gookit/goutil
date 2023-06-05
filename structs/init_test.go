@@ -120,9 +120,10 @@ func TestInitDefaults_nestStruct(t *testing.T) {
 
 	u = &User{Extra: ExtraDefault{Github: "some url"}}
 	err = structs.InitDefaults(u)
-	dump.P(u)
+	// dump.P(u)
 	assert.NoErr(t, err)
 	assert.Eq(t, "chengdu", u.Extra.City)
+	assert.Eq(t, "some url", u.Extra.Github)
 }
 
 func TestInitDefaults_ptrStructField(t *testing.T) {
@@ -141,6 +142,13 @@ func TestInitDefaults_ptrStructField(t *testing.T) {
 	assert.Eq(t, 30, u.Age)
 	assert.Eq(t, "chengdu", u.Extra.City)
 	assert.Eq(t, "https://github.com/inhere", u.Extra.Github)
+
+	u = &User{Extra: &ExtraDefault{Github: "some url"}}
+	err = structs.InitDefaults(u)
+	// dump.P(u)
+	assert.NoErr(t, err)
+	assert.Eq(t, "chengdu", u.Extra.City)
+	assert.Eq(t, "some url", u.Extra.Github)
 }
 
 func TestInitDefaults_sliceField(t *testing.T) {
@@ -161,7 +169,7 @@ func TestInitDefaults_sliceField(t *testing.T) {
 	assert.Eq(t, []int64{34, 456}, u.TagIds)
 }
 
-func TestInitDefaults_InitStructSlice(t *testing.T) {
+func TestInitDefaults_initStructSlice(t *testing.T) {
 	// test for slice struct field
 	type User struct {
 		Name  string `default:"inhere"`
