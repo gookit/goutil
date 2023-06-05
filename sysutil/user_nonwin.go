@@ -18,9 +18,9 @@ func ChangeUserByName(newUname string) (err error) {
 }
 
 // ChangeUserUidGid change work user by new username uid,gid
-func ChangeUserUidGid(newUid int, newGid int) (err error) {
-	if newUid > 0 {
-		err = syscall.Setuid(newUid)
+func ChangeUserUidGid(newUID int, newGid int) (err error) {
+	if newUID > 0 {
+		err = syscall.Setuid(newUID)
 
 		// update group id
 		if err == nil && newGid > 0 {
