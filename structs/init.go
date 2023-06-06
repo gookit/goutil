@@ -24,13 +24,6 @@ type InitOptions struct {
 	ParseEnv bool
 	// ValueHook before set value hook TODO
 	ValueHook func(val string) any
-	// InitStructSlice init struct slice. default: false
-	InitStructSlice bool
-}
-
-// InitStructSlice init struct slice
-func InitStructSlice(opt *InitOptions) {
-	opt.InitStructSlice = true
 }
 
 // Init struct default value by field "default" tag.
@@ -83,6 +76,11 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 			continue
 		}
 
+		val, hasTag := sf.Tag.Lookup(opt.TagName)
+		if !hasTag || val == "-" {
+			continue
+		}
+
 		fv := rv.Field(i)
 		if fv.Kind() == reflect.Struct {
 			if err := initDefaults(fv, opt); err != nil {
@@ -105,8 +103,6 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 			continue
 		}
 
-		val, hasTag := sf.Tag.Lookup(opt.TagName)
-
 		// handle for pointer field
 		if fv.Kind() == reflect.Pointer {
 			if fv.IsNil() {
@@ -120,7 +116,7 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 				}
 				continue
 			}
-		} else if fv.Kind() == reflect.Slice && (opt.InitStructSlice || hasTag) {
+		} else if fv.Kind() == reflect.Slice {
 			el := sf.Type.Elem()
 			isPtr := el.Kind() == reflect.Pointer
 			if isPtr {

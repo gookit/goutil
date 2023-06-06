@@ -55,7 +55,7 @@ func ExampleInitDefaults() {
 	type User struct {
 		Name  string `default:"inhere"`
 		Age   int    `default:"30"`
-		Extra Extra
+		Extra Extra  `default:""` // add tag for init sub struct
 	}
 
 	u := &User{}

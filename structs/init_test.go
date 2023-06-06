@@ -104,9 +104,9 @@ type ExtraDefault struct {
 
 func TestInitDefaults_nestStruct(t *testing.T) {
 	type User struct {
-		Name  string `default:"inhere"`
-		Age   int    `default:"30"`
-		Extra ExtraDefault
+		Name  string       `default:"inhere"`
+		Age   int          `default:"30"`
+		Extra ExtraDefault `default:""`
 	}
 
 	u := &User{}
@@ -129,9 +129,9 @@ func TestInitDefaults_nestStruct(t *testing.T) {
 func TestInitDefaults_ptrStructField(t *testing.T) {
 	// test for pointer struct field
 	type User struct {
-		Name  string `default:"inhere"`
-		Age   int    `default:"30"`
-		Extra *ExtraDefault
+		Name  string        `default:"inhere"`
+		Age   int           `default:"30"`
+		Extra *ExtraDefault `default:""`
 	}
 
 	u := &User{}
@@ -172,13 +172,13 @@ func TestInitDefaults_sliceField(t *testing.T) {
 func TestInitDefaults_initStructSlice(t *testing.T) {
 	// test for slice struct field
 	type User struct {
-		Name  string `default:"inhere"`
-		Age   int    `default:"30"`
-		Extra []ExtraDefault
+		Name  string         `default:"inhere"`
+		Age   int            `default:"30"`
+		Extra []ExtraDefault `default:""`
 	}
 
 	u := &User{}
-	err := structs.Init(u, structs.InitStructSlice)
+	err := structs.Init(u)
 	dump.P(u)
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, u.Extra)
