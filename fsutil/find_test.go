@@ -60,6 +60,7 @@ func TestApplyFilters(t *testing.T) {
 	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.OnlyFindFile}))
 	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.ExcludeDotFile}))
 	assert.False(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.IncludeSuffix("-backup")}))
+	assert.True(t, fsutil.ApplyFilters("", e1, []fsutil.FilterFunc{fsutil.ExcludeNames("some-backup")}))
 }
 
 func TestFindInDir(t *testing.T) {

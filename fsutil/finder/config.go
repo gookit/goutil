@@ -36,19 +36,19 @@ type Config struct {
 	depth int
 
 	// ScanDirs scan dir paths for find.
-	ScanDirs []string
+	ScanDirs []string `json:"scan_dirs"`
 	// FindFlags for find result. default is FlagFile
-	FindFlags FindFlag
+	FindFlags FindFlag `json:"find_flags"`
 	// MaxDepth for find result. default is 0 - not limit
-	MaxDepth int
+	MaxDepth int `json:"max_depth"`
 	// UseAbsPath use abs path for find result. default is false
-	UseAbsPath bool
+	UseAbsPath bool `json:"use_abs_path"`
 	// CacheResult cache result for find result. default is false
-	CacheResult bool
+	CacheResult bool `json:"cache_result"`
 	// ExcludeDotDir exclude dot dir. default is true
-	ExcludeDotDir bool
+	ExcludeDotDir bool `json:"exclude_dot_dir"`
 	// ExcludeDotFile exclude dot dir. default is false
-	ExcludeDotFile bool
+	ExcludeDotFile bool `json:"exclude_dot_file"`
 
 	// Matchers generic include matchers for file/dir elems
 	Matchers []Matcher
@@ -66,26 +66,26 @@ type Config struct {
 	// commonly settings for build matchers
 
 	// IncludeDirs include dir name list. eg: {"model"}
-	IncludeDirs []string
+	IncludeDirs []string `json:"include_dirs"`
 	// IncludeExts include file ext name list. eg: {".go", ".md"}
-	IncludeExts []string
+	IncludeExts []string `json:"include_exts"`
 	// IncludeFiles include file name list. eg: {"go.mod"}
-	IncludeFiles []string
+	IncludeFiles []string `json:"include_files"`
 	// IncludePaths include file/dir path list. eg: {"path/to"}
-	IncludePaths []string
+	IncludePaths []string `json:"include_paths"`
 	// IncludeNames include file/dir name list. eg: {"test", "some.go"}
-	IncludeNames []string
+	IncludeNames []string `json:"include_names"`
 
 	// ExcludeDirs exclude dir name list. eg: {"test"}
-	ExcludeDirs []string
+	ExcludeDirs []string `json:"exclude_dirs"`
 	// ExcludeExts exclude file ext name list. eg: {".go", ".md"}
-	ExcludeExts []string
+	ExcludeExts []string `json:"exclude_exts"`
 	// ExcludeFiles exclude file name list. eg: {"go.mod"}
-	ExcludeFiles []string
+	ExcludeFiles []string `json:"exclude_files"`
 	// ExcludePaths exclude file/dir path list. eg: {"path/to"}
-	ExcludePaths []string
+	ExcludePaths []string `json:"exclude_paths"`
 	// ExcludeNames exclude file/dir name list. eg: {"test", "some.go"}
-	ExcludeNames []string
+	ExcludeNames []string `json:"exclude_names"`
 }
 
 // NewConfig create a new Config

@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -192,6 +193,18 @@ func DeleteIfFileExist(fPath string) error {
 		return os.Remove(fPath)
 	}
 	return nil
+}
+
+// RemoveSub removes all sub files and dirs of dirPath, but not remove dirPath.
+func RemoveSub(dirPath string, fns ...FilterFunc) error {
+	return FindInDir(dirPath, func(fPath string, ent fs.DirEntry) error {
+		if ent.IsDir() {
+			if err := RemoveSub(fPath, fns...); err != nil {
+				return err
+			}
+		}
+		return os.Remove(fPath)
+	}, fns...)
 }
 
 // ************************************************************

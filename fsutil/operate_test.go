@@ -62,6 +62,9 @@ func TestCreateFile(t *testing.T) {
 	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
 	file = fsutil.MustCreateFile(fpath, 0, 0766)
 	assert.NoErr(t, file.Close())
+
+	err = fsutil.RemoveSub("./testdata/sub")
+	assert.NoErr(t, err)
 }
 
 func TestQuickOpenFile(t *testing.T) {

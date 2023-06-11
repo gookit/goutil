@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -69,6 +70,7 @@ type (
 	//
 	// - return False will skip handle the file.
 	FilterFunc func(fPath string, ent fs.DirEntry) bool
+
 	// HandleFunc type for FindInDir
 	HandleFunc func(fPath string, ent fs.DirEntry) error
 )
@@ -81,6 +83,13 @@ func OnlyFindDir(_ string, ent fs.DirEntry) bool {
 // OnlyFindFile on find
 func OnlyFindFile(_ string, ent fs.DirEntry) bool {
 	return !ent.IsDir()
+}
+
+// ExcludeNames on find
+func ExcludeNames(names ...string) FilterFunc {
+	return func(_ string, ent fs.DirEntry) bool {
+		return !arrutil.StringsHas(names, ent.Name())
+	}
 }
 
 // IncludeSuffix on find
