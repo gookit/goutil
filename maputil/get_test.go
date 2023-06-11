@@ -3,6 +3,7 @@ package maputil_test
 import (
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -15,68 +16,135 @@ func TestGetByPath(t *testing.T) {
 		"key3": map[string]any{"sk1": "sv1"},
 		"key4": []int{1, 2},
 		"key5": []any{1, "2", true},
+		"mlMp": []map[string]any{
+			{
+				"code":  "001",
+				"names": []string{"John", "abc"},
+			},
+			{
+				"code":  "002",
+				"names": []string{"Tom", "def"},
+			},
+		},
 	}
 
-	v, ok := maputil.GetByPath("key0", mp)
+	tests := []struct {
+		path string
+		want any
+		ok   bool
+	}{
+		{"key0", "val0", true},
+		{"key1.sk0", "sv0", true},
+		{"key3.sk1", "sv1", true},
+		// not exists
+		{"not-exits", nil, false},
+		{"key2.not-exits", nil, false},
+		{"not-exits.subkey", nil, false},
+		// slices behaviour
+		{"key2", mp["key2"], true},
+		{"key2.0", "sv1", true},
+		{"key2.1", "sv2", true},
+		{"key4.0", 1, true},
+		{"key4.1", 2, true},
+		{"key5.0", 1, true},
+		{"key5.1", "2", true},
+		{"key5.2", true, true},
+		// out of bound
+		{"key4.3", nil, false},
+		// deep sub map
+		{"mlMp.*.code", []any{"001", "002"}, true},
+		{"mlMp.*.names", []any{
+			[]string{"John", "abc"},
+			[]string{"Tom", "def"},
+		}, true},
+		{"mlMp.*.names.1", []any{"abc", "def"}, true},
+	}
+
+	for _, tt := range tests {
+		v, ok := maputil.GetByPath(tt.path, mp)
+		assert.Eq(t, tt.ok, ok, tt.path)
+		assert.Eq(t, tt.want, v, tt.path)
+	}
+
+	// v, ok := maputil.GetByPath("mlMp.*.names.1", mp)
+	// assert.True(t, ok)
+	// assert.Eq(t, []any{"abc", "def"}, v)
+}
+
+var mlMp = map[string]any{
+	"names": []string{"John", "Jane", "abc"},
+	"coding": []map[string]any{
+		{
+			"details": map[string]any{
+				"em": map[string]any{
+					"code":              "001-1",
+					"encounter_uid":     "1-1",
+					"billing_provider":  "Test provider 01-1",
+					"resident_provider": "Test Resident Provider-1",
+				},
+			},
+		},
+		{
+			"details": map[string]any{
+				"em": map[string]any{
+					"code":              "001",
+					"encounter_uid":     "1",
+					"billing_provider":  "Test provider 01",
+					"resident_provider": "Test Resident Provider",
+				},
+				"cpt": []map[string]any{
+					{
+						"code":              "001",
+						"encounter_uid":     "2",
+						"work_item_uid":     "3",
+						"billing_provider":  "Test provider 001",
+						"resident_provider": "Test Resident Provider",
+					},
+					{
+						"code":              "OBS01",
+						"encounter_uid":     "3",
+						"work_item_uid":     "4",
+						"billing_provider":  "Test provider OBS01",
+						"resident_provider": "Test Resident Provider",
+					},
+					{
+						"code":              "SU002",
+						"encounter_uid":     "5",
+						"work_item_uid":     "6",
+						"billing_provider":  "Test provider SU002",
+						"resident_provider": "Test Resident Provider",
+					},
+				},
+			},
+		},
+	},
+}
+
+func TestGetByPath_deepPath(t *testing.T) {
+	val, ok := maputil.GetByPath("coding.0.details.em.code", mlMp)
 	assert.True(t, ok)
-	assert.Eq(t, "val0", v)
+	assert.NotEmpty(t, val)
 
-	v, ok = maputil.GetByPath("key1.sk0", mp)
+	val, ok = maputil.GetByPath("coding.*.details", mlMp)
 	assert.True(t, ok)
-	assert.Eq(t, "sv0", v)
+	assert.NotEmpty(t, val)
+	// dump.P(ok, val)
 
-	v, ok = maputil.GetByPath("key3.sk1", mp)
+	val, ok = maputil.GetByPath("coding.*.details.em", mlMp)
+	dump.P(ok, val)
 	assert.True(t, ok)
-	assert.Eq(t, "sv1", v)
 
-	// not exists
-	v, ok = maputil.GetByPath("not-exits", mp)
-	assert.False(t, ok)
-	assert.Nil(t, v)
-	v, ok = maputil.GetByPath("key2.not-exits", mp)
-	assert.False(t, ok)
-	assert.Nil(t, v)
-	v, ok = maputil.GetByPath("not-exits.subkey", mp)
-	assert.False(t, ok)
-	assert.Nil(t, v)
-
-	// Slices behaviour
-	v, ok = maputil.GetByPath("key2", mp)
+	val, ok = maputil.GetByPath("coding.*.details.em.code", mlMp)
+	dump.P(ok, val)
 	assert.True(t, ok)
-	assert.Eq(t, mp["key2"], v)
 
-	v, ok = maputil.GetByPath("key2.0", mp)
+	val, ok = maputil.GetByPath("coding.*.details.cpt.*.encounter_uid", mlMp)
+	dump.P(ok, val)
 	assert.True(t, ok)
-	assert.Eq(t, "sv1", v)
 
-	v, ok = maputil.GetByPath("key2.1", mp)
+	val, ok = maputil.GetByPath("coding.*.details.cpt.*.work_item_uid", mlMp)
+	dump.P(ok, val)
 	assert.True(t, ok)
-	assert.Eq(t, "sv2", v)
-
-	v, ok = maputil.GetByPath("key4.0", mp)
-	assert.True(t, ok)
-	assert.Eq(t, 1, v)
-
-	v, ok = maputil.GetByPath("key4.1", mp)
-	assert.True(t, ok)
-	assert.Eq(t, 2, v)
-
-	v, ok = maputil.GetByPath("key5.0", mp)
-	assert.True(t, ok)
-	assert.Eq(t, 1, v)
-
-	v, ok = maputil.GetByPath("key5.1", mp)
-	assert.True(t, ok)
-	assert.Eq(t, "2", v)
-
-	v, ok = maputil.GetByPath("key5.2", mp)
-	assert.True(t, ok)
-	assert.Eq(t, true, v)
-
-	// Out of bound value
-	v, ok = maputil.GetByPath("key2.2", mp)
-	assert.False(t, ok)
-	assert.Nil(t, v)
 }
 
 func TestKeys(t *testing.T) {

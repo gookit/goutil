@@ -313,7 +313,20 @@ func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 
 	t.Helper()
 	return fail(t,
-		fmt.Sprintf("String value check fail:\nGiven string: %#v\nNot contains: %#v", s, sub),
+		fmt.Sprintf("String check fail:\nGiven string: %#v\nNot contains: %#v", s, sub),
+		fmtAndArgs,
+	)
+}
+
+// StrCount asserts that the given strings is contains sub-string and count
+func StrCount(t TestingT, s, sub string, count int, fmtAndArgs ...any) bool {
+	if strings.Count(s, sub) == count {
+		return true
+	}
+
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("String check fail:\nGiven string: %s\nNot contains %q count: %d", s, sub, count),
 		fmtAndArgs,
 	)
 }
