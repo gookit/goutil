@@ -99,6 +99,21 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 						return err
 					}
 				}
+			} else if fv.Kind() == reflect.Slice {
+				el := sf.Type.Elem()
+				if el.Kind() == reflect.Pointer {
+					el = el.Elem()
+				}
+
+				// init sub struct in slice. like `[]SubStruct` or `[]*SubStruct`
+				if el.Kind() == reflect.Struct && fv.Len() > 0 {
+					for i := 0; i < fv.Len(); i++ {
+						subFv := reflect.Indirect(fv.Index(i))
+						if err := initDefaults(subFv, opt); err != nil {
+							return err
+						}
+					}
+				}
 			}
 			continue
 		}

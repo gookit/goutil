@@ -39,13 +39,27 @@ func TestInitDefaults(t *testing.T) {
 	assert.Eq(t, "", u1.city)
 	// dump.P(u1)
 	// fmt.Printf("%+v\n", u1)
+}
 
-	err = structs.InitDefaults([]string{"invalid"})
+func TestInitDefaults_error(t *testing.T) {
+	err := structs.InitDefaults([]string{"invalid"})
 	assert.ErrMsg(t, err, "must be provider an pointer value")
 
 	arr := []string{"invalid"}
 	err = structs.InitDefaults(&arr)
 	assert.ErrMsg(t, err, "must be provider an struct value")
+
+	type User struct {
+		Name string `default:"inhere"`
+		Age  int    `default:"abc"`
+	}
+
+	u := &User{}
+	err = structs.InitDefaults(u)
+	assert.ErrMsg(t, err, comdef.ErrConvType.Error())
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 0, u.Age)
+	// dump.P(u)
 }
 
 func TestInitDefaults_parseEnv(t *testing.T) {
@@ -197,6 +211,13 @@ func TestInitDefaults_initStructSlice(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, u1.Extra)
 	assert.Eq(t, "chengdu", u1.Extra[0].City)
+
+	// test for not empty slice struct field
+	u2 := &User1{Extra: []*ExtraDefault{{City: "sh"}}}
+	err = structs.Init(u2)
+	// dump.P(u2)
+	assert.NoErr(t, err)
+	assert.Eq(t, "sh", u2.Extra[0].City)
 }
 
 func TestInitDefaults_ptrField(t *testing.T) {
