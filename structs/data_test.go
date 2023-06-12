@@ -7,15 +7,40 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestLiteData_Data(t *testing.T) {
+	d := structs.NewLiteData(nil)
+	d.SetData(map[string]any{
+		"key0": 234,
+		"key1": "abc",
+		"key2": true,
+	})
+
+	assert.NotEmpty(t, d.Data())
+	v, ok := d.Value("key0")
+	assert.True(t, ok)
+	assert.Eq(t, 234, v)
+
+	d.ResetData()
+	assert.Empty(t, d.Data())
+}
+
 func TestNewData(t *testing.T) {
 	md := structs.NewData()
 	assert.Eq(t, 0, md.DataLen())
 
 	md.SetData(map[string]any{
 		"key0": 234,
+		"sub": map[string]any{
+			"skey1": "abc",
+			"skey2": true,
+		},
 	})
 	assert.NotEmpty(t, md.Data())
 	assert.Eq(t, 234, md.IntVal("key0"))
+
+	v, ok := md.Value("key0")
+	assert.True(t, ok)
+	assert.Eq(t, 234, v)
 
 	md.SetValue("key1", "val1")
 	assert.Eq(t, "val1", md.GetVal("key1"))
