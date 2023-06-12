@@ -1,12 +1,13 @@
-package testutil
+package fakeobj
 
 import (
+	"bytes"
 	"errors"
 )
 
-// TestWriter struct, useful for testing
-type TestWriter struct {
-	Buffer
+// Writer implements the io.Writer, io.Flusher, io.Closer.
+type Writer struct {
+	bytes.Buffer
 	// ErrOnWrite return error on write, useful for testing
 	ErrOnWrite bool
 	// ErrOnFlush return error on flush, useful for testing
@@ -15,31 +16,31 @@ type TestWriter struct {
 	ErrOnClose bool
 }
 
-// NewTestWriter instance
-func NewTestWriter() *TestWriter {
-	return &TestWriter{}
+// NewWriter instance
+func NewWriter() *Writer {
+	return &Writer{}
 }
 
 // SetErrOnWrite method
-func (w *TestWriter) SetErrOnWrite() *TestWriter {
+func (w *Writer) SetErrOnWrite() *Writer {
 	w.ErrOnWrite = true
 	return w
 }
 
 // SetErrOnFlush method
-func (w *TestWriter) SetErrOnFlush() *TestWriter {
+func (w *Writer) SetErrOnFlush() *Writer {
 	w.ErrOnFlush = true
 	return w
 }
 
 // SetErrOnClose method
-func (w *TestWriter) SetErrOnClose() *TestWriter {
+func (w *Writer) SetErrOnClose() *Writer {
 	w.ErrOnClose = true
 	return w
 }
 
 // Flush implements
-func (w *TestWriter) Flush() error {
+func (w *Writer) Flush() error {
 	if w.ErrOnFlush {
 		return errors.New("flush error")
 	}
@@ -49,7 +50,7 @@ func (w *TestWriter) Flush() error {
 }
 
 // Close implements
-func (w *TestWriter) Close() error {
+func (w *Writer) Close() error {
 	if w.ErrOnClose {
 		return errors.New("close error")
 	}
@@ -57,7 +58,7 @@ func (w *TestWriter) Close() error {
 }
 
 // Write implements
-func (w *TestWriter) Write(p []byte) (n int, err error) {
+func (w *Writer) Write(p []byte) (n int, err error) {
 	if w.ErrOnWrite {
 		return 0, errors.New("write error")
 	}

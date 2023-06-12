@@ -1,4 +1,4 @@
-// Package assert provides some tool functions for use with the Go testing.
+// Package assert Provides commonly asserts functions for help write Go testing.
 //
 // inspired the package: github.com/stretchr/testify/assert
 package assert
