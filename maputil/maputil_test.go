@@ -22,6 +22,19 @@ func TestSimpleMerge(t *testing.T) {
 
 	ret = maputil.SimpleMerge(src, nil)
 	assert.Eq(t, "v0", ret["A"])
+
+	src = map[string]any{"A": "v0", "B": "v1", "sub": map[string]any{"s1": "sv0"}}
+	dst = map[string]any{"A": "v1", "B": "v2", "sub": map[string]any{
+		"s1": "sv1",
+		"s2": "sv2",
+	}}
+	ret = maputil.SimpleMerge(src, dst)
+
+	dm := maputil.Data(ret)
+	assert.Eq(t, "v0", dm.Str("A"))
+	assert.Eq(t, "v1", dm.Str("B"))
+	assert.Eq(t, "sv0", dm.Str("sub.s1"))
+	assert.Eq(t, "sv2", dm.Str("sub.s2"))
 }
 
 func TestMergeStringMap(t *testing.T) {
@@ -30,6 +43,12 @@ func TestMergeStringMap(t *testing.T) {
 
 	ret = maputil.MergeSMap(map[string]string{"A": "v0"}, map[string]string{"a": "v1"}, true)
 	assert.Eq(t, map[string]string{"a": "v0"}, ret)
+
+	ret = maputil.MergeSMap(map[string]string{"A": "v0"}, nil, false)
+	assert.Eq(t, map[string]string{"A": "v0"}, ret)
+
+	ret = maputil.MergeSMap(nil, map[string]string{"a": "v1"}, true)
+	assert.Eq(t, map[string]string{"a": "v1"}, ret)
 }
 
 func TestMakeByPath(t *testing.T) {
