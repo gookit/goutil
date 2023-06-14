@@ -32,14 +32,18 @@ func TestIsEqual(t *testing.T) {
 
 	is.False(reflects.IsEqual(nil, "abc"))
 	is.False(reflects.IsEqual("abc", nil))
-
 	is.False(reflects.IsEqual("abc", 123))
+	is.True(reflects.IsEqual(123, 123))
+	is.True(reflects.IsEqual([]byte{}, []byte{}))
+	is.True(reflects.IsEqual([]byte("abc"), []byte("abc")))
+	is.False(reflects.IsEqual([]byte("abc"), 123))
 }
 
 func TestIsEmpty(t *testing.T) {
 	is := assert.New(t)
 
 	is.True(reflects.IsEmpty(reflect.ValueOf(nil)))
+	is.True(reflects.IsEmpty(reflect.ValueOf(false)))
 	is.True(reflects.IsEmpty(reflect.ValueOf("")))
 	is.True(reflects.IsEmpty(reflect.ValueOf([]string{})))
 	is.True(reflects.IsEmpty(reflect.ValueOf(map[int]string{})))
@@ -59,6 +63,7 @@ func TestIsEmptyValue(t *testing.T) {
 
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(nil)))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf("")))
+	is.True(reflects.IsEmptyValue(reflect.ValueOf(false)))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf([]string{})))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(map[int]string{})))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(0)))
@@ -70,6 +75,9 @@ func TestIsEmptyValue(t *testing.T) {
 	}
 	rv := reflect.ValueOf(T{}).Field(0)
 	is.True(reflects.IsEmptyValue(rv))
+
+	rv = reflect.ValueOf(&T{v: "abc"})
+	is.False(reflects.IsEmptyValue(rv))
 }
 
 func TestIsSimpleKind(t *testing.T) {
@@ -91,4 +99,20 @@ func TestIsSimpleKind(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIsAnyInt(t *testing.T) {
+	// test for IsAnyInt
+	assert.True(t, reflects.IsAnyInt(reflect.Int))
+	assert.True(t, reflects.IsAnyInt(reflect.Int8))
+	assert.True(t, reflects.IsAnyInt(reflect.Uint))
+	assert.False(t, reflects.IsAnyInt(reflect.Func))
+
+	// test for IsIntx
+	assert.True(t, reflects.IsIntx(reflect.Int))
+	assert.False(t, reflects.IsIntx(reflect.Uint))
+
+	// test for IsUintX()
+	assert.True(t, reflects.IsUintX(reflect.Uint16))
+	assert.False(t, reflects.IsUintX(reflect.Int))
 }

@@ -32,12 +32,12 @@ func IsAnyInt(k reflect.Kind) bool {
 	return k >= reflect.Int && k <= reflect.Uintptr
 }
 
-// IsIntx check is intX or uintX type
+// IsIntx check is intX type
 func IsIntx(k reflect.Kind) bool {
 	return k >= reflect.Int && k <= reflect.Int64
 }
 
-// IsUintX check is intX or uintX type
+// IsUintX check is uintX type
 func IsUintX(k reflect.Kind) bool {
 	return k >= reflect.Uint && k <= reflect.Uintptr
 }

@@ -1,5 +1,4 @@
 //go:build !windows
-// +build !windows
 
 package sysutil
 
@@ -12,7 +11,6 @@ import (
 // ChangeUserByName change work user by new username.
 func ChangeUserByName(newUname string) (err error) {
 	u := MustFindUser(newUname)
-
 	// syscall.Setlogin(newUname)
 	return ChangeUserUidGid(strutil.IntOrPanic(u.Uid), strutil.IntOrPanic(u.Gid))
 }
@@ -27,6 +25,5 @@ func ChangeUserUidGid(newUID int, newGid int) (err error) {
 			err = syscall.Setgid(newGid)
 		}
 	}
-
 	return
 }

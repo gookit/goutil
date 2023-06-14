@@ -1,4 +1,4 @@
-// Package textutil provide some extra text handle util
+// Package textutil provide some extensions text handle util functions.
 package textutil
 
 import (
