@@ -9,6 +9,7 @@ import (
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
 func TestSearchNameUp(t *testing.T) {
@@ -28,30 +29,20 @@ func TestSearchNameUp(t *testing.T) {
 	assert.Empty(t, p)
 }
 
-type dirEnt struct {
-	typ   fs.FileMode
-	isDir bool
-	name  string
-}
+func TestGlobWithFunc(t *testing.T) {
+	var paths []string
+	err := fsutil.GlobWithFunc("testdata/*", func(fpath string) error {
+		paths = append(paths, fpath)
+		return nil
+	})
 
-func (d *dirEnt) Name() string {
-	return d.name
-}
-
-func (d *dirEnt) IsDir() bool {
-	return d.isDir
-}
-
-func (d *dirEnt) Type() fs.FileMode {
-	return d.typ
-}
-
-func (d *dirEnt) Info() (fs.FileInfo, error) {
-	panic("implement me")
+	assert.NoErr(t, err)
+	assert.NotEmpty(t, paths)
+	assert.Contains(t, paths, "testdata/test.jpg")
 }
 
 func TestApplyFilters(t *testing.T) {
-	e1 := &dirEnt{name: "some-backup"}
+	e1 := &fakeobj.DirEntry{Nam: "some-backup"}
 	f1 := fsutil.ExcludeSuffix("-backup")
 
 	assert.False(t, f1("", e1))

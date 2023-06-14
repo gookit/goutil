@@ -2,11 +2,22 @@ package fsutil_test
 
 import (
 	"bytes"
+	"io/fs"
 	"testing"
 
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
+
+func TestMain(m *testing.M) {
+	err := fsutil.RemoveSub("./testdata", func(fPath string, ent fs.DirEntry) bool {
+		return fsutil.PathMatch(ent.Name(), "*.txt")
+	})
+	basefn.MustOK(err)
+
+	m.Run()
+}
 
 func TestMimeType(t *testing.T) {
 	assert.Eq(t, "", fsutil.MimeType(""))

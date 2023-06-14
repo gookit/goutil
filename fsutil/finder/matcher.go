@@ -22,24 +22,24 @@ func (fn MatcherFunc) Apply(elem Elem) bool {
 
 // ------------------ Multi matcher wrapper ------------------
 
-// MultiFilter wrapper for multi matchers
-type MultiFilter struct {
-	Before  Matcher
-	Filters []Matcher
+// MultiMatcher wrapper for multi matchers
+type MultiMatcher struct {
+	Before   Matcher
+	Matchers []Matcher
 }
 
 // Add matchers
-func (mf *MultiFilter) Add(fls ...Matcher) {
-	mf.Filters = append(mf.Filters, fls...)
+func (mf *MultiMatcher) Add(fls ...Matcher) {
+	mf.Matchers = append(mf.Matchers, fls...)
 }
 
-// Apply check file path. return False will filter this file.
-func (mf *MultiFilter) Apply(el Elem) bool {
+// Apply check file path is match.
+func (mf *MultiMatcher) Apply(el Elem) bool {
 	if mf.Before != nil && !mf.Before.Apply(el) {
 		return false
 	}
 
-	for _, fl := range mf.Filters {
+	for _, fl := range mf.Matchers {
 		if !fl.Apply(el) {
 			return false
 		}
@@ -47,49 +47,49 @@ func (mf *MultiFilter) Apply(el Elem) bool {
 	return true
 }
 
-// NewDirFilters create a new dir matchers
-func NewDirFilters(fls ...Matcher) *MultiFilter {
-	return &MultiFilter{
-		Before:  MatchDir,
-		Filters: fls,
+// NewDirMatchers create a new dir matchers
+func NewDirMatchers(fls ...Matcher) *MultiMatcher {
+	return &MultiMatcher{
+		Before:   MatchDir,
+		Matchers: fls,
 	}
 }
 
-// NewFileFilters create a new dir matchers
-func NewFileFilters(fls ...Matcher) *MultiFilter {
-	return &MultiFilter{
-		Before:  MatchFile,
-		Filters: fls,
+// NewFileMatchers create a new dir matchers
+func NewFileMatchers(fls ...Matcher) *MultiMatcher {
+	return &MultiMatcher{
+		Before:   MatchFile,
+		Matchers: fls,
 	}
 }
 
 // ------------------ Body Matcher ------------------
 
-// BodyFilter for filter file contents.
-type BodyFilter interface {
-	Apply(filePath string, buf *bytes.Buffer) bool
+// BodyMatcher for match file contents.
+type BodyMatcher interface {
+	Apply(filePath string, body *bytes.Buffer) bool
 }
 
-// BodyMatcherFunc for filter file contents.
-type BodyMatcherFunc func(filePath string, buf *bytes.Buffer) bool
+// BodyMatcherFunc for match file contents.
+type BodyMatcherFunc func(filePath string, body *bytes.Buffer) bool
 
-// Apply for filter file contents.
-func (fn BodyMatcherFunc) Apply(filePath string, buf *bytes.Buffer) bool {
-	return fn(filePath, buf)
+// Apply for match file contents.
+func (fn BodyMatcherFunc) Apply(filePath string, body *bytes.Buffer) bool {
+	return fn(filePath, body)
 }
 
-// BodyFilters multi body matchers as Matcher
-type BodyFilters struct {
-	Filters []BodyFilter
+// BodyMatchers multi body matchers as Matcher
+type BodyMatchers struct {
+	Matchers []BodyMatcher
 }
 
-// NewBodyFilters create a new body matchers
+// NewBodyMatchers create a new body matchers
 //
 // Usage:
 //
-//		bf := finder.NewBodyFilters(
+//		bf := finder.NewBodyMatchers(
 //			finder.BodyMatcherFunc(func(filePath string, buf *bytes.Buffer) bool {
-//				// filter file contents
+//				// match file contents
 //				return true
 //			}),
 //		)
@@ -98,19 +98,19 @@ type BodyFilters struct {
 //	 for el := range es {
 //			fmt.Println(el.Path())
 //	 }
-func NewBodyFilters(fls ...BodyFilter) *BodyFilters {
-	return &BodyFilters{
-		Filters: fls,
+func NewBodyMatchers(fls ...BodyMatcher) *BodyMatchers {
+	return &BodyMatchers{
+		Matchers: fls,
 	}
 }
 
-// AddFilter add matchers
-func (mf *BodyFilters) AddFilter(fls ...BodyFilter) {
-	mf.Filters = append(mf.Filters, fls...)
+// AddMatcher add matchers
+func (mf *BodyMatchers) AddMatcher(fls ...BodyMatcher) {
+	mf.Matchers = append(mf.Matchers, fls...)
 }
 
-// Apply check file path. return False will filter this file.
-func (mf *BodyFilters) Apply(el Elem) bool {
+// Apply check file contents is match.
+func (mf *BodyMatchers) Apply(el Elem) bool {
 	if el.IsDir() {
 		return false
 	}
@@ -130,7 +130,7 @@ func (mf *BodyFilters) Apply(el Elem) bool {
 	file.Close()
 
 	// apply matchers
-	for _, fl := range mf.Filters {
+	for _, fl := range mf.Matchers {
 		if !fl.Apply(el.Path(), buf) {
 			return false
 		}

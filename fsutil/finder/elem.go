@@ -9,7 +9,7 @@ import (
 // Elem of find file/dir path result
 type Elem interface {
 	fs.DirEntry
-	// Path get file/dir path. eg: "/path/to/file.go"
+	// Path get file/dir full path. eg: "/path/to/file.go"
 	Path() string
 	// Info get file info. like fs.DirEntry.Info(), but will cache result.
 	Info() (fs.FileInfo, error)

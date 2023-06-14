@@ -2,7 +2,9 @@
 
 [![GoDoc](https://godoc.org/github.com/goutil/fsutil/finder?status.svg)](https://godoc.org/github.com/goutil/fsutil/finder)
 
-`finder` provide a finding tool for find files or dirs, and with some built-in matchers.
+`finder` Provides a simple and convenient filedir lookup function, 
+supports filtering, excluding, matching, ignoring, etc.
+and with some commonly built-in matchers.
 
 ## Usage
 

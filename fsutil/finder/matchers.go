@@ -136,7 +136,7 @@ func MatchSuffixes(suffixes []string) MatcherFunc {
 //
 //	f := NewFinder('path/to/dir')
 //	f.Add(MatchPath("need/path"))
-func MatchPath(subPaths []string) MatcherFunc { return MatchPaths(subPaths) }
+func MatchPath(subPaths ...string) MatcherFunc { return MatchPaths(subPaths) }
 
 // MatchPaths match file/dir by given sub paths.
 func MatchPaths(subPaths []string) MatcherFunc {

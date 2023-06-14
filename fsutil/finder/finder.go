@@ -1,5 +1,6 @@
-// Package finder provide a finding tool for find files or dirs,
-// and with some built-in matchers.
+// Package finder Provides a simple and convenient filedir lookup function,
+// supports filtering, excluding, matching, ignoring, etc.
+// and with some commonly built-in matchers.
 package finder
 
 import (

@@ -25,6 +25,7 @@ func TestFinder_findFile(t *testing.T) {
 
 	assert.Nil(t, f.Err())
 	assert.NotEmpty(t, f.String())
+	assert.NotEmpty(t, f.Config())
 	assert.Eq(t, 0, f.CacheNum())
 
 	// find paths
