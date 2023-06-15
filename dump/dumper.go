@@ -185,7 +185,7 @@ func (d *Dumper) printOne(v any) {
 
 	if bts, ok := v.([]byte); ok && d.BytesAsString {
 		strVal := d.ColorTheme.string(string(bts))
-		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(len(bts)) + ",cap=" + strconv.Itoa(cap(bts)))
+		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(len(bts)) + ",cap=" + strconv.Itoa(cap(bts)))
 		d.printf("[]byte(\"%s\"), %s\n", strVal, lenTip)
 		return
 	}
@@ -236,14 +236,14 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		intStr := strconv.FormatInt(v.Int(), 10)
 		intStr = d.ColorTheme.integer(intStr)
-		d.printf("%s(%s),\n", t.String(), intStr)
+		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(v))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		intStr := strconv.FormatUint(v.Uint(), 10)
 		intStr = d.ColorTheme.integer(intStr)
-		d.printf("%s(%s),\n", t.String(), intStr)
+		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(v))
 	case reflect.String:
 		strVal := d.ColorTheme.string(v.String())
-		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(v.Len()))
+		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
 		d.printf("%s(\"%s\"), %s\n", t.String(), strVal, lenTip)
 	case reflect.Complex64, reflect.Complex128:
 		d.printf("%#v\n", v.Complex())
@@ -253,7 +253,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		}
 
 		eleNum := v.Len()
-		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
+		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
 
 		d.write(!isPtr, t.String(), " [ ", lenTip, "\n")
 		d.msValue = false
@@ -305,7 +305,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		d.indentPrint("},\n")
 	case reflect.Map:
-		lenTip := d.ColorTheme.lenTip("#len=" + strconv.Itoa(v.Len()))
+		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
 
 		d.write(!isPtr, d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
 		d.msValue = false
@@ -393,6 +393,14 @@ func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
 	d.visited[vis] = d.curDepth
 	d.mu.Unlock()
 	return true
+}
+
+func (d *Dumper) rvStringer(rv reflect.Value) string {
+	val := rv.Interface()
+	if s, ok := val.(fmt.Stringer); ok {
+		return d.ColorTheme.valTip(` #str: "` + s.String() + `"`)
+	}
+	return ""
 }
 
 func (d *Dumper) print(v ...any) {

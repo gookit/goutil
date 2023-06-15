@@ -31,7 +31,7 @@ var (
 		"value":  "normal",
 		// special type
 		"msType":  "green", // for keywords map, struct type
-		"lenTip":  "gray",  // tips comments for string, slice, map len
+		"valTip":  "gray",  // tips comments for string, slice, map len
 		"string":  "green",
 		"integer": "lightBlue",
 	}
@@ -52,7 +52,7 @@ func (ct Theme) caller(s string) string  { return ct.wrap("caller", s) }
 func (ct Theme) field(s string) string   { return ct.wrap("field", s) }
 func (ct Theme) value(s string) string   { return ct.wrap("value", s) }
 func (ct Theme) msType(s string) string  { return ct.wrap("msType", s) }
-func (ct Theme) lenTip(s string) string  { return ct.wrap("lenTip", s) }
+func (ct Theme) valTip(s string) string  { return ct.wrap("valTip", s) }
 func (ct Theme) string(s string) string  { return ct.wrap("string", s) }
 func (ct Theme) integer(s string) string { return ct.wrap("integer", s) }
 
