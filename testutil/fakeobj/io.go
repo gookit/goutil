@@ -16,6 +16,11 @@ type Writer struct {
 	ErrOnClose bool
 }
 
+// NewBuffer instance. alias of NewWriter()
+func NewBuffer() *Writer {
+	return NewWriter()
+}
+
 // NewWriter instance
 func NewWriter() *Writer {
 	return &Writer{}
@@ -39,28 +44,35 @@ func (w *Writer) SetErrOnClose() *Writer {
 	return w
 }
 
-// Flush implements
-func (w *Writer) Flush() error {
-	if w.ErrOnFlush {
-		return errors.New("flush error")
-	}
-
+// ResetGet buffer string.
+func (w *Writer) ResetGet() string {
+	s := w.String()
 	w.Reset()
-	return nil
-}
-
-// Close implements
-func (w *Writer) Close() error {
-	if w.ErrOnClose {
-		return errors.New("close error")
-	}
-	return nil
+	return s
 }
 
 // Write implements
 func (w *Writer) Write(p []byte) (n int, err error) {
 	if w.ErrOnWrite {
-		return 0, errors.New("write error")
+		return 0, errors.New("fake write error")
 	}
 	return w.Buffer.Write(p)
+}
+
+// Close implements
+func (w *Writer) Close() error {
+	if w.ErrOnClose {
+		return errors.New("fake close error")
+	}
+	return nil
+}
+
+// Flush implements
+func (w *Writer) Flush() error {
+	if w.ErrOnFlush {
+		return errors.New("fake flush error")
+	}
+
+	w.Reset()
+	return nil
 }

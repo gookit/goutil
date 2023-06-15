@@ -19,8 +19,11 @@ func TestBuffer_WriteAny(t *testing.T) {
 	assert.Eq(t, "ab-cd-ef", buf.ResetAndGet())
 
 	buf.WriteAny(23, "abc")
-	assert.Eq(t, "23abc", buf.ResetAndGet())
+	assert.Eq(t, "23abc", buf.ResetGet())
 
 	buf.Writeln("abc")
 	assert.Eq(t, "abc\n", buf.ResetAndGet())
+
+	assert.NoErr(t, buf.Close())
+	assert.NoErr(t, buf.Flush())
 }

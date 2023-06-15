@@ -57,9 +57,24 @@ func (b *Buffer) MustWriteString(ss ...string) {
 	}
 }
 
+// ResetGet buffer string. alias of ResetAndGet()
+func (b *Buffer) ResetGet() string {
+	return b.ResetAndGet()
+}
+
 // ResetAndGet buffer string.
 func (b *Buffer) ResetAndGet() string {
 	s := b.String()
 	b.Reset()
 	return s
+}
+
+// Close buffer
+func (b *Buffer) Close() error {
+	return nil
+}
+
+// Flush buffer
+func (b *Buffer) Flush() error {
+	return nil
 }
