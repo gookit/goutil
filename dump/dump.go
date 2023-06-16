@@ -3,6 +3,7 @@ package dump
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"reflect"
@@ -43,6 +44,9 @@ var (
 		opts.Output = os.Stdout
 		opts.ShowFlag = Fnopos
 	})
+
+	// some type init
+	stringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
 )
 
 // Theme color code/tag map for dump

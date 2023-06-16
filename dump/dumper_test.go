@@ -3,6 +3,7 @@ package dump
 import (
 	"bytes"
 	"fmt"
+	"io/fs"
 	"os"
 	"reflect"
 	"testing"
@@ -418,4 +419,27 @@ func TestStruct_WithNested(t *testing.T) {
 	//  },
 	//  Github: string("https://github.com/inhere"),
 	// }
+}
+
+func TestDumper_Dump_userType(t *testing.T) {
+	type testSt struct {
+		name string
+		mod  fs.FileMode
+		Mod2 fs.FileMode
+		Age  int
+	}
+
+	st := testSt{
+		name: "inhere",
+		mod:  0777,
+		Mod2: 0775,
+		Age:  23,
+	}
+
+	fmt.Println("------ use dumper ------")
+	P(st)
+	fmt.Println("------ use fmt.Println ------")
+	fmt.Println(st)
+	fmt.Println("------ use fmt.Printf ------")
+	fmt.Printf("%+v\n", st)
 }

@@ -236,11 +236,11 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		intStr := strconv.FormatInt(v.Int(), 10)
 		intStr = d.ColorTheme.integer(intStr)
-		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(v))
+		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(t, v))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
 		intStr := strconv.FormatUint(v.Uint(), 10)
 		intStr = d.ColorTheme.integer(intStr)
-		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(v))
+		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(t, v))
 	case reflect.String:
 		strVal := d.ColorTheme.string(v.String())
 		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
@@ -395,10 +395,10 @@ func (d *Dumper) checkCyclicRef(t reflect.Type, v reflect.Value) (goon bool) {
 	return true
 }
 
-func (d *Dumper) rvStringer(rv reflect.Value) string {
-	val := rv.Interface()
-	if s, ok := val.(fmt.Stringer); ok {
-		return d.ColorTheme.valTip(` #str: "` + s.String() + `"`)
+func (d *Dumper) rvStringer(rt reflect.Type, rv reflect.Value) string {
+	// fmt.Println("Implements fmt.Stringer:", t.Implements(stringerType))
+	if rv.CanInterface() && rt.Implements(stringerType) {
+		return d.ColorTheme.valTip(` #str: "` + rv.Interface().(fmt.Stringer).String() + `"`)
 	}
 	return ""
 }
