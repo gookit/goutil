@@ -18,7 +18,7 @@
 - [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
 - [`fmtutil`](./fmtutil) Format data util functions. eg: data, size, time
 - [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
-- [`jsonutil`](./jsonutil) some util functions for quick read, write, encode, decode JSON data.
+- [`jsonutil`](./jsonutil) Provide some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
@@ -35,16 +35,19 @@
   - [cmdline](./cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`dump`](./dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
 - [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
+- [`finder`](./fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - net util:
   - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client
 - string util:
   - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
-- sys util:
+  - [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
+- system util:
   - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
   - [cmdr](./sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
   - [process](./sysutil/process) Provide some process handle util functions.
-- [`testutil`](./testutil) Test help util functions. eg: http test, mock ENV value
-  - [assert](./testutil/assert) Asserts functions for help testing
+- [`testutil`](testutil) Test help util functions. eg: http test, mock ENV value
+  - [assert](testutil/assert) Provides commonly asserts functions for help testing
+  - [fakeobj](testutil/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
 - [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
@@ -173,27 +176,6 @@ ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2}
 ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```
 
-
-### Basefn
-
-> Package `github.com/gookit/goutil/basefn`
-
-```go
-// source at basefn/basefunc.go
-func Panicf(format string, v ...any) 
-func MustOK(err error) 
-func Must[T any](v T, err error) T 
-func ErrOnFail(cond bool, err error) error 
-func OrError(cond bool, err error) error 
-func FirstOr[T any](sl []T, elseVal T) T 
-func OrValue[T any](cond bool, okVal, elVal T) T 
-func OrReturn[T any](cond bool, okFn, elseFn func() T) T 
-func CallOn(cond bool, fn ErrFunc) error 
-func CallOrElse(cond bool, okFn, elseFn ErrFunc) error 
-// source at basefn/extfunc.go
-func DataSize(size uint64) string 
-func HowLongAgo(sec int64) string 
-```
 
 ### Bytes Utils
 
@@ -686,9 +668,11 @@ func PathMatch(pattern, s string) bool
 func SearchNameUp(dirPath, name string) string 
 func SearchNameUpx(dirPath, name string) (string, bool) 
 func WalkDir(dir string, fn fs.WalkDirFunc) error 
+func Glob(pattern string, fls ...comdef.StringMatchFunc) []string 
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
 func OnlyFindDir(_ string, ent fs.DirEntry) bool 
 func OnlyFindFile(_ string, ent fs.DirEntry) bool 
+func ExcludeNames(names ...string) FilterFunc 
 func IncludeSuffix(ss ...string) FilterFunc 
 func ExcludeDotFile(_ string, ent fs.DirEntry) bool 
 func ExcludeSuffix(ss ...string) FilterFunc 
@@ -739,6 +723,7 @@ func RmIfExist(fPath string) error
 func DeleteIfExist(fPath string) error 
 func RmFileIfExist(fPath string) error 
 func DeleteIfFileExist(fPath string) error 
+func RemoveSub(dirPath string, fns ...FilterFunc) error 
 func Unzip(archive, targetDir string) (err error) 
 // source at fsutil/opread.go
 func NewIOReader(in any) (r io.Reader, err error) 
@@ -844,6 +829,7 @@ func NewFormatter(mp any) *MapFormatter
 func DeepGet(mp map[string]any, path string) (val any) 
 func QuietGet(mp map[string]any, path string) (val any) 
 func GetByPath(path string, mp map[string]any) (val any, ok bool) 
+func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) 
 func Keys(mp any) (keys []string) 
 func Values(mp any) (values []any) 
 func EachAnyMap(mp any, fn func(key string, val any)) 
@@ -1065,10 +1051,10 @@ func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error)
 // source at structs/copy.go
 func MapStruct(srcSt, dstSt any) 
 // source at structs/data.go
+func NewLiteData(data map[string]any) *Data 
 func NewData() *Data 
 func NewOrderedMap(len int) *OrderedMap 
 // source at structs/init.go
-func InitStructSlice(opt *InitOptions) 
 func Init(ptr any, optFns ...InitOptFunc) error 
 func InitDefaults(ptr any, optFns ...InitOptFunc) error 
 // source at structs/structs.go
@@ -1217,6 +1203,7 @@ func Rtrim(s string, cutSet ...string) string
 func RTrim(s string, cutSet ...string) string 
 func TrimRight(s string, cutSet ...string) string 
 func FilterEmail(s string) string 
+func Filter(ss []string, fls ...comdef.StringMatchFunc) []string  
 // source at strutil/format.go
 func Title(s string) string 
 func Lower(s string) string 
@@ -1354,8 +1341,8 @@ func Workdir() string
 func BinDir() string 
 func BinName() string 
 func BinFile() string 
-func Open(fileOrUrl string) error 
-func OpenBrowser(fileOrUrl string) error 
+func Open(fileOrURL string) error 
+func OpenBrowser(fileOrURL string) error 
 func OpenFile(path string) error 
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error 
@@ -1381,7 +1368,7 @@ func ExpandPath(path string) string
 func ExpandHome(path string) string 
 // source at sysutil/user_nonwin.go
 func ChangeUserByName(newUname string) (err error) 
-func ChangeUserUidGid(newUid int, newGid int) (err error) 
+func ChangeUserUidGid(newUID int, newGid int) (err error) 
 ```
 
 ### Testing Utils
@@ -1400,7 +1387,7 @@ func ClearOSEnv()
 func RevertOSEnv() 
 func MockCleanOsEnv(mp map[string]string, fn func()) 
 // source at testutil/fsmock.go
-func NewDirEnt(fpath string, isDir ...bool) *DirEnt 
+func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry 
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request 
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder 

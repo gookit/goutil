@@ -33,16 +33,19 @@
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以方便快速的构建简单的命令行应用程序
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
-- strutil:
+- [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
+- netutil:
   - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
 - strutil:
   - [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
+  - [textutil](strutil/textutil) 提供一些常用的扩展文本处理功能函数。
 - sysutil:
   - [clipboard](sysutil/clipboard) 提供简单的剪贴板读写操作工具库
   - [cmdr](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
-  - [process](./sysutil/process) 提供一些进程操作相关的实用功能。
+  - [process](sysutil/process) 提供一些进程操作相关的实用功能。
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
-  - [assert](testutil/assert) 用于帮助测试的断言函数工具包
+  - [assert](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
+  - [fakeobj](testutil/fakeobj) 提供一些接口的假的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
@@ -172,27 +175,6 @@ ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2}
 ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```
 
-
-### Basefn
-
-> Package `github.com/gookit/goutil/basefn`
-
-```go
-// source at basefn/basefunc.go
-func Panicf(format string, v ...any) 
-func MustOK(err error) 
-func Must[T any](v T, err error) T 
-func ErrOnFail(cond bool, err error) error 
-func OrError(cond bool, err error) error 
-func FirstOr[T any](sl []T, elseVal T) T 
-func OrValue[T any](cond bool, okVal, elVal T) T 
-func OrReturn[T any](cond bool, okFn, elseFn func() T) T 
-func CallOn(cond bool, fn ErrFunc) error 
-func CallOrElse(cond bool, okFn, elseFn ErrFunc) error 
-// source at basefn/extfunc.go
-func DataSize(size uint64) string 
-func HowLongAgo(sec int64) string 
-```
 
 ### Bytes Utils
 
@@ -687,9 +669,11 @@ func PathMatch(pattern, s string) bool
 func SearchNameUp(dirPath, name string) string 
 func SearchNameUpx(dirPath, name string) (string, bool) 
 func WalkDir(dir string, fn fs.WalkDirFunc) error 
+func Glob(pattern string, fls ...comdef.StringMatchFunc) []string 
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
 func OnlyFindDir(_ string, ent fs.DirEntry) bool 
 func OnlyFindFile(_ string, ent fs.DirEntry) bool 
+func ExcludeNames(names ...string) FilterFunc 
 func IncludeSuffix(ss ...string) FilterFunc 
 func ExcludeDotFile(_ string, ent fs.DirEntry) bool 
 func ExcludeSuffix(ss ...string) FilterFunc 
@@ -740,6 +724,7 @@ func RmIfExist(fPath string) error
 func DeleteIfExist(fPath string) error 
 func RmFileIfExist(fPath string) error 
 func DeleteIfFileExist(fPath string) error 
+func RemoveSub(dirPath string, fns ...FilterFunc) error 
 func Unzip(archive, targetDir string) (err error) 
 // source at fsutil/opread.go
 func NewIOReader(in any) (r io.Reader, err error) 
@@ -845,6 +830,7 @@ func NewFormatter(mp any) *MapFormatter
 func DeepGet(mp map[string]any, path string) (val any) 
 func QuietGet(mp map[string]any, path string) (val any) 
 func GetByPath(path string, mp map[string]any) (val any, ok bool) 
+func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) 
 func Keys(mp any) (keys []string) 
 func Values(mp any) (values []any) 
 func EachAnyMap(mp any, fn func(key string, val any)) 
@@ -1066,10 +1052,10 @@ func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error)
 // source at structs/copy.go
 func MapStruct(srcSt, dstSt any) 
 // source at structs/data.go
+func NewLiteData(data map[string]any) *Data 
 func NewData() *Data 
 func NewOrderedMap(len int) *OrderedMap 
 // source at structs/init.go
-func InitStructSlice(opt *InitOptions) 
 func Init(ptr any, optFns ...InitOptFunc) error 
 func InitDefaults(ptr any, optFns ...InitOptFunc) error 
 // source at structs/structs.go
@@ -1218,6 +1204,7 @@ func Rtrim(s string, cutSet ...string) string
 func RTrim(s string, cutSet ...string) string 
 func TrimRight(s string, cutSet ...string) string 
 func FilterEmail(s string) string 
+func Filter(ss []string, fls ...comdef.StringMatchFunc) []string  
 // source at strutil/format.go
 func Title(s string) string 
 func Lower(s string) string 
@@ -1355,8 +1342,8 @@ func Workdir() string
 func BinDir() string 
 func BinName() string 
 func BinFile() string 
-func Open(fileOrUrl string) error 
-func OpenBrowser(fileOrUrl string) error 
+func Open(fileOrURL string) error 
+func OpenBrowser(fileOrURL string) error 
 func OpenFile(path string) error 
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error 
@@ -1382,7 +1369,7 @@ func ExpandPath(path string) string
 func ExpandHome(path string) string 
 // source at sysutil/user_nonwin.go
 func ChangeUserByName(newUname string) (err error) 
-func ChangeUserUidGid(newUid int, newGid int) (err error) 
+func ChangeUserUidGid(newUID int, newGid int) (err error) 
 ```
 
 ### Testing Utils
@@ -1401,7 +1388,7 @@ func ClearOSEnv()
 func RevertOSEnv() 
 func MockCleanOsEnv(mp map[string]string, fn func()) 
 // source at testutil/fsmock.go
-func NewDirEnt(fpath string, isDir ...bool) *DirEnt 
+func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry 
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request 
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder 
