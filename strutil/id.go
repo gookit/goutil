@@ -39,7 +39,8 @@ func MicroTimeHexID() string {
 
 // DatetimeNo generate. can use for order-no.
 //
-// No prefix, return like: 2023041410484904074285478388(len: 28)
+//   - No prefix, return like: 2023041410484904074285478388(len: 28)
+//   - With prefix, return like: prefix2023041410484904074285478388(len: 28 + len(prefix))
 func DatetimeNo(prefix string) string {
 	nt := time.Now()
 	pl := len(prefix)

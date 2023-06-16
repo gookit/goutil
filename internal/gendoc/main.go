@@ -22,6 +22,7 @@ import (
 
 var (
 	hidden = []string{
+		"basefn",
 		"netutil",
 		"comdef",
 		"internal",

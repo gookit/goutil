@@ -33,16 +33,19 @@
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以方便快速的构建简单的命令行应用程序
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
-- strutil:
+- [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
+- netutil:
   - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
 - strutil:
   - [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
+  - [textutil](strutil/textutil) 提供一些常用的扩展文本处理功能函数。
 - sysutil:
   - [clipboard](sysutil/clipboard) 提供简单的剪贴板读写操作工具库
   - [cmdr](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
-  - [process](./sysutil/process) 提供一些进程操作相关的实用功能。
+  - [process](sysutil/process) 提供一些进程操作相关的实用功能。
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
-  - [assert](testutil/assert) 用于帮助测试的断言函数工具包
+  - [assert](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
+  - [fakeobj](testutil/fakeobj) 提供一些接口的假的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
