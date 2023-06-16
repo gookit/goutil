@@ -30,6 +30,11 @@ func TestSearchNameUp(t *testing.T) {
 }
 
 func TestGlobWithFunc(t *testing.T) {
+	assert.NotEmpty(t, fsutil.Glob("testdata/*"))
+	assert.NotEmpty(t, fsutil.Glob("testdata/*", func(s string) bool {
+		return s[0] != '.'
+	}))
+
 	var paths []string
 	err := fsutil.GlobWithFunc("testdata/*", func(fpath string) error {
 		paths = append(paths, fpath)

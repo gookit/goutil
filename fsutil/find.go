@@ -3,9 +3,11 @@ package fsutil
 import (
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -43,11 +45,37 @@ func SearchNameUpx(dirPath, name string) (string, bool) {
 
 // WalkDir walks the file tree rooted at root, calling fn for each file or
 // directory in the tree, including root.
+//
+// TIP: will recursively find in sub dirs.
 func WalkDir(dir string, fn fs.WalkDirFunc) error {
 	return filepath.WalkDir(dir, fn)
 }
 
-// GlobWithFunc handle matched file
+// Glob find files by glob path pattern. alias of filepath.Glob()
+// and support filter matched files by name.
+//
+// Usage:
+//
+//	files := fsutil.Glob("/path/to/dir/*.go")
+func Glob(pattern string, fls ...comdef.StringMatchFunc) []string {
+	files, _ := filepath.Glob(pattern)
+	if len(fls) == 0 || len(files) == 0 {
+		return files
+	}
+
+	var matched []string
+	for _, file := range files {
+		for _, fn := range fls {
+			if fn(path.Base(file)) {
+				matched = append(matched, file)
+				break
+			}
+		}
+	}
+	return matched
+}
+
+// GlobWithFunc find files by glob path pattern, then handle matched file
 //
 // - TIP: will be not find in subdir.
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) {
