@@ -436,21 +436,21 @@ func (c *CFlags) showHelp(err error) {
 	buf := new(strutil.Buffer)
 
 	if err != nil {
-		buf.QuietWritef("<error>ERROR:</> %s\n", err.Error())
+		buf.Printf("<error>ERROR:</> %s\n", err.Error())
 	} else {
-		buf.QuietWritef("<cyan>%s</>\n\n", c.helpDesc())
+		buf.Printf("<cyan>%s</>\n\n", c.helpDesc())
 	}
 
-	buf.QuietWritef("<comment>Usage:</> %s [--Options...] [...CliArgs]\n", binName)
-	buf.QuietWriteString("<comment>Options:</>\n")
+	buf.Printf("<comment>Usage:</> %s [--Options...] [...CliArgs]\n", binName)
+	buf.WriteStr("<comment>Options:</>\n")
 
 	// render options help
 	c.renderOptionsHelp(buf)
 
 	if len(c.bindArgs) > 0 {
-		buf.QuietWriteString("\n<comment>CliArgs:</>\n")
+		buf.WriteStr1("\n<comment>CliArgs:</>\n")
 		for _, arg := range c.bindArgs {
-			buf.QuietWritef(
+			buf.Printf(
 				"  <green>%s</>   %s\n",
 				strutil.PadRight(arg.Name, " ", c.argWidth),
 				arg.HelpDesc(),
@@ -459,13 +459,13 @@ func (c *CFlags) showHelp(err error) {
 	}
 
 	if c.LongHelp != "" {
-		buf.QuietWriteln("\n<comment>Help:</>")
-		buf.QuietWriteln(strings.Trim(c.LongHelp, "\n"))
+		buf.WriteStr1Nl("\n<comment>Help:</>")
+		buf.WriteStr1Nl(strings.Trim(c.LongHelp, "\n"))
 	}
 
 	if c.Example != "" {
-		buf.QuietWriteln("\n<comment>Examples:</>")
-		buf.QuietWriteString(strings.Trim(c.Example, "\n"))
+		buf.WriteStr1Nl("\n<comment>Examples:</>")
+		buf.WriteStr1(strings.Trim(c.Example, "\n"))
 	}
 
 	color.Println(strutil.Replaces(buf.String(), helpVars))
@@ -509,6 +509,6 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 			}
 		}
 
-		buf.QuietWriteln(b.String())
+		buf.WriteStr1(b.String())
 	})
 }

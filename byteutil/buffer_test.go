@@ -10,12 +10,12 @@ import (
 func TestBuffer_WriteAny(t *testing.T) {
 	buf := byteutil.NewBuffer()
 
-	buf.QuietWritef("ab-%s", "c")
-	buf.QuietWriteByte('d')
+	buf.Printf("ab-%s", "c")
+	buf.PrintByte('d')
 	assert.Eq(t, "ab-cd", buf.ResetAndGet())
 
-	buf.QuietWriteString("ab", "-", "cd")
-	buf.MustWriteString("-ef")
+	buf.WriteStr("ab", "-", "cd")
+	buf.WriteStr1("-ef")
 	assert.Eq(t, "ab-cd-ef", buf.ResetAndGet())
 
 	buf.WriteAny(23, "abc")

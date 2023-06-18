@@ -129,28 +129,28 @@ func (a *App) findCmd(name string) (*Cmd, bool) {
 func (a *App) showHelp() error {
 	bin := a.Name
 	buf := strutil.NewBuffer()
-	buf.QuietWritef("<cyan>%s</> - %s", bin, a.Desc)
+	buf.Printf("<cyan>%s</> - %s", bin, a.Desc)
 
 	if a.Version != "" {
-		buf.QuietWritef("(Version: <cyan>%s</>)", a.Version)
+		buf.Printf("(Version: <cyan>%s</>)", a.Version)
 	}
 
-	buf.QuietWritef("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)
+	buf.Printf("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)
 
-	buf.QuietWriteln("<comment>Options:</>")
-	buf.QuietWriteln("  <green>-h, --help</>     Display application help")
-	buf.QuietWriteln("\n<comment>Commands:</>")
+	buf.WriteStr1Nl("<comment>Options:</>")
+	buf.WriteStr1Nl("  <green>-h, --help</>     Display application help")
+	buf.WriteStr1Nl("\n<comment>Commands:</>")
 
 	sort.Strings(a.names)
 	for _, name := range a.names {
 		c := a.cmds[name]
 		name := strutil.PadRight(name, " ", a.NameWidth)
-		buf.QuietWritef("  <green>%s</>  %s\n", name, strutil.UpperFirst(c.Desc))
+		buf.Printf("  <green>%s</>  %s\n", name, strutil.UpperFirst(c.Desc))
 	}
 
 	name := strutil.PadRight("help", " ", a.NameWidth)
-	buf.QuietWritef("  <green>%s</>  Display application help\n", name)
-	buf.QuietWritef("\nUse \"<cyan>%s COMMAND --help</>\" for about a command\n", bin)
+	buf.Printf("  <green>%s</>  Display application help\n", name)
+	buf.Printf("\nUse \"<cyan>%s COMMAND --help</>\" for about a command\n", bin)
 
 	if a.AfterHelpBuild != nil {
 		a.AfterHelpBuild(buf)

@@ -10,8 +10,8 @@ import (
 func TestNewBuffer(t *testing.T) {
 	buf := testutil.NewBuffer()
 
-	buf.WriteString("ab", "-", "cd")
-	assert.Eq(t, "ab-cd", buf.ResetAndGet())
+	buf.WriteStr("ab", "-", "cd")
+	assert.Eq(t, "ab-cd", buf.ResetGet())
 
 	buf.WriteAny(23, "abc")
 	assert.Eq(t, "23abc", buf.ResetAndGet())
