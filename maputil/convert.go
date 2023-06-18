@@ -74,6 +74,30 @@ func HTTPQueryString(data map[string]any) string {
 	return strings.Join(ss, "&")
 }
 
+// StringsMapToAnyMap convert map[string][]string to map[string]any
+//
+//	Example:
+//	{"k1": []string{"v1", "v2"}, "k2": []string{"v3"}}
+//	=>
+//	{"k": []string{"v1", "v2"}, "k2": "v3"}
+//
+//	mp := StringsMapToAnyMap(httpReq.Header)
+func StringsMapToAnyMap(ssMp map[string][]string) map[string]any {
+	if len(ssMp) == 0 {
+		return nil
+	}
+
+	anyMp := make(map[string]any, len(ssMp))
+	for k, v := range ssMp {
+		if len(v) == 1 {
+			anyMp[k] = v[0]
+			continue
+		}
+		anyMp[k] = v
+	}
+	return anyMp
+}
+
 // ToString simple and quickly convert map[string]any to string.
 func ToString(mp map[string]any) string {
 	if mp == nil {

@@ -2,6 +2,7 @@ package maputil_test
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -99,4 +100,22 @@ func TestFlatten(t *testing.T) {
 	assert.NotPanics(t, func() {
 		maputil.FlatWithFunc(nil, nil)
 	})
+}
+
+func TestStringsMapToAnyMap(t *testing.T) {
+	assert.Nil(t, maputil.StringsMapToAnyMap(nil))
+
+	hh := http.Header{
+		"key0": []string{"val0", "val1"},
+		"key1": []string{"val2"},
+	}
+
+	mp := maputil.StringsMapToAnyMap(hh)
+	assert.Contains(t, mp, "key0")
+	assert.Contains(t, mp, "key1")
+	assert.Len(t, mp["key0"], 2)
+
+	dm := maputil.Data(mp)
+	assert.Eq(t, "val0", dm.Str("key0.0"))
+	assert.Eq(t, "val2", dm.Str("key1"))
 }
