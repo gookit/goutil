@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gookit/goutil/netutil/httpctype"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -71,6 +72,11 @@ func IsServerError(statusCode int) bool {
 	return statusCode >= http.StatusInternalServerError && statusCode <= 600
 }
 
+// IsNoBodyMethod check
+func IsNoBodyMethod(method string) bool {
+	return method != "POST" && method != "PUT" && method != "PATCH"
+}
+
 // BuildBasicAuth returns the base64 encoded username:password for basic auth.
 // Then set to header "Authorization".
 //
@@ -110,24 +116,49 @@ func HeaderToStringMap(rh http.Header) map[string]string {
 	return mp
 }
 
-// ToQueryValues convert string-map or any-map to url.Values
-func ToQueryValues(data any) url.Values {
-	// use url.Values directly if we have it
-	if uv, ok := data.(url.Values); ok {
-		return uv
-	}
+// MakeQuery make query string, convert data to url.Values
+func MakeQuery(data any) url.Values {
+	return ToQueryValues(data)
+}
 
+// ToQueryValues convert string-map or any-map to url.Values
+//
+// data support:
+//   - url.Values
+//   - []byte
+//   - string
+//   - map[string]string
+//   - map[string]any
+func ToQueryValues(data any) url.Values {
 	uv := make(url.Values)
-	if strMp, ok := data.(map[string]string); ok {
-		for k, v := range strMp {
+
+	switch typData := data.(type) {
+	// use url.Values directly if we have it
+	case url.Values:
+		return typData
+	case map[string][]string:
+		return typData
+	case []byte:
+		m, err := url.ParseQuery(string(typData))
+		if err != nil {
+			return uv
+		}
+		return m
+	case string:
+		m, err := url.ParseQuery(typData)
+		if err != nil {
+			return uv
+		}
+		return m
+	case map[string]string:
+		for k, v := range typData {
 			uv.Add(k, v)
 		}
-	} else if kvMp, ok := data.(map[string]any); ok {
-		for k, v := range kvMp {
+	case map[string]any:
+		for k, v := range typData {
 			uv.Add(k, strutil.QuietString(v))
 		}
 	}
-
 	return uv
 }
 
@@ -162,12 +193,12 @@ func AppendQueryToURLString(urlStr string, query url.Values) string {
 	return urlStr + "?" + query.Encode()
 }
 
-// IsNoBodyMethod check
-func IsNoBodyMethod(method string) bool {
-	return method != "POST" && method != "PUT" && method != "PATCH"
+// MakeBody make request body, convert data to io.Reader
+func MakeBody(data any, cType string) io.Reader {
+	return ToRequestBody(data, cType)
 }
 
-// ToRequestBody convert handle
+// ToRequestBody make request body, convert data to io.Reader
 //
 // Allow type for data:
 //   - string
@@ -175,39 +206,56 @@ func IsNoBodyMethod(method string) bool {
 //   - map[string]string
 //   - map[string][]string/url.Values
 //   - io.Reader(eg: bytes.Buffer, strings.Reader)
-func ToRequestBody(data any) io.Reader {
-	var reqBody io.Reader
-	switch typVal := data.(type) {
-	case io.Reader:
-		reqBody = typVal
-	case map[string]string:
-		reqBody = bytes.NewBufferString(ToQueryValues(typVal).Encode())
-	case map[string][]string:
-		reqBody = bytes.NewBufferString(url.Values(typVal).Encode())
-	case url.Values:
-		reqBody = bytes.NewBufferString(typVal.Encode())
-	case string:
-		reqBody = bytes.NewBufferString(typVal)
-	case []byte:
-		reqBody = bytes.NewBuffer(typVal)
-	default:
-		// auto encode body data to json
-		if data != nil {
-			buf := &bytes.Buffer{}
-			enc := json.NewEncoder(buf)
-			// close escape  &, <, >  TO  \u0026, \u003c, \u003e
-			enc.SetEscapeHTML(false)
-			if err := enc.Encode(data); err != nil {
-				panic("auto encode data error=" + err.Error())
-			}
-
-			reqBody = buf
-		}
-
-		// nobody
+func ToRequestBody(data any, cType string) io.Reader {
+	if data == nil {
+		return nil // nobody
 	}
 
-	return reqBody
+	var reader io.Reader
+	kind := httpctype.ToKind(cType, "")
+
+	switch typVal := data.(type) {
+	case io.Reader:
+		reader = typVal
+	case []byte:
+		reader = bytes.NewBuffer(typVal)
+	case string:
+		reader = bytes.NewBufferString(typVal)
+	case url.Values:
+		reader = bytes.NewBufferString(typVal.Encode())
+	case map[string]string:
+		if kind == httpctype.KindJSON {
+			reader = toJSONReader(data)
+		} else {
+			reader = bytes.NewBufferString(ToQueryValues(typVal).Encode())
+		}
+	case map[string][]string:
+		if kind == httpctype.KindJSON {
+			reader = toJSONReader(data)
+		} else {
+			reader = bytes.NewBufferString(url.Values(typVal).Encode())
+		}
+	default:
+		// encode body data to json
+		if kind == httpctype.KindJSON {
+			reader = toJSONReader(data)
+		} else {
+			panic("invalid body data type for request")
+		}
+	}
+
+	return reader
+}
+
+func toJSONReader(data any) io.Reader {
+	buf := &bytes.Buffer{}
+	enc := json.NewEncoder(buf)
+	// close escape  &, <, >  TO  \u0026, \u003c, \u003e
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(data); err != nil {
+		panic("encode data as json fail. error=" + err.Error())
+	}
+	return buf
 }
 
 // HeaderToString convert http Header to string
@@ -248,6 +296,10 @@ func RequestToString(r *http.Request) string {
 
 // ResponseToString convert http Response to string
 func ResponseToString(w *http.Response) string {
+	if w == nil {
+		return ""
+	}
+
 	buf := &bytes.Buffer{}
 	buf.WriteString(w.Proto)
 	buf.WriteByte(' ')
@@ -266,6 +318,7 @@ func ResponseToString(w *http.Response) string {
 	if w.Body != nil {
 		buf.WriteByte('\n')
 		_, _ = buf.ReadFrom(w.Body)
+		_ = w.Body.Close()
 	}
 
 	return buf.String()

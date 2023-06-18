@@ -60,6 +60,12 @@ func TestToQueryValues(t *testing.T) {
 
 	vs = httpreq.ToQueryValues(vs)
 	assert.Eq(t, "field1=234&field2=value2", vs.Encode())
+
+	vs = httpreq.MakeQuery(map[string][]string{
+		"field1": {"234"},
+		"field2": {"value2"},
+	})
+	assert.StrContains(t, vs.Encode(), "field1=234")
 }
 
 func TestRequestToString(t *testing.T) {
@@ -70,10 +76,11 @@ func TestRequestToString(t *testing.T) {
 		"custom-key0": []string{"val0"},
 	})
 
-	vs := httpreq.ToQueryValues(map[string]string{"field1": "value1", "field2": "value2"})
+	vs := httpreq.ToQueryValues(map[string]string{
+		"field1": "value1", "field2": "value2",
+	})
 
 	req.Body = io.NopCloser(strings.NewReader(vs.Encode()))
-
 	str := httpreq.RequestToString(req)
 	dump.P(str)
 

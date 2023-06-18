@@ -1,203 +1,204 @@
-// Package httpreq an simple http requester
 package httpreq
 
 import (
-	"bytes"
 	"context"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/gookit/goutil/netutil/httpctype"
+	"github.com/gookit/goutil/strutil"
 )
 
-// ReqOption alias of Option
-type ReqOption = Option
-
-// Option struct
-type Option struct {
-	// Method for request
-	Method string
-	// HeaderMap data. eg: traceid
-	HeaderMap map[string]string
-	// Timeout unit: ms
-	Timeout int
-	// TCancelFunc will auto set it on Timeout > 0
-	TCancelFunc context.CancelFunc
-	// ContentType header
-	ContentType string
-	// EncodeJSON req body
-	EncodeJSON bool
-	// Logger for request
-	Logger ReqLogger
-	// Context for request
-	Context context.Context
-}
-
-// NewOpt create a new Option
-func NewOpt(opt *Option) *Option {
-	if opt == nil {
-		opt = &Option{}
-	}
-	return opt
-}
-
-// Req alias of ReqClient
-//
-// Deprecated: rename to ReqClient
-type Req = ReqClient
-
-// ReqClient an simple http request client.
-type ReqClient struct {
+// Client a simple http request client.
+type Client struct {
 	client Doer
-	// some config for request
+	// default config for request
 	method  string
 	baseURL string
+	timeout int // unit: ms
 	// custom set headers
 	headerMap map[string]string
-	// request body.
-	// eg: strings.NewReader("name=inhere")
-	body io.Reader
+
 	// beforeSend callback
 	beforeSend func(req *http.Request)
-	afterSend  func(resp *http.Response)
-}
-
-// ConfigStd req client
-func ConfigStd(fn func(hc *http.Client)) {
-	fn(std.client.(*http.Client))
-}
-
-// Std instance
-func Std() *ReqClient { return std }
-
-// Get quick send a GET request by default client
-func Get(url string, opt *ReqOption) (*http.Response, error) {
-	return std.Method(http.MethodGet).SendWithOpt(url, opt)
-}
-
-// Post quick send a POS request by default client
-func Post(url string, data any, opt *ReqOption) (*http.Response, error) {
-	return std.Method(http.MethodPost).AnyBody(data).SendWithOpt(url, opt)
+	afterSend  AfterSendFn
 }
 
 // New instance with base URL
-func New(baseURL ...string) *ReqClient {
-	h := &ReqClient{
-		method: http.MethodGet,
-		client: http.DefaultClient,
-		// init map
-		headerMap: make(map[string]string),
-	}
+func New(baseURL ...string) *Client {
+	h := NewWithDoer(&http.Client{})
 
-	if len(baseURL) > 0 {
+	if len(baseURL) > 0 && baseURL[0] != "" {
 		h.baseURL = baseURL[0]
 	}
 	return h
 }
 
-// BaseURL with base URL
-func (h *ReqClient) BaseURL(baseURL string) *ReqClient {
+// NewWithDoer instance with custom http client
+func NewWithDoer(d Doer) *Client {
+	return &Client{
+		client: d,
+		method: http.MethodGet,
+		// init map
+		headerMap: make(map[string]string),
+	}
+}
+
+// Doer get the http client
+func (h *Client) Doer() Doer {
+	return h.client
+}
+
+// Client custom http client doer
+func (h *Client) Client(c Doer) *Client {
+	h.client = c
+	return h
+}
+
+// BaseURL set request base URL
+func (h *Client) BaseURL(baseURL string) *Client {
 	h.baseURL = baseURL
 	return h
 }
 
-// Method with custom method
-func (h *ReqClient) Method(method string) *ReqClient {
+// DefaultMethod set default request method
+func (h *Client) DefaultMethod(method string) *Client {
 	if method != "" {
 		h.method = method
 	}
 	return h
 }
 
-// WithHeader with custom header
-func (h *ReqClient) WithHeader(key, val string) *ReqClient {
+// ContentType set default content-Type header.
+func (h *Client) ContentType(cType string) *Client {
+	return h.DefaultHeader(httpctype.Key, cType)
+}
+
+// DefaultHeader set default header for all requests
+func (h *Client) DefaultHeader(key, val string) *Client {
 	h.headerMap[key] = val
 	return h
 }
 
-// WithHeaders with custom headers
-func (h *ReqClient) WithHeaders(kvMap map[string]string) *ReqClient {
+// DefaultHeaderMap set default headers for all requests
+func (h *Client) DefaultHeaderMap(kvMap map[string]string) *Client {
 	for k, v := range kvMap {
 		h.headerMap[k] = v
 	}
 	return h
 }
 
-// ContentType with custom content-Type header.
-func (h *ReqClient) ContentType(cType string) *ReqClient {
-	return h.WithHeader(httpctype.Key, cType)
-}
-
 // OnBeforeSend add callback before send.
-func (h *ReqClient) OnBeforeSend(fn func(req *http.Request)) *ReqClient {
+func (h *Client) OnBeforeSend(fn func(req *http.Request)) *Client {
 	h.beforeSend = fn
 	return h
 }
 
 // OnAfterSend add callback after send.
-func (h *ReqClient) OnAfterSend(fn func(resp *http.Response)) *ReqClient {
+func (h *Client) OnAfterSend(fn AfterSendFn) *Client {
 	h.afterSend = fn
 	return h
 }
 
+//
+// build request options
+//
+
+// WithOption with custom request options
+func (h *Client) WithOption(optFns ...OptionFn) *Option {
+	return NewOption(optFns).WithClient(h)
+}
+
+func newOptWithClient(cli *Client) *Option {
+	return &Option{cli: cli}
+}
+
+// WithData with custom request data
+func (h *Client) WithData(data any) *Option {
+	return newOptWithClient(h).WithData(data)
+}
+
 // WithBody with custom body
-func (h *ReqClient) WithBody(r io.Reader) *ReqClient {
-	h.body = r
-	return h
+func (h *Client) WithBody(r io.Reader) *Option {
+	return newOptWithClient(h).WithBody(r)
 }
 
 // BytesBody with custom bytes body
-func (h *ReqClient) BytesBody(bs []byte) *ReqClient {
-	h.body = bytes.NewReader(bs)
-	return h
-}
-
-// JSONBytesBody with custom bytes body, and set JSON content type
-func (h *ReqClient) JSONBytesBody(bs []byte) *ReqClient {
-	h.body = bytes.NewReader(bs)
-	h.ContentType(httpctype.JSON)
-	return h
+func (h *Client) BytesBody(bs []byte) *Option {
+	return newOptWithClient(h).BytesBody(bs)
 }
 
 // StringBody with custom string body
-func (h *ReqClient) StringBody(s string) *ReqClient {
-	h.body = strings.NewReader(s)
-	return h
+func (h *Client) StringBody(s string) *Option {
+	return newOptWithClient(h).StringBody(s)
+}
+
+// FormBody with custom form data body
+func (h *Client) FormBody(data any) *Option {
+	return newOptWithClient(h).FormBody(data)
+}
+
+// JSONBody with custom JSON data body
+func (h *Client) JSONBody(data any) *Option {
+	return newOptWithClient(h).WithJSON(data)
+}
+
+// JSONBytesBody with custom bytes body, and set JSON content type
+func (h *Client) JSONBytesBody(bs []byte) *Option {
+	return newOptWithClient(h).JSONBytesBody(bs)
 }
 
 // AnyBody with custom body.
 //
 // Allow type:
 //   - string, []byte, map[string][]string/url.Values, io.Reader(eg: bytes.Buffer, strings.Reader)
-func (h *ReqClient) AnyBody(data any) *ReqClient {
-	h.body = ToRequestBody(data)
-	return h
+func (h *Client) AnyBody(data any) *Option {
+	return newOptWithClient(h).AnyBody(data)
 }
 
-// Client custom http client
-func (h *ReqClient) Client(c Doer) *ReqClient {
-	h.client = c
-	return h
+//
+// send request with options
+//
+
+// Get send GET request with options, return http response
+func (h *Client) Get(url string, optFns ...OptionFn) (*http.Response, error) {
+	return h.Send(http.MethodGet, url, optFns...)
+}
+
+// Post send POST request with options, return http response
+func (h *Client) Post(url string, data any, optFns ...OptionFn) (*http.Response, error) {
+	opt := NewOption(optFns).WithMethod(http.MethodPost).AnyBody(data)
+	return h.SendWithOpt(url, opt)
+}
+
+// Put send PUT request with options, return http response
+func (h *Client) Put(url string, data any, optFns ...OptionFn) (*http.Response, error) {
+	opt := NewOption(optFns).WithMethod(http.MethodPut).AnyBody(data)
+	return h.SendWithOpt(url, opt)
+}
+
+// Delete send DELETE request with options, return http response
+func (h *Client) Delete(url string, optFns ...OptionFn) (*http.Response, error) {
+	return h.Send(http.MethodDelete, url, optFns...)
+}
+
+// Send request with option func, return http response
+func (h *Client) Send(method, url string, optFns ...OptionFn) (*http.Response, error) {
+	return h.SendWithOpt(url, NewOption(optFns).WithMethod(method))
 }
 
 // MustSend request, will panic on error
-func (h *ReqClient) MustSend(url string) *http.Response {
-	resp, err := h.Send(url)
+func (h *Client) MustSend(method, url string, optFns ...OptionFn) *http.Response {
+	resp, err := h.SendWithOpt(url, NewOption(optFns).WithMethod(method))
 	if err != nil {
 		panic(err)
 	}
-
 	return resp
 }
 
-// Send request and return http response
-func (h *ReqClient) Send(url string) (*http.Response, error) {
-	return h.SendWithOpt(url, nil)
-}
-
 // SendWithOpt request and return http response
-func (h *ReqClient) SendWithOpt(url string, opt *ReqOption) (*http.Response, error) {
+func (h *Client) SendWithOpt(url string, opt *Option) (*http.Response, error) {
 	cli := h
 	if len(cli.baseURL) > 0 {
 		if !strings.HasPrefix(url, "http") {
@@ -207,41 +208,71 @@ func (h *ReqClient) SendWithOpt(url string, opt *ReqOption) (*http.Response, err
 		}
 	}
 
+	opt = MakeOpt(opt)
+	ctx := opt.Context
+	if ctx == nil {
+		ctx = context.Background()
+	}
+
 	// create request
-	req, err := http.NewRequest(cli.method, url, cli.body)
+	method := strings.ToUpper(strutil.OrElse(opt.Method, cli.method))
+
+	if opt.Data != nil {
+		if IsNoBodyMethod(method) {
+			url = AppendQueryToURLString(url, MakeQuery(opt.Data))
+			opt.Body = nil
+		} else if opt.Body == nil {
+			cType := strutil.OrElse(h.headerMap[httpctype.Key], opt.ContentType)
+			opt.Body = MakeBody(opt.Data, cType)
+		}
+	}
+
+	req, err := http.NewRequestWithContext(ctx, method, url, opt.Body)
 	if err != nil {
 		return nil, err
 	}
-	return h.SendRequest(req, opt)
+
+	return h.sendRequest(req, opt)
 }
 
-// SendRequest request and return http response
-func (h *ReqClient) SendRequest(req *http.Request, opt *ReqOption) (*http.Response, error) {
-	cli := h
-	opt = NewOpt(opt)
+// SendRequest send request and return http response
+func (h *Client) SendRequest(req *http.Request, opt *Option) (*http.Response, error) {
+	return h.sendRequest(req, opt)
+}
 
-	if opt.Timeout > 0 {
-		cli = NewClient(opt.Timeout)
-	}
-
-	if len(cli.headerMap) > 0 {
-		for k, v := range cli.headerMap {
+// send request and return http response
+func (h *Client) sendRequest(req *http.Request, opt *Option) (*http.Response, error) {
+	// apply default headers
+	if len(h.headerMap) > 0 {
+		for k, v := range h.headerMap {
 			req.Header.Set(k, v)
 		}
 	}
 
-	if cli.beforeSend != nil {
-		cli.beforeSend(req)
+	// apply options
+	if opt.ContentType != "" {
+		req.Header.Set(httpctype.Key, opt.ContentType)
+	}
+
+	// - apply header map
+	if len(opt.HeaderMap) > 0 {
+		for k, v := range opt.HeaderMap {
+			req.Header.Set(k, v)
+		}
+	}
+
+	cli := h // if timeout changed, create new client
+	if opt.Timeout > 0 && opt.Timeout != cli.timeout {
+		cli = NewClient(opt.Timeout)
+	}
+
+	if h.beforeSend != nil {
+		h.beforeSend(req)
 	}
 
 	resp, err := cli.client.Do(req)
-	if err == nil && cli.afterSend != nil {
-		cli.afterSend(resp)
+	if h.afterSend != nil {
+		h.afterSend(resp, err)
 	}
 	return resp, err
-}
-
-// Doer get the http client
-func (h *ReqClient) Doer() Doer {
-	return h.client
 }
