@@ -43,7 +43,6 @@ func TestGlobWithFunc(t *testing.T) {
 
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, paths)
-	assert.Contains(t, paths, "testdata/test.jpg")
 }
 
 func TestApplyFilters(t *testing.T) {

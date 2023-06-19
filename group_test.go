@@ -2,36 +2,33 @@ package goutil_test
 
 import (
 	"fmt"
-	"net/http"
 	"testing"
-	"time"
 
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/netutil/httpreq"
+	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestNewErrGroup(t *testing.T) {
-	httpreq.ConfigStd(func(hc *http.Client) {
-		hc.Timeout = 3 * time.Second
-	})
+	httpreq.SetTimeout(3000)
 
 	eg := goutil.NewErrGroup()
 	eg.Add(func() error {
-		resp, err := httpreq.Get("https://httpbin.org/get", nil)
+		resp, err := httpreq.Get(testSrvAddr+"/get", nil)
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(resp.Body)
+		fmt.Println(testutil.ParseBodyToReply(resp.Body))
 		return nil
 	}, func() error {
-		resp, err := httpreq.Post("https://httpbin.org/post", "hi", nil)
+		resp, err := httpreq.Post(testSrvAddr+"/post", "hi")
 		if err != nil {
 			return err
 		}
 
-		fmt.Println(resp.Body)
+		fmt.Println(testutil.ParseBodyToReply(resp.Body))
 		return nil
 	})
 

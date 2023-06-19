@@ -818,6 +818,7 @@ func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V
 func ToAnyMap(mp any) map[string]any 
 func TryAnyMap(mp any) (map[string]any, error) 
 func HTTPQueryString(data map[string]any) string 
+func StringsMapToAnyMap(ssMp map[string][]string) map[string]any 
 func ToString(mp map[string]any) string 
 func ToString2(mp any) string 
 func FormatIndent(mp any, indent string) string 
@@ -1377,7 +1378,7 @@ func ChangeUserUidGid(newUID int, newGid int) (err error)
 
 ```go
 // source at testutil/buffer.go
-func NewBuffer() *Buffer 
+func NewBuffer() *byteutil.Buffer 
 // source at testutil/envmock.go
 func MockEnvValue(key, val string, fn func(nv string)) 
 func MockEnvValues(kvMap map[string]string, fn func()) 
@@ -1391,6 +1392,11 @@ func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request 
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder 
+func TestMain(m *testing.M) 
+func NewEchoServer() *httptest.Server 
+func BuildEchoReply(r *http.Request) *EchoReply 
+func ParseRespToReply(w *http.Response) *EchoReply 
+func ParseBodyToReply(bd io.ReadCloser) *EchoReply 
 // source at testutil/testutil.go
 func DiscardStdout() error 
 func ReadOutput() (s string) 

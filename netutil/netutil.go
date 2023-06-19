@@ -16,10 +16,24 @@ func InternalIPOld() (ip string) {
 	for _, a := range addrs {
 		if ipNet, ok := a.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
 			if ipNet.IP.To4() != nil {
-				// os.Stdout.WriteString(ipNet.IP.String() + "\n")
 				ip = ipNet.IP.String()
 				return
 			}
+		}
+	}
+	return
+}
+
+// GetLocalIPs get local IPs
+func GetLocalIPs() (ips []string) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		panic("Oops: " + err.Error())
+	}
+
+	for _, a := range addrs {
+		if ipNet, ok := a.(*net.IPNet); ok && !ipNet.IP.IsLoopback() {
+			ips = append(ips, ipNet.IP.String())
 		}
 	}
 	return
