@@ -104,6 +104,13 @@ func (as *Assertions) NoErr(err error, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// NoError asserts that the given is a nil error
+func (as *Assertions) NoError(err error, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NoErr(as.t, err, fmtAndArgs...)
+	return as
+}
+
 // Err asserts that the given is a not nil error
 func (as *Assertions) Err(err error, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()

@@ -16,6 +16,11 @@ func TestNewWriter(t *testing.T) {
 	assert.Eq(t, "", tw.String())
 	assert.NoErr(t, tw.Close())
 
+	// write string
+	_, err = tw.WriteString("hello")
+	assert.NoErr(t, err)
+	assert.Eq(t, "hello", tw.ResetGet())
+
 	tw.SetErrOnWrite()
 	_, err = tw.Write([]byte("hello"))
 	assert.Err(t, err)
