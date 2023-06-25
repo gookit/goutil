@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/netutil/httpctype"
 	"github.com/gookit/goutil/strutil"
 )
@@ -96,8 +97,25 @@ func AddHeaders(req *http.Request, header http.Header) {
 	}
 }
 
+// SetHeaders sets the key, value pairs from the given http.Header to the
+// request. Values for existing keys are overwritten.
+func SetHeaders(req *http.Request, headers ...http.Header) {
+	for _, header := range headers {
+		for key, values := range header {
+			req.Header[key] = values
+		}
+	}
+}
+
 // AddHeaderMap to reqeust instance.
 func AddHeaderMap(req *http.Request, headerMap map[string]string) {
+	for k, v := range headerMap {
+		req.Header.Add(k, v)
+	}
+}
+
+// SetHeaderMap to reqeust instance.
+func SetHeaderMap(req *http.Request, headerMap map[string]string) {
 	for k, v := range headerMap {
 		req.Header.Set(k, v)
 	}
@@ -127,6 +145,7 @@ func MakeQuery(data any) url.Values {
 //   - url.Values
 //   - []byte
 //   - string
+//   - map[string][]string
 //   - map[string]string
 //   - map[string]any
 func ToQueryValues(data any) url.Values {
@@ -159,6 +178,38 @@ func ToQueryValues(data any) url.Values {
 			uv.Add(k, strutil.QuietString(v))
 		}
 	}
+	return uv
+}
+
+// MergeURLValues merge url.Values by overwrite.
+//
+// values support: url.Values, map[string]string, map[string][]string
+func MergeURLValues(uv url.Values, values ...any) url.Values {
+	if uv == nil {
+		uv = make(url.Values)
+	}
+
+	for _, v := range values {
+		switch tv := v.(type) {
+		case url.Values:
+			for k, vs := range tv {
+				uv[k] = vs
+			}
+		case map[string]any:
+			for k, v := range tv {
+				uv[k] = arrutil.AnyToStrings(v)
+			}
+		case map[string]string:
+			for k, v := range tv {
+				uv[k] = []string{v}
+			}
+		case map[string][]string:
+			for k, vs := range tv {
+				uv[k] = vs
+			}
+		}
+	}
+
 	return uv
 }
 

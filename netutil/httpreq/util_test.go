@@ -3,6 +3,7 @@ package httpreq_test
 import (
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
@@ -109,4 +110,19 @@ func TestResponseToString(t *testing.T) {
 	assert.StrContains(t, str, "HTTP/1.1 200 OK")
 	assert.StrContains(t, str, "Foo: Bar")
 	assert.StrContains(t, str, "foo...bar")
+}
+
+func TestMergeURLValues(t *testing.T) {
+	uv := url.Values{"key1": []string{"val1"}}
+	uv = httpreq.MergeURLValues(uv, url.Values{"key2": []string{"val2"}}, map[string]string{"key3": "val3"}, map[string][]string{
+		"key4": {"val4"},
+	})
+
+	assert.Eq(t, "val1", uv.Get("key1"))
+	assert.Eq(t, "val2", uv.Get("key2"))
+	assert.Eq(t, "val3", uv.Get("key3"))
+	assert.Eq(t, "val4", uv.Get("key4"))
+
+	uv = httpreq.MergeURLValues(nil, url.Values{"key2": []string{"val2"}})
+	assert.Eq(t, "val2", uv.Get("key2"))
 }

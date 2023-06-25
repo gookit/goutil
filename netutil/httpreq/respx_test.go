@@ -30,3 +30,19 @@ func TestRespX_String(t *testing.T) {
 	// fmt.Println(s)
 	assert.StrContains(t, s, `"hi"`)
 }
+
+func TestWrapResp(t *testing.T) {
+	rx, err := httpreq.WrapResp(httpreq.Get(testSrvAddr + "/get"))
+	assert.NoErr(t, err)
+	assert.NotNil(t, rx)
+	assert.Equal(t, 200, rx.StatusCode)
+	assert.True(t, rx.IsOk())
+	assert.True(t, rx.IsSuccessful())
+	assert.False(t, rx.IsFail())
+	assert.False(t, rx.IsEmptyBody())
+	assert.Equal(t, httpctype.JSON, rx.ContentType())
+
+	s := rx.String()
+	fmt.Println(s)
+	assert.StrContains(t, s, "GET")
+}

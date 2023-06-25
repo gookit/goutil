@@ -20,6 +20,14 @@ type RespX struct {
 	CostTime int64
 }
 
+// WrapResp wrap http.Response to RespX
+func WrapResp(hr *http.Response, err error) (*RespX, error) {
+	if err != nil {
+		return nil, err
+	}
+	return &RespX{Response: hr}, nil
+}
+
 // NewResp instance
 func NewResp(hr *http.Response) *RespX {
 	return &RespX{Response: hr}
