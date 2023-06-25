@@ -16,41 +16,12 @@ const (
 	MimeSniffLen = 512
 )
 
-// OSTempFile create a temp file on os.TempDir()
-//
-// Usage:
-//
-//	fsutil.OSTempFile("example.*.txt")
-func OSTempFile(pattern string) (*os.File, error) {
-	return os.CreateTemp(os.TempDir(), pattern)
-}
+// PathMatcher path matcher func
+type PathMatcher func(path string) bool
 
-// TempFile is like os.CreateTemp, but can custom temp dir.
-//
-// Usage:
-//
-//	fsutil.TempFile("", "example.*.txt")
-func TempFile(dir, pattern string) (*os.File, error) {
-	return os.CreateTemp(dir, pattern)
-}
-
-// OSTempDir creates a new temp dir on os.TempDir and return the temp dir path
-//
-// Usage:
-//
-//	fsutil.OSTempDir("example.*")
-func OSTempDir(pattern string) (string, error) {
-	return os.MkdirTemp(os.TempDir(), pattern)
-}
-
-// TempDir creates a new temp dir and return the temp dir path
-//
-// Usage:
-//
-//	fsutil.TempDir("", "example.*")
-//	fsutil.TempDir("testdata", "example.*")
-func TempDir(dir, pattern string) (string, error) {
-	return os.MkdirTemp(dir, pattern)
+// DetectMime detect file mime type. alias of MimeType()
+func DetectMime(path string) string {
+	return MimeType(path)
 }
 
 // MimeType get File Mime Type name. eg "image/png"
@@ -59,7 +30,6 @@ func MimeType(path string) (mime string) {
 	if err != nil {
 		return
 	}
-
 	return ReaderMimeType(file)
 }
 

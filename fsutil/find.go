@@ -11,6 +11,42 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// FirstExists check multi paths and return first exists path.
+func FirstExists(paths ...string) string {
+	return MatchFirst(paths, PathExists, "")
+}
+
+// FirstExistsDir check multi paths and return first exists dir.
+func FirstExistsDir(paths ...string) string {
+	return MatchFirst(paths, IsDir, "")
+}
+
+// FirstExistsFile check multi paths and return first exists file.
+func FirstExistsFile(paths ...string) string {
+	return MatchFirst(paths, IsFile, "")
+}
+
+// MatchPaths given paths by custom mather func.
+func MatchPaths(paths []string, matcher PathMatcher) []string {
+	var ret []string
+	for _, p := range paths {
+		if matcher(p) {
+			ret = append(ret, p)
+		}
+	}
+	return ret
+}
+
+// MatchFirst filter paths by filter func and return first match path.
+func MatchFirst(paths []string, matcher PathMatcher, defaultPath string) string {
+	for _, p := range paths {
+		if matcher(p) {
+			return p
+		}
+	}
+	return defaultPath
+}
+
 // SearchNameUp find file/dir name in dirPath or parent dirs,
 // return the name of directory path
 //

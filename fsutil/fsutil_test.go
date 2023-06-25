@@ -20,7 +20,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestMimeType(t *testing.T) {
-	assert.Eq(t, "", fsutil.MimeType(""))
+	assert.Eq(t, "", fsutil.DetectMime(""))
 	assert.Eq(t, "", fsutil.MimeType("not-exist"))
 	assert.Eq(t, "image/jpeg", fsutil.MimeType("testdata/test.jpg"))
 
