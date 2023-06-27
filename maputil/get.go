@@ -81,17 +81,22 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 			}
 		case []map[string]any: // is an any-map slice
 			if k == Wildcard {
-				if kl == i+2 {
+				if kl == i+2 { // * is last key
 					return tData, true
 				}
 
-				sl := make([]any, 0, len(tData))
+				// * is not last key, find sub item data
+				sl := make([]any, 0)
 				for _, v := range tData {
 					if val, ok = GetByPathKeys(v, keys[i+2:]); ok {
 						sl = append(sl, val)
 					}
 				}
-				return sl, true
+
+				if len(sl) > 0 {
+					return sl, true
+				}
+				return nil, false
 			}
 
 			// k is index number

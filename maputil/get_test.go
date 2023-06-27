@@ -1,6 +1,7 @@
 package maputil_test
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -94,11 +95,11 @@ var mlMp = map[string]any{
 				},
 				"cpt": []map[string]any{
 					{
-						"code":              "001",
-						"encounter_uid":     "2",
-						"work_item_uid":     "3",
-						"billing_provider":  "Test provider 001",
-						"resident_provider": "Test Resident Provider",
+						"code":             "001",
+						"encounter_uid":    "2",
+						"work_item_uid":    "3",
+						"billing_provider": "Test provider 001",
+						// "resident_provider": "Test Resident Provider",
 					},
 					{
 						"code":              "OBS01",
@@ -108,11 +109,11 @@ var mlMp = map[string]any{
 						"resident_provider": "Test Resident Provider",
 					},
 					{
-						"code":              "SU002",
-						"encounter_uid":     "5",
-						"work_item_uid":     "6",
-						"billing_provider":  "Test provider SU002",
-						"resident_provider": "Test Resident Provider",
+						"code":             "SU002",
+						"encounter_uid":    "5",
+						"work_item_uid":    "6",
+						"billing_provider": "Test provider SU002",
+						// "resident_provider": "Test Resident Provider",
 					},
 				},
 			},
@@ -137,14 +138,27 @@ func TestGetByPath_deepPath(t *testing.T) {
 	val, ok = maputil.GetByPath("coding.*.details.em.code", mlMp)
 	dump.P(ok, val)
 	assert.True(t, ok)
+	assert.IsType(t, []any{}, val)
 
 	val, ok = maputil.GetByPath("coding.*.details.cpt.*.encounter_uid", mlMp)
 	dump.P(ok, val)
 	assert.True(t, ok)
+	assert.Len(t, val, 1)
+	assert.IsType(t, []any{}, val)
 
 	val, ok = maputil.GetByPath("coding.*.details.cpt.*.work_item_uid", mlMp)
-	dump.P(ok, val)
+	// dump.P(ok, val)
 	assert.True(t, ok)
+	assert.IsType(t, []any{}, val)
+
+	val, ok = maputil.GetByPath("coding.*.details.cpt.*.resident_provider", mlMp)
+	// dump.P(ok, val)
+	assert.True(t, ok)
+	assert.IsKind(t, reflect.Slice, val)
+
+	val, ok = maputil.GetByPath("coding.*.details.cpt.*.not-exists", mlMp)
+	assert.Nil(t, val)
+	assert.False(t, ok)
 }
 
 func TestKeys(t *testing.T) {
