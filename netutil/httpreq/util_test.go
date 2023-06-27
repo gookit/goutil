@@ -126,3 +126,16 @@ func TestMergeURLValues(t *testing.T) {
 	uv = httpreq.MergeURLValues(nil, url.Values{"key2": []string{"val2"}})
 	assert.Eq(t, "val2", uv.Get("key2"))
 }
+
+func TestParseAccept(t *testing.T) {
+	// parseAccept
+	ss := httpreq.ParseAccept("")
+	assert.Len(t, ss, 0)
+
+	ss = httpreq.ParseAccept(",")
+	assert.Len(t, ss, 0)
+
+	ss = httpreq.ParseAccept("application/json")
+	assert.Len(t, ss, 1)
+	assert.Eq(t, []string{"application/json"}, ss)
+}

@@ -374,3 +374,20 @@ func ResponseToString(w *http.Response) string {
 
 	return buf.String()
 }
+
+// ParseAccept header to strings. referred from gin framework
+func ParseAccept(acceptHeader string) []string {
+	if acceptHeader == "" {
+		return []string{}
+	}
+
+	parts := strings.Split(acceptHeader, ",")
+	outs := make([]string, 0, len(parts))
+
+	for _, part := range parts {
+		if part = strings.TrimSpace(strings.Split(part, ";")[0]); part != "" {
+			outs = append(outs, part)
+		}
+	}
+	return outs
+}
