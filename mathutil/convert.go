@@ -3,6 +3,7 @@ package mathutil
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -19,6 +20,12 @@ func Int(in any) (int, error) {
 	return ToInt(in)
 }
 
+// SafeInt convert value to int, will ignore error
+func SafeInt(in any) int {
+	val, _ := ToInt(in)
+	return val
+}
+
 // QuietInt convert value to int, will ignore error
 func QuietInt(in any) int {
 	val, _ := ToInt(in)
@@ -27,7 +34,10 @@ func QuietInt(in any) int {
 
 // MustInt convert value to int, will panic on error
 func MustInt(in any) int {
-	val, _ := ToInt(in)
+	val, err := ToInt(in)
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 
@@ -59,29 +69,54 @@ func ToInt(in any) (iVal int, err error) {
 	case int32:
 		iVal = int(tVal)
 	case int64:
-		iVal = int(tVal)
+		if tVal > math.MaxInt32 {
+			err = fmt.Errorf("value overflow int32. input: %v", tVal)
+		} else {
+			iVal = int(tVal)
+		}
 	case uint:
-		iVal = int(tVal)
+		if tVal > math.MaxInt32 {
+			err = fmt.Errorf("value overflow int32. input: %v", tVal)
+		} else {
+			iVal = int(tVal)
+		}
 	case uint8:
 		iVal = int(tVal)
 	case uint16:
 		iVal = int(tVal)
 	case uint32:
-		iVal = int(tVal)
+		if tVal > math.MaxInt32 {
+			err = fmt.Errorf("value overflow int32. input: %v", tVal)
+		} else {
+			iVal = int(tVal)
+		}
 	case uint64:
-		iVal = int(tVal)
+		if tVal > math.MaxInt32 {
+			err = fmt.Errorf("value overflow int32. input: %v", tVal)
+		} else {
+			iVal = int(tVal)
+		}
 	case float32:
 		iVal = int(tVal)
 	case float64:
 		iVal = int(tVal)
 	case time.Duration:
-		iVal = int(tVal)
+		if tVal > math.MaxInt32 {
+			err = fmt.Errorf("value overflow int32. input: %v", tVal)
+		} else {
+			iVal = int(tVal)
+		}
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
 	case json.Number:
 		var i64 int64
-		i64, err = tVal.Int64()
-		iVal = int(i64)
+		if i64, err = tVal.Int64(); err == nil {
+			if i64 > math.MaxInt32 {
+				err = fmt.Errorf("value overflow int32. input: %v", tVal)
+			} else {
+				iVal = int(i64)
+			}
+		}
 	default:
 		err = comdef.ErrConvType
 	}
@@ -103,6 +138,12 @@ func Uint(in any) (uint64, error) {
 	return ToUint(in)
 }
 
+// SafeUint convert string to uint, will ignore error
+func SafeUint(in any) uint64 {
+	val, _ := ToUint(in)
+	return val
+}
+
 // QuietUint convert string to uint, will ignore error
 func QuietUint(in any) uint64 {
 	val, _ := ToUint(in)
@@ -111,7 +152,10 @@ func QuietUint(in any) uint64 {
 
 // MustUint convert string to uint, will panic on error
 func MustUint(in any) uint64 {
-	val, _ := ToUint(in)
+	val, err := ToUint(in)
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 
@@ -158,6 +202,11 @@ func ToUint(in any) (u64 uint64, err error) {
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
+		// if iface, ok := in.(comdef.Int64able); ok {
+		// 	var i64 int64
+		// 	i64, err = iface.Int64()
+		// 	u64 = uint64(i64)
+		// } else {
 		err = comdef.ErrConvType
 	}
 	return
@@ -186,11 +235,14 @@ func QuietInt64(in any) int64 {
 
 // MustInt64 convert value to int64, will panic on error
 func MustInt64(in any) int64 {
-	i64, _ := ToInt64(in)
+	i64, err := ToInt64(in)
+	if err != nil {
+		panic(err)
+	}
 	return i64
 }
 
-// TODO StrictInt64,AsInt64 strict convert to int64
+// TODO AsInt64 strict convert to int64
 
 // Int64OrErr convert string to int64, return error on failed
 func Int64OrErr(in any) (int64, error) {
@@ -257,9 +309,12 @@ func FloatOrPanic(in any) float64 {
 	return val
 }
 
-// MustFloat convert value to float64 TODO will panic on error
+// MustFloat convert value to float64, will panic on error
 func MustFloat(in any) float64 {
-	val, _ := ToFloat(in)
+	val, err := ToFloat(in)
+	if err != nil {
+		panic(err)
+	}
 	return val
 }
 
@@ -328,19 +383,13 @@ func StringOrPanic(val any) string {
 }
 
 // MustString convert intX/floatX value to string, will panic on error
-func MustString(val any) string {
-	return StringOrPanic(val)
-}
+func MustString(val any) string { return StringOrPanic(val) }
 
 // ToString convert intX/floatX value to string, return error on failed
-func ToString(val any) (string, error) {
-	return TryToString(val, true)
-}
+func ToString(val any) (string, error) { return TryToString(val, true) }
 
 // StringOrErr convert intX/floatX value to string, return error on failed
-func StringOrErr(val any) (string, error) {
-	return TryToString(val, true)
-}
+func StringOrErr(val any) (string, error) { return TryToString(val, true) }
 
 // QuietString convert intX/floatX value to string, other type convert by fmt.Sprint
 func QuietString(val any) string {

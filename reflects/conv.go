@@ -2,6 +2,7 @@ package reflects
 
 import (
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 
@@ -72,10 +73,16 @@ func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 		}
 	case reflect.Int8:
 		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+			if dstV > math.MaxInt8 {
+				return rv, fmt.Errorf("value overflow int8. val: %v", val)
+			}
 			rv = reflect.ValueOf(int8(dstV))
 		}
 	case reflect.Int16:
 		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+			if dstV > math.MaxInt16 {
+				return rv, fmt.Errorf("value overflow int16. val: %v", val)
+			}
 			rv = reflect.ValueOf(int16(dstV))
 		}
 	case reflect.Int32:
@@ -92,14 +99,23 @@ func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 		}
 	case reflect.Uint8:
 		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+			if dstV > math.MaxUint8 {
+				return rv, fmt.Errorf("value overflow uint8. val: %v", val)
+			}
 			rv = reflect.ValueOf(uint8(dstV))
 		}
 	case reflect.Uint16:
 		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+			if dstV > math.MaxUint16 {
+				return rv, fmt.Errorf("value overflow uint16. val: %v", val)
+			}
 			rv = reflect.ValueOf(uint16(dstV))
 		}
 	case reflect.Uint32:
 		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+			if dstV > math.MaxUint32 {
+				return rv, fmt.Errorf("value overflow uint32. val: %v", val)
+			}
 			rv = reflect.ValueOf(uint32(dstV))
 		}
 	case reflect.Uint64:

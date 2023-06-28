@@ -1,6 +1,7 @@
 package reflects_test
 
 import (
+	"math"
 	"reflect"
 	"testing"
 
@@ -132,6 +133,28 @@ func TestValueByKind(t *testing.T) {
 		val, err := reflects.ValueByKind(e.give, e.kind)
 		assert.NoErr(t, err)
 		assert.Eq(t, e.want, val.Interface())
+	}
+
+	errTests := []struct {
+		give any
+		kind reflect.Kind
+	}{
+		{"abc", reflect.Int},
+		{true, reflect.Int},
+		{23, reflect.Bool},
+		// case for overflow
+		{143, reflect.Int8},
+		{math.MaxInt16 + 1, reflect.Int16},
+		{343, reflect.Uint8},
+		{int64(math.MaxInt32 + 1), reflect.Int32},
+		{int64(math.MaxUint16 + 1), reflect.Uint16},
+		{int64(math.MaxUint32 + 1), reflect.Uint32},
+	}
+
+	for _, e := range errTests {
+		val, err := reflects.ValueByKind(e.give, e.kind)
+		assert.Err(t, err, "give: %v, kind: %v", e.give, e.kind)
+		assert.False(t, val.IsValid())
 	}
 
 	val, err := reflects.ValueByKind("abc", reflect.Int)
