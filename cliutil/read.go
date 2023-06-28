@@ -29,8 +29,7 @@ func ReadInput(question string) (string, error) {
 		return "", scanner.Err()
 	}
 
-	answer := scanner.Text()
-	return strings.TrimSpace(answer), nil
+	return strings.TrimSpace(scanner.Text()), nil
 }
 
 // ReadLine read one line from user input.

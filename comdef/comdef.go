@@ -40,3 +40,8 @@ type (
 	// UnmarshalFunc define
 	UnmarshalFunc func(bts []byte, ptr any) error
 )
+
+// Int64able interface
+type Int64able interface {
+	Int64() (int64, error)
+}

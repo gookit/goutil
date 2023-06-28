@@ -26,4 +26,19 @@ func TestBuffer_WriteAny(t *testing.T) {
 
 	assert.NoErr(t, buf.Close())
 	assert.NoErr(t, buf.Flush())
+
+	buf.WriteStr1Nl("abc")
+	assert.Eq(t, "abc\n", buf.ResetAndGet())
+
+	// test WriteStrings
+	buf.WriteStrings([]string{"a", "b", "c"})
+	assert.Eq(t, "abc", buf.ResetAndGet())
+
+	// test WriteStringNl
+	buf.WriteStringNl("abc")
+	assert.Eq(t, "abc\n", buf.ResetAndGet())
+
+	// test WriteAnyNl
+	buf.WriteAnyNl(1, "abc")
+	assert.Eq(t, "1abc\n", buf.ResetAndGet())
 }

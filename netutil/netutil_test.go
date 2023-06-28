@@ -8,7 +8,9 @@ import (
 )
 
 func TestInternalIP(t *testing.T) {
+	assert.NotEmpty(t, netutil.InternalIPv1())
 	assert.NotEmpty(t, netutil.InternalIP())
 	assert.NotEmpty(t, netutil.InternalIPv4())
 	assert.NotEmpty(t, netutil.InternalIPv6())
+	assert.NotEmpty(t, netutil.GetLocalIPs())
 }

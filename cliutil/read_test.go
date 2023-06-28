@@ -1,11 +1,73 @@
 package cliutil_test
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
+	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
+
+func TestRead_cases(t *testing.T) {
+	buf := byteutil.NewBuffer()
+	cliutil.Input = buf
+	defer func() {
+		cliutil.Input = os.Stdin
+	}()
+
+	t.Run("ReadInput", func(t *testing.T) {
+		buf.WriteString("inhere")
+		ans, err := cliutil.ReadInput("hi, your name? ")
+		fmt.Println("ans:", ans)
+		assert.NoError(t, err)
+		assert.Equal(t, "inhere", ans)
+	})
+
+	// test ReadLine
+	t.Run("ReadLine", func(t *testing.T) {
+		buf.WriteString("inhere")
+		ans, err := cliutil.ReadLine("hi, your name? ")
+		fmt.Println("ans:", ans)
+		assert.NoError(t, err)
+		assert.Equal(t, "inhere", ans)
+	})
+
+	// test ReadFirst
+	t.Run("ReadFirst", func(t *testing.T) {
+		buf.WriteString("Y")
+		ans, err := cliutil.ReadFirst("continue?[y/n] ")
+		fmt.Println("ans:", ans)
+		assert.NoError(t, err)
+		assert.Equal(t, "Y", ans)
+	})
+
+	// test ReadFirstRune
+	t.Run("ReadFirstRune", func(t *testing.T) {
+		buf.WriteString("Y")
+		ans, err := cliutil.ReadFirstRune("continue?[y/n] ")
+		fmt.Println("ans:", string(ans))
+		assert.NoError(t, err)
+		assert.Equal(t, 'Y', ans)
+	})
+
+	// test ReadAsBool
+	t.Run("ReadAsBool", func(t *testing.T) {
+		buf.WriteString("Y")
+		ans := cliutil.ReadAsBool("continue?[y/n] ", false)
+		fmt.Println("ans:", ans)
+		assert.True(t, ans)
+	})
+
+	// test Confirm
+	t.Run("Confirm", func(t *testing.T) {
+		buf.WriteString("Y")
+		ans := cliutil.Confirm("continue?", false)
+		fmt.Println(ans)
+		assert.True(t, ans)
+	})
+}
 
 func TestReadFirst(t *testing.T) {
 	// testutil.RewriteStdout()

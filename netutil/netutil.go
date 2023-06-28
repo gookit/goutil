@@ -6,8 +6,8 @@ import (
 	"net/netip"
 )
 
-// InternalIPOld get internal IP buy old logic
-func InternalIPOld() (ip string) {
+// InternalIPv1 get internal IP buy old logic
+func InternalIPv1() (ip string) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		panic("Oops: " + err.Error())
