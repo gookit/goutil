@@ -11,7 +11,9 @@ type Uint interface {
 }
 
 // Xint interface type. alias of Integer
-type Xint = Integer
+type Xint interface {
+	Int | Uint
+}
 
 // Integer interface type. all int or uint types
 type Integer interface {
@@ -43,7 +45,12 @@ type SortedType interface {
 }
 
 // Compared type. alias of constraints.ScalarType
-type Compared = ScalarType
+//
+// TODO: use type alias, will error on go1.18 Error: types.go:50: interface contains type constraints
+// type Compared = ScalarType
+type Compared interface {
+	Int | Uint | Float | ~string | ~bool
+}
 
 // ScalarType interface type.
 //
