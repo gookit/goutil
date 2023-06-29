@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -102,7 +101,7 @@ func TestConvSlice(t *testing.T) {
 	oldArr = []string{"12", "23"}
 	newArr, err = reflects.ConvSlice(reflect.ValueOf(oldArr), reflect.TypeOf(1))
 	assert.NoErr(t, err)
-	assert.Eq(t, arrutil.StringsAsInts(oldArr), newArr.Interface())
+	assert.Eq(t, []int{12, 23}, newArr.Interface())
 
 	assert.Panics(t, func() {
 		_, _ = reflects.ConvSlice(reflect.ValueOf("s"), reflect.TypeOf("s"))
