@@ -46,4 +46,5 @@ func TestNewFileInfo(t *testing.T) {
 	assert.True(t, fi.IsDir())
 	assert.Gt(t, int(fi.Mode()), 0)
 	assert.Equal(t, "dir", fi.Name())
+	assert.Nil(t, fi.Sys())
 }

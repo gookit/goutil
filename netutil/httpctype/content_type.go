@@ -1,6 +1,7 @@
 // Package httpctype list some common http content-type
 package httpctype
 
+// Key is the header key of Content-Type
 const Key = "Content-Type"
 
 // there are some HTTP Content-Type with charset of the most common data formats.

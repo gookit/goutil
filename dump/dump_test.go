@@ -235,7 +235,7 @@ func TestStruct_CannotExportField(t *testing.T) {
 	assert.Contains(t, str, "opt4: string(\"abc\"),")
 }
 
-func TestStruct_InterfaceField(t *testing.T) {
+func ExampleStruct_interfaceField() {
 	myS1 := struct {
 		// cannotExport any // ok
 		cannotExport st1 // ok
@@ -251,7 +251,7 @@ func TestStruct_InterfaceField(t *testing.T) {
 	fmt.Println(myS1)
 }
 
-func TestStruct_MapInterfacedValue(t *testing.T) {
+func ExampleStruct_mapInterfacedValue() {
 	myS2 := &struct {
 		cannotExport map[string]any
 	}{

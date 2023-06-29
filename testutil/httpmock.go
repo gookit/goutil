@@ -25,7 +25,14 @@ type (
 	}
 )
 
-// NewHttpRequest for http testing
+// NewHttpRequest for http testing, alias of NewHTTPRequest()
+//
+// Deprecated: use NewHTTPRequest() instead.
+func NewHttpRequest(method, path string, data *MD) *http.Request {
+	return NewHTTPRequest(method, path, data)
+}
+
+// NewHTTPRequest for http testing
 // Usage:
 //
 //	req := NewHttpRequest("GET", "/path", nil)
@@ -42,7 +49,7 @@ type (
 //		BodyString: "data string",
 //		Headers: M{"x-head": "val"}
 //	})
-func NewHttpRequest(method, path string, data *MD) *http.Request {
+func NewHTTPRequest(method, path string, data *MD) *http.Request {
 	var body io.Reader
 	if data != nil {
 		if data.Body != nil {
@@ -97,7 +104,7 @@ func NewHttpRequest(method, path string, data *MD) *http.Request {
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder {
 	// w.Result() will return http.Response
 	w := httptest.NewRecorder()
-	r := NewHttpRequest(method, path, data)
+	r := NewHTTPRequest(method, path, data)
 
 	// s := httptest.NewServer()
 	h.ServeHTTP(w, r)

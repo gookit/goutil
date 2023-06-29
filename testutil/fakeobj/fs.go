@@ -95,10 +95,12 @@ func (f *FileInfo) Reset() *FileInfo {
 
 // fs.File methods.
 
+// Stat returns the FileInfo structure describing file.
 func (f *FileInfo) Stat() (fs.FileInfo, error) {
 	return f, nil
 }
 
+// Read reads up to len(p) bytes into p.
 func (f *FileInfo) Read(p []byte) (int, error) {
 	if f.offset >= len(f.Contents) {
 		return 0, io.EOF
@@ -109,32 +111,39 @@ func (f *FileInfo) Read(p []byte) (int, error) {
 	return n, nil
 }
 
+// Close closes the file
 func (f *FileInfo) Close() error {
 	return f.CloseErr
 }
 
 // fs.FileInfo methods.
 
+// Name returns the base name of the file.
 func (f *FileInfo) Name() string {
 	return f.Nam
 }
 
+// Size returns the length in bytes for regular files; system-dependent for others.
 func (f *FileInfo) Size() int64 {
 	return int64(len(f.Contents))
 }
 
+// Mode returns file mode bits.
 func (f *FileInfo) Mode() fs.FileMode {
 	return f.Mod
 }
 
+// ModTime returns the modification time.
 func (f *FileInfo) ModTime() time.Time {
 	return f.Mt
 }
 
+// IsDir returns true if the file is a directory.
 func (f *FileInfo) IsDir() bool {
 	return f.Dir
 }
 
+// Sys returns underlying data source (can return nil).
 func (f *FileInfo) Sys() any {
 	return nil
 }

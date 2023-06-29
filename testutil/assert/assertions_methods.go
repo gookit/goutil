@@ -1,5 +1,6 @@
 package assert
 
+// Nil asserts that the given is a nil value
 func (as *Assertions) Nil(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = Nil(as.t, give, fmtAndArgs...)

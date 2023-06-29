@@ -1,3 +1,4 @@
+// Package httpheader provides some common http header names.
 package httpheader
 
 // some common http header names
