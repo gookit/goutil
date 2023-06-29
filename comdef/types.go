@@ -10,8 +10,11 @@ type Uint interface {
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
 }
 
-// Xint interface type. all int or uint types
-type Xint interface {
+// Xint interface type. alias of Integer
+type Xint = Integer
+
+// Integer interface type. all int or uint types
+type Integer interface {
 	Int | Uint
 }
 
@@ -30,15 +33,21 @@ type XintOrFloat interface {
 	Int | Uint | Float
 }
 
-// SortedType interface type.
-// that supports the operators < <= >= >.
+// SortedType interface type. same of constraints.Ordered
+//
+// it can be ordered, that supports the operators < <= >= >.
 //
 // contains: (x)int, float, ~string types
 type SortedType interface {
 	Int | Uint | Float | ~string
 }
 
+// Compared type. alias of constraints.ScalarType
+type Compared = ScalarType
+
 // ScalarType interface type.
+//
+// it can be ordered, that supports the operators < <= >= >.
 //
 // contains: (x)int, float, ~string, ~bool types
 type ScalarType interface {

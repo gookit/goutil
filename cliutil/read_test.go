@@ -66,6 +66,9 @@ func TestRead_cases(t *testing.T) {
 		ans := cliutil.Confirm("continue?", false)
 		fmt.Println(ans)
 		assert.True(t, ans)
+		ans = cliutil.Confirm("continue?", true)
+		fmt.Println(ans)
+		assert.True(t, ans)
 	})
 }
 

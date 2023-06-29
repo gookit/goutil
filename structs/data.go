@@ -12,15 +12,12 @@ import (
 // LiteData simple map[string]any struct. no lock
 type LiteData = Data
 
-// NewLiteData create, not lock
+// NewLiteData create, not locked
 func NewLiteData(data map[string]any) *Data {
 	if data == nil {
 		data = make(map[string]any)
 	}
-
-	return &LiteData{
-		data: data,
-	}
+	return &LiteData{data: data}
 }
 
 /*************************************************************
@@ -82,7 +79,7 @@ func (d *Data) ResetData() {
 
 // Merge load new data
 func (d *Data) Merge(mp map[string]any) {
-	d.data = maputil.SimpleMerge(d.data, mp)
+	d.data = maputil.SimpleMerge(mp, d.data)
 }
 
 // Set value to data
@@ -151,21 +148,27 @@ func (d *Data) String() string {
 	return maputil.ToString(d.data)
 }
 
-// OrderedMap data TODO
-type OrderedMap struct {
+// OrderedData data TODO
+type OrderedData struct {
 	maputil.Data
-	len  int
+	cap  int
 	keys []string
 	// vals []any
 }
 
-// NewOrderedMap instance.
-func NewOrderedMap(len int) *OrderedMap {
-	return &OrderedMap{len: len}
+// NewOrderedData instance.
+func NewOrderedData(cap int) *OrderedData {
+	return &OrderedData{cap: cap, Data: make(maputil.Data, cap)}
+}
+
+// Load data
+func (om *OrderedData) Load(data map[string]any) {
+	om.Data.Load(data)
+	om.keys = om.Data.Keys()
 }
 
 // Set key and value to map
-func (om *OrderedMap) Set(key string, val any) {
+func (om *OrderedData) Set(key string, val any) {
 	om.keys = append(om.keys, key)
 	om.Data.Set(key, val)
 }

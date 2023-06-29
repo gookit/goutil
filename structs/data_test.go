@@ -20,6 +20,13 @@ func TestLiteData_Data(t *testing.T) {
 	assert.True(t, ok)
 	assert.Eq(t, 234, v)
 
+	d.Merge(map[string]any{
+		"key1": "def",
+		"key4": "value4",
+	})
+	assert.Eq(t, "def", d.StrVal("key1"))
+	assert.Eq(t, "value4", d.GetVal("key4"))
+
 	d.ResetData()
 	assert.Empty(t, d.Data())
 }
@@ -68,4 +75,15 @@ func TestDataStore_EnableLock(t *testing.T) {
 	md.Set("key1", "def")
 	assert.Eq(t, "def", md.Get("key1"))
 	assert.NotEmpty(t, md.String())
+}
+
+func TestNewOrderedData(t *testing.T) {
+	od := structs.NewOrderedData(10)
+	od.Set("key0", 234)
+	od.Load(map[string]any{
+		"key1": "abc",
+		"key2": true,
+	})
+
+	assert.NotEmpty(t, od.Keys())
 }

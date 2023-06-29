@@ -20,6 +20,38 @@ type StringWriteStringer interface {
 	fmt.Stringer
 }
 
+type (
+	// MarshalFunc define
+	MarshalFunc func(v any) ([]byte, error)
+
+	// UnmarshalFunc define
+	UnmarshalFunc func(bts []byte, ptr any) error
+)
+
+// Int64able interface
+type Int64able interface {
+	Int64() (int64, error)
+}
+
+//
+//
+// Matcher type
+//
+//
+
+// Matcher interface
+type Matcher[T any] interface {
+	Match(s T) bool
+}
+
+// MatchFunc definition. implements Matcher interface
+type MatchFunc[T any] func(v T) bool
+
+// Match satisfies the Matcher interface
+func (fn MatchFunc[T]) Match(v T) bool {
+	return fn(v)
+}
+
 // StringMatcher interface
 type StringMatcher interface {
 	Match(s string) bool
@@ -33,15 +65,15 @@ func (fn StringMatchFunc) Match(s string) bool {
 	return fn(s)
 }
 
-type (
-	// MarshalFunc define
-	MarshalFunc func(v any) ([]byte, error)
+// StringHandler interface
+type StringHandler interface {
+	Handle(s string) string
+}
 
-	// UnmarshalFunc define
-	UnmarshalFunc func(bts []byte, ptr any) error
-)
+// StringHandleFunc definition
+type StringHandleFunc func(s string) string
 
-// Int64able interface
-type Int64able interface {
-	Int64() (int64, error)
+// Handle satisfies the StringHandler interface
+func (fn StringHandleFunc) Handle(s string) string {
+	return fn(s)
 }

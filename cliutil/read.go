@@ -90,14 +90,33 @@ func ReadFirstRune(question string) (rune, error) {
 //	ok := ReadAsBool("are you OK? [y/N]", false)
 func ReadAsBool(tip string, defVal bool) bool {
 	fChar, err := ReadFirstByte(tip)
-	if err != nil {
-		panic(err)
-	}
-
-	if fChar != 0 {
+	if err == nil && fChar != 0 {
 		return ByteIsYes(fChar)
 	}
 	return defVal
+}
+
+// Confirm with user input
+func Confirm(tip string, defVal ...bool) bool {
+	var defV bool
+	mark := " [y/N]: "
+
+	if len(defVal) > 0 && defVal[0] {
+		defV = true
+		mark = " [Y/n]: "
+	}
+
+	return ReadAsBool(tip+mark, defV)
+}
+
+// InputIsYes answer: yes, y, Yes, Y
+func InputIsYes(ans string) bool {
+	return len(ans) > 0 && (ans[0] == 'y' || ans[0] == 'Y')
+}
+
+// ByteIsYes answer: yes, y, Yes, Y
+func ByteIsYes(ans byte) bool {
+	return ans == 'y' || ans == 'Y'
 }
 
 // ReadPassword from console terminal
@@ -115,27 +134,4 @@ func ReadPassword(question ...string) string {
 
 	println() // new line
 	return string(bs)
-}
-
-// Confirm with user input
-func Confirm(tip string, defVal ...bool) bool {
-	mark := " [y/N]: "
-
-	var defV bool
-	if len(defVal) > 0 && defVal[0] {
-		defV = true
-		mark = " [Y/n]: "
-	}
-
-	return ReadAsBool(tip+mark, defV)
-}
-
-// InputIsYes answer: yes, y, Yes, Y
-func InputIsYes(ans string) bool {
-	return len(ans) > 0 && (ans[0] == 'y' || ans[0] == 'Y')
-}
-
-// ByteIsYes answer: yes, y, Yes, Y
-func ByteIsYes(ans byte) bool {
-	return ans == 'y' || ans == 'Y'
 }

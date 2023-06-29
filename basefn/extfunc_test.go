@@ -31,6 +31,7 @@ func TestHowLongAgo(t *testing.T) {
 	}{
 		{-36, "unknown"},
 		{36, "36 secs"},
+		{60, "1 min"},
 		{346, "5 mins"},
 		{3467, "57 mins"},
 		{346778, "4 days"},

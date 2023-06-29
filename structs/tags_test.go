@@ -219,3 +219,18 @@ func TestParseTagValueNamed(t *testing.T) {
 	_, err = structs.ParseTagValueNamed("name", "name=n;default=inhere", "name")
 	assert.ErrSubMsg(t, err, "parse tag error on field 'name': invalid")
 }
+
+func TestParseTagValueQuick(t *testing.T) {
+	fields := []string{"name", "default"}
+	mp := structs.ParseTagValueQuick("", fields)
+	assert.Empty(t, mp)
+
+	mp = structs.ParseTagValueQuick("inhere", fields)
+	assert.NotEmpty(t, mp)
+	assert.Eq(t, "inhere", mp.Str("name"))
+
+	mp = structs.ParseTagValueQuick(";tom", fields)
+	assert.NotEmpty(t, mp)
+	assert.Eq(t, "", mp.Str("name"))
+	assert.Eq(t, "tom", mp.Str("default"))
+}
