@@ -20,6 +20,8 @@ func TestValid(t *testing.T) {
 	is.Eq("ab", strutil.Valid("ab", ""))
 	is.Eq("ab", strutil.Valid("ab", "cd"))
 	is.Eq("cd", strutil.Valid("", "cd"))
+	is.Empty(strutil.Valid("", ""))
+
 	is.Eq("cd", strutil.OrElse("", "cd"))
 	is.Eq("ab", strutil.OrElse("ab", "cd"))
 
@@ -27,6 +29,7 @@ func TestValid(t *testing.T) {
 	is.Eq("cd", strutil.OrCond(false, "ab", "cd"))
 
 	is.Eq("ab", strutil.OrHandle("  ab  ", strings.TrimSpace))
+	is.Empty(strutil.OrHandle("", strings.TrimSpace))
 }
 
 func TestRenderTemplate(t *testing.T) {

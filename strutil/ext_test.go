@@ -12,19 +12,19 @@ func TestBuilder_WriteAny(t *testing.T) {
 
 	sb.Writef("ab-%s", "c")
 	sb.WriteByteNE('d')
-	assert.Eq(t, "ab-cd", sb.String())
+	sb.WriteMulti('-', 'e', 'f')
+	assert.Eq(t, "ab-cd-ef", sb.ResetGet())
 
-	sb.Reset()
 	sb.WriteStrings("ab", "-", "cd")
 	sb.WriteString("-ef")
-	assert.Eq(t, "ab-cd-ef", sb.String())
+	assert.Eq(t, "ab-cd-ef", sb.ResetGet())
 
-	sb.Reset()
 	sb.WriteAny("abc")
 	sb.WriteAnys(23, "def")
-	assert.Eq(t, "abc23def", sb.String())
+	assert.Eq(t, "abc23def", sb.ResetGet())
 
-	sb.Reset()
+	sb.Write([]byte("abc"))
+	sb.WriteRune('-')
 	sb.Writeln("abc")
-	assert.Eq(t, "abc\n", sb.String())
+	assert.Eq(t, "abc-abc\n", sb.ResetGet())
 }

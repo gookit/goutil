@@ -143,3 +143,10 @@ func (b *Builder) WriteStrings(ss ...string) {
 		_, _ = b.Builder.WriteString(s)
 	}
 }
+
+// ResetGet return current string and reset builder
+func (b *Builder) ResetGet() string {
+	s := b.String()
+	b.Reset()
+	return s
+}

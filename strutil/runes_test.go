@@ -34,7 +34,7 @@ func TestUtf8Width(t *testing.T) {
 
 func TestUtf8Truncate(t *testing.T) {
 	s := "hello 你好, world 世界"
-	assert.Eq(t, "hello 你好", strutil.TextTruncate(s, 10, ""))
+	assert.Eq(t, "hello 你好", strutil.Truncate(s, 10, ""))
 	assert.Eq(t, "hello ...", strutil.TextTruncate(s, 10, "..."))
 	assert.Eq(t, "hello 你好", strutil.TextTruncate("hello 你好", 20, "..."))
 }

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+
+	"github.com/gookit/goutil/comdef"
 )
 
 // OrCond return s1 on cond is True, OR return s2.
@@ -28,7 +30,7 @@ func OrElse(s, orVal string) string {
 }
 
 // OrHandle return fn(s) on s is not empty.
-func OrHandle(s string, fn func(s string) string) string {
+func OrHandle(s string, fn comdef.StringHandleFunc) string {
 	if s != "" {
 		return fn(s)
 	}

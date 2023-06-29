@@ -100,15 +100,21 @@ func TestParseSizeRange(t *testing.T) {
 		{"1kb~invalid", 1024, 0, false},
 		{"invalid1~invalid2", 0, 0, false},
 		{"invalid", 0, 0, false},
+		{"1invalid", 0, 0, false},
 	}
 
 	is := assert.New(t)
 	opt := &strutil.ParseSizeOpt{}
 	for _, item := range tests {
 		is.WithMsg(item.expr)
-		mix, max, err := strutil.ParseSizeRange(item.expr, opt)
-		is.Equal(item.min, mix, "for "+item.expr)
+		min, max, err := strutil.ParseSizeRange(item.expr, opt)
+		is.Equal(item.min, min, "for "+item.expr)
 		is.Equal(item.max, max, "for "+item.expr)
 		is.Equal(item.ok, err == nil, "for "+item.expr)
 	}
+
+	min, max, err := strutil.ParseSizeRange("1kb~1m", nil)
+	is.Nil(err)
+	is.Equal(uint64(1024), min)
+	is.Equal(uint64(1024*1024), max)
 }
