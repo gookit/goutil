@@ -7,7 +7,7 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestInts_Has_String(t *testing.T) {
+func TestInts_methods(t *testing.T) {
 	tests := []struct {
 		is    arrutil.Ints
 		val   int
@@ -27,6 +27,12 @@ func TestInts_Has_String(t *testing.T) {
 		assert.False(t, tt.is.Has(999))
 		assert.Eq(t, tt.want2, tt.is.String())
 	}
+
+	ints := arrutil.Ints{23, 10, 12}
+	ints.Sort()
+	assert.Eq(t, "10,12,23", ints.String())
+	assert.Eq(t, 10, ints.First())
+	assert.Eq(t, 23, ints.Last())
 }
 
 func TestStrings_methods(t *testing.T) {
@@ -52,4 +58,25 @@ func TestStrings_methods(t *testing.T) {
 
 	ss := arrutil.Strings{"a", "b"}
 	assert.Eq(t, "a b", ss.Join(" "))
+	assert.Eq(t, "a", ss.First())
+}
+
+func TestScalarList_methods(t *testing.T) {
+	ls := arrutil.ScalarList[string]{"a", "", "b"}
+	assert.Eq(t, "a", ls.First())
+	assert.Eq(t, "b", ls.Last())
+	assert.True(t, ls.Has("a"))
+	assert.False(t, ls.IsEmpty())
+	assert.Eq(t, "[a,b]", ls.Filter().String())
+	assert.Eq(t, "[a,b]", ls.Remove("").String())
+
+	t.Run("panic", func(t *testing.T) {
+		ls = arrutil.ScalarList[string]{}
+		assert.Panics(t, func() {
+			ls.First()
+		})
+		assert.Panics(t, func() {
+			ls.Last()
+		})
+	})
 }

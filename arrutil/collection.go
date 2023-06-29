@@ -92,7 +92,7 @@ var (
 //	item: the element to search.
 //	fn: the comparer function.
 //	return: the index of the element, or -1 if not found.
-func TwowaySearch(data any, item any, fn Comparer) (int, error) {
+func TwowaySearch(data, item any, fn Comparer) (int, error) {
 	if data == nil {
 		return -1, errors.New("collections.TwowaySearch: data is nil")
 	}
@@ -255,7 +255,7 @@ func Excepts(first, second any, fn Comparer) any {
 //	second: the second slice. MUST BE A SLICE.
 //	fn: the comparer function.
 //	returns: to intersect of the two slices.
-func Intersects(first any, second any, fn Comparer) any {
+func Intersects(first, second any, fn Comparer) any {
 	typeOfFirst := reflect.TypeOf(first)
 	if typeOfFirst.Kind() != reflect.Slice {
 		panic("collections.Intersects: first must be a slice")

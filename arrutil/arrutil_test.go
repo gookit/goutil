@@ -8,13 +8,6 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestReverse(t *testing.T) {
-	ss := []string{"a", "b", "c"}
-
-	arrutil.Reverse(ss)
-	assert.Eq(t, []string{"c", "b", "a"}, ss)
-}
-
 func TestStringsRemove(t *testing.T) {
 	ss := []string{"a", "b", "c"}
 	ns := arrutil.StringsRemove(ss, "b")
@@ -29,6 +22,15 @@ func TestStringsFilter(t *testing.T) {
 
 	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
 	is.Eq([]string{"a", "b"}, ss)
+}
+
+func TestStringsMap(t *testing.T) {
+	is := assert.New(t)
+
+	ss := arrutil.StringsMap([]string{"a", "b", "c"}, func(s string) string {
+		return s + "1"
+	})
+	is.Eq([]string{"a1", "b1", "c1"}, ss)
 }
 
 func TestTrimStrings(t *testing.T) {
@@ -120,6 +122,7 @@ func TestGetRandomOne(t *testing.T) {
 }
 
 func TestUnique(t *testing.T) {
+	assert.Eq(t, []int{2}, arrutil.Unique[int]([]int{2}))
 	assert.Eq(t, []int{2, 3, 4}, arrutil.Unique[int]([]int{2, 3, 2, 4}))
 	assert.Eq(t, []uint{2, 3, 4}, arrutil.Unique([]uint{2, 3, 2, 4}))
 	assert.Eq(t, []string{"ab", "bc", "cd"}, arrutil.Unique([]string{"ab", "bc", "ab", "cd"}))

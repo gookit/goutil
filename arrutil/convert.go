@@ -220,7 +220,7 @@ func AnyToString(arr any) string {
 func SliceToString(arr ...any) string { return ToString(arr) }
 
 // ToString simple and quickly convert []any to string
-func ToString(arr []any) string {
+func ToString[T any](arr []T) string {
 	// like fmt.Println([]any(nil))
 	if arr == nil {
 		return "[]"

@@ -8,24 +8,11 @@ import (
 	"github.com/gookit/goutil/mathutil"
 )
 
-// Reverse string slice [site user info 0] -> [0 info user site]
-func Reverse(ss []string) {
-	ln := len(ss)
-	for i := 0; i < ln/2; i++ {
-		li := ln - i - 1
-		ss[i], ss[li] = ss[li], ss[i]
-	}
-}
-
-// StringsRemove a value form a string slice
+// StringsRemove value form a string slice
 func StringsRemove(ss []string, s string) []string {
-	ns := make([]string, 0, len(ss))
-	for _, v := range ss {
-		if v != s {
-			ns = append(ns, v)
-		}
-	}
-	return ns
+	return StringsFilter(ss, func(el string) bool {
+		return s != el
+	})
 }
 
 // StringsFilter given strings, default will filter emtpy string.
@@ -34,8 +21,8 @@ func StringsRemove(ss []string, s string) []string {
 //
 //	// output: [a, b]
 //	ss := arrutil.StringsFilter([]string{"a", "", "b", ""})
-func StringsFilter(ss []string, filter ...func(s string) bool) []string {
-	var fn func(s string) bool
+func StringsFilter(ss []string, filter ...comdef.StringMatchFunc) []string {
+	var fn comdef.StringMatchFunc
 	if len(filter) > 0 && filter[0] != nil {
 		fn = filter[0]
 	} else {
@@ -101,32 +88,4 @@ func RandomOne[T any](arr []T) T {
 		return arr[i]
 	}
 	panic("cannot get value from nil or empty slice")
-}
-
-// Unique value in the given slice data.
-func Unique[T ~string | comdef.XintOrFloat](list []T) []T {
-	if len(list) < 2 {
-		return list
-	}
-
-	valMap := make(map[T]struct{}, len(list))
-	uniArr := make([]T, 0, len(list))
-
-	for _, t := range list {
-		if _, ok := valMap[t]; !ok {
-			valMap[t] = struct{}{}
-			uniArr = append(uniArr, t)
-		}
-	}
-	return uniArr
-}
-
-// IndexOf value in given slice.
-func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int {
-	for i, v := range list {
-		if v == val {
-			return i
-		}
-	}
-	return -1
 }

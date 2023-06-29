@@ -78,6 +78,8 @@ func TestSliceToString(t *testing.T) {
 	is := assert.New(t)
 
 	is.Eq("[]", arrutil.SliceToString(nil))
+	is.Eq("[]", arrutil.ToString[any](nil))
+	is.Eq("[a,b]", arrutil.ToString([]string{"a", "b"}))
 	is.Eq("[a,b]", arrutil.SliceToString("a", "b"))
 }
 
