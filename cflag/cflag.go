@@ -222,7 +222,7 @@ func (c *CFlags) MustParse(args []string) {
 	}
 }
 
-// Parse flags and run command
+// Parse flags and run command func
 //
 // If args is nil, will parse os.Args
 func (c *CFlags) Parse(args []string) error {

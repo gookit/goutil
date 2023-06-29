@@ -1,23 +1,65 @@
 package cflag_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestEnumString_Set(t *testing.T) {
-	es := cflag.EnumString{}
-	es.SetEnum([]string{"php", "go"})
+func TestIntVar_methods(t *testing.T) {
+	iv := cflag.NewIntVar(cflag.LimitInt(1, 10))
 
+	assert.Eq(t, 0, iv.Get())
+	assert.NoErr(t, iv.Set("1"))
+	assert.Eq(t, 1, iv.Get())
+	assert.Eq(t, "1", iv.String())
+
+	assert.Err(t, iv.Set("no-int"))
+	assert.Err(t, iv.Set("11"))
+}
+
+func TestString_methods(t *testing.T) {
+	var s cflag.String
+
+	assert.Eq(t, "", s.Get())
+	assert.NoErr(t, s.Set("val"))
+	assert.Eq(t, "val", s.Get())
+	assert.Eq(t, "val", s.String())
+}
+
+func TestStrVar_methods(t *testing.T) {
+	sv := cflag.StrVar{}
+
+	assert.Eq(t, "", sv.Get())
+	assert.NoErr(t, sv.Set("val"))
+	assert.Eq(t, "val", sv.Get())
+	assert.Eq(t, "val", sv.String())
+
+	sv = cflag.NewStrVar(func(val string) error {
+		if val == "no" {
+			return errors.New("invalid value")
+		}
+		return nil
+	})
+	assert.Err(t, sv.Set("no"))
+}
+
+func TestEnumString_methods(t *testing.T) {
+	es := cflag.NewEnumString()
+	es.WithEnum([]string{"php", "go"})
+
+	assert.NotEmpty(t, es.Enum())
 	assert.Err(t, es.Set("no-match"))
 
 	assert.NoErr(t, es.Set("go"))
 	assert.Eq(t, "go", es.String())
+	assert.Eq(t, "go", es.Get())
+	assert.Eq(t, "php,go", es.EnumString())
 }
 
-func TestConfString_Set(t *testing.T) {
+func TestConfString_methods(t *testing.T) {
 	cs := cflag.ConfString{}
 	cs.SetData(map[string]string{"key": "val"})
 
@@ -36,7 +78,7 @@ func TestConfString_Set(t *testing.T) {
 	assert.Eq(t, 123, cs.Int("age"))
 }
 
-func TestKVString_Set(t *testing.T) {
+func TestKVString_methods(t *testing.T) {
 	kv := cflag.NewKVString()
 	assert.Empty(t, kv.Data())
 
@@ -50,4 +92,40 @@ func TestKVString_Set(t *testing.T) {
 
 	assert.NoErr(t, kv.Set("name=inhere"))
 	assert.Eq(t, "inhere", kv.Str("name"))
+}
+
+func TestInts_methods(t *testing.T) {
+	its := cflag.Ints{}
+
+	assert.NoErr(t, its.Set("23"))
+	assert.NotEmpty(t, its.Get())
+	assert.Eq(t, []int{23}, its.Ints())
+	assert.Eq(t, "[23]", its.String())
+}
+
+func TestIntsString_methods(t *testing.T) {
+	its := cflag.IntsString{}
+
+	assert.NoErr(t, its.Set("23"))
+	assert.Eq(t, []int{23}, its.Ints())
+	assert.Eq(t, []int{23}, its.Get())
+
+	assert.NoErr(t, its.Set("34"))
+	assert.Eq(t, "[23,34]", its.String())
+
+	its.ValueFn = func(val int) error {
+		if val < 10 {
+			return errors.New("invalid value")
+		}
+		return nil
+	}
+	assert.Err(t, its.Set("3"))
+
+	its.SizeFn = func(ln int) error {
+		if ln > 2 {
+			return errors.New("too many values")
+		}
+		return nil
+	}
+	assert.Err(t, its.Set("45"))
 }

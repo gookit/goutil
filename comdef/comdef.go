@@ -77,3 +77,9 @@ type StringHandleFunc func(s string) string
 func (fn StringHandleFunc) Handle(s string) string {
 	return fn(s)
 }
+
+// IntCheckFunc check func
+type IntCheckFunc func(val int) error
+
+// StrCheckFunc check func
+type StrCheckFunc func(val string) error

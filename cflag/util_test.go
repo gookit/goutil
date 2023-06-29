@@ -20,6 +20,12 @@ func TestAddPrefix(t *testing.T) {
 func TestIsFlagHelpErr(t *testing.T) {
 	assert.False(t, cflag.IsFlagHelpErr(nil))
 	assert.True(t, cflag.IsFlagHelpErr(flag.ErrHelp))
+
+	// IsGoodName
+	assert.True(t, cflag.IsGoodName("name"))
+
+	// WrapColorForCode
+	assert.Eq(t, "hello <mga>keywords</>", cflag.WrapColorForCode("hello `keywords`"))
 }
 
 func TestSplitShortcut(t *testing.T) {
