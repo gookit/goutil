@@ -3,7 +3,6 @@ package arrutil
 import (
 	"errors"
 	"reflect"
-	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/comdef"
@@ -84,30 +83,6 @@ func SliceToInt64s(arr []any) []int64 {
 	return i64s
 }
 
-// StringsAsInts convert and ignore error
-func StringsAsInts(ss []string) []int {
-	ints, _ := StringsTryInts(ss)
-	return ints
-}
-
-// StringsToInts string slice to int slice
-func StringsToInts(ss []string) (ints []int, err error) {
-	return StringsTryInts(ss)
-}
-
-// StringsTryInts string slice to int slice
-func StringsTryInts(ss []string) (ints []int, err error) {
-	for _, str := range ss {
-		iVal, err := strconv.Atoi(str)
-		if err != nil {
-			return nil, err
-		}
-
-		ints = append(ints, iVal)
-	}
-	return
-}
-
 // AnyToSlice convert any(allow: array,slice) to []any
 func AnyToSlice(sl any) (ls []any, err error) {
 	rfKeys := reflect.ValueOf(sl)
@@ -134,15 +109,6 @@ func MustToStrings(arr any) []string {
 		panic(err)
 	}
 	return ret
-}
-
-// StringsToSlice convert []string to []any
-func StringsToSlice(ss []string) []any {
-	args := make([]any, len(ss))
-	for i, s := range ss {
-		args[i] = s
-	}
-	return args
 }
 
 // ToStrings convert any(allow: array,slice) to []string

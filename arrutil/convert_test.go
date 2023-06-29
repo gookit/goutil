@@ -44,12 +44,14 @@ func TestToStrings(t *testing.T) {
 	ss = arrutil.SliceToStrings([]any{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
-	as := arrutil.StringsToSlice([]string{"1", "2"})
-	is.Eq(`[]interface {}{"1", "2"}`, fmt.Sprintf("%#v", as))
-
 	ss, err = arrutil.ToStrings("b")
 	is.Nil(err)
 	is.Eq(`[]string{"b"}`, fmt.Sprintf("%#v", ss))
+
+	is.Empty(arrutil.AnyToStrings(234))
+	is.Panics(func() {
+		arrutil.MustToStrings(234)
+	})
 
 	_, err = arrutil.ToStrings([]any{[]int{1}, nil})
 	is.Err(err)
@@ -83,19 +85,12 @@ func TestSliceToString(t *testing.T) {
 	is.Eq("[a,b]", arrutil.SliceToString("a", "b"))
 }
 
-func TestStringsToInts(t *testing.T) {
+func TestAnyToSlice(t *testing.T) {
 	is := assert.New(t)
 
-	ints, err := arrutil.StringsToInts([]string{"1", "2"})
-	is.Nil(err)
-	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", ints))
-
-	_, err = arrutil.StringsToInts([]string{"a", "b"})
-	is.Err(err)
-
-	ints = arrutil.StringsAsInts([]string{"1", "2"})
-	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", ints))
-	is.Nil(arrutil.StringsAsInts([]string{"abc"}))
+	sl, err := arrutil.AnyToSlice([]int{1, 2})
+	is.NoErr(err)
+	is.Eq("[]interface {}{1, 2}", fmt.Sprintf("%#v", sl))
 }
 
 func TestConvType(t *testing.T) {

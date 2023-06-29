@@ -15,7 +15,7 @@ type ArrFormatter struct {
 	Prefix string
 	// Indent string for format each element
 	Indent string
-	// ClosePrefix string for last "]"
+	// ClosePrefix on before end char: ]
 	ClosePrefix string
 }
 
@@ -23,7 +23,6 @@ type ArrFormatter struct {
 func NewFormatter(arr any) *ArrFormatter {
 	f := &ArrFormatter{}
 	f.Src = arr
-
 	return f
 }
 
@@ -47,7 +46,6 @@ func (f *ArrFormatter) FormatTo(w io.Writer) {
 
 // Format to string
 func (f *ArrFormatter) String() string {
-	f.Format()
 	return f.Format()
 }
 

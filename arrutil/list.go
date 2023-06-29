@@ -2,7 +2,6 @@ package arrutil
 
 import (
 	"sort"
-	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/comdef"
@@ -13,11 +12,7 @@ type Ints []int
 
 // String to string
 func (is Ints) String() string {
-	ss := make([]string, len(is))
-	for i, iv := range is {
-		ss[i] = strconv.Itoa(iv)
-	}
-	return strings.Join(ss, ",")
+	return ToString(is)
 }
 
 // Has given element
@@ -84,7 +79,15 @@ func (ss Strings) First() string {
 	if len(ss) > 0 {
 		return ss[0]
 	}
-	return ""
+	panic("empty string list")
+}
+
+// Last element value.
+func (ss Strings) Last() string {
+	if len(ss) > 0 {
+		return ss[len(ss)-1]
+	}
+	panic("empty string list")
 }
 
 // ScalarList definition for any type

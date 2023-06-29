@@ -1,6 +1,7 @@
 package arrutil_test
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 
@@ -21,4 +22,18 @@ func TestNewFormatter(t *testing.T) {
 
 	assert.Eq(t, "", arrutil.FormatIndent("invalid", ""))
 	assert.Eq(t, "[]", arrutil.FormatIndent([]string{}, ""))
+
+	sl := []string{"c", "d"}
+	f := arrutil.NewFormatter(sl)
+	f.WithFn(func(f *arrutil.ArrFormatter) {
+		f.Indent = "  "
+		f.ClosePrefix = "-"
+	})
+	str = f.String()
+	assert.Eq(t, "[\n  c,\n  d\n-]", str)
+
+	f = arrutil.NewFormatter(sl)
+	w := &bytes.Buffer{}
+	f.FormatTo(w)
+	assert.Eq(t, "[c, d]", w.String())
 }

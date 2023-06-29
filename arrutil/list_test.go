@@ -18,7 +18,7 @@ func TestInts_methods(t *testing.T) {
 			arrutil.Ints{12, 23},
 			12,
 			true,
-			"12,23",
+			"[12,23]",
 		},
 	}
 
@@ -30,9 +30,19 @@ func TestInts_methods(t *testing.T) {
 
 	ints := arrutil.Ints{23, 10, 12}
 	ints.Sort()
-	assert.Eq(t, "10,12,23", ints.String())
+	assert.Eq(t, "[10,12,23]", ints.String())
 	assert.Eq(t, 10, ints.First())
 	assert.Eq(t, 23, ints.Last())
+
+	t.Run("panic", func(t *testing.T) {
+		ints = arrutil.Ints{}
+		assert.Panics(t, func() {
+			ints.First()
+		})
+		assert.Panics(t, func() {
+			ints.Last()
+		})
+	})
 }
 
 func TestStrings_methods(t *testing.T) {
@@ -59,6 +69,17 @@ func TestStrings_methods(t *testing.T) {
 	ss := arrutil.Strings{"a", "b"}
 	assert.Eq(t, "a b", ss.Join(" "))
 	assert.Eq(t, "a", ss.First())
+	assert.Eq(t, "b", ss.Last())
+
+	t.Run("panic", func(t *testing.T) {
+		ss = arrutil.Strings{}
+		assert.Panics(t, func() {
+			ss.First()
+		})
+		assert.Panics(t, func() {
+			ss.Last()
+		})
+	})
 }
 
 func TestScalarList_methods(t *testing.T) {
@@ -66,6 +87,7 @@ func TestScalarList_methods(t *testing.T) {
 	assert.Eq(t, "a", ls.First())
 	assert.Eq(t, "b", ls.Last())
 	assert.True(t, ls.Has("a"))
+	assert.False(t, ls.Has("e"))
 	assert.False(t, ls.IsEmpty())
 	assert.Eq(t, "[a,b]", ls.Filter().String())
 	assert.Eq(t, "[a,b]", ls.Remove("").String())
