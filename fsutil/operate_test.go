@@ -95,6 +95,61 @@ func TestQuickOpenFile(t *testing.T) {
 	assert.NoErr(t, fsutil.Remove(file.Name()))
 }
 
+func TestMustOpenFile(t *testing.T) {
+	assert.Panics(t, func() {
+		fsutil.MustOpenFile("/path-not-exists", os.O_RDONLY, 0666)
+	})
+}
+
+func TestOpenAppendFile(t *testing.T) {
+	fpath := "./testdata/open-append-file.txt"
+	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
+
+	file, err := fsutil.OpenAppendFile(fpath)
+	assert.NoErr(t, err)
+	assert.Eq(t, fpath, file.Name())
+
+	_, err = file.WriteString("hello")
+	assert.NoErr(t, err)
+	assert.NoErr(t, file.Close())
+
+	// reopen for write
+	file, err = fsutil.OpenAppendFile(fpath)
+	assert.NoErr(t, err)
+
+	_, err = file.WriteString(" world")
+	assert.NoErr(t, err)
+	assert.NoErr(t, file.Close())
+
+	// read all
+	s := fsutil.ReadString(fpath)
+	assert.Eq(t, "hello world", s)
+}
+
+func TestOpenTruncFile(t *testing.T) {
+	fpath := "./testdata/open-trunc-file.txt"
+	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
+
+	file, err := fsutil.OpenTruncFile(fpath)
+	assert.NoErr(t, err)
+	assert.Eq(t, fpath, file.Name())
+
+	_, err = file.WriteString("hello")
+	assert.NoErr(t, err)
+	assert.NoErr(t, file.Close())
+
+	// reopen for write
+	file, err = fsutil.OpenTruncFile(fpath)
+	assert.NoErr(t, err)
+
+	_, err = file.WriteString(" world")
+	assert.NoErr(t, err)
+
+	// read all
+	s := fsutil.ReadString(fpath)
+	assert.Eq(t, " world", s)
+}
+
 func TestMustRemove(t *testing.T) {
 	assert.Panics(t, func() {
 		fsutil.MustRm("/path-not-exist")

@@ -27,6 +27,12 @@ func TestString_methods(t *testing.T) {
 	assert.NoErr(t, s.Set("val"))
 	assert.Eq(t, "val", s.Get())
 	assert.Eq(t, "val", s.String())
+
+	assert.NoErr(t, s.Set("val1,val2"))
+	assert.Eq(t, []string{"val1", "val2"}, s.Strings())
+
+	assert.NoErr(t, s.Set("23,34"))
+	assert.Eq(t, []int{23, 34}, s.Ints(","))
 }
 
 func TestStrVar_methods(t *testing.T) {
@@ -101,6 +107,10 @@ func TestInts_methods(t *testing.T) {
 	assert.NotEmpty(t, its.Get())
 	assert.Eq(t, []int{23}, its.Ints())
 	assert.Eq(t, "[23]", its.String())
+
+	assert.True(t, its.IsRepeatable())
+	assert.NoErr(t, its.Set("34"))
+	assert.Eq(t, "[23,34]", its.String())
 }
 
 func TestIntsString_methods(t *testing.T) {
@@ -128,4 +138,27 @@ func TestIntsString_methods(t *testing.T) {
 		return nil
 	}
 	assert.Err(t, its.Set("45"))
+}
+
+func TestStrings_methods(t *testing.T) {
+	ss := cflag.Strings{}
+
+	assert.NoErr(t, ss.Set("val"))
+	assert.Eq(t, []string{"val"}, ss.Get())
+	assert.Eq(t, []string{"val"}, ss.Strings())
+
+	assert.NoErr(t, ss.Set("val2"))
+	assert.Eq(t, "val,val2", ss.String())
+	assert.True(t, ss.IsRepeatable())
+}
+
+func TestBooleans_methods(t *testing.T) {
+	bs := cflag.Booleans{}
+
+	assert.NoErr(t, bs.Set("true"))
+	assert.Eq(t, []bool{true}, bs.Bools())
+
+	assert.NoErr(t, bs.Set("false"))
+	assert.Eq(t, "[true,false]", bs.String())
+	assert.True(t, bs.IsRepeatable())
 }

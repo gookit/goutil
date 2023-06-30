@@ -145,3 +145,8 @@ func TestShellQuote(t *testing.T) {
 	assert.Eq(t, `'ab"s'`, cliutil.ShellQuote(`ab"s`))
 	assert.Eq(t, "abs", cliutil.ShellQuote("abs"))
 }
+
+func TestOutputLines(t *testing.T) {
+	assert.Empty(t, cliutil.OutputLines("\n"))
+	assert.Eq(t, []string{"a", "b"}, cliutil.OutputLines("a\nb"))
+}

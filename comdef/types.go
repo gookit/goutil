@@ -44,12 +44,12 @@ type SortedType interface {
 	Int | Uint | Float | ~string
 }
 
-// Compared type. alias of constraints.ScalarType
+// Compared type. alias of constraints.SortedType
 //
 // TODO: use type alias, will error on go1.18 Error: types.go:50: interface contains type constraints
-// type Compared = ScalarType
+// type Compared = SortedType
 type Compared interface {
-	Int | Uint | Float | ~string | ~bool
+	Int | Uint | Float | ~string
 }
 
 // ScalarType interface type.

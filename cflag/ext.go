@@ -53,9 +53,9 @@ func NewIntVar(checkFn comdef.IntCheckFunc) IntVar {
 	return IntVar{CheckFn: checkFn}
 }
 
-// Get value string
+// Get value
 func (o *IntVar) Get() any {
-	return o.str
+	return o.val
 }
 
 // Set new value
@@ -102,7 +102,7 @@ type String string
 
 // Get value
 func (s *String) Get() any {
-	return s
+	return string(*s)
 }
 
 // Set value
@@ -224,7 +224,7 @@ type Ints []int
 
 // String to string
 func (s *Ints) String() string {
-	return fmt.Sprintf("%v", *s)
+	return arrutil.ToString(*s)
 }
 
 // Get value
@@ -251,9 +251,8 @@ func (s *Ints) IsRepeatable() bool {
 	return true
 }
 
-// Strings The string flag list, repeatable
-//
-// implemented flag.Value interface
+// Strings The string flag list, repeatable.
+// eg: --names tom --names john
 type Strings []string
 
 // String input value to string
@@ -263,7 +262,7 @@ func (s *Strings) String() string {
 
 // Get value
 func (s *Strings) Get() any {
-	return s
+	return []string(*s)
 }
 
 // Set new value
@@ -272,18 +271,28 @@ func (s *Strings) Set(value string) error {
 	return nil
 }
 
+// Strings value
+func (s *Strings) Strings() []string {
+	return *s
+}
+
 // IsRepeatable on input
 func (s *Strings) IsRepeatable() bool {
 	return true
 }
 
-// Booleans The bool flag list, repeatable
-// implemented flag.Value interface
+// Booleans The bool flag list, repeatable.
+// eg: -v -v => []bool{true, true}
 type Booleans []bool
 
 // String input value to string
 func (s *Booleans) String() string {
-	return fmt.Sprintf("%v", *s)
+	return arrutil.ToString(*s)
+}
+
+// Bools value
+func (s *Booleans) Bools() []bool {
+	return *s
 }
 
 // Set new value
@@ -423,8 +432,6 @@ func (s *KVString) IsRepeatable() bool {
 }
 
 // ConfString The config-string flag, INI format, like nginx-config.
-//
-// Implemented the flag.Value interface.
 //
 // Example:
 //
