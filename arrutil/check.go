@@ -8,6 +8,17 @@ import (
 	"github.com/gookit/goutil/mathutil"
 )
 
+// SliceHas check the slice contains the given value
+func SliceHas[T comdef.ScalarType](slice []T, val T) bool {
+	for _, ele := range slice {
+		if ele == val {
+			return true
+		}
+	}
+
+	return false
+}
+
 // IntsHas check the []int contains the given value
 func IntsHas(ints []int, val int) bool {
 	for _, ele := range ints {
