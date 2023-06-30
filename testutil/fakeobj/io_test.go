@@ -8,7 +8,7 @@ import (
 )
 
 func TestNewWriter(t *testing.T) {
-	tw := fakeobj.NewWriter()
+	tw := fakeobj.NewBuffer()
 	_, err := tw.Write([]byte("hello"))
 	assert.NoErr(t, err)
 	assert.Eq(t, "hello", tw.String())

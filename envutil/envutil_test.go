@@ -80,6 +80,9 @@ func TestSetEnvs(t *testing.T) {
 	for key, val := range envMp {
 		assert.Eq(t, val, Getenv(key))
 	}
+	assert.Panics(t, func() {
+		SetEnvs("name")
+	})
 
 	UnsetEnvs(keys...)
 	for key := range envMp {

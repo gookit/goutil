@@ -48,9 +48,20 @@ func MockEnvValues(kvMap map[string]string, fn func()) {
 	}
 }
 
-// MockOsEnvByText by env text string.
-// will clear all old ENV data, use given data map.
-// will recover old ENV after fn run.
+// MockOsEnvByText by env multi line text string.
+// will clear all old ENV data, use given data map,
+// and will recover old ENV after fn run.
+//
+// Usage:
+//
+//	testutil.MockOsEnvByText(`
+//		APP_COMMAND = login
+//		APP_ENV = dev
+//		APP_DEBUG = true
+//
+//	`, func() {
+//			// do something ...
+//	})
 func MockOsEnvByText(envText string, fn func()) {
 	ss := strings.Split(envText, "\n")
 	mp := make(map[string]string, len(ss))

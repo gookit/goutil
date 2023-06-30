@@ -12,6 +12,34 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+var testSrvAddr string
+
+func TestMain(m *testing.M) {
+	s := testutil.NewEchoServer()
+	defer s.Close()
+
+	testSrvAddr = "http://" + s.Listener.Addr().String()
+	fmt.Println("server addr:", testSrvAddr)
+
+	m.Run()
+}
+
+func TestNewHTTPRequest(t *testing.T) {
+	r := testutil.NewHTTPRequest("GET", testSrvAddr+"/hello", &testutil.MD{
+		Headers: map[string]string{
+			"X-Test": "val",
+		},
+		BeforeSend: func(req *http.Request) {
+			req.Header.Set("X-Test2", "val2")
+		},
+	})
+
+	assert.Eq(t, "GET", r.Method)
+	assert.Eq(t, testSrvAddr+"/hello", r.URL.String())
+	assert.Eq(t, "val", r.Header.Get("X-Test"))
+	assert.Eq(t, "val2", r.Header.Get("X-Test2"))
+}
+
 func TestMockRequest(t *testing.T) {
 	r := http.NewServeMux()
 	r.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -31,18 +59,6 @@ func TestMockRequest(t *testing.T) {
 
 	w = testutil.MockRequest(r, "POST", "/", &testutil.MD{Body: strings.NewReader("BODY")})
 	assert.Eq(t, "hello!BODY", w.Body.String())
-}
-
-var testSrvAddr string
-
-func TestMain(m *testing.M) {
-	s := testutil.NewEchoServer()
-	defer s.Close()
-
-	testSrvAddr = "http://" + s.Listener.Addr().String()
-	fmt.Println("server addr:", testSrvAddr)
-
-	m.Run()
 }
 
 func TestNewEchoServer(t *testing.T) {

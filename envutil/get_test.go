@@ -58,3 +58,19 @@ func TestEnviron(t *testing.T) {
 		assert.Contains(t, Environ(), TestEnvName)
 	})
 }
+
+func TestSearchEnvKeys(t *testing.T) {
+	testutil.MockOsEnv(map[string]string{
+		TestEnvName: TestEnvValue,
+		"APP_NAME":  "test",
+	}, func() {
+		keys := SearchEnvKeys(TestEnvName)
+		assert.Contains(t, keys, TestEnvName)
+
+		keys = SearchEnvKeys("APP")
+		assert.Contains(t, keys, "APP_NAME")
+
+		keys = SearchEnv("test", true)
+		assert.Contains(t, keys, "APP_NAME")
+	})
+}

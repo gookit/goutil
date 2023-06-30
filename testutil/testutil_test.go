@@ -41,3 +41,9 @@ func TestRewriteStderr(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Eq(t, "Hello, playground", msg)
 }
+
+func TestNewDirEnt(t *testing.T) {
+	de := testutil.NewDirEnt("testdata/some.txt")
+	assert.NotEmpty(t, de)
+	assert.False(t, de.IsDir())
+}
