@@ -7,6 +7,20 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestSliceHas(t *testing.T) {
+	ints := []int{2, 4, 5}
+	assert.True(t, arrutil.SliceHas(ints, 2))
+	assert.False(t, arrutil.SliceHas(ints, 3))
+
+	int64s := []int64{2, 4, 5}
+	assert.True(t, arrutil.SliceHas(int64s, 2))
+	assert.False(t, arrutil.SliceHas(int64s, 3))
+
+	strs := []string{"2", "4", "5"}
+	assert.True(t, arrutil.SliceHas(strs, "2"))
+	assert.False(t, arrutil.SliceHas(strs, "3"))
+}
+
 func TestIntsHas(t *testing.T) {
 	ints := []int{2, 4, 5}
 	assert.True(t, arrutil.IntsHas(ints, 2))

@@ -101,6 +101,7 @@ func RandomOne[T any](arr []T) T
 func Unique[T ~string | comdef.XintOrFloat](list []T) []T 
 func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int 
 // source at arrutil/check.go
+func SliceHas[T comdef.ScalarType](slice []T, val T) bool
 func IntsHas(ints []int, val int) bool 
 func Int64sHas(ints []int64, val int64) bool 
 func InStrings(elem string, ss []string) bool 
@@ -163,6 +164,10 @@ func FormatIndent(arr any, indent string) string
 arrutil.IntsHas([]int{2, 4, 5}, 2) // True
 arrutil.Int64sHas([]int64{2, 4, 5}, 2) // True
 arrutil.StringsHas([]string{"a", "b"}, "a") // True
+
+arrutil.SliceHas([]int{2, 4, 5}, 2) // True
+arrutil.SliceHas([]int64{2, 4, 5}, 2) // True
+arrutil.SliceHas([]string{"a", "b"}, "a") // True
 
 // list and val interface{}
 arrutil.Contains(list, val)
