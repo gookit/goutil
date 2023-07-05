@@ -82,7 +82,7 @@ func WriteString(s string) {
 	_, _ = os.Stdout.WriteString(s)
 }
 
-// Writeln to stdout
+// Writeln string to stdout
 func Writeln(s string) {
 	_, _ = os.Stdout.WriteString(s)
 	_, _ = os.Stdout.Write([]byte("\n"))

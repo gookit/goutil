@@ -52,6 +52,13 @@ type Compared interface {
 	Int | Uint | Float | ~string
 }
 
+// SimpleType interface type. alias of ScalarType
+//
+// contains: (x)int, float, ~string, ~bool types
+type SimpleType interface {
+	Int | Uint | Float | ~string | ~bool
+}
+
 // ScalarType interface type.
 //
 // it can be ordered, that supports the operators < <= >= >.
