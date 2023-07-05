@@ -61,7 +61,7 @@ type SimpleType interface {
 
 // ScalarType interface type.
 //
-// it can be ordered, that supports the operators < <= >= >.
+// TIP: has bool type, it cannot be ordered
 //
 // contains: (x)int, float, ~string, ~bool types
 type ScalarType interface {

@@ -8,34 +8,20 @@ import (
 )
 
 func TestInts_methods(t *testing.T) {
-	tests := []struct {
-		is    arrutil.Ints
-		val   int
-		want  bool
-		want2 string
-	}{
-		{
-			arrutil.Ints{12, 23},
-			12,
-			true,
-			"[12,23]",
-		},
-	}
+	ints := arrutil.Ints[int]{23, 10, 12}
+	assert.False(t, ints.Has(999))
+	assert.Eq(t, "[23,10,12]", ints.String())
 
-	for _, tt := range tests {
-		assert.Eq(t, tt.want, tt.is.Has(tt.val))
-		assert.False(t, tt.is.Has(999))
-		assert.Eq(t, tt.want2, tt.is.String())
-	}
-
-	ints := arrutil.Ints{23, 10, 12}
 	ints.Sort()
 	assert.Eq(t, "[10,12,23]", ints.String())
 	assert.Eq(t, 10, ints.First())
 	assert.Eq(t, 23, ints.Last())
 
+	ints = arrutil.Ints[int]{}
+	assert.Eq(t, 1, ints.First(1))
+	assert.Eq(t, 2, ints.Last(2))
+
 	t.Run("panic", func(t *testing.T) {
-		ints = arrutil.Ints{}
 		assert.Panics(t, func() {
 			ints.First()
 		})
@@ -71,8 +57,11 @@ func TestStrings_methods(t *testing.T) {
 	assert.Eq(t, "a", ss.First())
 	assert.Eq(t, "b", ss.Last())
 
+	ss = arrutil.Strings{}
+	assert.Eq(t, "default1", ss.First("default1"))
+	assert.Eq(t, "default2", ss.Last("default2"))
+
 	t.Run("panic", func(t *testing.T) {
-		ss = arrutil.Strings{}
 		assert.Panics(t, func() {
 			ss.First()
 		})
@@ -82,18 +71,27 @@ func TestStrings_methods(t *testing.T) {
 	})
 }
 
-func TestScalarList_methods(t *testing.T) {
-	ls := arrutil.ScalarList[string]{"a", "", "b"}
+func TestSortedList_methods(t *testing.T) {
+	ls := arrutil.SortedList[string]{"a", "", "b"}
 	assert.Eq(t, "a", ls.First())
 	assert.Eq(t, "b", ls.Last())
 	assert.True(t, ls.Has("a"))
 	assert.False(t, ls.Has("e"))
 	assert.False(t, ls.IsEmpty())
 	assert.Eq(t, "[a,b]", ls.Filter().String())
-	assert.Eq(t, "[a,b]", ls.Remove("").String())
+
+	ls = ls.Remove("")
+	assert.Eq(t, "[a,b]", ls.String())
+
+	ls1 := arrutil.SortedList[int]{4, 3}
+	ls1.Sort()
+	assert.Eq(t, "[3,4]", ls1.String())
+
+	ls = arrutil.SortedList[string]{}
+	assert.Eq(t, "default1", ls.First("default1"))
+	assert.Eq(t, "default2", ls.Last("default2"))
 
 	t.Run("panic", func(t *testing.T) {
-		ls = arrutil.ScalarList[string]{}
 		assert.Panics(t, func() {
 			ls.First()
 		})

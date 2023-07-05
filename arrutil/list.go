@@ -8,15 +8,15 @@ import (
 )
 
 // Ints type
-type Ints []int
+type Ints[T comdef.Integer] []T
 
 // String to string
-func (is Ints) String() string {
+func (is Ints[T]) String() string {
 	return ToString(is)
 }
 
 // Has given element
-func (is Ints) Has(i int) bool {
+func (is Ints[T]) Has(i T) bool {
 	for _, iv := range is {
 		if i == iv {
 			return true
@@ -26,24 +26,47 @@ func (is Ints) Has(i int) bool {
 }
 
 // First element value.
-func (is Ints) First() int {
+func (is Ints[T]) First(defVal ...T) T {
 	if len(is) > 0 {
 		return is[0]
 	}
-	panic("empty int slice")
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	panic("empty integer slice")
 }
 
 // Last element value.
-func (is Ints) Last() int {
+func (is Ints[T]) Last(defVal ...T) T {
 	if len(is) > 0 {
 		return is[len(is)-1]
 	}
-	panic("empty int slice")
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	panic("empty integer slice")
 }
 
 // Sort the int slice
-func (is Ints) Sort() {
-	sort.Ints(is)
+func (is Ints[T]) Sort() {
+	sort.Sort(is)
+}
+
+// Len get length
+func (is Ints[T]) Len() int {
+	return len(is)
+}
+
+// Less compare two elements
+func (is Ints[T]) Less(i, j int) bool {
+	return is[i] < is[j]
+}
+
+// Swap elements by indexes
+func (is Ints[T]) Swap(i, j int) {
+	is[i], is[j] = is[j], is[i]
 }
 
 // Strings type
@@ -75,41 +98,69 @@ func (ss Strings) Contains(sub string) bool {
 }
 
 // First element value.
-func (ss Strings) First() string {
+func (ss Strings) First(defVal ...string) string {
 	if len(ss) > 0 {
 		return ss[0]
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	panic("empty string list")
 }
 
 // Last element value.
-func (ss Strings) Last() string {
+func (ss Strings) Last(defVal ...string) string {
 	if len(ss) > 0 {
 		return ss[len(ss)-1]
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	panic("empty string list")
 }
 
-// ScalarList definition for any type
-type ScalarList[T comdef.ScalarType] []T
+// Sort the string slice
+func (ss Strings) Sort() {
+	sort.Strings(ss)
+}
+
+// SortedList definition for compared type
+type SortedList[T comdef.Compared] []T
+
+// Len get length
+func (ls SortedList[T]) Len() int {
+	return len(ls)
+}
+
+// Less compare two elements
+func (ls SortedList[T]) Less(i, j int) bool {
+	return ls[i] < ls[j]
+}
+
+// Swap elements by indexes
+func (ls SortedList[T]) Swap(i, j int) {
+	ls[i], ls[j] = ls[j], ls[i]
+}
 
 // IsEmpty check
-func (ls ScalarList[T]) IsEmpty() bool {
+func (ls SortedList[T]) IsEmpty() bool {
 	return len(ls) == 0
 }
 
 // String to string
-func (ls ScalarList[T]) String() string {
+func (ls SortedList[T]) String() string {
 	return ToString(ls)
 }
 
 // Has given element
-func (ls ScalarList[T]) Has(el T) bool {
+func (ls SortedList[T]) Has(el T) bool {
 	return ls.Contains(el)
 }
 
 // Contains given element
-func (ls ScalarList[T]) Contains(el T) bool {
+func (ls SortedList[T]) Contains(el T) bool {
 	for _, v := range ls {
 		if v == el {
 			return true
@@ -119,39 +170,47 @@ func (ls ScalarList[T]) Contains(el T) bool {
 }
 
 // First element value.
-func (ls ScalarList[T]) First() T {
+func (ls SortedList[T]) First(defVal ...T) T {
 	if len(ls) > 0 {
 		return ls[0]
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	panic("empty list")
 }
 
 // Last element value.
-func (ls ScalarList[T]) Last() T {
+func (ls SortedList[T]) Last(defVal ...T) T {
 	if ln := len(ls); ln > 0 {
 		return ls[ln-1]
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	panic("empty list")
 }
 
 // Remove given element
-func (ls ScalarList[T]) Remove(el T) ScalarList[T] {
+func (ls SortedList[T]) Remove(el T) SortedList[T] {
 	return Filter(ls, func(v T) bool {
 		return v != el
 	})
 }
 
 // Filter the slice, default will filter zero value.
-func (ls ScalarList[T]) Filter(filter ...comdef.MatchFunc[T]) ScalarList[T] {
+func (ls SortedList[T]) Filter(filter ...comdef.MatchFunc[T]) SortedList[T] {
 	return Filter(ls, filter...)
 }
 
 // Map the slice to new slice. TODO syntax ERROR: Method cannot have type parameters
-// func (ls ScalarList[T]) Map[V any](mapFn MapFn[T, V]) ScalarList[V] {
+// func (ls SortedList[T]) Map[V any](mapFn MapFn[T, V]) SortedList[V] {
 // 	return Map(ls, mapFn)
 // }
 
 // Sort the slice
-// func (ls ScalarList[T]) Sort() {
-// sort.Sort(ls)
-// }
+func (ls SortedList[T]) Sort() {
+	sort.Sort(ls)
+}

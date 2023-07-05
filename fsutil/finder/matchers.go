@@ -239,9 +239,9 @@ var timeNumReg = regexp.MustCompile(`(-?\d+)`)
 //
 // Usage:
 //
-//	f := EmptyFinder()
-//	f.AddFilter(HumanModTime(">10m")) // before 10 minutes
-//	f.AddFilter(HumanModTime("<10m")) // latest 10 minutes, to Now
+//	f := finder.NewFinder()
+//	f.Include(HumanModTime(">10m")) // before 10 minutes
+//	f.Include(HumanModTime("<10m")) // latest 10 minutes, to Now
 func HumanModTime(expr string) MatcherFunc {
 	opt := &timex.ParseRangeOpt{AutoSort: true}
 	// convert > to <, < to >
