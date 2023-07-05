@@ -6,11 +6,13 @@ import (
 )
 
 // Buffer wrap and extends the bytes.Buffer, add some useful methods
+// and implements the io.Writer, io.Closer and stdio.Flusher interfaces
 type Buffer struct {
 	bytes.Buffer
 	// custom error for testing
 	CloseErr error
 	FlushErr error
+	SyncErr  error
 }
 
 // NewBuffer instance
@@ -116,4 +118,9 @@ func (b *Buffer) Close() error {
 // Flush buffer
 func (b *Buffer) Flush() error {
 	return b.FlushErr
+}
+
+// Sync anf flush buffer
+func (b *Buffer) Sync() error {
+	return b.SyncErr
 }

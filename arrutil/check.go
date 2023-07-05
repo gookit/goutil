@@ -15,12 +15,11 @@ func SliceHas[T comdef.ScalarType](slice []T, val T) bool {
 			return true
 		}
 	}
-
 	return false
 }
 
-// IntsHas check the []int contains the given value
-func IntsHas(ints []int, val int) bool {
+// IntsHas check the []comdef.Integer contains the given value
+func IntsHas[T comdef.Integer](ints []T, val T) bool {
 	for _, ele := range ints {
 		if ele == val {
 			return true
@@ -39,9 +38,6 @@ func Int64sHas(ints []int64, val int64) bool {
 	return false
 }
 
-// InStrings alias of StringsHas()
-func InStrings(elem string, ss []string) bool { return StringsHas(ss, elem) }
-
 // StringsHas check the []string contains the given element
 func StringsHas(ss []string, val string) bool {
 	for _, ele := range ss {
@@ -51,6 +47,9 @@ func StringsHas(ss []string, val string) bool {
 	}
 	return false
 }
+
+// InStrings alias of StringsHas()
+func InStrings(elem string, ss []string) bool { return StringsHas(ss, elem) }
 
 // NotIn check the given value whether not in the list
 func NotIn[T comdef.ScalarType](value T, list []T) bool {

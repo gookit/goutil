@@ -26,6 +26,10 @@ func TestIntsHas(t *testing.T) {
 	assert.True(t, arrutil.IntsHas(ints, 2))
 	assert.True(t, arrutil.IntsHas(ints, 5))
 	assert.False(t, arrutil.IntsHas(ints, 3))
+
+	uints := []uint{2, 4, 5}
+	assert.True(t, arrutil.IntsHas(uints, 2))
+	assert.False(t, arrutil.IntsHas(uints, 3))
 }
 
 func TestInt64sHas(t *testing.T) {

@@ -26,6 +26,7 @@ func TestBuffer_WriteAny(t *testing.T) {
 
 	assert.NoErr(t, buf.Close())
 	assert.NoErr(t, buf.Flush())
+	assert.NoErr(t, buf.Sync())
 
 	buf.WriteStr1Nl("abc")
 	assert.Eq(t, "abc\n", buf.ResetAndGet())

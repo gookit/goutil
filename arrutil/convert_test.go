@@ -91,6 +91,9 @@ func TestAnyToSlice(t *testing.T) {
 	sl, err := arrutil.AnyToSlice([]int{1, 2})
 	is.NoErr(err)
 	is.Eq("[]interface {}{1, 2}", fmt.Sprintf("%#v", sl))
+
+	_, err = arrutil.AnyToSlice(123)
+	is.Err(err)
 }
 
 func TestConvType(t *testing.T) {

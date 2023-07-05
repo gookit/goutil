@@ -1,6 +1,7 @@
 package byteutil_test
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/gookit/goutil/byteutil"
@@ -15,4 +16,22 @@ func TestNewChanPool(t *testing.T) {
 
 	p.Put([]byte("abc"))
 	assert.Equal(t, []byte("abc"), p.Get())
+
+	// test concurrent get and put
+	t.Run("concurrent", func(t *testing.T) {
+		p := byteutil.NewChanPool(10, 8, 8)
+		wg := sync.WaitGroup{}
+
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func(i int) {
+				p.Put([]byte("abc"))
+				assert.Equal(t, []byte("abc"), p.Get())
+				wg.Done()
+			}(i)
+		}
+
+		p.Put([]byte("abc"))
+		assert.Equal(t, []byte("abc"), p.Get())
+	})
 }

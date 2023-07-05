@@ -13,14 +13,14 @@ package byteutil
 // from https://github.com/minio/minio/blob/master/internal/bpool/bpool.go
 type ChanPool struct {
 	c    chan []byte
-	w    int
-	wcap int
+	w    int // init byte width
+	wcap int // set byte cap
 }
 
 // NewChanPool instance
-func NewChanPool(maxSize int, width int, capWidth int) *ChanPool {
+func NewChanPool(chSize int, width int, capWidth int) *ChanPool {
 	return &ChanPool{
-		c:    make(chan []byte, maxSize),
+		c:    make(chan []byte, chSize),
 		w:    width,
 		wcap: capWidth,
 	}
@@ -30,8 +30,7 @@ func NewChanPool(maxSize int, width int, capWidth int) *ChanPool {
 // available in the pool.
 func (bp *ChanPool) Get() (b []byte) {
 	select {
-	case b = <-bp.c:
-	// reuse existing buffer
+	case b = <-bp.c: // reuse existing buffer
 	default:
 		// create new buffer
 		if bp.wcap > 0 {
