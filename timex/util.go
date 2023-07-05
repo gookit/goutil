@@ -163,9 +163,9 @@ func ensureOpt(opt *ParseRangeOpt) *ParseRangeOpt {
 //	"-5h~-1h"       	=> 5 hours ago to 1 hour ago
 //	"1h~5h"         	=> 1 hour after to 5 hours after
 //	"-1h~1h"        	=> 1 hour ago to 1 hour after
-//	"-1h"            	=> 1 hour ago to feature. eq "-1h,"
+//	"-1h"            	=> 1 hour ago to feature. eq "-1h~"
 //	"-1h~0"          	=> 1 hour ago to now.
-//	"< -1h" OR "~-1h"   => 1 hour ago. eq ",-1h"
+//	"< -1h" OR "~-1h"   => 1 hour ago.
 //	"> 1h" OR "1h"     	=> 1 hour after to feature
 //	// keyword: now, today, yesterday, tomorrow
 //	"today"          => today start to today end

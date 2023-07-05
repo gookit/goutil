@@ -65,18 +65,18 @@ func TestNewEchoServer(t *testing.T) {
 	r, err := http.Post(testSrvAddr, "text/plain", strings.NewReader("hello!"))
 	assert.NoErr(t, err)
 
-	rpl := testutil.ParseRespToReply(r)
-	dump.P(rpl)
-	assert.Eq(t, "POST", rpl.Method)
-	assert.Eq(t, "text/plain", rpl.ContentType())
-	assert.Eq(t, "hello!", rpl.Body)
+	rr := testutil.ParseRespToReply(r)
+	dump.P(rr)
+	assert.Eq(t, "POST", rr.Method)
+	assert.Eq(t, "text/plain", rr.ContentType())
+	assert.Eq(t, "hello!", rr.Body)
 
 	r, err = http.Post(testSrvAddr, "application/json", strings.NewReader(`{"name": "inhere", "age": 18}`))
 	assert.NoErr(t, err)
 
-	rpl = testutil.ParseRespToReply(r)
-	dump.P(rpl)
-	assert.Eq(t, "POST", rpl.Method)
-	assert.Eq(t, "application/json", rpl.ContentType())
-	assert.Eq(t, `{"name": "inhere", "age": 18}`, rpl.Body)
+	rr = testutil.ParseRespToReply(r)
+	dump.P(rr)
+	assert.Eq(t, "POST", rr.Method)
+	assert.Eq(t, "application/json", rr.ContentType())
+	assert.Eq(t, `{"name": "inhere", "age": 18}`, rr.Body)
 }

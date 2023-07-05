@@ -56,8 +56,8 @@ func EmptyFinder() *Finder { return NewEmpty() }
 //
 // Usage:
 //
-//	f := NewFinder("/path/to/dir").Find()
-//	for el := range f {
+//	f := NewFinder("/path/to/dir")
+//	for el := range f.Find() {
 //		fmt.Println(el.Path())
 //	}
 func (f *Finder) Find() <-chan Elem {
