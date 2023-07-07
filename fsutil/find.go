@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -27,7 +26,7 @@ func FirstExistsFile(paths ...string) string {
 }
 
 // MatchPaths given paths by custom mather func.
-func MatchPaths(paths []string, matcher PathMatcher) []string {
+func MatchPaths(paths []string, matcher PathMatchFunc) []string {
 	var ret []string
 	for _, p := range paths {
 		if matcher(p) {
@@ -38,7 +37,7 @@ func MatchPaths(paths []string, matcher PathMatcher) []string {
 }
 
 // MatchFirst filter paths by filter func and return first match path.
-func MatchFirst(paths []string, matcher PathMatcher, defaultPath string) string {
+func MatchFirst(paths []string, matcher PathMatchFunc, defaultPath string) string {
 	for _, p := range paths {
 		if matcher(p) {
 			return p
@@ -93,7 +92,7 @@ func WalkDir(dir string, fn fs.WalkDirFunc) error {
 // Usage:
 //
 //	files := fsutil.Glob("/path/to/dir/*.go")
-func Glob(pattern string, fls ...comdef.StringMatchFunc) []string {
+func Glob(pattern string, fls ...NameMatchFunc) []string {
 	files, _ := filepath.Glob(pattern)
 	if len(fls) == 0 || len(files) == 0 {
 		return files

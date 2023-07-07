@@ -49,6 +49,60 @@ func MkParentDir(fpath string) error {
 }
 
 // ************************************************************
+//	options for open file
+// ************************************************************
+
+// OpenOption for open file
+type OpenOption struct {
+	// file open flag. see FsCWTFlags
+	Flag int
+	// file perm. see DefaultFilePerm
+	Perm os.FileMode
+}
+
+// OpenOptionFunc for open/write file
+type OpenOptionFunc func(*OpenOption)
+
+// NewOpenOption create a new OpenOption instance
+//
+// Defaults:
+//   - open flags: FsCWTFlags (override write)
+//   - file Perm: DefaultFilePerm
+func NewOpenOption(optFns ...OpenOptionFunc) *OpenOption {
+	opt := &OpenOption{
+		Flag: FsCWTFlags,
+		Perm: DefaultFilePerm,
+	}
+
+	for _, fn := range optFns {
+		fn(opt)
+	}
+	return opt
+}
+
+// OpenOptOrNew create a new OpenOption instance if opt is nil
+func OpenOptOrNew(opt *OpenOption) *OpenOption {
+	if opt == nil {
+		return NewOpenOption()
+	}
+	return opt
+}
+
+// WithFlag set file open flag
+func WithFlag(flag int) OpenOptionFunc {
+	return func(opt *OpenOption) {
+		opt.Flag = flag
+	}
+}
+
+// WithPerm set file perm
+func WithPerm(perm os.FileMode) OpenOptionFunc {
+	return func(opt *OpenOption) {
+		opt.Perm = perm
+	}
+}
+
+// ************************************************************
 //	open/create files
 // ************************************************************
 

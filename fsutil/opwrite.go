@@ -7,6 +7,10 @@ import (
 	"github.com/gookit/goutil/basefn"
 )
 
+// ************************************************************
+//	temp file or dir
+// ************************************************************
+
 // OSTempFile create a temp file on os.TempDir()
 //
 // Usage:
@@ -48,6 +52,22 @@ func TempDir(dir, pattern string) (string, error) {
 //	write, copy files
 // ************************************************************
 
+// MustSave create file and write contents to file, panic on error.
+//
+// data type allow: string, []byte, io.Reader
+// default option see NewOpenOption()
+func MustSave(filePath string, data any, optFns ...OpenOptionFunc) {
+	basefn.MustOK(SaveFile(filePath, data, optFns...))
+}
+
+// SaveFile create file and write contents to file.
+//
+// default option see NewOpenOption()
+func SaveFile(filePath string, data any, optFns ...OpenOptionFunc) error {
+	opt := NewOpenOption(optFns...)
+	return WriteFile(filePath, data, opt.Perm, opt.Flag)
+}
+
 // PutContents create file and write contents to file at once.
 //
 // data type allow: string, []byte, io.Reader
@@ -62,7 +82,6 @@ func PutContents(filePath string, data any, fileFlag ...int) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-
 	return WriteOSFile(f, data)
 }
 

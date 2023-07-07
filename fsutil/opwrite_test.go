@@ -41,3 +41,23 @@ func TestWriteFile(t *testing.T) {
 		_ = fsutil.WriteFile(tempFile, []string{"hello"}, 0644)
 	})
 }
+
+func TestMustSave(t *testing.T) {
+	opt := fsutil.OpenOptOrNew(nil)
+	assert.NotNil(t, opt)
+	opt = fsutil.OpenOptOrNew(fsutil.NewOpenOption())
+	assert.NotNil(t, opt)
+
+	testFile := "./testdata/must-save.txt"
+
+	fsutil.MustSave(testFile, []byte("hello"),
+		fsutil.WithFlag(fsutil.FsCWTFlags),
+		fsutil.WithPerm(0644),
+	)
+	assert.Eq(t, "hello", fsutil.ReadString(testFile))
+
+	// write invalid data
+	assert.Panics(t, func() {
+		fsutil.MustSave(testFile, []string{"hello"})
+	})
+}

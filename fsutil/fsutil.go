@@ -11,14 +11,6 @@ import (
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
-const (
-	// MimeSniffLen sniff Length, use for detect file mime type
-	MimeSniffLen = 512
-)
-
-// PathMatcher path matcher func
-type PathMatcher func(path string) bool
-
 // DetectMime detect file mime type. alias of MimeType()
 func DetectMime(path string) string {
 	return MimeType(path)

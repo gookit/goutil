@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"text/scanner"
+
+	"github.com/gookit/goutil/basefn"
 )
 
 // NewIOReader instance by input file path or io.Reader
@@ -73,12 +75,11 @@ func ReadStringOrErr(in any) (string, error) {
 func ReadAll(in any) []byte { return GetContents(in) }
 
 // GetContents read contents from path or io.Reader, will panic on in type error
-func GetContents(in any) []byte {
-	r, err := NewIOReader(in)
-	if err != nil {
-		panic(err)
-	}
-	return MustReadReader(r)
+func GetContents(in any) []byte { return MustRead(in) }
+
+// MustRead read contents from path or io.Reader, will panic on in type error
+func MustRead(in any) []byte {
+	return basefn.Must(ReadOrErr(in))
 }
 
 // ReadOrErr read contents from path or io.Reader, will panic on in type error
