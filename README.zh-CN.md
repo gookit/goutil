@@ -90,21 +90,18 @@ u64Val = goutil.Uint("2") // 2
 
 ```go
 // source at arrutil/arrutil.go
-func Reverse(ss []string) 
 func StringsRemove(ss []string, s string) []string 
-func StringsFilter(ss []string, filter ...func(s string) bool) []string 
+func StringsFilter(ss []string, filter ...comdef.StringMatchFunc) []string 
 func StringsMap(ss []string, mapFn func(s string) string) []string 
 func TrimStrings(ss []string, cutSet ...string) []string 
 func GetRandomOne[T any](arr []T) T 
 func RandomOne[T any](arr []T) T 
-func Unique[T ~string | comdef.XintOrFloat](list []T) []T 
-func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int 
 // source at arrutil/check.go
-func SliceHas[T comdef.ScalarType](slice []T, val T) bool
-func IntsHas(ints []int, val int) bool 
+func SliceHas[T comdef.ScalarType](slice []T, val T) bool 
+func IntsHas[T comdef.Integer](ints []T, val T) bool 
 func Int64sHas(ints []int64, val int64) bool 
-func InStrings(elem string, ss []string) bool 
 func StringsHas(ss []string, val string) bool 
+func InStrings(elem string, ss []string) bool 
 func NotIn[T comdef.ScalarType](value T, list []T) bool 
 func In[T comdef.ScalarType](value T, list []T) bool 
 func ContainsAll[T comdef.ScalarType](list, values []T) bool 
@@ -114,20 +111,17 @@ func HasValue(arr, val any) bool
 func Contains(arr, val any) bool 
 func NotContains(arr, val any) bool 
 // source at arrutil/collection.go
-func TwowaySearch(data any, item any, fn Comparer) (int, error) 
+func TwowaySearch(data, item any, fn Comparer) (int, error) 
 func MakeEmptySlice(itemType reflect.Type) any 
 func CloneSlice(data any) any 
 func Differences[T any](first, second []T, fn Comparer) []T 
 func Excepts(first, second any, fn Comparer) any 
-func Intersects(first any, second any, fn Comparer) any 
+func Intersects(first, second any, fn Comparer) any 
 func Union(first, second any, fn Comparer) any 
 func Find(source any, fn Predicate) (any, error) 
 func FindOrDefault(source any, fn Predicate, defaultValue any) any 
 func TakeWhile(data any, fn Predicate) any 
 func ExceptWhile(data any, fn Predicate) any 
-// source at arrutil/collection_gte118.go
-func Map[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V 
-func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V 
 // source at arrutil/convert.go
 func JoinStrings(sep string, ss ...string) string 
 func StringsJoin(sep string, ss ...string) string 
@@ -135,25 +129,36 @@ func JoinSlice(sep string, arr ...any) string
 func ToInt64s(arr any) (ret []int64, err error) 
 func MustToInt64s(arr any) []int64 
 func SliceToInt64s(arr []any) []int64 
-func StringsAsInts(ss []string) []int 
-func StringsToInts(ss []string) (ints []int, err error) 
-func StringsTryInts(ss []string) (ints []int, err error) 
 func AnyToSlice(sl any) (ls []any, err error) 
 func AnyToStrings(arr any) []string 
 func MustToStrings(arr any) []string 
-func StringsToSlice(ss []string) []any 
 func ToStrings(arr any) (ret []string, err error) 
 func SliceToStrings(arr []any) []string 
 func QuietStrings(arr []any) []string 
 func ConvType[T any, R any](arr []T, newElemTyp R) ([]R, error) 
 func AnyToString(arr any) string 
 func SliceToString(arr ...any) string 
-func ToString(arr []any) string 
+func ToString[T any](arr []T) string 
 func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V 
 func CombineToSMap(keys, values []string) map[string]string 
 // source at arrutil/format.go
 func NewFormatter(arr any) *ArrFormatter 
 func FormatIndent(arr any, indent string) string 
+// source at arrutil/ints.go
+func IntsToString[T comdef.Integer](ints []T) string 
+// source at arrutil/process.go
+func Reverse[T any](ls []T) 
+func Remove[T comdef.Compared](ls []T, val T) []T 
+func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T 
+func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V 
+func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V 
+func Unique[T ~string | comdef.XintOrFloat](list []T) []T 
+func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int 
+// source at arrutil/strings.go
+func StringsToSlice(ss []string) []any 
+func StringsAsInts(ss []string) []int 
+func StringsToInts(ss []string) (ints []int, err error) 
+func StringsTryInts(ss []string) (ints []int, err error) 
 ```
 #### ArrUtil Usage
 
@@ -163,10 +168,6 @@ func FormatIndent(arr any, indent string) string
 arrutil.IntsHas([]int{2, 4, 5}, 2) // True
 arrutil.Int64sHas([]int64{2, 4, 5}, 2) // True
 arrutil.StringsHas([]string{"a", "b"}, "a") // True
-
-arrutil.SliceHas([]int{2, 4, 5}, 2) // True
-arrutil.SliceHas([]int64{2, 4, 5}, 2) // True
-arrutil.SliceHas([]string{"a", "b"}, "a") // True
 
 // list and val interface{}
 arrutil.Contains(list, val)
@@ -204,7 +205,7 @@ func IsNumChar(c byte) bool
 // source at byteutil/encoder.go
 func NewStdEncoder(encFn func(src []byte) []byte, decFn func(src []byte) ([]byte, error)) *StdEncoder 
 // source at byteutil/pool.go
-func NewChanPool(maxSize int, width int, capWidth int) *ChanPool 
+func NewChanPool(chSize int, width int, capWidth int) *ChanPool 
 ```
 
 ### Cflag
@@ -222,6 +223,9 @@ func NewEmpty(fns ...func(c *CFlags)) *CFlags
 func WithDesc(desc string) func(c *CFlags) 
 func WithVersion(version string) func(c *CFlags) 
 // source at cflag/ext.go
+func LimitInt(min, max int) comdef.IntCheckFunc 
+func NewIntVar(checkFn comdef.IntCheckFunc) IntVar 
+func NewStrVar(checkFn comdef.StrCheckFunc) StrVar 
 func NewEnumString(enum ...string) EnumString 
 func NewKVString() KVString 
 // source at cflag/optarg.go
@@ -311,10 +315,10 @@ func ReadFirst(question string) (string, error)
 func ReadFirstByte(question string) (byte, error) 
 func ReadFirstRune(question string) (rune, error) 
 func ReadAsBool(tip string, defVal bool) bool 
-func ReadPassword(question ...string) string 
 func Confirm(tip string, defVal ...bool) bool 
 func InputIsYes(ans string) bool 
 func ByteIsYes(ans byte) bool 
+func ReadPassword(question ...string) string 
 ```
 
 #### CLI Util Usage
@@ -670,11 +674,19 @@ func IsAbsPath(aPath string) bool
 func IsImageFile(path string) bool 
 func IsZipFile(filepath string) bool 
 func PathMatch(pattern, s string) bool 
+// source at fsutil/define.go
+func NewEntry(fPath string, ent fs.DirEntry) Entry 
+func NewFileInfo(fPath string, info fs.FileInfo) FileInfo 
 // source at fsutil/find.go
+func FirstExists(paths ...string) string 
+func FirstExistsDir(paths ...string) string 
+func FirstExistsFile(paths ...string) string 
+func MatchPaths(paths []string, matcher PathMatchFunc) []string 
+func MatchFirst(paths []string, matcher PathMatchFunc, defaultPath string) string 
 func SearchNameUp(dirPath, name string) string 
 func SearchNameUpx(dirPath, name string) (string, bool) 
 func WalkDir(dir string, fn fs.WalkDirFunc) error 
-func Glob(pattern string, fls ...comdef.StringMatchFunc) []string 
+func Glob(pattern string, fls ...NameMatchFunc) []string 
 func GlobWithFunc(pattern string, fn func(filePath string) error) (err error) 
 func OnlyFindDir(_ string, ent fs.DirEntry) bool 
 func OnlyFindFile(_ string, ent fs.DirEntry) bool 
@@ -685,10 +697,7 @@ func ExcludeSuffix(ss ...string) FilterFunc
 func ApplyFilters(fPath string, ent fs.DirEntry, filters []FilterFunc) bool 
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
 // source at fsutil/fsutil.go
-func OSTempFile(pattern string) (*os.File, error) 
-func TempFile(dir, pattern string) (*os.File, error) 
-func OSTempDir(pattern string) (string, error) 
-func TempDir(dir, pattern string) (string, error) 
+func DetectMime(path string) string 
 func MimeType(path string) (mime string) 
 func ReaderMimeType(r io.Reader) (mime string) 
 func JoinPaths(elem ...string) string 
@@ -714,6 +723,10 @@ func Mkdir(dirPath string, perm os.FileMode) error
 func MkDirs(perm os.FileMode, dirPaths ...string) error 
 func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error 
 func MkParentDir(fpath string) error 
+func NewOpenOption(optFns ...OpenOptionFunc) *OpenOption 
+func OpenOptOrNew(opt *OpenOption) *OpenOption 
+func WithFlag(flag int) OpenOptionFunc 
+func WithPerm(perm os.FileMode) OpenOptionFunc 
 func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) 
 func MustOpenFile(filepath string, flag int, perm os.FileMode) *os.File 
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) 
@@ -742,11 +755,18 @@ func ReadString(in any) string
 func ReadStringOrErr(in any) (string, error) 
 func ReadAll(in any) []byte 
 func GetContents(in any) []byte 
+func MustRead(in any) []byte 
 func ReadOrErr(in any) ([]byte, error) 
 func ReadExistFile(filePath string) []byte 
 func TextScanner(in any) *scanner.Scanner 
 func LineScanner(in any) *bufio.Scanner 
 // source at fsutil/opwrite.go
+func OSTempFile(pattern string) (*os.File, error) 
+func TempFile(dir, pattern string) (*os.File, error) 
+func OSTempDir(pattern string) (string, error) 
+func TempDir(dir, pattern string) (string, error) 
+func MustSave(filePath string, data any, optFns ...OpenOptionFunc) 
+func SaveFile(filePath string, data any, optFns ...OpenOptionFunc) error 
 func PutContents(filePath string, data any, fileFlag ...int) (int, error) 
 func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) error 
 func WriteOSFile(f *os.File, data any) (n int, err error) 
@@ -868,6 +888,7 @@ func OutRange[T comdef.IntOrFloat](val, min, max T) bool
 func InUintRange[T comdef.Uint](val, min, max T) bool 
 // source at mathutil/convert.go
 func Int(in any) (int, error) 
+func SafeInt(in any) int 
 func QuietInt(in any) int 
 func MustInt(in any) int 
 func IntOrPanic(in any) int 
@@ -875,6 +896,7 @@ func IntOrErr(in any) (iVal int, err error)
 func ToInt(in any) (iVal int, err error) 
 func StrInt(s string) int 
 func Uint(in any) (uint64, error) 
+func SafeUint(in any) uint64 
 func QuietUint(in any) uint64 
 func MustUint(in any) uint64 
 func UintOrErr(in any) (uint64, error) 
@@ -1060,7 +1082,7 @@ func MapStruct(srcSt, dstSt any)
 // source at structs/data.go
 func NewLiteData(data map[string]any) *Data 
 func NewData() *Data 
-func NewOrderedMap(len int) *OrderedMap 
+func NewOrderedData(cap int) *OrderedData 
 // source at structs/init.go
 func Init(ptr any, optFns ...InitOptFunc) error 
 func InitDefaults(ptr any, optFns ...InitOptFunc) error 
@@ -1297,7 +1319,7 @@ func FirstLine(output string) string
 // source at strutil/strutil.go
 func OrCond(cond bool, s1, s2 string) string 
 func OrElse(s, orVal string) string 
-func OrHandle(s string, fn func(s string) string) string 
+func OrHandle(s string, fn comdef.StringHandleFunc) string 
 func Valid(ss ...string) string 
 func Replaces(str string, pairs map[string]string) string 
 func NewReplacer(pairs map[string]string) *strings.Replacer 
@@ -1374,8 +1396,9 @@ func UserConfigDir(subPath string) string
 func ExpandPath(path string) string 
 func ExpandHome(path string) string 
 // source at sysutil/user_nonwin.go
-func ChangeUserByName(newUname string) (err error) 
-func ChangeUserUidGid(newUID int, newGid int) (err error) 
+func ChangeUserByName(newUname string) error 
+func ChangeUserUidGid(newUID int, newGid int) error 
+func ChangeUserUIDGid(newUID int, newGid int) (err error) 
 ```
 
 ### Testing Utils
@@ -1393,10 +1416,9 @@ func MockOsEnv(mp map[string]string, fn func())
 func ClearOSEnv() 
 func RevertOSEnv() 
 func MockCleanOsEnv(mp map[string]string, fn func()) 
-// source at testutil/fsmock.go
-func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry 
 // source at testutil/httpmock.go
 func NewHttpRequest(method, path string, data *MD) *http.Request 
+func NewHTTPRequest(method, path string, data *MD) *http.Request 
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder 
 func TestMain(m *testing.M) 
 func NewEchoServer() *httptest.Server 
@@ -1412,6 +1434,7 @@ func RewriteStderr()
 func RestoreStderr(printData ...bool) (s string) 
 // source at testutil/writer.go
 func NewTestWriter() *TestWriter 
+func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry 
 ```
 
 ### Timex
