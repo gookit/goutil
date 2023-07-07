@@ -29,6 +29,18 @@ func (m SMap) HasValue(val string) bool {
 	return false
 }
 
+// Load data to the map
+func (m SMap) Load(data map[string]string) {
+	for k, v := range data {
+		m[k] = v
+	}
+}
+
+// Set value to the data map
+func (m SMap) Set(key string, val any) {
+	m[key] = strutil.MustString(val)
+}
+
 // Value get from the data map
 func (m SMap) Value(key string) (string, bool) {
 	val, ok := m[key]

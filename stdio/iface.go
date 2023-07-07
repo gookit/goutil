@@ -7,6 +7,11 @@ type Flusher interface {
 	Flush() error
 }
 
+// Syncer interface
+type Syncer interface {
+	Sync() error
+}
+
 // FlushWriter is the interface satisfied by logging destinations.
 type FlushWriter interface {
 	Flusher
@@ -24,7 +29,7 @@ type FlushCloseWriter interface {
 // SyncCloseWriter is the interface satisfied by logging destinations.
 // such as os.File
 type SyncCloseWriter interface {
-	Flusher
+	Syncer
 	// WriteCloser the output writer
 	io.WriteCloser
 }

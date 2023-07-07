@@ -1,17 +1,20 @@
 package fakeobj
 
 import (
-	"bytes"
 	"errors"
+
+	"github.com/gookit/goutil/byteutil"
 )
 
-// Writer implements the io.Writer, io.Flusher, io.Closer.
+// Writer implements the io.Writer, stdio.Flusher, io.Closer.
 type Writer struct {
-	bytes.Buffer
+	byteutil.Buffer
 	// ErrOnWrite return error on write, useful for testing
 	ErrOnWrite bool
 	// ErrOnFlush return error on flush, useful for testing
 	ErrOnFlush bool
+	// ErrOnSync return error on flush, useful for testing
+	ErrOnSync bool
 	// ErrOnClose return error on close, useful for testing
 	ErrOnClose bool
 }
@@ -67,10 +70,20 @@ func (w *Writer) Close() error {
 	return nil
 }
 
-// Flush implements
+// Flush implements stdio.Flusher
 func (w *Writer) Flush() error {
 	if w.ErrOnFlush {
 		return errors.New("fake flush error")
+	}
+
+	w.Reset()
+	return nil
+}
+
+// Sync implements stdio.Syncer
+func (w *Writer) Sync() error {
+	if w.ErrOnSync {
+		return errors.New("fake sync error")
 	}
 
 	w.Reset()

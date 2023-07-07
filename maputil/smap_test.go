@@ -59,4 +59,12 @@ func TestSMap_ToKVPairs(t *testing.T) {
 	str := fmt.Sprint(arr)
 	assert.StrContains(t, str, "k1 23")
 	assert.StrContains(t, str, "k2 ab")
+
+	mp.Set("k3", "true")
+	assert.Eq(t, "true", mp.Get("k3"))
+
+	mp.Load(map[string]string{
+		"k4": "1,2",
+	})
+	assert.Eq(t, "1,2", mp.Get("k4"))
 }
