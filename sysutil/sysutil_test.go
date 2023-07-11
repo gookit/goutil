@@ -11,7 +11,7 @@ import (
 
 func TestBasic_usage(t *testing.T) {
 	assert.NotEmpty(t, sysutil.BinDir())
-	assert.NotEmpty(t, sysutil.BinDir())
+	assert.NotEmpty(t, sysutil.BinName())
 	assert.NotEmpty(t, sysutil.BinFile())
 }
 

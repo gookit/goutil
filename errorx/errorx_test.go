@@ -122,7 +122,7 @@ func TestWithPrev_errorx_l2(t *testing.T) {
 	err1 := returnXErrL2("first error message")
 	assert.Err(t, err1)
 
-	err2 := errorx.WithPrev(err1, "second error message")
+	err2 := errorx.WithPrevf(err1, "second error %s", "message")
 	assert.Err(t, err2)
 	assert.True(t, errorx.Has(err2, err1))
 	assert.True(t, errorx.Is(err2, err1))
@@ -241,6 +241,27 @@ func TestWrapf(t *testing.T) {
 	fmt.Println(err)
 	fmt.Println("err.Error():")
 	fmt.Println(err.Error())
+}
+
+func TestErrorX_Format(t *testing.T) {
+	err := errorx.New("first error message")
+	err = errorx.Wrap(err, "second error message")
+	err = errorx.Wrap(err, "third error message")
+	assert.Err(t, err)
+	fmt.Println(err)
+
+	ex, ok := errorx.ToErrorX(err)
+	assert.True(t, ok)
+
+	s := ex.String()
+	// fmt.Println(s)
+	assert.StrContains(t, s, "third error message")
+	assert.StrContains(t, s, "Previous: second error message")
+	assert.StrContains(t, s, "Previous: first error message")
+
+	err = ex.Cause()
+	assert.Err(t, err)
+	assert.Eq(t, "first error message", err.Error())
 }
 
 type MyError struct {

@@ -32,6 +32,10 @@ func TestErrorR_usage(t *testing.T) {
 	assert.False(t, err.IsSuc())
 	assert.True(t, err.IsFail())
 	assert.NotEmpty(t, err.String())
+
+	err = errorx.Failf(1301, "fail %s", "msg")
+	assert.Eq(t, 1301, err.Code())
+	assert.False(t, err.IsSuc())
 }
 
 func TestErrMap_usage(t *testing.T) {
@@ -43,6 +47,7 @@ func TestErrMap_usage(t *testing.T) {
 	em["err1"] = errorx.Raw("this is error1")
 	assert.False(t, em.IsEmpty())
 	assert.NotEmpty(t, em.Error())
+	assert.Err(t, em.ErrorOrNil())
 }
 
 func TestErrors_usage(t *testing.T) {
@@ -54,4 +59,5 @@ func TestErrors_usage(t *testing.T) {
 	es = append(es, errorx.Raw("this is error1"))
 	assert.False(t, es.IsEmpty())
 	assert.NotEmpty(t, es.Error())
+	assert.Err(t, es.ErrorOrNil())
 }

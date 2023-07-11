@@ -2,21 +2,28 @@ package reflects
 
 import "reflect"
 
-// BKind base data kind type
-type BKind uint
+// BKind base data kind type, alias of reflect.Kind
+//
+// Diff with reflect.Kind:
+//   - Int contains all intX types
+//   - Uint contains all uintX types
+//   - Float contains all floatX types
+//   - Array for array and slice types
+//   - Complex contains all complexX types
+type BKind = reflect.Kind
 
 // base kinds
 const (
 	// Int for all intX types
-	Int = BKind(reflect.Int)
+	Int = reflect.Int
 	// Uint for all uintX types
-	Uint = BKind(reflect.Uint)
+	Uint = reflect.Uint
 	// Float for all floatX types
-	Float = BKind(reflect.Float32)
+	Float = reflect.Float32
 	// Array for array,slice types
-	Array = BKind(reflect.Array)
+	Array = reflect.Array
 	// Complex for all complexX types
-	Complex = BKind(reflect.Complex64)
+	Complex = reflect.Complex64
 )
 
 // ToBaseKind convert reflect.Kind to base kind
@@ -39,7 +46,7 @@ func ToBKind(kind reflect.Kind) BKind {
 		return Array
 	default:
 		// like: string, map, struct, ptr, func, interface ...
-		return BKind(kind)
+		return kind
 	}
 }
 

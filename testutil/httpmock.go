@@ -184,7 +184,7 @@ func BuildEchoReply(r *http.Request) *EchoReply {
 	if method == "POST" || method == "PUT" || method == "PATCH" {
 		// get form data
 		_ = r.ParseForm()
-		form = stringsMapToAnyMap(r.Form)
+		form = stringsMapToAnyMap(r.PostForm)
 
 		// get form files
 		if r.MultipartForm != nil {
@@ -199,7 +199,9 @@ func BuildEchoReply(r *http.Request) *EchoReply {
 		}
 
 		// get body data
-		if r.Body != nil {
+		if len(r.PostForm) > 0 {
+			bodyStr = r.PostForm.Encode()
+		} else if r.Body != nil {
 			// defer r.Body.Close()
 			body, _ := io.ReadAll(r.Body)
 			bodyStr = string(body)

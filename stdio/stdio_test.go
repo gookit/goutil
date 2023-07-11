@@ -39,6 +39,8 @@ func TestNewIOReader(t *testing.T) {
 }
 
 func TestWriteBytes(t *testing.T) {
+	stdio.WriteByte('a')
+	stdio.WritelnBytes([]byte("bc "))
 	stdio.WriteBytes([]byte("hi,"))
 	stdio.WriteString("inhere.")
 	stdio.Writeln("welcome")

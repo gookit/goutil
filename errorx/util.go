@@ -68,6 +68,12 @@ func Unwrap(err error) error {
 // Previous alias of Unwrap()
 func Previous(err error) error { return Unwrap(err) }
 
+// IsErrorX check
+func IsErrorX(err error) (ok bool) {
+	_, ok = err.(*ErrorX)
+	return
+}
+
 // ToErrorX convert check
 func ToErrorX(err error) (ex *ErrorX, ok bool) {
 	ex, ok = err.(*ErrorX)
