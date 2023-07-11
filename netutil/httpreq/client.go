@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/gookit/goutil/netutil/httpctype"
 	"github.com/gookit/goutil/strutil"
@@ -25,14 +26,18 @@ type Client struct {
 	afterSend  AfterSendFn
 }
 
-// New instance with base URL
+// New instance with base URL and use http.Client as default http client
 func New(baseURL ...string) *Client {
-	h := NewWithDoer(&http.Client{})
-
+	h := NewWithDoer(&http.Client{Timeout: defaultTimeout})
 	if len(baseURL) > 0 && baseURL[0] != "" {
 		h.baseURL = baseURL[0]
 	}
 	return h
+}
+
+// NewWithTimeout new instance use http.Client and with custom timeout(ms)
+func NewWithTimeout(ms int) *Client {
+	return NewWithDoer(&http.Client{Timeout: time.Duration(ms) * time.Millisecond})
 }
 
 // NewWithDoer instance with custom http client
@@ -50,9 +55,18 @@ func (h *Client) Doer() Doer {
 	return h.client
 }
 
-// Client custom http client doer
-func (h *Client) Client(c Doer) *Client {
+// SetClient custom set http client doer
+func (h *Client) SetClient(c Doer) *Client {
 	h.client = c
+	return h
+}
+
+// SetTimeout set default timeout for http client doer
+func (h *Client) SetTimeout(ms int) *Client {
+	h.timeout = ms
+	if hc, ok := h.client.(*http.Client); ok {
+		hc.Timeout = time.Duration(ms) * time.Millisecond
+	}
 	return h
 }
 
@@ -110,43 +124,43 @@ func (h *Client) WithOption(optFns ...OptionFn) *Option {
 	return NewOption(optFns).WithClient(h)
 }
 
-func newOptWithClient(cli *Client) *Option {
+func optWithClient(cli *Client) *Option {
 	return &Option{cli: cli}
 }
 
 // WithData with custom request data
 func (h *Client) WithData(data any) *Option {
-	return newOptWithClient(h).WithData(data)
+	return optWithClient(h).WithData(data)
 }
 
 // WithBody with custom body
 func (h *Client) WithBody(r io.Reader) *Option {
-	return newOptWithClient(h).WithBody(r)
+	return optWithClient(h).WithBody(r)
 }
 
 // BytesBody with custom bytes body
 func (h *Client) BytesBody(bs []byte) *Option {
-	return newOptWithClient(h).BytesBody(bs)
+	return optWithClient(h).BytesBody(bs)
 }
 
 // StringBody with custom string body
 func (h *Client) StringBody(s string) *Option {
-	return newOptWithClient(h).StringBody(s)
+	return optWithClient(h).StringBody(s)
 }
 
 // FormBody with custom form data body
 func (h *Client) FormBody(data any) *Option {
-	return newOptWithClient(h).FormBody(data)
+	return optWithClient(h).FormBody(data)
 }
 
 // JSONBody with custom JSON data body
 func (h *Client) JSONBody(data any) *Option {
-	return newOptWithClient(h).WithJSON(data)
+	return optWithClient(h).WithJSON(data)
 }
 
 // JSONBytesBody with custom bytes body, and set JSON content type
 func (h *Client) JSONBytesBody(bs []byte) *Option {
-	return newOptWithClient(h).JSONBytesBody(bs)
+	return optWithClient(h).JSONBytesBody(bs)
 }
 
 // AnyBody with custom body.
@@ -154,11 +168,11 @@ func (h *Client) JSONBytesBody(bs []byte) *Option {
 // Allow type:
 //   - string, []byte, map[string][]string/url.Values, io.Reader(eg: bytes.Buffer, strings.Reader)
 func (h *Client) AnyBody(data any) *Option {
-	return newOptWithClient(h).AnyBody(data)
+	return optWithClient(h).AnyBody(data)
 }
 
 //
-// send request with options
+// ------------ send request with options ------------
 //
 
 // Get send GET request with options, return http response
@@ -169,6 +183,12 @@ func (h *Client) Get(url string, optFns ...OptionFn) (*http.Response, error) {
 // Post send POST request with options, return http response
 func (h *Client) Post(url string, data any, optFns ...OptionFn) (*http.Response, error) {
 	opt := NewOption(optFns).WithMethod(http.MethodPost).AnyBody(data)
+	return h.SendWithOpt(url, opt)
+}
+
+// PostJSON send JSON POST request with options, return http response
+func (h *Client) PostJSON(url string, data any, optFns ...OptionFn) (*http.Response, error) {
+	opt := NewOption(optFns).WithMethod(http.MethodPost).WithJSON(data)
 	return h.SendWithOpt(url, opt)
 }
 
@@ -208,7 +228,7 @@ func (h *Client) SendWithOpt(url string, opt *Option) (*http.Response, error) {
 		}
 	}
 
-	opt = MakeOpt(opt)
+	opt = OptOrNew(opt)
 	ctx := opt.Context
 	if ctx == nil {
 		ctx = context.Background()

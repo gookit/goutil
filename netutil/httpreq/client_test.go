@@ -24,6 +24,7 @@ func TestClient_Send(t *testing.T) {
 		})
 
 	assert.NoErr(t, err)
+
 	sc := resp.StatusCode
 	assert.True(t, httpreq.IsOK(sc))
 	assert.True(t, httpreq.IsSuccessful(sc))
@@ -46,6 +47,8 @@ func TestClient_RSET(t *testing.T) {
 		DefaultHeaderMap(map[string]string{
 			"custom2": "value2",
 		})
+
+	assert.NotNil(t, cli.Doer())
 
 	t.Run("Get", func(t *testing.T) {
 		resp, err := cli.Get("/get", httpreq.WithData("name=inhere&age=18"))

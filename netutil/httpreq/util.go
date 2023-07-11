@@ -291,7 +291,7 @@ func ToRequestBody(data any, cType string) io.Reader {
 		if kind == httpctype.KindJSON {
 			reader = toJSONReader(data)
 		} else {
-			panic("invalid body data type for request")
+			panic("httpreq: invalid data type for request body, content-type: " + cType)
 		}
 	}
 

@@ -31,6 +31,8 @@ type ReqLogger interface {
 	Errorf(format string, args ...any)
 }
 
+const defaultTimeout = 500 * time.Millisecond
+
 var (
 	// global lock
 	_gl = sync.Mutex{}
@@ -47,10 +49,7 @@ func NewClient(timeout int) *Client {
 	cli, ok := cs[timeout]
 
 	if !ok {
-		cli = NewWithDoer(&http.Client{
-			Timeout: time.Duration(timeout) * time.Millisecond,
-		})
-		cli.timeout = timeout
+		cli = NewWithTimeout(timeout)
 		cs[timeout] = cli
 	}
 
@@ -79,7 +78,7 @@ func WithJSONType(opt *Option) {
 	opt.ContentType = httpctype.JSON
 }
 
-// WithData set request data
+// WithData set request data, will auto convert to body data or query string
 func WithData(data any) OptionFn {
 	return func(opt *Option) {
 		opt.Data = data

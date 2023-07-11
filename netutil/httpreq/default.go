@@ -2,7 +2,7 @@ package httpreq
 
 import "net/http"
 
-// default standard client instance
+// default standard client instance, with 500ms timeout
 var std = NewClient(500)
 
 // Std instance
@@ -32,6 +32,11 @@ func Get(url string, optFns ...OptionFn) (*http.Response, error) {
 // Post quick send a POST request by default client
 func Post(url string, data any, optFns ...OptionFn) (*http.Response, error) {
 	return std.Post(url, data, optFns...)
+}
+
+// PostJSON quick send a POST request by default client, with JSON content type
+func PostJSON(url string, data any, optFns ...OptionFn) (*http.Response, error) {
+	return std.PostJSON(url, data, optFns...)
 }
 
 // Put quick send a PUT request by default client

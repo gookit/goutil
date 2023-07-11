@@ -16,7 +16,8 @@ type Options = Option
 
 // Option struct
 type Option struct {
-	cli *Client
+	cli  *Client
+	sent bool
 	// Timeout for request. unit: ms
 	Timeout int
 	// Method for request
@@ -45,15 +46,15 @@ type Option struct {
 // OptionFn option func type
 type OptionFn func(opt *Option)
 
-// MakeOpt create a new Option
-func MakeOpt(opt *Option) *Option {
+// OptOrNew create a new Option if opt is nil
+func OptOrNew(opt *Option) *Option {
 	if opt == nil {
 		opt = &Option{}
 	}
 	return opt
 }
 
-// NewOpt create a new Option
+// NewOpt create a new Option and with option func
 func NewOpt(fns ...OptionFn) *Option {
 	return NewOption(fns)
 }
@@ -83,6 +84,14 @@ func (o *Option) WithOptionFns(fns []OptionFn) *Option {
 func (o *Option) WithClient(cli *Client) *Option {
 	o.cli = cli
 	return o
+}
+
+// Copy option for new request, use for repeat send request
+func (o *Option) Copy() *Option {
+	o.Body = nil
+	on := *o
+	on.sent = false
+	return &on
 }
 
 // WithMethod set method
@@ -125,18 +134,18 @@ func (o *Option) WithData(data any) *Option {
 	return o
 }
 
-// WithBody with custom body
-func (o *Option) WithBody(r io.Reader) *Option {
-	o.Body = r
-	return o
-}
-
 // AnyBody with custom body.
 //
 // Allow type:
 //   - string, []byte, map[string][]string/url.Values, io.Reader(eg: bytes.Buffer, strings.Reader)
 func (o *Option) AnyBody(data any) *Option {
 	o.Body = ToRequestBody(data, o.ContentType)
+	return o
+}
+
+// WithBody with custom body
+func (o *Option) WithBody(r io.Reader) *Option {
+	o.Body = r
 	return o
 }
 
@@ -199,6 +208,7 @@ func (o *Option) Delete(url string, fns ...OptionFn) (*http.Response, error) {
 // Send request and return http response
 func (o *Option) Send(method, url string, fns ...OptionFn) (*http.Response, error) {
 	cli := basefn.OrValue(o.cli != nil, o.cli, std)
+	o.sent = true
 	o.WithOptionFns(fns).WithMethod(method)
 
 	return cli.SendWithOpt(url, o)
@@ -207,6 +217,7 @@ func (o *Option) Send(method, url string, fns ...OptionFn) (*http.Response, erro
 // MustSend request, will panic on error
 func (o *Option) MustSend(method, url string, fns ...OptionFn) *http.Response {
 	cli := basefn.OrValue(o.cli != nil, o.cli, std)
+	o.sent = true
 	o.WithOptionFns(fns).WithMethod(method)
 
 	resp, err := cli.SendWithOpt(url, o)
