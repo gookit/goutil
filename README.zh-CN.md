@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-`goutil` Go 常用功能的扩展工具库(**600+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
+`goutil` Go 常用功能的扩展工具库(**700+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
@@ -558,6 +558,7 @@ func Rawf(tpl string, vars ...any) error
 func Cause(err error) error 
 func Unwrap(err error) error 
 func Previous(err error) error 
+func IsErrorX(err error) (ok bool) 
 func ToErrorX(err error) (ex *ErrorX, ok bool) 
 func Has(err, target error) bool 
 func Is(err, target error) bool 
@@ -706,6 +707,7 @@ func SlashPath(path string) string
 func UnixPath(path string) string 
 func ToAbsPath(p string) string 
 // source at fsutil/info.go
+func DirPath(fpath string) string 
 func Dir(fpath string) string 
 func PathName(fpath string) string 
 func Name(fpath string) string 
@@ -738,6 +740,7 @@ func MustCreateFile(filePath string, filePerm, dirPerm os.FileMode) *os.File
 func Remove(fPath string) error 
 func MustRemove(fPath string) 
 func QuietRemove(fPath string) 
+func SafeRemoveAll(path string) 
 func RmIfExist(fPath string) error 
 func DeleteIfExist(fPath string) error 
 func RmFileIfExist(fPath string) error 
@@ -960,7 +963,7 @@ func IsNil(v reflect.Value) bool
 func IsFunc(val any) bool 
 func IsEqual(src, dst any) bool 
 func IsEmpty(v reflect.Value) bool 
-func IsEmptyValue(v reflect.Value) bool 
+func IsEmptyReal(v reflect.Value) bool 
 // source at reflects/conv.go
 func BaseTypeVal(v reflect.Value) (value any, err error) 
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) 
@@ -1443,6 +1446,21 @@ func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry
 
 Provides an enhanced time.Time implementation, and add more commonly used functional methods.
 ```go
+// source at timex/check.go
+func IsDuration(s string) bool 
+func InRange(dst, start, end time.Time) bool 
+// source at timex/conv.go
+func Elapsed(start time.Time) time.Duration 
+func ElapsedString(start time.Time) string 
+func FromNow(t time.Time) string 
+func FromNowWith(u time.Time, tms []TimeMessage) string 
+func HowLongAgo(diffSec int64) string 
+func HowLongAgo2(diffSec int64, tms []TimeMessage) string 
+func ToTime(s string, layouts ...string) (time.Time, error) 
+func ToDur(s string) (time.Duration, error) 
+func ToDuration(s string) (time.Duration, error) 
+func TryToTime(s string, bt time.Time) (time.Time, error) 
+func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error) 
 // source at timex/gotime.go
 func SetLocalByName(tzName string) error 
 func NowAddDay(day int) time.Time 
@@ -1486,14 +1504,6 @@ func FormatByTpl(t time.Time, template string) string
 func FormatUnix(sec int64, layout ...string) string 
 func FormatUnixBy(sec int64, layout string) string 
 func FormatUnixByTpl(sec int64, template ...string) string 
-func HowLongAgo(sec int64) string 
-func ToTime(s string, layouts ...string) (time.Time, error) 
-func ToDur(s string) (time.Duration, error) 
-func ToDuration(s string) (time.Duration, error) 
-func IsDuration(s string) bool 
-func TryToTime(s string, bt time.Time) (time.Time, error) 
-func InRange(dst, start, end time.Time) bool 
-func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error) 
 ```
 #### Timex Usage
 
