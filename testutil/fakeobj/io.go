@@ -41,6 +41,12 @@ func (w *Writer) SetErrOnFlush() *Writer {
 	return w
 }
 
+// SetErrOnSync method
+func (w *Writer) SetErrOnSync() *Writer {
+	w.ErrOnSync = true
+	return w
+}
+
 // SetErrOnClose method
 func (w *Writer) SetErrOnClose() *Writer {
 	w.ErrOnClose = true

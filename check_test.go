@@ -11,6 +11,7 @@ func TestIsEmpty(t *testing.T) {
 	is := assert.New(t)
 
 	is.True(goutil.IsEmpty(nil))
+	is.False(goutil.IsZero("abc"))
 	is.False(goutil.IsEmpty("abc"))
 }
 

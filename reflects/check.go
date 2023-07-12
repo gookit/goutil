@@ -84,6 +84,9 @@ func IsEqual(src, dst any) bool {
 	return bytes.Equal(bs1, bs2)
 }
 
+// IsZero reflect value check, alias of the IsEmpty()
+var IsZero = IsEmpty
+
 // IsEmpty reflect value check
 func IsEmpty(v reflect.Value) bool {
 	switch v.Kind() {
@@ -108,11 +111,17 @@ func IsEmpty(v reflect.Value) bool {
 	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }
 
-// IsEmptyValue reflect value check.
-// Difference the IsEmpty(), if value is ptr, will check real elem.
+// IsEmptyValue reflect value check, alias of the IsEmptyReal()
+var IsEmptyValue = IsEmptyReal
+
+// IsEmptyReal reflect value check.
+//
+// Note:
+//
+//	Difference the IsEmpty(), if value is ptr or interface, will check real elem.
 //
 // From src/pkg/encoding/json/encode.go.
-func IsEmptyValue(v reflect.Value) bool {
+func IsEmptyReal(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Array, reflect.Map, reflect.Slice, reflect.String:
 		return v.Len() == 0
@@ -128,7 +137,7 @@ func IsEmptyValue(v reflect.Value) bool {
 		if v.IsNil() {
 			return true
 		}
-		return IsEmptyValue(v.Elem())
+		return IsEmptyReal(v.Elem())
 	case reflect.Func:
 		return v.IsNil()
 	case reflect.Invalid:

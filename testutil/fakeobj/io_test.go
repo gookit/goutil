@@ -13,6 +13,7 @@ func TestNewWriter(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Eq(t, "hello", tw.String())
 	assert.NoErr(t, tw.Flush())
+	assert.NoErr(t, tw.Sync())
 	assert.Eq(t, "", tw.String())
 	assert.NoErr(t, tw.Close())
 
@@ -28,6 +29,9 @@ func TestNewWriter(t *testing.T) {
 
 	tw.SetErrOnFlush()
 	assert.Err(t, tw.Flush())
+
+	tw.SetErrOnSync()
+	assert.Err(t, tw.Sync())
 
 	tw.SetErrOnClose()
 	assert.Err(t, tw.Close())

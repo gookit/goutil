@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -42,6 +43,7 @@ func TestIsEqual(t *testing.T) {
 func TestIsEmpty(t *testing.T) {
 	is := assert.New(t)
 
+	is.True(reflects.IsZero(reflect.ValueOf(nil)))
 	is.True(reflects.IsEmpty(reflect.ValueOf(nil)))
 	is.True(reflects.IsEmpty(reflect.ValueOf(false)))
 	is.True(reflects.IsEmpty(reflect.ValueOf("")))
@@ -50,6 +52,7 @@ func TestIsEmpty(t *testing.T) {
 	is.True(reflects.IsEmpty(reflect.ValueOf(0)))
 	is.True(reflects.IsEmpty(reflect.ValueOf(uint(0))))
 	is.True(reflects.IsEmpty(reflect.ValueOf(float32(0))))
+	is.True(reflects.IsEmpty(reflect.ValueOf(comdef.StringMatchFunc(nil))))
 
 	type T struct {
 		v any //lint:ignore U1000 for test
@@ -69,6 +72,7 @@ func TestIsEmptyValue(t *testing.T) {
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(0)))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(uint(0))))
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(float32(0))))
+	is.True(reflects.IsEmptyReal(reflect.ValueOf(comdef.StringMatchFunc(nil))))
 
 	type T struct {
 		v any //lint:ignore U1000 for test

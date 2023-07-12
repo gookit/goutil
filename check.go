@@ -15,6 +15,9 @@ func IsNil(v any) bool {
 	return reflects.IsNil(reflect.ValueOf(v))
 }
 
+// IsZero value check, alias of the IsEmpty()
+var IsZero = IsEmpty
+
 // IsEmpty value check
 func IsEmpty(v any) bool {
 	if v == nil {
