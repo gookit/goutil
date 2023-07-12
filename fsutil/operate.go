@@ -227,6 +227,11 @@ func MustRemove(fPath string) {
 // NOTICE: will ignore error
 func QuietRemove(fPath string) { _ = os.Remove(fPath) }
 
+// SafeRemoveAll removes path and any children it contains. will ignore error
+func SafeRemoveAll(path string) {
+	_ = os.RemoveAll(path)
+}
+
 // RmIfExist removes the named file or (empty) directory on exists.
 func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }
 

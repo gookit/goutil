@@ -16,18 +16,21 @@ func TestMkdir(t *testing.T) {
 		return
 	}
 
-	err := os.Chmod("./testdata", os.ModePerm)
+	err := os.Chmod("testdata", os.ModePerm)
 
 	if assert.NoErr(t, err) {
-		assert.NoErr(t, fsutil.Mkdir("./testdata/sub/sub21", os.ModePerm))
-		assert.NoErr(t, fsutil.Mkdir("./testdata/sub/sub22", 0666))
+		assert.NoErr(t, fsutil.Mkdir("testdata/sub/sub21", os.ModePerm))
+		assert.NoErr(t, fsutil.Mkdir("testdata/sub/sub22", 0666))
 		// 066X will error
-		assert.NoErr(t, fsutil.Mkdir("./testdata/sub/sub23/sub31", 0777))
+		assert.NoErr(t, fsutil.Mkdir("testdata/sub/sub23/sub31", 0774))
 
-		assert.NoErr(t, fsutil.MkParentDir("./testdata/sub/sub24/sub32"))
-		assert.True(t, fsutil.IsDir("./testdata/sub/sub24"))
+		assert.NoErr(t, fsutil.MkParentDir("testdata/sub/sub24/sub32"))
+		assert.True(t, fsutil.IsDir("testdata/sub/sub24"))
+		fsutil.SafeRemoveAll("testdata/sub")
 
-		assert.NoErr(t, os.RemoveAll("./testdata/sub"))
+		assert.NoErr(t, fsutil.MkDirs(0774, "testdata/sub1/sub21", "testdata/sub1/sub22"))
+		assert.NoErr(t, fsutil.MkSubDirs(0774, "testdata/sub2", "sub21", "sub22"))
+		assert.NoErr(t, fsutil.RemoveSub("testdata", fsutil.ExcludeDotFile, fsutil.ExcludeSuffix(".jpg")))
 	}
 }
 

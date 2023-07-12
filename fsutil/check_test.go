@@ -25,6 +25,7 @@ func TestFsUtil_common(t *testing.T) {
 	assert.Eq(t, "test.jpg", fsutil.Name("path/to/test.jpg"))
 	assert.Eq(t, "", fsutil.Name(""))
 
+	assert.NotEmpty(t, fsutil.DirPath("path/to/test.jpg"))
 	if runtime.GOOS == "windows" {
 		assert.Eq(t, "path\\to", fsutil.Dir("path/to/test.jpg"))
 	} else {

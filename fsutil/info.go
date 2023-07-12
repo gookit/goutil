@@ -8,6 +8,9 @@ import (
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
+// DirPath get dir path from filepath, without last name.
+func DirPath(fpath string) string { return filepath.Dir(fpath) }
+
 // Dir get dir path from filepath, without last name.
 func Dir(fpath string) string { return filepath.Dir(fpath) }
 

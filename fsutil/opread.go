@@ -72,7 +72,7 @@ func ReadStringOrErr(in any) (string, error) {
 }
 
 // ReadAll read contents from path or io.Reader, will panic on in type error
-func ReadAll(in any) []byte { return GetContents(in) }
+func ReadAll(in any) []byte { return MustRead(in) }
 
 // GetContents read contents from path or io.Reader, will panic on in type error
 func GetContents(in any) []byte { return MustRead(in) }
