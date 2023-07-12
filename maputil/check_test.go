@@ -15,6 +15,18 @@ func TestHasKey(t *testing.T) {
 	assert.False(t, maputil.HasKey("abc", "not-exist"))
 }
 
+func TestHasOneKey(t *testing.T) {
+	var mp any = map[string]string{"key0": "val0", "key1": "def"}
+
+	ok, key := maputil.HasOneKey(mp, "key0", "not-exist")
+	assert.True(t, ok)
+	assert.Eq(t, "key0", key)
+
+	ok, key = maputil.HasOneKey("abc", "not-exist")
+	assert.Nil(t, key)
+	assert.False(t, ok)
+}
+
 func TestHasAllKeys(t *testing.T) {
 	var mp any = map[string]string{"key0": "val0", "key1": "def"}
 	ok, noKey := maputil.HasAllKeys(mp, "key0")
@@ -29,6 +41,6 @@ func TestHasAllKeys(t *testing.T) {
 	assert.False(t, ok)
 	assert.Eq(t, "not-exist", noKey)
 
-	ok, _ = maputil.HasAllKeys(mp, "invalid-map", "not-exist")
+	ok, _ = maputil.HasAllKeys("invalid-map", "not-exist")
 	assert.False(t, ok)
 }

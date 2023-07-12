@@ -188,10 +188,7 @@ func (d Data) StrSplit(key, sep string) []string {
 
 // StringsByStr value get by key
 func (d Data) StringsByStr(key string) []string {
-	if val, ok := d.GetByPath(key); ok {
-		return strings.Split(strutil.QuietString(val), ",")
-	}
-	return nil
+	return d.StrSplit(key, ",")
 }
 
 // StrMap get map[string]string value

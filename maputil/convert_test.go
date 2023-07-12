@@ -3,6 +3,7 @@ package maputil_test
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -96,6 +97,16 @@ func TestFlatten(t *testing.T) {
 	mp := maputil.Flatten(data)
 	assert.ContainsKeys(t, mp, []string{"age", "name", "top.sub0", "top.sub1[0]", "top.sub1[1]"})
 	assert.Nil(t, maputil.Flatten(nil))
+
+	fmp := make(map[string]string)
+	maputil.FlatWithFunc(data, func(path string, val reflect.Value) {
+		fmp[path] = fmt.Sprintf("%v", val.Interface())
+	})
+	dump.P(fmp)
+	assert.Eq(t, "inhere", fmp["name"])
+	assert.Eq(t, "234", fmp["age"])
+	assert.Eq(t, "val0", fmp["top.sub0"])
+	assert.Eq(t, "val1-0", fmp["top.sub1[0]"])
 
 	assert.NotPanics(t, func() {
 		maputil.FlatWithFunc(nil, nil)

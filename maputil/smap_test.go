@@ -41,6 +41,10 @@ func TestSMap_usage(t *testing.T) {
 	assert.Eq(t, []string{"1", "2"}, mp.Strings("k4"))
 	assert.Nil(t, mp.Strings("not-exist"))
 
+	// Default
+	assert.Eq(t, "ab", mp.Default("k2", "abc"))
+	assert.Eq(t, "abc", mp.Default("notExists", "abc"))
+
 	// not exists
 	assert.False(t, mp.Bool("notExists"))
 	assert.Eq(t, 0, mp.Int("notExists"))
