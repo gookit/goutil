@@ -35,7 +35,7 @@ func TestHowLongAgo(t *testing.T) {
 		{346, "5 mins"},
 		{3467, "57 mins"},
 		{346778, "4 days"},
-		{1200346778, "13892 days"},
+		{2592000*7 + 2, "7 months"},
 	}
 
 	for _, tt := range tests {

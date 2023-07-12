@@ -1,6 +1,8 @@
 package timex
 
-import "time"
+import (
+	"time"
+)
 
 // some time layout or time
 const (

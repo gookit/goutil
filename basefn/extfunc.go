@@ -33,14 +33,16 @@ var timeFormats = [][]int{
 	{3600},
 	{7200, 3600},
 	{86400},
-	{172800, 86400},
+	{172800, 86400}, // second elem is unit.
+	{2592000},
+	{2592000 * 2, 2592000},
 }
 
 var timeMessages = []string{
-	"< 1 sec", "1 sec", "secs", "1 min", "mins", "1 hr", "hrs", "1 day", "days",
+	"< 1 sec", "1 sec", "secs", "1 min", "mins", "1 hr", "hrs", "1 day", "days", "1 month", "months",
 }
 
-// HowLongAgo format a seconds, get how lang ago
+// HowLongAgo format a seconds, get how lang ago. eg: 1 day, 1 week
 func HowLongAgo(sec int64) string {
 	intVal := int(sec)
 	length := len(timeFormats)
@@ -63,8 +65,6 @@ func HowLongAgo(sec int64) string {
 				if len(item) == 1 {
 					return timeMessages[i]
 				}
-
-				// len is 2
 				return fmt.Sprintf("%d %s", intVal/item[1], timeMessages[i])
 			}
 		}

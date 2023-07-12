@@ -13,11 +13,12 @@ import (
 
 // provide some commonly time consts
 const (
-	OneSecond  = 1
-	OneMinSec  = 60
-	OneHourSec = 3600
-	OneDaySec  = 86400
-	OneWeekSec = 7 * 86400
+	OneSecond   = 1
+	OneMinSec   = 60
+	OneHourSec  = 3600
+	OneDaySec   = 86400
+	OneWeekSec  = 7 * 86400
+	OneMonthSec = 30 * 86400
 
 	Microsecond = time.Microsecond
 	Millisecond = time.Millisecond
@@ -31,9 +32,11 @@ const (
 	Day     = OneDay
 	OneWeek = 7 * 24 * time.Hour
 	Week    = OneWeek
+	Month   = 30 * 24 * time.Hour
 )
 
 // TimeX alias of Time
+// Deprecated: use Time instead
 type TimeX = Time
 
 // Time an enhanced time.Time implementation.
@@ -211,9 +214,9 @@ func (t *Time) AddHour(hours int) *Time {
 	return t.AddSeconds(hours * OneHourSec)
 }
 
-// SubHour add some hour time
+// SubHour minus some hour time
 func (t *Time) SubHour(hours int) *Time {
-	return t.AddSeconds(-hours * OneHourSec)
+	return t.SubSeconds(hours * OneHourSec)
 }
 
 // AddMinutes add some minutes time for the time
@@ -221,7 +224,7 @@ func (t *Time) AddMinutes(minutes int) *Time {
 	return t.AddSeconds(minutes * OneMinSec)
 }
 
-// SubMinutes add some minutes time for the time
+// SubMinutes minus some minutes time for the time
 func (t *Time) SubMinutes(minutes int) *Time {
 	return t.AddSeconds(-minutes * OneMinSec)
 }
@@ -235,7 +238,7 @@ func (t *Time) AddSeconds(seconds int) *Time {
 	}
 }
 
-// SubSeconds add some seconds time the time
+// SubSeconds minus some seconds time the time
 func (t *Time) SubSeconds(seconds int) *Time {
 	return &Time{
 		Time: t.Add(time.Duration(-seconds) * time.Second),
@@ -244,8 +247,7 @@ func (t *Time) SubSeconds(seconds int) *Time {
 	}
 }
 
-// Diff calc diff duration for t - u.
-// alias of time.Time.Sub()
+// Diff calc diff duration for t - u. alias of time.Time.Sub()
 func (t Time) Diff(u time.Time) time.Duration {
 	return t.Sub(u)
 }
