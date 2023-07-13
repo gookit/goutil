@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/gookit/goutil/reflects"
 )
 
 // some consts for separators
@@ -101,27 +103,46 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 
 			// k is index number
 			idx, err := strconv.Atoi(k)
-			if err != nil {
-				return nil, false
-			}
-
-			if idx >= len(tData) {
+			if err != nil || idx >= len(tData) {
 				return nil, false
 			}
 			item = tData[idx]
 		default:
+			if k == Wildcard && kl == i+2 { // * is last key
+				return tData, true
+			}
+
 			rv := reflect.ValueOf(tData)
 			// check is slice
 			if rv.Kind() == reflect.Slice {
-				i, err := strconv.Atoi(k)
-				if err != nil {
-					return nil, false
-				}
-				if i >= rv.Len() {
+				if k == Wildcard {
+					// * is not last key, find sub item data
+					sl := make([]any, 0)
+					for si := 0; si < rv.Len(); si++ {
+						el := reflects.Indirect(rv.Index(si))
+						if el.Kind() != reflect.Map {
+							return nil, false
+						}
+
+						// el is map value.
+						if val, ok = GetByPathKeys(ToAnyMap(el.Interface()), keys[i+2:]); ok {
+							sl = append(sl, val)
+						}
+					}
+
+					if len(sl) > 0 {
+						return sl, true
+					}
 					return nil, false
 				}
 
-				item = rv.Index(i).Interface()
+				// check k is index number
+				ii, err := strconv.Atoi(k)
+				if err != nil || ii >= rv.Len() {
+					return nil, false
+				}
+
+				item = rv.Index(ii).Interface()
 				continue
 			}
 

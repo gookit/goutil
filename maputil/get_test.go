@@ -4,7 +4,9 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/dump"
+	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -224,4 +226,84 @@ func TestEachAnyMap(t *testing.T) {
 	assert.Panics(t, func() {
 		maputil.EachAnyMap(1, nil)
 	})
+}
+
+func TestGetByPathKeys(t *testing.T) {
+	val, ok := maputil.GetByPathKeys(map[string]any{}, nil)
+	assert.True(t, ok)
+	assert.Empty(t, val)
+
+	t.Run("sub string-map", func(t *testing.T) {
+		mp := map[string]any{
+			"top": map[string]string{"key": "value"},
+		}
+
+		val, ok := maputil.GetByPathKeys(mp, []string{"top", "key"})
+		assert.True(t, ok)
+		assert.Eq(t, "value", val)
+	})
+	t.Run("sub any-map", func(t *testing.T) {
+		mp := map[string]any{
+			"top": map[any]any{"key": "value"},
+		}
+
+		val, ok := maputil.GetByPathKeys(mp, []string{"top", "key"})
+		assert.True(t, ok)
+		assert.Eq(t, "value", val)
+	})
+
+	t.Run("sub []map[string]any", func(t *testing.T) {
+		mp := map[string]any{
+			"top": []map[string]any{
+				{"key": "value"},
+				{"key": "value1"},
+			},
+		}
+
+		val, ok := maputil.GetByPathKeys(mp, []string{"top", "1"})
+		assert.True(t, ok)
+		assert.NotEmpty(t, val)
+		assert.IsKind(t, reflect.Map, val)
+		val, ok = maputil.GetByPathKeys(mp, []string{"top", "10"})
+		assert.False(t, ok)
+		assert.Nil(t, val)
+		val, ok = maputil.GetByPathKeys(mp, []string{"top", "invalid"})
+		assert.False(t, ok)
+		assert.Nil(t, val)
+
+		val, ok = maputil.GetByPathKeys(mp, []string{"top", "*"})
+		assert.True(t, ok)
+		assert.IsKind(t, reflect.Slice, val)
+		assert.NotEmpty(t, val)
+		val, ok = maputil.GetByPathKeys(mp, []string{"top", "*", "key"})
+		assert.True(t, ok)
+		assert.IsKind(t, reflect.Slice, val)
+		assert.Len(t, val, 2)
+	})
+}
+
+// https://github.com/gookit/goutil/issues/109
+func TestIssues_109(t *testing.T) {
+	mp := make(map[string]any)
+	err := jsonutil.DecodeString(`{
+  "success": true,
+  "result": {
+    "total": 2,
+    "records": [
+      {
+        "id": "59fab0fa-8f0a-4065-8863-1dae40166015"
+      },
+      {
+        "id": "7c1bd7f9-2ef4-44c8-9756-2e85156ca58f"
+      }
+    ]
+  }
+}`, &mp)
+	assert.NoErr(t, err)
+	dump.P(mp)
+
+	ids, ok := maputil.GetByPath("result.records.*.id", mp)
+	dump.P(ids, arrutil.AnyToStrings(ids))
+	assert.True(t, ok)
+	assert.Len(t, ids, 2)
 }
