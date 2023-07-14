@@ -6,6 +6,7 @@ import (
 
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
 func TestDiscardReader(t *testing.T) {
@@ -22,7 +23,16 @@ func TestDiscardReader(t *testing.T) {
 
 	assert.Empty(t, fsutil.ReadReader(sr))
 	assert.Empty(t, fsutil.ReadAll(sr))
+}
 
+func TestReadReader(t *testing.T) {
+	fr := fakeobj.NewReader()
+	assert.Empty(t, fsutil.ReadReader(fr))
+
+	assert.Panics(t, func() {
+		fr.ErrOnRead = true
+		fsutil.ReadReader(fr)
+	})
 }
 
 func TestGetContents(t *testing.T) {

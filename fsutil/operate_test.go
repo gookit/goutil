@@ -2,6 +2,7 @@ package fsutil_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/envutil"
@@ -99,9 +100,18 @@ func TestQuickOpenFile(t *testing.T) {
 }
 
 func TestMustOpenFile(t *testing.T) {
+	fpath := "testdata/must-open-file.txt"
+
 	assert.Panics(t, func() {
-		fsutil.MustOpenFile("/path-not-exists", os.O_RDONLY, 0666)
+		fsutil.MustOpenFile(fpath, os.O_RDONLY, 0666)
 	})
+
+	_, err := fsutil.PutContents(fpath, strings.NewReader("must-open-file"))
+	assert.NoErr(t, err)
+
+	of := fsutil.MustOpenFile(fpath, fsutil.FsRWFlags, 0600)
+	assert.Eq(t, "must-open-file", fsutil.ReadString(of))
+	assert.NoErr(t, of.Close())
 }
 
 func TestOpenAppendFile(t *testing.T) {

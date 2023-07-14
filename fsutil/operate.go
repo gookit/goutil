@@ -106,11 +106,12 @@ func WithPerm(perm os.FileMode) OpenOptionFunc {
 //	open/create files
 // ************************************************************
 
-// some commonly flag consts for open file
+// some commonly flag consts for open file.
 const (
 	FsCWAFlags = os.O_CREATE | os.O_WRONLY | os.O_APPEND // create, append write-only
 	FsCWTFlags = os.O_CREATE | os.O_WRONLY | os.O_TRUNC  // create, override write-only
 	FsCWFlags  = os.O_CREATE | os.O_WRONLY               // create, write-only
+	FsRWFlags  = os.O_RDWR                               // read-write, dont create.
 	FsRFlags   = os.O_RDONLY                             // read-only
 )
 
@@ -119,13 +120,13 @@ const (
 // Usage:
 //
 //	file, err := OpenFile("path/to/file.txt", FsCWFlags, 0666)
-func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
-	fileDir := path.Dir(filepath)
+func OpenFile(filePath string, flag int, perm os.FileMode) (*os.File, error) {
+	fileDir := path.Dir(filePath)
 	if err := os.MkdirAll(fileDir, DefaultDirPerm); err != nil {
 		return nil, err
 	}
 
-	file, err := os.OpenFile(filepath, flag, perm)
+	file, err := os.OpenFile(filePath, flag, perm)
 	if err != nil {
 		return nil, err
 	}
@@ -137,8 +138,8 @@ func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) {
 // Usage:
 //
 //	file := MustOpenFile("path/to/file.txt", FsCWFlags, 0666)
-func MustOpenFile(filepath string, flag int, perm os.FileMode) *os.File {
-	file, err := OpenFile(filepath, flag, perm)
+func MustOpenFile(filePath string, flag int, perm os.FileMode) *os.File {
+	file, err := OpenFile(filePath, flag, perm)
 	if err != nil {
 		panic(err)
 	}

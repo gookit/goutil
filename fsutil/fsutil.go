@@ -2,47 +2,12 @@
 package fsutil
 
 import (
-	"io"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/gookit/goutil/internal/comfunc"
 )
-
-// DetectMime detect file mime type. alias of MimeType()
-func DetectMime(path string) string {
-	return MimeType(path)
-}
-
-// MimeType get File Mime Type name. eg "image/png"
-func MimeType(path string) (mime string) {
-	file, err := os.Open(path)
-	if err != nil {
-		return
-	}
-	return ReaderMimeType(file)
-}
-
-// ReaderMimeType get the io.Reader mimeType
-//
-// Usage:
-//
-//	file, err := os.Open(filepath)
-//	if err != nil {
-//		return
-//	}
-//	mime := ReaderMimeType(file)
-func ReaderMimeType(r io.Reader) (mime string) {
-	var buf [MimeSniffLen]byte
-	n, _ := io.ReadFull(r, buf[:])
-	if n == 0 {
-		return ""
-	}
-
-	return http.DetectContentType(buf[:n])
-}
 
 // JoinPaths elements, alias of filepath.Join()
 func JoinPaths(elem ...string) string {

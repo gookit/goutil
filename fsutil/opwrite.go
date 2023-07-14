@@ -155,3 +155,21 @@ func MustCopyFile(srcPath, dstPath string) {
 		panic(err)
 	}
 }
+
+// UpdateContents read file contents, call handleFn(contents) handle, then write updated contents to file
+func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error {
+	osFile, err := os.OpenFile(filePath, os.O_RDWR, 0600)
+	if err != nil {
+		return err
+	}
+	defer osFile.Close()
+
+	// read file contents
+	if bs, err1 := io.ReadAll(osFile); err1 == nil {
+		bs = handleFn(bs)
+		_, err = osFile.Write(bs)
+	} else {
+		err = err1
+	}
+	return err
+}

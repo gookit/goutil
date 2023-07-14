@@ -21,6 +21,10 @@ func TestMustCopyFile(t *testing.T) {
 	assert.Eq(t, []byte("hello"), fsutil.GetContents(dstPath))
 	assert.Eq(t, "hello", fsutil.ReadString(dstPath))
 
+	assert.Panics(t, func() {
+		fsutil.MustCopyFile("testdata/not-exists-file", "")
+	})
+
 	str, err := fsutil.ReadStringOrErr(dstPath)
 	assert.NoErr(t, err)
 	assert.Eq(t, "hello", str)
@@ -60,4 +64,10 @@ func TestMustSave(t *testing.T) {
 	assert.Panics(t, func() {
 		fsutil.MustSave(testFile, []string{"hello"})
 	})
+}
+
+func TestUpdateContents(t *testing.T) {
+	err := fsutil.UpdateContents("testdata/not-exists-file", nil)
+	assert.Err(t, err)
+
 }
