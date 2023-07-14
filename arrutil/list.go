@@ -12,7 +12,7 @@ type Ints[T comdef.Integer] []T
 
 // String to string
 func (is Ints[T]) String() string {
-	return ToString(is)
+	return TString(is)
 }
 
 // Has given element
@@ -151,7 +151,7 @@ func (ls SortedList[T]) IsEmpty() bool {
 
 // String to string
 func (ls SortedList[T]) String() string {
-	return ToString(ls)
+	return TString(ls)
 }
 
 // Has given element

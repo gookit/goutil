@@ -134,16 +134,16 @@ func ToStrings(arr any) (ret []string, err error) {
 	return
 }
 
-// SliceToStrings convert []any to []string
+// SliceToStrings safe convert []any to []string
 func SliceToStrings(arr []any) []string {
 	return QuietStrings(arr)
 }
 
-// QuietStrings convert []any to []string
+// QuietStrings safe convert []any to []string
 func QuietStrings(arr []any) []string {
 	ss := make([]string, len(arr))
 	for i, v := range arr {
-		ss[i] = strutil.QuietString(v)
+		ss[i] = strutil.SafeString(v)
 	}
 	return ss
 }
@@ -186,7 +186,12 @@ func AnyToString(arr any) string {
 func SliceToString(arr ...any) string { return ToString(arr) }
 
 // ToString simple and quickly convert []any to string
-func ToString[T any](arr []T) string {
+func ToString(arr []any) string {
+	return TString[any](arr)
+}
+
+// TString simple and quickly convert []T to string
+func TString[T any](arr []T) string {
 	// like fmt.Println([]any(nil))
 	if arr == nil {
 		return "[]"
@@ -199,7 +204,7 @@ func ToString[T any](arr []T) string {
 		if i > 0 {
 			sb.WriteByte(',')
 		}
-		sb.WriteString(strutil.QuietString(v))
+		sb.WriteString(strutil.SafeString(v))
 	}
 
 	sb.WriteByte(']')
