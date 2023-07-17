@@ -3,8 +3,8 @@ package goutil
 import (
 	"reflect"
 
+	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/reflects"
-	"github.com/gookit/goutil/stdutil"
 )
 
 // IsNil value check
@@ -58,7 +58,7 @@ func IsEqual(src, dst any) bool {
 //	string 	    - check sub-string exists
 //	array,slice - check sub-element exists
 func Contains(data, elem any) bool {
-	_, found := stdutil.CheckContains(data, elem)
+	_, found := checkfn.Contains(data, elem)
 	return found
 }
 
@@ -70,6 +70,6 @@ func Contains(data, elem any) bool {
 //	string 	    - check sub-string exists
 //	array,slice - check sub-element exists
 func IsContains(data, elem any) bool {
-	_, found := stdutil.CheckContains(data, elem)
+	_, found := checkfn.Contains(data, elem)
 	return found
 }

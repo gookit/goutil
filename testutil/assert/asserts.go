@@ -9,15 +9,15 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
-	"github.com/gookit/goutil/stdutil"
 )
 
 // Nil asserts that the given is a nil value
 func Nil(t TestingT, give any, fmtAndArgs ...any) bool {
-	if stdutil.IsNil(give) {
+	if checkfn.IsNil(give) {
 		return true
 	}
 
@@ -27,7 +27,7 @@ func Nil(t TestingT, give any, fmtAndArgs ...any) bool {
 
 // NotNil asserts that the given is a not nil value
 func NotNil(t TestingT, give any, fmtAndArgs ...any) bool {
-	if !stdutil.IsNil(give) {
+	if !checkfn.IsNil(give) {
 		return true
 	}
 
@@ -175,7 +175,7 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 //	string      - check sub-string exists
 //	array,slice - check sub-element exists
 func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
-	valid, found := stdutil.CheckContains(src, elem)
+	valid, found := checkfn.Contains(src, elem)
 	if valid && found {
 		return true
 	}
@@ -199,7 +199,7 @@ func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 //	string      - check sub-string exists
 //	array,slice - check sub-element exists
 func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
-	valid, found := stdutil.CheckContains(src, elem)
+	valid, found := checkfn.Contains(src, elem)
 	if valid && !found {
 		return true
 	}
