@@ -185,13 +185,8 @@ func AnyToString(arr any) string {
 // SliceToString convert []any to string
 func SliceToString(arr ...any) string { return ToString(arr) }
 
-// ToString simple and quickly convert []any to string
-func ToString(arr []any) string {
-	return TString[any](arr)
-}
-
-// TString simple and quickly convert []T to string
-func TString[T any](arr []T) string {
+// ToString simple and quickly convert []T to string
+func ToString[T any](arr []T) string {
 	// like fmt.Println([]any(nil))
 	if arr == nil {
 		return "[]"
