@@ -25,11 +25,3 @@ func TestElapsedTime(t *testing.T) {
 
 	assert.Eq(t, 3000, int(mathutil.MustFloat(num)))
 }
-
-func TestDataSize(t *testing.T) {
-	assert.Eq(t, "3.38K", mathutil.DataSize(3456))
-}
-
-func TestHowLongAgo(t *testing.T) {
-	assert.Eq(t, "57 mins", mathutil.HowLongAgo(3456))
-}

@@ -1,8 +1,6 @@
-package basefn
+package mathutil
 
-import (
-	"fmt"
-)
+import "fmt"
 
 // DataSize format bytes number friendly. eg: 1024 => 1KB, 1024*1024 => 1MB
 //

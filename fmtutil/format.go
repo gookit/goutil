@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/byteutil"
+	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -24,7 +24,7 @@ const (
 //	fl, err := file.Stat()
 //	fmtSize := DataSize(fl.Size())
 func DataSize(size uint64) string {
-	return basefn.DataSize(size)
+	return mathutil.DataSize(size)
 }
 
 // SizeToString alias of the DataSize

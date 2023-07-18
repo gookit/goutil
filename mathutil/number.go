@@ -3,8 +3,6 @@ package mathutil
 import (
 	"fmt"
 	"time"
-
-	"github.com/gookit/goutil/basefn"
 )
 
 // IsNumeric returns true if the given character is a numeric, otherwise false.
@@ -25,15 +23,4 @@ func Percent(val, total int) float64 {
 // Deprecated: use timex.ElapsedTime()
 func ElapsedTime(startTime time.Time) string {
 	return fmt.Sprintf("%.3f", time.Since(startTime).Seconds()*1000)
-}
-
-// DataSize format value to data size string. eg: 1024 => 1KB, 1024*1024 => 1MB
-// alias basefn.DataSize()
-func DataSize(size uint64) string {
-	return basefn.DataSize(size)
-}
-
-// HowLongAgo calc time. alias basefn.HowLongAgo()
-func HowLongAgo(sec int64) string {
-	return basefn.HowLongAgo(sec)
 }

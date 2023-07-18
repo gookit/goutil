@@ -7,7 +7,7 @@ package timex
 import (
 	"time"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -334,7 +334,7 @@ func (t Time) Timestamp() int64 {
 
 // HowLongAgo format diff time to string.
 func (t Time) HowLongAgo(before time.Time) string {
-	return basefn.HowLongAgo(t.Unix() - before.Unix())
+	return mathutil.HowLongAgo(t.Unix() - before.Unix())
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
