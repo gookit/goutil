@@ -1,4 +1,4 @@
-package stdutil
+package goinfo
 
 import (
 	"path"
@@ -42,7 +42,7 @@ func GetCallStacks(all bool) []byte {
 //
 // returns:
 //
-//	github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
+//	github.com/gookit/goutil/goinfo_test.someFunc2(),stack_test.go:26
 func GetCallerInfo(skip int) string {
 	skip++ // ignore current func
 	cs := GetCallersInfo(skip, skip+1)
@@ -62,6 +62,7 @@ func SimpleCallersInfo(skip, num int) []string {
 
 // GetCallersInfo returns an array of strings containing
 // the func name, file and line number of each stack frame leading.
+//
 // NOTICE: max should > skip
 func GetCallersInfo(skip, max int) []string {
 	var (
@@ -93,7 +94,7 @@ func GetCallersInfo(skip, max int) []string {
 		if strings.ContainsRune(file, '/') {
 			name = fc.Name()
 			file = path.Base(file)
-			// eg: github.com/gookit/goutil/stdutil_test.someFunc2(),stack_test.go:26
+			// eg: github.com/gookit/goutil/goinfo_test.someFunc2(),stack_test.go:26
 			callers = append(callers, name+"(),"+file+":"+strconv.Itoa(line))
 		}
 
