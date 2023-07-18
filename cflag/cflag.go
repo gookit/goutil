@@ -19,12 +19,13 @@ import (
 	"strings"
 
 	"github.com/gookit/color"
+	"github.com/gookit/goutil"
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/stdio"
-	"github.com/gookit/goutil/stdutil"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
 )
@@ -140,7 +141,7 @@ func (c *CFlags) AddValidator(name string, fn OptCheckFn) {
 // ConfigOpt for a flag option
 func (c *CFlags) ConfigOpt(name string, fn func(opt *FlagOpt)) {
 	if c.Lookup(name) == nil {
-		stdutil.Panicf("cflag: option '%s' is not registered", name)
+		goutil.Panicf("cflag: option '%s' is not registered", name)
 	}
 
 	// init on not exist
@@ -163,7 +164,7 @@ func (c *CFlags) AddShortcuts(name string, shorts ...string) {
 func (c *CFlags) addShortcuts(name string, shorts []string) {
 	for _, short := range shorts {
 		if regName, ok := c.shortcuts[short]; ok {
-			stdutil.Panicf("cflag: shortcut '%s' has been used by option '%s'", short, regName)
+			goutil.Panicf("cflag: shortcut '%s' has been used by option '%s'", short, regName)
 		}
 
 		c.shortcuts[short] = name
@@ -188,10 +189,10 @@ func (c *CFlags) BindArg(arg *FlagArg) {
 	arg.Index = len(c.bindArgs)
 
 	// check arg info
-	stdutil.PanicIf(arg.check())
+	basefn.PanicIf(arg.check())
 
 	if _, ok := c.argNames[arg.Name]; ok {
-		stdutil.Panicf("cflag: arg '%s' have been registered", arg.Name)
+		basefn.Panicf("cflag: arg '%s' have been registered", arg.Name)
 	}
 
 	// register
@@ -266,7 +267,7 @@ func (c *CFlags) prepare() error {
 	// parse flag usage string
 	c.VisitAll(func(f *flag.Flag) {
 		if regName, ok := c.shortcuts[f.Name]; ok {
-			stdutil.Panicf("cflag: name '%s' has been as shortcut by '%s'", f.Name, regName)
+			goutil.Panicf("cflag: name '%s' has been as shortcut by '%s'", f.Name, regName)
 		}
 
 		f.Usage = c.parseFlagUsage(f.Name, f.Usage)
@@ -388,7 +389,7 @@ func (c *CFlags) bindParsedArgs() error {
 func (c *CFlags) Arg(name string) *FlagArg {
 	idx, ok := c.argNames[name]
 	if !ok {
-		stdutil.Panicf("cflag: get not binding arg '%s'", name)
+		goutil.Panicf("cflag: get not binding arg '%s'", name)
 	}
 	return c.bindArgs[idx]
 }

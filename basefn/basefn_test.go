@@ -8,6 +8,14 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestPanicIf(t *testing.T) {
+	basefn.PanicIf(nil)
+
+	assert.Panics(t, func() {
+		basefn.PanicIf(errors.New("a error"))
+	})
+}
+
 func TestPanicf(t *testing.T) {
 	basefn.MustOK(nil)
 

@@ -1,9 +1,9 @@
-package basefn_test
+package mathutil_test
 
 import (
 	"testing"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -20,7 +20,7 @@ func TestDataSize(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Eq(t, tt.want, basefn.DataSize(tt.args))
+		assert.Eq(t, tt.want, mathutil.DataSize(tt.args))
 	}
 }
 
@@ -39,6 +39,6 @@ func TestHowLongAgo(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Eq(t, tt.want, basefn.HowLongAgo(tt.args))
+		assert.Eq(t, tt.want, mathutil.HowLongAgo(tt.args))
 	}
 }

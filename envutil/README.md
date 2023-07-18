@@ -1,6 +1,6 @@
 # Env Util
 
-Provide some commonly ENV util functions.
+Provide some commonly system or go ENV util functions.
 
 ## Install
 

@@ -8,6 +8,13 @@ func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
 }
 
+// PanicIf if error is not empty
+func PanicIf(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 // MustOK if error is not empty, will panic
 func MustOK(err error) {
 	if err != nil {
