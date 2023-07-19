@@ -80,7 +80,7 @@ func TestSliceToString(t *testing.T) {
 	is := assert.New(t)
 	is.Eq("[]", arrutil.SliceToString(nil))
 
-	is.Eq("[]", arrutil.ToString(nil))
+	is.Eq("[]", arrutil.ToString[any](nil))
 	is.Eq("[a,b]", arrutil.ToString([]any{"a", "b"}))
 
 	is.Eq("[a,b]", arrutil.SliceToString("a", "b"))
@@ -121,10 +121,23 @@ func TestConvType(t *testing.T) {
 	is.Nil(arr3)
 }
 
+func TestJoinTyped(t *testing.T) {
+	assert.Eq(t, "", arrutil.JoinTyped[any](","))
+	assert.Eq(t, "", arrutil.JoinTyped[any](",", nil))
+	assert.Eq(t, "1,2", arrutil.JoinTyped(",", 1, 2))
+	assert.Eq(t, "a,b", arrutil.JoinTyped(",", "a", "b"))
+	assert.Eq(t, "1,a", arrutil.JoinTyped[any](",", 1, "a"))
+}
+
 func TestJoinSlice(t *testing.T) {
 	assert.Eq(t, "", arrutil.JoinSlice(","))
 	assert.Eq(t, "", arrutil.JoinSlice(",", nil))
 	assert.Eq(t, "a,23,b", arrutil.JoinSlice(",", "a", 23, "b"))
+}
+
+func TestIntsToString(t *testing.T) {
+	assert.Eq(t, "[]", arrutil.IntsToString([]int{}))
+	assert.Eq(t, "[1,2,3]", arrutil.IntsToString([]int{1, 2, 3}))
 }
 
 func TestCombineToMap(t *testing.T) {

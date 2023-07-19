@@ -3,6 +3,7 @@ package arrutil
 import (
 	"errors"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/comdef"
@@ -28,6 +29,29 @@ func StringsJoin(sep string, ss ...string) string {
 	return strings.Join(ss, sep)
 }
 
+// JoinTyped join typed []T slice to string.
+//
+// Usage:
+//
+//	JoinTyped(",", 1,2,3) // "1,2,3"
+//	JoinTyped(",", "a","b","c") // "a,b,c"
+//	JoinTyped[any](",", "a",1,"c") // "a,1,c"
+func JoinTyped[T any](sep string, arr ...T) string {
+	if arr == nil {
+		return ""
+	}
+
+	var sb strings.Builder
+	for i, v := range arr {
+		if i > 0 {
+			sb.WriteString(sep)
+		}
+		sb.WriteString(strutil.QuietString(v))
+	}
+
+	return sb.String()
+}
+
 // JoinSlice join []any slice to string.
 func JoinSlice(sep string, arr ...any) string {
 	if arr == nil {
@@ -46,8 +70,26 @@ func JoinSlice(sep string, arr ...any) string {
 }
 
 /*************************************************************
- * helper func for slices
+ * convert func for ints
  *************************************************************/
+
+// IntsToString convert []T to string
+func IntsToString[T comdef.Integer](ints []T) string {
+	if len(ints) == 0 {
+		return "[]"
+	}
+
+	var sb strings.Builder
+	sb.WriteByte('[')
+	for i, v := range ints {
+		if i > 0 {
+			sb.WriteByte(',')
+		}
+		sb.WriteString(strconv.FormatInt(int64(v), 10))
+	}
+	sb.WriteByte(']')
+	return sb.String()
+}
 
 // ToInt64s convert any(allow: array,slice) to []int64
 func ToInt64s(arr any) (ret []int64, err error) {
@@ -82,6 +124,10 @@ func SliceToInt64s(arr []any) []int64 {
 	}
 	return i64s
 }
+
+/*************************************************************
+ * convert func for anys
+ *************************************************************/
 
 // AnyToSlice convert any(allow: array,slice) to []any
 func AnyToSlice(sl any) (ls []any, err error) {
@@ -206,7 +252,7 @@ func ToString[T any](arr []T) string {
 	return sb.String()
 }
 
-// CombineToMap combine two slice to map[K]V.
+// CombineToMap combine []K and []V slice to map[K]V.
 //
 // If keys length is greater than values, the extra keys will be ignored.
 func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V {

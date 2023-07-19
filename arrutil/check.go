@@ -39,7 +39,7 @@ func Int64sHas(ints []int64, val int64) bool {
 }
 
 // StringsHas check the []string contains the given element
-func StringsHas(ss []string, val string) bool {
+func StringsHas[T ~string](ss []T, val T) bool {
 	for _, ele := range ss {
 		if ele == val {
 			return true
@@ -48,8 +48,10 @@ func StringsHas(ss []string, val string) bool {
 	return false
 }
 
-// InStrings alias of StringsHas()
-func InStrings(elem string, ss []string) bool { return StringsHas(ss, elem) }
+// InStrings check elem in the ss. alias of StringsHas()
+func InStrings[T ~string](elem T, ss []T) bool {
+	return StringsHas(ss, elem)
+}
 
 // NotIn check the given value whether not in the list
 func NotIn[T comdef.ScalarType](value T, list []T) bool {
