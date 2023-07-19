@@ -49,7 +49,7 @@ func NotEmpty(result any, fmtAndArgs ...any) {
 
 func panicWithMsg(errMsg string, fmtAndArgs []any) {
 	if len(fmtAndArgs) > 0 {
-		errMsg = comfunc.FormatTplAndArgs(fmtAndArgs)
+		errMsg = comfunc.FormatWithArgs(fmtAndArgs)
 	}
 	panic(errMsg)
 }

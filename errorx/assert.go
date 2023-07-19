@@ -30,7 +30,7 @@ func IsIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error {
 	if arrutil.NotIn(value, list) {
 		var errMsg string
 		if len(fmtAndArgs) > 0 {
-			errMsg = comfunc.FormatTplAndArgs(fmtAndArgs)
+			errMsg = comfunc.FormatWithArgs(fmtAndArgs)
 		} else {
 			errMsg = fmt.Sprintf("value should be in the %v", list)
 		}
@@ -44,7 +44,7 @@ func NotIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error {
 	if arrutil.In(value, list) {
 		var errMsg string
 		if len(fmtAndArgs) > 0 {
-			errMsg = comfunc.FormatTplAndArgs(fmtAndArgs)
+			errMsg = comfunc.FormatWithArgs(fmtAndArgs)
 		} else {
 			errMsg = fmt.Sprintf("value should not be in the %v", list)
 		}
@@ -55,7 +55,7 @@ func NotIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error {
 
 func formatErrMsg(errMsg string, fmtAndArgs []any) string {
 	if len(fmtAndArgs) > 0 {
-		errMsg = comfunc.FormatTplAndArgs(fmtAndArgs)
+		errMsg = comfunc.FormatWithArgs(fmtAndArgs)
 	}
 	return errMsg
 }

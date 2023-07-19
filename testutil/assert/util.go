@@ -75,33 +75,11 @@ func truncatingFormat(data any) string {
 	}
 
 	// Give us some space the type info too if needed.
-	max := bufio.MaxScanTokenSize - 100
+	max := bufio.MaxScanTokenSize - 1000
 	if len(value) > max {
 		value = value[0:max] + "<... truncated>"
 	}
 	return value
-}
-
-func formatTplAndArgs(fmtAndArgs ...any) string {
-	if len(fmtAndArgs) == 0 || fmtAndArgs == nil {
-		return ""
-	}
-
-	ln := len(fmtAndArgs)
-	first := fmtAndArgs[0]
-
-	if ln == 1 {
-		if msgAsStr, ok := first.(string); ok {
-			return msgAsStr
-		}
-		return fmt.Sprintf("%+v", first)
-	}
-
-	// is template string.
-	if tplStr, ok := first.(string); ok {
-		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
-	}
-	return fmt.Sprint(fmtAndArgs...)
 }
 
 func callerInfos() []string {

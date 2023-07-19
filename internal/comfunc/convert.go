@@ -37,3 +37,26 @@ func StrToBool(s string) (bool, error) {
 
 	return false, fmt.Errorf("'%s' cannot convert to bool", s)
 }
+
+// FormatWithArgs format message with args
+func FormatWithArgs(fmtAndArgs []any) string {
+	ln := len(fmtAndArgs)
+	if ln == 0 {
+		return ""
+	}
+
+	first := fmtAndArgs[0]
+
+	if ln == 1 {
+		if msgAsStr, ok := first.(string); ok {
+			return msgAsStr
+		}
+		return fmt.Sprintf("%+v", first)
+	}
+
+	// is template string.
+	if tplStr, ok := first.(string); ok {
+		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
+	}
+	return fmt.Sprint(fmtAndArgs...)
+}

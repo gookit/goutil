@@ -10,6 +10,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/internal/checkfn"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
@@ -703,7 +704,7 @@ func fail(t TestingT, failMsg string, fmtAndArgs []any) bool {
 	}
 
 	// user custom message
-	if userMsg := formatTplAndArgs(fmtAndArgs...); len(userMsg) > 0 {
+	if userMsg := comfunc.FormatWithArgs(fmtAndArgs); len(userMsg) > 0 {
 		labeledTexts = append(labeledTexts, labeledText{"User Msg", userMsg})
 	}
 

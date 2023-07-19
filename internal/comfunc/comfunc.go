@@ -80,29 +80,6 @@ func ParseEnvVar(val string, getFn func(string) string) (newVal string) {
 	})
 }
 
-// FormatTplAndArgs message
-func FormatTplAndArgs(fmtAndArgs []any) string {
-	if len(fmtAndArgs) == 0 || fmtAndArgs == nil {
-		return ""
-	}
-
-	ln := len(fmtAndArgs)
-	first := fmtAndArgs[0]
-
-	if ln == 1 {
-		if msgAsStr, ok := first.(string); ok {
-			return msgAsStr
-		}
-		return fmt.Sprintf("%+v", first)
-	}
-
-	// is template string.
-	if tplStr, ok := first.(string); ok {
-		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
-	}
-	return fmt.Sprint(fmtAndArgs...)
-}
-
 var (
 	// TIP: extend unit d,w
 	// time.ParseDuration() is not supported. eg: "1d", "2w"
