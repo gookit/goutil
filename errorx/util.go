@@ -80,6 +80,15 @@ func ToErrorX(err error) (ex *ErrorX, ok bool) {
 	return
 }
 
+// MustEX convert error to *ErrorX, panic if err check failed.
+func MustEX(err error) *ErrorX {
+	ex, ok := err.(*ErrorX)
+	if !ok {
+		panic("errorx: error is not *ErrorX")
+	}
+	return ex
+}
+
 // Has contains target error, or err is eq target.
 // alias of errors.Is()
 func Has(err, target error) bool {

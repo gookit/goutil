@@ -265,6 +265,7 @@ func WithStack(err error) error {
 	if err == nil {
 		return nil
 	}
+
 	return &ErrorX{
 		msg: err.Error(),
 		// prev:  err,
@@ -277,6 +278,7 @@ func Traced(err error) error {
 	if err == nil {
 		return nil
 	}
+
 	return &ErrorX{
 		msg:   err.Error(),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),
@@ -288,6 +290,7 @@ func Stacked(err error) error {
 	if err == nil {
 		return nil
 	}
+
 	return &ErrorX{
 		msg:   err.Error(),
 		stack: callersStack(stdOpt.SkipDepth, stdOpt.TraceDepth),

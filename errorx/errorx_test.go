@@ -137,6 +137,7 @@ func TestWithPrev_errorx_l2(t *testing.T) {
 
 func TestStacked_goerr(t *testing.T) {
 	assert.Nil(t, errorx.Stacked(nil))
+	assert.Nil(t, errorx.Traced(nil))
 
 	err1 := errorx.E("first error message")
 	assert.Err(t, err1)
@@ -165,6 +166,8 @@ func TestStacked_errorx(t *testing.T) {
 	err2 := errorx.WithStack(err1)
 	assert.Err(t, err2)
 	fmt.Printf("%+v\n", err2)
+
+	assert.Nil(t, errorx.WithStack(nil))
 }
 
 func TestTo_ErrorX(t *testing.T) {
@@ -235,12 +238,34 @@ func TestCause(t *testing.T) {
 
 func TestWrapf(t *testing.T) {
 	err := errorx.Rawf("first error %s", "message")
+	assert.Panics(t, func() {
+		_ = errorx.MustEX(err)
+	})
+
 	err = errorx.Wrapf(err, "second error %s", "message")
 	assert.Err(t, err)
+	assert.True(t, errorx.IsErrorX(err))
+
+	ex, ok := errorx.ToErrorX(err)
+	assert.True(t, ok)
+	assert.Eq(t, "second error message", ex.Message())
 
 	fmt.Println(err)
 	fmt.Println("err.Error():")
 	fmt.Println(err.Error())
+
+	err = errorx.Wrapf(nil, "first error %s", "message")
+	assert.Eq(t, "first error message", err.Error())
+}
+
+func TestWithOptions(t *testing.T) {
+	err := errorx.WithOptions("err msg", errorx.SkipDepth(3), errorx.TraceDepth(10))
+	// fmt.Println(err.Error())
+	assert.Eq(t, "err msg", err.Error())
+	assert.True(t, errorx.IsErrorX(err))
+
+	s := errorx.MustEX(err).StackString()
+	assert.StrContains(t, s, "TestWithOptions")
 }
 
 func TestErrorX_Format(t *testing.T) {

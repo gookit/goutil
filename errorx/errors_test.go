@@ -48,6 +48,7 @@ func TestErrMap_usage(t *testing.T) {
 	assert.False(t, em.IsEmpty())
 	assert.NotEmpty(t, em.Error())
 	assert.Err(t, em.ErrorOrNil())
+	assert.Err(t, em.One())
 }
 
 func TestErrors_usage(t *testing.T) {

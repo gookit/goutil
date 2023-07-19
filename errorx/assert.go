@@ -53,9 +53,9 @@ func NotIn[T comdef.ScalarType](value T, list []T, fmtAndArgs ...any) error {
 	return nil
 }
 
-func formatErrMsg(errMsg string, fmtAndArgs []any) string {
+func formatErrMsg(defMsg string, fmtAndArgs []any) string {
 	if len(fmtAndArgs) > 0 {
-		errMsg = comfunc.FormatWithArgs(fmtAndArgs)
+		return comfunc.FormatWithArgs(fmtAndArgs)
 	}
-	return errMsg
+	return defMsg
 }

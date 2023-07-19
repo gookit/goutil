@@ -17,7 +17,6 @@ func TestErrStackOpt(t *testing.T) {
 	Config(SkipDepth(5), TraceDepth(12))
 	assert.Eq(t, 5, stdOpt.SkipDepth)
 	assert.Eq(t, 12, stdOpt.TraceDepth)
-
 }
 
 func TestFuncForPC(t *testing.T) {

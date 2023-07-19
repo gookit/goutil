@@ -99,7 +99,7 @@ func FuncForPC(pc uintptr) *Func {
 	}
 }
 
-// FileLine of the func
+// FileLine returns the file name and line number of the source code
 func (f *Func) FileLine() (file string, line int) {
 	return f.Func.FileLine(f.pc)
 }
@@ -108,7 +108,7 @@ func (f *Func) FileLine() (file string, line int) {
 //
 // Returns eg:
 //
-//	github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34
+//	"github.com/gookit/goutil/errorx_test.TestWithPrev(), errorx_test.go:34"
 func (f *Func) Location() string {
 	file, line := f.FileLine()
 
