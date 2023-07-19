@@ -4,14 +4,12 @@ package fmtutil
 import (
 	"encoding/json"
 
-	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/byteutil"
 )
 
-// StringOrJSON encode pretty JSON data to json bytes.
+// StringOrJSON to string or encode pretty JSON data to json bytes.
 func StringOrJSON(v any) ([]byte, error) {
-	s, err := strutil.StringOrErr(v)
-	if err != nil {
+	return byteutil.ToBytesWithFunc(v, func(v any) ([]byte, error) {
 		return json.MarshalIndent(v, "", "    ")
-	}
-	return []byte(s), nil
+	})
 }

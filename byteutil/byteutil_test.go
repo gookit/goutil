@@ -2,6 +2,7 @@ package byteutil_test
 
 import (
 	"errors"
+	"io/fs"
 	"testing"
 	"time"
 
@@ -26,28 +27,9 @@ func TestFirstLine(t *testing.T) {
 	assert.Eq(t, []byte("hi"), byteutil.FirstLine([]byte("hi")))
 }
 
-func TestStrOrErr(t *testing.T) {
-	bs := []byte("hi, inhere")
-	assert.Eq(t, "hi, inhere", byteutil.SafeString(bs, nil))
-	assert.Eq(t, "", byteutil.SafeString(bs, errors.New("error")))
-
-	str, err := byteutil.StrOrErr(bs, nil)
-	assert.NoErr(t, err)
-	assert.Eq(t, "hi, inhere", str)
-
-	str, err = byteutil.StrOrErr(bs, errors.New("error"))
-	assert.Err(t, err)
-	assert.Eq(t, "", str)
-}
-
 func TestMd5(t *testing.T) {
 	assert.NotEmpty(t, byteutil.Md5("abc"))
 	assert.NotEmpty(t, byteutil.Md5([]int{12, 34}))
-}
-
-func TestToString(t *testing.T) {
-	assert.Eq(t, "123", byteutil.String([]byte("123")))
-	assert.Eq(t, "123", byteutil.ToString([]byte("123")))
 }
 
 func TestAppendAny(t *testing.T) {
@@ -83,6 +65,7 @@ func TestAppendAny(t *testing.T) {
 		{[]byte{}, []int{1, 2, 3}, []byte("[1 2 3]")},
 		{[]byte{}, []string{"1", "2", "3"}, []byte("[1 2 3]")},
 		{[]byte{}, true, []byte("true")},
+		{[]byte{}, fs.ModePerm, []byte("-rwxrwxrwx")},
 		{[]byte{}, errors.New("error msg"), []byte("error msg")},
 	}
 
@@ -106,4 +89,14 @@ func TestCut(t *testing.T) {
 	assert.False(t, ok)
 	assert.Eq(t, []byte("age=123"), b)
 	assert.Empty(t, a)
+
+	// SafeCut
+	b, a = byteutil.SafeCut([]byte("age=123"), '=')
+	assert.Eq(t, []byte("age"), b)
+	assert.Eq(t, []byte("123"), a)
+
+	// SafeCuts
+	b, a = byteutil.SafeCuts([]byte("age=123"), []byte{'='})
+	assert.Eq(t, []byte("age"), b)
+	assert.Eq(t, []byte("123"), a)
 }

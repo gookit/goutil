@@ -2,12 +2,24 @@ package byteutil
 
 import (
 	"bytes"
+	"crypto/md5"
 	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
-	"unsafe"
 )
+
+// Md5 Generate a 32-bit md5 bytes
+func Md5(src any) []byte {
+	h := md5.New()
+
+	if s, ok := src.(string); ok {
+		h.Write([]byte(s))
+	} else {
+		h.Write([]byte(fmt.Sprint(src)))
+	}
+	return h.Sum(nil)
+}
 
 // Random bytes generate
 func Random(length int) ([]byte, error) {
@@ -25,32 +37,6 @@ func FirstLine(bs []byte) []byte {
 		return bs[0:i]
 	}
 	return bs
-}
-
-// StrOrErr convert to string, return empty string on error.
-func StrOrErr(bs []byte, err error) (string, error) {
-	if err != nil {
-		return "", err
-	}
-	return string(bs), err
-}
-
-// SafeString convert to string, return empty string on error.
-func SafeString(bs []byte, err error) string {
-	if err != nil {
-		return ""
-	}
-	return string(bs)
-}
-
-// String unsafe convert bytes to string
-func String(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
-}
-
-// ToString convert bytes to string
-func ToString(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
 }
 
 // AppendAny append any value to byte slice
@@ -104,12 +90,19 @@ func AppendAny(dst []byte, v any) []byte {
 	return dst
 }
 
-// Cut bytes. like the strings.Cut()
+// Cut bytes by one byte char. like bytes.Cut(), but sep is byte.
 func Cut(bs []byte, sep byte) (before, after []byte, found bool) {
-	if i := bytes.IndexByte(bs, sep); i >= 0 {
-		return bs[:i], bs[i+1:], true
-	}
+	return bytes.Cut(bs, []byte{sep})
+}
 
-	before = bs
+// SafeCut bytes by one byte char. always return before and after
+func SafeCut(bs []byte, sep byte) (before, after []byte) {
+	before, after, _ = bytes.Cut(bs, []byte{sep})
+	return
+}
+
+// SafeCuts bytes by sub bytes. like the bytes.Cut(), but always return before and after
+func SafeCuts(bs []byte, sep []byte) (before, after []byte) {
+	before, after, _ = bytes.Cut(bs, sep)
 	return
 }
