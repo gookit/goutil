@@ -8,6 +8,11 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestIsNumeric(t *testing.T) {
+	assert.True(t, mathutil.IsNumeric('3'))
+	assert.False(t, mathutil.IsNumeric('a'))
+}
+
 func TestCompare(t *testing.T) {
 	tests := []struct {
 		x, y any
@@ -42,7 +47,20 @@ func TestCompare(t *testing.T) {
 	assert.False(t, mathutil.Compare("abc", 3, comdef.OpGt))
 	assert.False(t, mathutil.Compare(2, "def", comdef.OpGt))
 
-	assert.True(t, mathutil.CompInt64(2, 3, comdef.OpLt))
+	// float64
+	assert.False(t, mathutil.Compare(2.4, "def", comdef.OpGt))
+
+	// float32
+	assert.True(t, mathutil.Compare(float32(2.3), float32(2.1), comdef.OpGt))
+	assert.False(t, mathutil.Compare(float32(2.3), float32(2.1), "<"))
+	assert.False(t, mathutil.Compare(float32(2.3), "invalid", "<"))
+
+	assert.True(t, mathutil.CompInt(2, 3, comdef.OpLt))
+
+	// int64
+	assert.True(t, mathutil.CompInt64(int64(2), 3, comdef.OpLt))
+	assert.True(t, mathutil.CompInt64(int64(22), 3, comdef.OpGt))
+	assert.False(t, mathutil.CompInt64(int64(2), 3, comdef.OpGt))
 }
 
 func TestInRange(t *testing.T) {
