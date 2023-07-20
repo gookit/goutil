@@ -3,7 +3,7 @@ module github.com/gookit/goutil
 go 1.18
 
 require (
-	github.com/gookit/color v1.5.3
+	github.com/gookit/color v1.5.4
 	golang.org/x/sync v0.3.0
 	golang.org/x/sys v0.10.0
 	golang.org/x/term v0.10.0
