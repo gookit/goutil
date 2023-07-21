@@ -1,15 +1,47 @@
 // Package basefn provide some no-dependents util functions
 package basefn
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // Panicf format panic message use fmt.Sprintf
 func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
 }
 
-// PanicIf if error is not empty
-func PanicIf(err error) {
+// PanicIf if cond = true, panics with error message
+func PanicIf(cond bool, fmtAndArgs ...any) {
+	if cond {
+		panic(errors.New(formatWithArgs(fmtAndArgs)))
+	}
+}
+
+func formatWithArgs(fmtAndArgs []any) string {
+	ln := len(fmtAndArgs)
+	if ln == 0 {
+		return ""
+	}
+
+	first := fmtAndArgs[0]
+
+	if ln == 1 {
+		if msgAsStr, ok := first.(string); ok {
+			return msgAsStr
+		}
+		return fmt.Sprintf("%+v", first)
+	}
+
+	// is template string.
+	if tplStr, ok := first.(string); ok {
+		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
+	}
+	return fmt.Sprint(fmtAndArgs...)
+}
+
+// PanicErr panics if error is not empty
+func PanicErr(err error) {
 	if err != nil {
 		panic(err)
 	}

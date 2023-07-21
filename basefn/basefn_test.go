@@ -9,22 +9,42 @@ import (
 )
 
 func TestPanicIf(t *testing.T) {
-	basefn.PanicIf(nil)
+	basefn.PanicIf(false, "")
+	assert.Panics(t, func() {
+		basefn.PanicIf(true, "a error msg")
+	})
 
 	assert.Panics(t, func() {
-		basefn.PanicIf(errors.New("a error"))
+		basefn.PanicIf(true)
+	})
+	assert.Panics(t, func() {
+		basefn.PanicIf(true, 234)
+	})
+	assert.Panics(t, func() {
+		basefn.PanicIf(true, 234, "abc")
+	})
+
+	assert.Panics(t, func() {
+		basefn.PanicIf(true, "a error %s", "msg")
+	})
+}
+
+func TestPanicErr(t *testing.T) {
+	basefn.PanicErr(nil)
+	assert.Panics(t, func() {
+		basefn.PanicErr(errors.New("a error"))
 	})
 }
 
 func TestPanicf(t *testing.T) {
 	basefn.MustOK(nil)
+	assert.Panics(t, func() {
+		basefn.Panicf("hi %s", "inhere")
+	})
 
 	assert.Eq(t, "hi", basefn.Must("hi", nil))
 	assert.Panics(t, func() {
 		basefn.Must("hi", errors.New("a error"))
-	})
-	assert.Panics(t, func() {
-		basefn.Panicf("hi %s", "inhere")
 	})
 	assert.Panics(t, func() {
 		basefn.MustOK(errors.New("a error"))

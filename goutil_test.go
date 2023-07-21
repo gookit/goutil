@@ -27,9 +27,25 @@ func TestPkgName(t *testing.T) {
 }
 
 func TestPanicIfErr(t *testing.T) {
+	goutil.PanicIf(false, "")
+	assert.Panics(t, func() {
+		goutil.PanicIf(true, "a error msg")
+	})
+
 	goutil.PanicIfErr(nil)
+	assert.Panics(t, func() {
+		goutil.PanicIfErr(errors.New("a error"))
+	})
+
 	goutil.PanicErr(nil)
+	assert.Panics(t, func() {
+		goutil.PanicErr(errors.New("a error"))
+	})
+
 	goutil.MustOK(nil)
+	assert.Panics(t, func() {
+		goutil.MustOK(errors.New("a error"))
+	})
 
 	assert.Eq(t, "hi", goutil.Must("hi", nil))
 	assert.Panics(t, func() {

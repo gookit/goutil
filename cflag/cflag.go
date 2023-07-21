@@ -189,7 +189,7 @@ func (c *CFlags) BindArg(arg *FlagArg) {
 	arg.Index = len(c.bindArgs)
 
 	// check arg info
-	basefn.PanicIf(arg.check())
+	basefn.PanicErr(arg.check())
 
 	if _, ok := c.argNames[arg.Name]; ok {
 		basefn.Panicf("cflag: arg '%s' have been registered", arg.Name)

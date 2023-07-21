@@ -5,6 +5,7 @@ package goutil
 import (
 	"fmt"
 
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/goinfo"
 	"github.com/gookit/goutil/structs"
 )
@@ -15,6 +16,11 @@ type Value = structs.Value
 // Panicf format panic message use fmt.Sprintf
 func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
+}
+
+// PanicIf if cond = true, panics with error message
+func PanicIf(cond bool, fmtAndArgs ...any) {
+	basefn.PanicIf(cond, fmtAndArgs...)
 }
 
 // PanicIfErr if error is not empty, will panic
