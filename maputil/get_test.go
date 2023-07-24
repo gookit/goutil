@@ -72,6 +72,10 @@ func TestGetByPath(t *testing.T) {
 	v, ok := maputil.GetByPath("mlMp.*.names.1", mp)
 	assert.True(t, ok)
 	assert.Eq(t, []any{"abc", "def"}, v)
+
+	v, ok = maputil.GetByPath("", mp)
+	assert.True(t, ok)
+	assert.NotEmpty(t, v)
 }
 
 var mlMp = map[string]any{

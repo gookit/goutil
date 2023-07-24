@@ -13,20 +13,20 @@
 
 **基础工具包**
 
-- [`arrutil`](./arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
-- [`cliutil`](./cliutil) CLI 的一些工具函数包. eg: read input, exec command
-  - [cmdline](./cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
-- [`envutil`](./envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
-- [`fmtutil`](./fmtutil) 格式化数据工具函数 eg：数据size
-- [`fsutil`](./fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
-- [`jsonutil`](./jsonutil) 一些用于快速读取、写入、编码、解码 JSON 数据的实用函数。
-- [`maputil`](./maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
-- [`mathutil`](./mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
-- [`reflects`](./reflects) 提供一些扩展性的反射使用工具函数.
-- [`stdutil`](./stdutil) 提供一些常用的 std util 函数。
-- [`structs`](./structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
-- [`strutil`](./strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
-- [`sysutil`](./sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
+- [`arrutil`](arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
+- [`cliutil`](cliutil) CLI 的一些工具函数包. eg: read input, exec command
+  - [cmdline](cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
+- [`envutil`](envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
+- [`fmtutil`](fmtutil) 格式化数据工具函数 eg：数据size
+- [`fsutil`](fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
+- [`goinfo`](goinfo) 提供一些与Go info, runtime 相关的工具函数。
+- [`jsonutil`](jsonutil) 一些用于快速读取、写入、编码、解码 JSON 数据的实用函数。
+- [`maputil`](maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
+- [`mathutil`](mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
+- [`reflects`](reflects) 提供一些扩展性的反射使用工具函数.
+- [`structs`](structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
+- [`strutil`](strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
+- [`sysutil`](sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
 
 **扩展工具包**
 
@@ -34,12 +34,13 @@
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
-- netutil:
+- netutil 子包:
   - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
-- strutil:
+- strutil 子包:
   - [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
   - [textutil](strutil/textutil) 提供一些常用的扩展文本处理功能函数。
-- sysutil:
+- [syncs](syncs) 提供一些同步、协程、信号相关的工具函数.
+- sysutil 子包:
   - [clipboard](sysutil/clipboard) 提供简单的剪贴板读写操作工具库
   - [cmdr](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
   - [process](sysutil/process) 提供一些进程操作相关的实用功能。
@@ -48,7 +49,7 @@
   - [fakeobj](testutil/fakeobj) 提供一些接口的假的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
-  - 例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
+  - 常用时间方法。例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
 
 ## GoDoc
 
@@ -100,8 +101,8 @@ func RandomOne[T any](arr []T) T
 func SliceHas[T comdef.ScalarType](slice []T, val T) bool 
 func IntsHas[T comdef.Integer](ints []T, val T) bool 
 func Int64sHas(ints []int64, val int64) bool 
-func StringsHas(ss []string, val string) bool 
-func InStrings(elem string, ss []string) bool 
+func StringsHas[T ~string](ss []T, val T) bool 
+func InStrings[T ~string](elem T, ss []T) bool 
 func NotIn[T comdef.ScalarType](value T, list []T) bool 
 func In[T comdef.ScalarType](value T, list []T) bool 
 func ContainsAll[T comdef.ScalarType](list, values []T) bool 
@@ -111,21 +112,27 @@ func HasValue(arr, val any) bool
 func Contains(arr, val any) bool 
 func NotContains(arr, val any) bool 
 // source at arrutil/collection.go
-func TwowaySearch(data, item any, fn Comparer) (int, error) 
-func MakeEmptySlice(itemType reflect.Type) any 
-func CloneSlice(data any) any 
-func Differences[T any](first, second []T, fn Comparer) []T 
-func Excepts(first, second any, fn Comparer) any 
-func Intersects(first, second any, fn Comparer) any 
-func Union(first, second any, fn Comparer) any 
-func Find(source any, fn Predicate) (any, error) 
-func FindOrDefault(source any, fn Predicate, defaultValue any) any 
-func TakeWhile(data any, fn Predicate) any 
-func ExceptWhile(data any, fn Predicate) any 
+func StringEqualsComparer(a, b string) int 
+func ValueEqualsComparer[T comdef.Compared](a, b T) int 
+func ReflectEqualsComparer[T any](a, b T) int 
+func ElemTypeEqualsComparer[T any](a, b T) int 
+func TwowaySearch[T any](data []T, item T, fn Comparer[T]) (int, error) 
+func CloneSlice[T any](data []T) []T 
+func Diff[T any](first, second []T, fn Comparer[T]) []T 
+func Differences[T any](first, second []T, fn Comparer[T]) []T 
+func Excepts[T any](first, second []T, fn Comparer[T]) []T 
+func Intersects[T any](first, second []T, fn Comparer[T]) []T 
+func Union[T any](first, second []T, fn Comparer[T]) []T 
+func Find[T any](source []T, fn Predicate[T]) (v T, err error) 
+func FindOrDefault[T any](source []T, fn Predicate[T], defaultValue T) T 
+func TakeWhile[T any](data []T, fn Predicate[T]) []T 
+func ExceptWhile[T any](data []T, fn Predicate[T]) []T 
 // source at arrutil/convert.go
 func JoinStrings(sep string, ss ...string) string 
 func StringsJoin(sep string, ss ...string) string 
+func JoinTyped[T any](sep string, arr ...T) string 
 func JoinSlice(sep string, arr ...any) string 
+func IntsToString[T comdef.Integer](ints []T) string 
 func ToInt64s(arr any) (ret []int64, err error) 
 func MustToInt64s(arr any) []int64 
 func SliceToInt64s(arr []any) []int64 
@@ -144,8 +151,6 @@ func CombineToSMap(keys, values []string) map[string]string
 // source at arrutil/format.go
 func NewFormatter(arr any) *ArrFormatter 
 func FormatIndent(arr any, indent string) string 
-// source at arrutil/ints.go
-func IntsToString[T comdef.Integer](ints []T) string 
 // source at arrutil/process.go
 func Reverse[T any](ls []T) 
 func Remove[T comdef.Compared](ls []T, val T) []T 
@@ -190,20 +195,25 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 // source at byteutil/buffer.go
 func NewBuffer() *Buffer 
 // source at byteutil/byteutil.go
+func Md5(src any) []byte 
 func Random(length int) ([]byte, error) 
 func FirstLine(bs []byte) []byte 
+func AppendAny(dst []byte, v any) []byte 
+func Cut(bs []byte, sep byte) (before, after []byte, found bool) 
+func SafeCut(bs []byte, sep byte) (before, after []byte) 
+func SafeCuts(bs []byte, sep []byte) (before, after []byte) 
+// source at byteutil/check.go
+func IsNumChar(c byte) bool 
+// source at byteutil/conv.go
 func StrOrErr(bs []byte, err error) (string, error) 
 func SafeString(bs []byte, err error) string 
 func String(b []byte) string 
 func ToString(b []byte) string 
-func AppendAny(dst []byte, v any) []byte 
-func Cut(bs []byte, sep byte) (before, after []byte, found bool) 
-// source at byteutil/bytex.go
-func Md5(src any) []byte 
-// source at byteutil/check.go
-func IsNumChar(c byte) bool 
+func ToBytes(v any) ([]byte, error) 
+func SafeBytes(v any) []byte 
+func ToBytesWithFunc(v any, usrFn ToBytesFunc) ([]byte, error) 
 // source at byteutil/encoder.go
-func NewStdEncoder(encFn func(src []byte) []byte, decFn func(src []byte) ([]byte, error)) *StdEncoder 
+func NewStdEncoder(encFn BytesEncodeFunc, decFn BytesDecodeFunc) *StdEncoder 
 // source at byteutil/pool.go
 func NewChanPool(chSize int, width int, capWidth int) *ChanPool 
 ```
@@ -560,6 +570,7 @@ func Unwrap(err error) error
 func Previous(err error) error 
 func IsErrorX(err error) (ok bool) 
 func ToErrorX(err error) (ex *ErrorX, ok bool) 
+func MustEX(err error) *ErrorX 
 func Has(err, target error) bool 
 func Is(err, target error) bool 
 func To(err error, target any) bool 
@@ -672,6 +683,7 @@ func IsDir(path string) bool
 func FileExists(path string) bool 
 func IsFile(path string) bool 
 func IsAbsPath(aPath string) bool 
+func IsEmptyDir(dirPath string) bool 
 func IsImageFile(path string) bool 
 func IsZipFile(filepath string) bool 
 func PathMatch(pattern, s string) bool 
@@ -698,9 +710,6 @@ func ExcludeSuffix(ss ...string) FilterFunc
 func ApplyFilters(fPath string, ent fs.DirEntry, filters []FilterFunc) bool 
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) 
 // source at fsutil/fsutil.go
-func DetectMime(path string) string 
-func MimeType(path string) (mime string) 
-func ReaderMimeType(r io.Reader) (mime string) 
 func JoinPaths(elem ...string) string 
 func JoinSubPaths(basePath string, elem ...string) string 
 func SlashPath(path string) string 
@@ -720,6 +729,10 @@ func ResolvePath(pathStr string) string
 func SplitPath(pathStr string) (dir, name string) 
 // source at fsutil/info_nonwin.go
 func Realpath(pathStr string) string 
+// source at fsutil/mime.go
+func DetectMime(path string) string 
+func MimeType(path string) (mime string) 
+func ReaderMimeType(r io.Reader) (mime string) 
 // source at fsutil/operate.go
 func Mkdir(dirPath string, perm os.FileMode) error 
 func MkDirs(perm os.FileMode, dirPaths ...string) error 
@@ -729,8 +742,8 @@ func NewOpenOption(optFns ...OpenOptionFunc) *OpenOption
 func OpenOptOrNew(opt *OpenOption) *OpenOption 
 func WithFlag(flag int) OpenOptionFunc 
 func WithPerm(perm os.FileMode) OpenOptionFunc 
-func OpenFile(filepath string, flag int, perm os.FileMode) (*os.File, error) 
-func MustOpenFile(filepath string, flag int, perm os.FileMode) *os.File 
+func OpenFile(filePath string, flag int, perm os.FileMode) (*os.File, error) 
+func MustOpenFile(filePath string, flag int, perm os.FileMode) *os.File 
 func QuickOpenFile(filepath string, fileFlag ...int) (*os.File, error) 
 func OpenAppendFile(filepath string, filePerm ...os.FileMode) (*os.File, error) 
 func OpenTruncFile(filepath string, filePerm ...os.FileMode) (*os.File, error) 
@@ -775,6 +788,7 @@ func WriteFile(filePath string, data any, perm os.FileMode, fileFlag ...int) err
 func WriteOSFile(f *os.File, data any) (n int, err error) 
 func CopyFile(srcPath, dstPath string) error 
 func MustCopyFile(srcPath, dstPath string) 
+func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error 
 ```
 
 #### FsUtil Usage
@@ -806,6 +820,26 @@ func main() {
 }
 ```
 
+
+### Go Info
+
+> Package `github.com/gookit/goutil/goinfo`
+
+```go
+// source at goinfo/gofunc.go
+func FuncName(fn any) string 
+func CutFuncName(fullFcName string) (pkgPath, shortFnName string) 
+func PkgName(fullFcName string) string 
+// source at goinfo/goinfo.go
+func GoVersion() string 
+func ParseGoVersion(line string) (*GoInfo, error) 
+func OsGoInfo() (*GoInfo, error) 
+// source at goinfo/stack.go
+func GetCallStacks(all bool) []byte 
+func GetCallerInfo(skip int) string 
+func SimpleCallersInfo(skip, num int) []string 
+func GetCallersInfo(skip, max int) []string 
+```
 
 ### JSON Utils
 
@@ -858,6 +892,7 @@ func NewFormatter(mp any) *MapFormatter
 // source at maputil/get.go
 func DeepGet(mp map[string]any, path string) (val any) 
 func QuietGet(mp map[string]any, path string) (val any) 
+func GetFromAny(path string, data any) (val any, ok bool) 
 func GetByPath(path string, mp map[string]any) (val any, ok bool) 
 func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) 
 func Keys(mp any) (keys []string) 
@@ -881,49 +916,16 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 
 ```go
 // source at mathutil/check.go
-func Compare(srcVal, dstVal any, op string) (ok bool) 
-func CompInt[T comdef.Xint](srcVal, dstVal T, op string) (ok bool) 
-func CompInt64(srcVal, dstVal int64, op string) bool 
-func CompFloat[T comdef.Float](srcVal, dstVal T, op string) (ok bool) 
-func CompValue[T comdef.XintOrFloat](srcVal, dstVal T, op string) (ok bool) 
+func IsNumeric(c byte) bool 
+func Compare(first, second any, op string) bool 
+func CompInt[T comdef.Xint](first, second T, op string) (ok bool) 
+func CompInt64(first, second int64, op string) bool 
+func CompFloat[T comdef.Float](first, second T, op string) (ok bool) 
+func CompValue[T comdef.XintOrFloat](first, second T, op string) (ok bool) 
 func InRange[T comdef.IntOrFloat](val, min, max T) bool 
 func OutRange[T comdef.IntOrFloat](val, min, max T) bool 
 func InUintRange[T comdef.Uint](val, min, max T) bool 
-// source at mathutil/convert.go
-func Int(in any) (int, error) 
-func SafeInt(in any) int 
-func QuietInt(in any) int 
-func MustInt(in any) int 
-func IntOrPanic(in any) int 
-func IntOrErr(in any) (iVal int, err error) 
-func ToInt(in any) (iVal int, err error) 
-func StrInt(s string) int 
-func Uint(in any) (uint64, error) 
-func SafeUint(in any) uint64 
-func QuietUint(in any) uint64 
-func MustUint(in any) uint64 
-func UintOrErr(in any) (uint64, error) 
-func ToUint(in any) (u64 uint64, err error) 
-func Int64(in any) (int64, error) 
-func SafeInt64(in any) int64 
-func QuietInt64(in any) int64 
-func MustInt64(in any) int64 
-func Int64OrErr(in any) (int64, error) 
-func ToInt64(in any) (i64 int64, err error) 
-func QuietFloat(in any) float64 
-func FloatOrPanic(in any) float64 
-func MustFloat(in any) float64 
-func Float(in any) (float64, error) 
-func FloatOrErr(in any) (float64, error) 
-func ToFloat(in any) (f64 float64, err error) 
-func StringOrPanic(val any) string 
-func MustString(val any) string 
-func ToString(val any) (string, error) 
-func StringOrErr(val any) (string, error) 
-func QuietString(val any) string 
-func String(val any) string 
-func TryToString(val any, defaultAsErr bool) (str string, err error) 
-// source at mathutil/mathutil.go
+// source at mathutil/compare.go
 func Min[T comdef.XintOrFloat](x, y T) T 
 func Max[T comdef.XintOrFloat](x, y T) T 
 func SwapMin[T comdef.XintOrFloat](x, y T) (T, T) 
@@ -933,13 +935,70 @@ func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64 
 func SwapMaxI64(x, y int64) (int64, int64) 
 func MaxFloat(x, y float64) float64 
-func OrElse[T comdef.XintOrFloat](in, nv T) T 
-// source at mathutil/number.go
-func IsNumeric(c byte) bool 
+// source at mathutil/convert.go
+func Int(in any) (int, error) 
+func SafeInt(in any) int 
+func QuietInt(in any) int 
+func MustInt(in any) int 
+func IntOrPanic(in any) int 
+func IntOrDefault(in any, defVal int) int 
+func IntOr(in any, defVal int) int 
+func IntOrErr(in any) (iVal int, err error) 
+func ToInt(in any) (iVal int, err error) 
+func ToIntWithFunc(in any, usrFn ToIntFunc) (iVal int, err error) 
+func StrInt(s string) int 
+func StrIntOr(s string, defVal int) int 
+func Uint(in any) (uint64, error) 
+func SafeUint(in any) uint64 
+func QuietUint(in any) uint64 
+func MustUint(in any) uint64 
+func UintOrDefault(in any, defVal uint64) uint64 
+func UintOr(in any, defVal uint64) uint64 
+func UintOrErr(in any) (uint64, error) 
+func ToUint(in any) (u64 uint64, err error) 
+func ToUintWithFunc(in any, usrFn ToUintFunc) (u64 uint64, err error) 
+func Int64(in any) (int64, error) 
+func SafeInt64(in any) int64 
+func QuietInt64(in any) int64 
+func MustInt64(in any) int64 
+func Int64OrDefault(in any, defVal int64) int64 
+func Int64Or(in any, defVal int64) int64 
+func Int64OrErr(in any) (int64, error) 
+func ToInt64(in any) (i64 int64, err error) 
+func ToInt64WithFunc(in any, usrFn ToInt64Func) (i64 int64, err error) 
+func QuietFloat(in any) float64 
+func SafeFloat(in any) float64 
+func FloatOrPanic(in any) float64 
+func MustFloat(in any) float64 
+func FloatOrDefault(in any, defVal float64) float64 
+func FloatOr(in any, defVal float64) float64 
+func Float(in any) (float64, error) 
+func FloatOrErr(in any) (float64, error) 
+func ToFloat(in any) (f64 float64, err error) 
+func ToFloatWithFunc(in any, usrFn ToFloatFunc) (f64 float64, err error) 
+func MustString(val any) string 
+func StringOrPanic(val any) string 
+func StringOrDefault(val any, defVal string) string 
+func StringOr(val any, defVal string) string 
+func ToString(val any) (string, error) 
+func StringOrErr(val any) (string, error) 
+func QuietString(val any) string 
+func String(val any) string 
+func SafeString(val any) string 
+func TryToString(val any, defaultAsErr bool) (str string, err error) 
+func ToStringWithFunc(val any, usrFn comdef.ToStringFunc) (str string, err error) 
 func Percent(val, total int) float64 
 func ElapsedTime(startTime time.Time) string 
+// source at mathutil/format.go
 func DataSize(size uint64) string 
 func HowLongAgo(sec int64) string 
+// source at mathutil/mathutil.go
+func OrElse[T comdef.XintOrFloat](val, defVal T) T 
+func ZeroOr[T comdef.XintOrFloat](val, defVal T) T 
+func LessOr[T comdef.XintOrFloat](val, max, devVal T) T 
+func LteOr[T comdef.XintOrFloat](val, max, devVal T) T 
+func GreaterOr[T comdef.XintOrFloat](val, min, defVal T) T 
+func GteOr[T comdef.XintOrFloat](val, min, defVal T) T 
 // source at mathutil/random.go
 func RandomInt(min, max int) int 
 func RandInt(min, max int) int 
@@ -972,6 +1031,8 @@ func ConvSlice(oldSlRv reflect.Value, newElemTyp reflect.Type) (rv reflect.Value
 func String(rv reflect.Value) string 
 func ToString(rv reflect.Value) (str string, err error) 
 func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) 
+// source at reflects/reflects.go
+func MakeSliceByElem(elTyp reflect.Type, len, cap int) reflect.Value 
 // source at reflects/type.go
 func ToBaseKind(kind reflect.Kind) BKind 
 func ToBKind(kind reflect.Kind) BKind 
@@ -979,6 +1040,8 @@ func TypeOf(v any) Type
 // source at reflects/util.go
 func Elem(v reflect.Value) reflect.Value 
 func Indirect(v reflect.Value) reflect.Value 
+func TypeReal(t reflect.Type) reflect.Type 
+func TypeElem(t reflect.Type) reflect.Type 
 func Len(v reflect.Value) int 
 func SliceSubKind(typ reflect.Type) reflect.Kind 
 func SliceElemKind(typ reflect.Type) reflect.Kind 
@@ -1017,48 +1080,6 @@ func WriteString(s string)
 func Writeln(s string) 
 // source at stdio/writer.go
 func NewWriteWrapper(w io.Writer) *WriteWrapper 
-```
-
-### Standard
-
-> Package `github.com/gookit/goutil/stdutil`
-
-```go
-// source at stdutil/chan.go
-func WaitCloseSignals(closer io.Closer) error 
-func Go(f func() error) error 
-func SignalHandler(ctx context.Context, signals ...os.Signal) (execute func() error, interrupt func(error)) 
-// source at stdutil/check.go
-func IsNil(v any) bool 
-func IsEmpty(v any) bool 
-func IsFunc(val any) bool 
-func IsEqual(src, dst any) bool 
-func Contains(data, elem any) bool 
-func IsContains(data, elem any) bool 
-func CheckContains(data, elem any) (valid, found bool) 
-func ValueIsEmpty(v reflect.Value) bool 
-func ValueLen(v reflect.Value) int 
-// source at stdutil/conv.go
-func ToString(v any) string 
-func MustString(v any) string 
-func TryString(v any) (string, error) 
-func BaseTypeVal(val any) (value any, err error) 
-func BaseTypeVal2(v reflect.Value) (value any, err error) 
-// source at stdutil/gofunc.go
-func FuncName(fn any) string 
-func CutFuncName(fullFcName string) (pkgPath, shortFnName string) 
-func PkgName(fullFcName string) string 
-// source at stdutil/stack.go
-func GetCallStacks(all bool) []byte 
-func GetCallerInfo(skip int) string 
-func SimpleCallersInfo(skip, num int) []string 
-func GetCallersInfo(skip, max int) []string 
-// source at stdutil/stdutil.go
-func DiscardE(_ error) 
-func PanicIfErr(err error) 
-func PanicIf(err error) 
-func Panicf(format string, v ...any) 
-func GoVersion() string 
 ```
 
 ### Structs
@@ -1169,30 +1190,48 @@ func JoinAny(sep string, parts ...any) string
 func Implode(sep string, ss ...string) string 
 func String(val any) (string, error) 
 func ToString(val any) (string, error) 
-func QuietString(in any) string 
-func SafeString(in any) string 
-func MustString(in any) string 
 func StringOrErr(val any) (string, error) 
-func AnyToString(val any, defaultAsErr bool) (str string, err error) 
-func Byte2str(b []byte) string 
-func Byte2string(b []byte) string 
-func ToBytes(s string) (b []byte) 
+func QuietString(val any) string 
+func SafeString(in any) string 
+func StringOrPanic(val any) string 
+func MustString(val any) string 
+func StringOrDefault(val any, defVal string) string 
+func StringOr(val any, defVal string) string 
+func AnyToString(val any, defaultAsErr bool) (s string, err error) 
+func ToStringWithFunc(val any, fbFn comdef.ToStringFunc) (str string, err error) 
 func ToBool(s string) (bool, error) 
 func QuietBool(s string) bool 
+func SafeBool(s string) bool 
 func MustBool(s string) bool 
 func Bool(s string) (bool, error) 
 func Int(s string) (int, error) 
 func ToInt(s string) (int, error) 
-func Int2(s string) int 
+func IntOrDefault(s string, defVal int) int 
+func IntOr(s string, defVal int) int 
+func SafeInt(s string) int 
 func QuietInt(s string) int 
 func MustInt(s string) int 
 func IntOrPanic(s string) int 
 func Int64(s string) int64 
+func SafeInt64(s string) int64 
 func QuietInt64(s string) int64 
 func ToInt64(s string) (int64, error) 
+func Int64OrDefault(s string, defVal int64) int64 
+func Int64Or(s string, defVal int64) int64 
 func Int64OrErr(s string) (int64, error) 
 func MustInt64(s string) int64 
 func Int64OrPanic(s string) int64 
+func Uint(s string) uint64 
+func SafeUint(s string) uint64 
+func ToUint(s string) (uint64, error) 
+func UintOrErr(s string) (uint64, error) 
+func MustUint(s string) uint64 
+func UintOrPanic(s string) uint64 
+func UintOrDefault(s string, defVal uint64) uint64 
+func UintOr(s string, defVal uint64) uint64 
+func Byte2str(b []byte) string 
+func Byte2string(b []byte) string 
+func ToBytes(s string) (b []byte) 
 func Ints(s string, sep ...string) []int 
 func ToInts(s string, sep ...string) ([]int, error) 
 func ToIntSlice(s string, sep ...string) (ints []int, err error) 
@@ -1305,6 +1344,10 @@ func TextWrap(s string, w int) string
 func WidthWrap(s string, w int) string 
 func WordWrap(s string, w int) string 
 // source at strutil/split.go
+func BeforeFirst(s, sep string) string 
+func AfterFirst(s, sep string) string 
+func BeforeLast(s, sep string) string 
+func AfterLast(s, sep string) string 
 func Cut(s, sep string) (before string, after string, found bool) 
 func QuietCut(s, sep string) (before string, after string) 
 func MustCut(s, sep string) (before string, after string) 
@@ -1321,6 +1364,8 @@ func SplitInlineComment(val string, strict ...bool) (string, string)
 func FirstLine(output string) string 
 // source at strutil/strutil.go
 func OrCond(cond bool, s1, s2 string) string 
+func BlankOr(val, defVal string) string 
+func ZeroOr[T ~string](val, defVal T) T 
 func OrElse(s, orVal string) string 
 func OrHandle(s string, fn comdef.StringHandleFunc) string 
 func Valid(ss ...string) string 
@@ -1330,7 +1375,19 @@ func PrettyJSON(v any) (string, error)
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string 
 func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string 
 func WrapTag(s, tag string) string 
-func SubstrCount(s string, substr string, params ...uint64) (int, error) 
+func SubstrCount(s, substr string, params ...uint64) (int, error) 
+```
+
+### Syncs
+
+> Package `github.com/gookit/goutil/syncs`
+
+```go
+// source at syncs/chan.go
+func WaitCloseSignals(onClose func(sig os.Signal)) 
+func Go(f func() error) error 
+// source at syncs/signal.go
+func SignalHandler(ctx context.Context, signals ...os.Signal) (execute func() error, interrupt func(error)) 
 ```
 
 ### System Utils

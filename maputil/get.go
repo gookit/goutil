@@ -32,17 +32,18 @@ func GetFromAny(path string, data any) (val any, ok bool) {
 	if data == nil {
 		return nil, false
 	}
-
-	keys := strings.Split(path, ".")
-	if len(keys) == 0 {
+	if len(path) == 0 {
 		return data, true
 	}
 
-	return getByPathKeys(data, keys)
+	return getByPathKeys(data, strings.Split(path, "."))
 }
 
 // GetByPath get value by key path from a map(map[string]any). eg "top" "top.sub"
 func GetByPath(path string, mp map[string]any) (val any, ok bool) {
+	if len(path) == 0 {
+		return mp, true
+	}
 	if val, ok := mp[path]; ok {
 		return val, true
 	}
@@ -52,9 +53,8 @@ func GetByPath(path string, mp map[string]any) (val any, ok bool) {
 		return nil, false
 	}
 
-	// has sub key. eg. "top.sub"
-	keys := strings.Split(path, ".")
-	return GetByPathKeys(mp, keys)
+	// key is path. eg: "top.sub"
+	return GetByPathKeys(mp, strings.Split(path, "."))
 }
 
 // GetByPathKeys get value by path keys from a map(map[string]any). eg "top" "top.sub"

@@ -57,7 +57,7 @@ func FuncName(f any) string {
 	return goinfo.FuncName(f)
 }
 
-// PkgName get current package name. alias of stdutil.PkgName()
+// PkgName get current package name. alias of goinfo.PkgName()
 //
 // Usage:
 //

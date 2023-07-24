@@ -13,42 +13,44 @@
 
 **Basic packages:**
 
-- [`arrutil`](./arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
-- [`cliutil`](./cliutil) Command-line util functions. eg: colored print, read input, exec command
-- [`envutil`](./envutil) ENV util for current runtime env information. eg: get one, get info, parse var
-- [`fmtutil`](./fmtutil) Format data util functions. eg: data, size, time
-- [`fsutil`](./fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
-- [`jsonutil`](./jsonutil) Provide some util functions for quick read, write, encode, decode JSON data.
-- [`maputil`](./maputil) Map data util functions. eg: convert, sub-value get, simple merge
-- [`mathutil`](./mathutil) Math(int, number) util functions. eg: convert, math calc, random
+- [`arrutil`](arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
+- [`cliutil`](cliutil) Command-line util functions. eg: colored print, read input, exec command
+- [`envutil`](envutil) ENV util for current runtime env information. eg: get one, get info, parse var
+- [`fmtutil`](fmtutil) Format data util functions. eg: data, size, time
+- [`fsutil`](fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
+- [`goinfo`](goinfo) provide some standard util functions for go.
+- [`jsonutil`](jsonutil) Provide some util functions for quick read, write, encode, decode JSON data.
+- [`maputil`](maputil) Map data util functions. eg: convert, sub-value get, simple merge
+- [`mathutil`](mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - `netutil` Network util functions
-- [`reflects`](./reflects) Provide extends reflect util functions.
-- [`stdutil`](./stdutil) Provide some commonly std util functions.
-- [`structs`](./structs) Provide some extends util functions for struct. eg: tag parse, struct data init
-- [`strutil`](./strutil) String util functions. eg: bytes, check, convert, encode, format and more
-- [`sysutil`](./sysutil) System util functions. eg: sysenv, exec, user, process
+- [`reflects`](reflects) Provide extends reflect util functions.
+- [`structs`](structs) Provide some extends util functions for struct. eg: tag parse, struct data init
+- [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
+- [`sysutil`](sysutil) System util functions. eg: sysenv, exec, user, process
 
 **Advance packages:**
 
-- [`cflag`](./cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
+- [`cflag`](cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
 - cli util:
-  - [cmdline](./cliutil/cmdline) Provide cmdline parse, args build to cmdline
-- [`dump`](./dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
-- [`errorx`](./errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
-- [`finder`](./fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
+  - [cmdline](cliutil/cmdline) Provide cmdline parse, args build to cmdline
+- [`dump`](dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
+- [`errorx`](errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
+- file util:
+  - [`finder`](fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - net util:
   - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client
 - string util:
   - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
   - [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
+- [syncs](syncs) Provides synchronization primitives util functions.
 - system util:
-  - [clipboard](./sysutil/clipboard) Provide a simple clipboard read and write operations.
-  - [cmdr](./sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
-  - [process](./sysutil/process) Provide some process handle util functions.
+  - [clipboard](sysutil/clipboard) Provide a simple clipboard read and write operations.
+  - [cmdr](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
+  - [process](sysutil/process) Provide some process handle util functions.
 - [`testutil`](testutil) Test help util functions. eg: http test, mock ENV value
   - [assert](testutil/assert) Provides commonly asserts functions for help testing
   - [fakeobj](testutil/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
-- [`timex`](./timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
+- [`timex`](timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 
 ## Go Doc

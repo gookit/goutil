@@ -41,7 +41,7 @@ var (
 		"json":    "JSON Utils",
 		"cli":     "CLI/Console",
 		"env":     "ENV/Environment",
-		"std":     "standard",
+		"goinfo":  "Go Info",
 	}
 
 	// allowLang = map[string]int{
