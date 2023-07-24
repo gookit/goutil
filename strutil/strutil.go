@@ -21,7 +21,24 @@ func OrCond(cond bool, s1, s2 string) string {
 	return s2
 }
 
-// OrElse return s OR orVal(new-value) on s is empty
+// BlankOr return default value on val is blank, else return val
+func BlankOr(val, defVal string) string {
+	val = strings.TrimSpace(val)
+	if val != "" {
+		return val
+	}
+	return defVal
+}
+
+// ZeroOr return default value on val is zero, else return val. same of OrElse()
+func ZeroOr[T ~string](val, defVal T) T {
+	if val != "" {
+		return val
+	}
+	return defVal
+}
+
+// OrElse return default value on val is zero, else return s
 func OrElse(s, orVal string) string {
 	if s != "" {
 		return s
@@ -137,7 +154,7 @@ func WrapTag(s, tag string) string {
 // substr The substring to search for
 // params[0] The offset where to start counting.
 // params[1] The maximum length after the specified offset to search for the substring.
-func SubstrCount(s string, substr string, params ...uint64) (int, error) {
+func SubstrCount(s, substr string, params ...uint64) (int, error) {
 	larg := len(params)
 	hasArgs := larg != 0
 	if hasArgs && larg > 2 {
@@ -146,9 +163,11 @@ func SubstrCount(s string, substr string, params ...uint64) (int, error) {
 	if !hasArgs {
 		return strings.Count(s, substr), nil
 	}
+
 	strlen := len(s)
 	offset := 0
 	end := strlen
+
 	if hasArgs {
 		offset = int(params[0])
 		if larg == 2 {
@@ -159,6 +178,7 @@ func SubstrCount(s string, substr string, params ...uint64) (int, error) {
 			end = strlen
 		}
 	}
+
 	s = string([]rune(s)[offset:end])
 	return strings.Count(s, substr), nil
 }

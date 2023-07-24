@@ -25,6 +25,15 @@ func TestValid(t *testing.T) {
 	is.Eq("cd", strutil.OrElse("", "cd"))
 	is.Eq("ab", strutil.OrElse("ab", "cd"))
 
+	is.Eq(" ", strutil.ZeroOr(" ", "cd"))
+	is.Eq("cd", strutil.ZeroOr("", "cd"))
+	is.Eq("ab", strutil.ZeroOr("ab", "cd"))
+
+	is.Eq("cd", strutil.BlankOr("", "cd"))
+	is.Eq("cd", strutil.BlankOr(" ", "cd"))
+	is.Eq("ab", strutil.BlankOr("ab", "cd"))
+	is.Eq("ab", strutil.BlankOr(" ab ", "cd"))
+
 	is.Eq("ab", strutil.OrCond(true, "ab", "cd"))
 	is.Eq("cd", strutil.OrCond(false, "ab", "cd"))
 
