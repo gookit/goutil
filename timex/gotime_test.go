@@ -28,3 +28,13 @@ func TestAddSeconds(t *testing.T) {
 	nt = timex.AddMinutes(nw, 1)
 	assert.True(t, nt.After(nw))
 }
+
+func TestNowAddSec(t *testing.T) {
+	nw := time.Now()
+
+	nt := timex.NowAddSec(10)
+	assert.True(t, nt.After(nw))
+
+	nt = timex.NowAddSeconds(10)
+	assert.True(t, nt.After(nw))
+}

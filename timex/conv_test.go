@@ -10,6 +10,28 @@ import (
 	"github.com/gookit/goutil/timex"
 )
 
+func TestElapsedNow(t *testing.T) {
+	// hrs
+	st := time.Now().Add(-204 * time.Minute)
+	assert.Eq(t, "3.40hrs", timex.ElapsedNow(st))
+
+	// min
+	st = time.Now().Add(-184 * time.Second)
+	assert.Eq(t, "3.07mins", timex.ElapsedNow(st))
+
+	// s
+	st = time.Now().Add(-1204 * time.Millisecond)
+	assert.Eq(t, "1.204s", timex.ElapsedNow(st))
+
+	// ms
+	st = time.Now().Add(-204 * time.Millisecond)
+	assert.Eq(t, "204.00ms", timex.ElapsedNow(st))
+
+	// us
+	st = time.Now().Add(-2304 * time.Nanosecond)
+	assert.StrContains(t, timex.ElapsedNow(st), "2.4")
+}
+
 func TestFromNow(t *testing.T) {
 	lastIdx := len(timex.TimeMessages) - 1
 	for i, tm := range timex.TimeMessages {
@@ -106,6 +128,9 @@ func TestParseRange(t *testing.T) {
 		// invalid
 		{"~", timex.ZeroUnix, timex.ZeroUnix, false},
 		{" ", timex.ZeroUnix, timex.ZeroUnix, false},
+		{"invalid", timex.ZeroUnix, timex.ZeroUnix, false},
+		{"2invalid", timex.ZeroUnix, timex.ZeroUnix, false},
+		{"<= 2invalid", timex.ZeroUnix, timex.ZeroUnix, false},
 	}
 
 	bt, err := timex.FromDate("2023-01-02 15:04:05")
@@ -154,6 +179,19 @@ func TestParseRange(t *testing.T) {
 		assert.Eq(t, yd.DayEnd().Unix(), end.Unix())
 
 		start, end, err = timex.ParseRange("~yesterday", nil)
+		assert.Error(t, err)
+		assert.Eq(t, timex.ZeroUnix, start.Unix())
+		assert.Eq(t, timex.ZeroUnix, end.Unix())
+	})
+
+	t.Run("keyword tomorrow", func(t *testing.T) {
+		td := timex.Now().DayAfter(1)
+		start, end, err := timex.ParseRange("tomorrow", nil)
+		assert.NoError(t, err)
+		assert.Eq(t, td.DayStart().Unix(), start.Unix())
+		assert.Eq(t, td.DayEnd().Unix(), end.Unix())
+
+		start, end, err = timex.ParseRange("~tomorrow", nil)
 		assert.Error(t, err)
 		assert.Eq(t, timex.ZeroUnix, start.Unix())
 		assert.Eq(t, timex.ZeroUnix, end.Unix())

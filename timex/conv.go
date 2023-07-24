@@ -2,8 +2,6 @@ package timex
 
 import (
 	"fmt"
-	"math"
-	"strconv"
 	"strings"
 	"time"
 
@@ -11,14 +9,27 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// Elapsed calc elapsed time from start time
-func Elapsed(start time.Time) time.Duration {
-	return time.Since(start)
+// Elapsed calc elapsed time from start time to end time.
+func Elapsed(start, end time.Time) string {
+	dur := end.Sub(start)
+
+	switch {
+	case dur > time.Hour:
+		return fmt.Sprintf("%.2fhrs", dur.Hours())
+	case dur > time.Minute:
+		return fmt.Sprintf("%.2fmins", dur.Minutes())
+	case dur > time.Second:
+		return fmt.Sprintf("%.3fs", dur.Seconds())
+	case dur > time.Millisecond:
+		return fmt.Sprintf("%.2fms", float64(dur.Nanoseconds())/1e6)
+	default:
+		return fmt.Sprintf("%.2fµs", float64(dur.Nanoseconds())/1e3)
+	}
 }
 
-// ElapsedString calc elapsed time from start time. unit: ms
-func ElapsedString(start time.Time) string {
-	return strconv.FormatInt(time.Since(start).Milliseconds(), 10)
+// ElapsedNow calc elapsed time from start time to now.
+func ElapsedNow(start time.Time) string {
+	return Elapsed(start, time.Now())
 }
 
 //
@@ -64,7 +75,7 @@ func FromNow(t time.Time) string {
 
 // FromNowWith format time from now with custom TimeMessage list
 func FromNowWith(u time.Time, tms []TimeMessage) string {
-	return HowLongAgo2(int64(time.Now().Sub(u).Seconds()), tms)
+	return HowLongAgo2(int64(time.Since(u).Seconds()), tms)
 }
 
 // HowLongAgo format diff time seconds to string. alias of HowLongAgo2()
@@ -91,7 +102,7 @@ func HowLongAgo2(diffSec int64, tms []TimeMessage) string {
 	if len(secs) == 1 {
 		return msg
 	}
-	return fmt.Sprintf(msg, int64(math.Ceil(float64(diffInt/secs[1]))))
+	return fmt.Sprintf(msg, int64(diffInt/secs[1]))
 }
 
 //
@@ -175,7 +186,8 @@ func ensureOpt(opt *ParseRangeOpt) *ParseRangeOpt {
 }
 
 // ParseRange parse time range expression string to time.Time range.
-//   - "0" is alias of "now"
+//
+//   - "0" will use opt.BaseTime.
 //
 // Expression format:
 //

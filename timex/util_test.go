@@ -89,6 +89,7 @@ func TestToDur(t *testing.T) {
 		ok  bool
 	}{
 		{"", time.Duration(0), false},
+		{"invalid", time.Duration(0), false},
 		{"0", time.Duration(0), true},
 		{"now", time.Duration(0), false},
 		{"3s", 3 * timex.Second, true},
@@ -121,11 +122,15 @@ func TestToDur(t *testing.T) {
 	dur, err = timex.ToDuration("0")
 	assert.NoErr(t, err)
 	assert.Eq(t, time.Duration(0), dur)
+}
 
+func TestIsDuration(t *testing.T) {
 	assert.True(t, timex.IsDuration("3s"))
 	assert.True(t, timex.IsDuration("3m"))
 	assert.True(t, timex.IsDuration("-3h"))
 	assert.True(t, timex.IsDuration("0"))
+
+	assert.False(t, timex.IsDuration("3invalid"))
 }
 
 func TestInRange(t *testing.T) {
@@ -134,10 +139,13 @@ func TestInRange(t *testing.T) {
 		out        bool
 	}{
 		{"-5s", "5s", true},
+		{"-5s", "", true},
 		{"", "-2s", false},
+		{"", "", false},
 	}
 
 	now := time.Now()
+
 	for _, item := range tests {
 		startT, err := timex.TryToTime(item.start, now)
 		assert.NoErr(t, err)

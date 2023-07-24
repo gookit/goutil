@@ -79,6 +79,7 @@ func TestTimeX_AddDay(t *testing.T) {
 	yd1 := tx.AddDay(-1)
 	assert.Eq(t, yd.Unix(), yd1.Unix())
 	assert.Eq(t, yd.Unix(), tx.DayAgo(1).Unix())
+	assert.Eq(t, yd.Unix(), tx.SubDay(1).Unix())
 
 	assert.Eq(t, "1 day", tx.HowLongAgo(yd.Time))
 
