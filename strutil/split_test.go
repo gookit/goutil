@@ -8,6 +8,28 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestBeforeAfter(t *testing.T) {
+	// BeforeFirst
+	assert.Eq(t, "abc", strutil.BeforeFirst("abc", ":"))
+	assert.Eq(t, "abc", strutil.BeforeFirst("abc:123", ":"))
+	assert.Eq(t, "abc", strutil.BeforeFirst("abc:123:456", ":"))
+
+	// AfterFirst
+	assert.Eq(t, "", strutil.AfterFirst("abc", ":"))
+	assert.Eq(t, "123", strutil.AfterFirst("abc:123", ":"))
+	assert.Eq(t, "123:456", strutil.AfterFirst("abc:123:456", ":"))
+
+	// BeforeLast
+	assert.Eq(t, "abc", strutil.BeforeLast("abc", ":"))
+	assert.Eq(t, "abc", strutil.BeforeLast("abc:123", ":"))
+	assert.Eq(t, "abc:123", strutil.BeforeLast("abc:123:456", ":"))
+
+	// AfterLast
+	assert.Eq(t, "", strutil.AfterLast("abc", ":"))
+	assert.Eq(t, "123", strutil.AfterLast("abc:123", ":"))
+	assert.Eq(t, "456", strutil.AfterLast("abc:123:456", ":"))
+}
+
 func TestCut(t *testing.T) {
 	str := "hi,inhere"
 

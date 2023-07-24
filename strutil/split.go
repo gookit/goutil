@@ -2,6 +2,38 @@ package strutil
 
 import "strings"
 
+// BeforeFirst get substring before first sep.
+func BeforeFirst(s, sep string) string {
+	if i := strings.Index(s, sep); i >= 0 {
+		return s[:i]
+	}
+	return s
+}
+
+// AfterFirst get substring after first sep.
+func AfterFirst(s, sep string) string {
+	if i := strings.Index(s, sep); i >= 0 {
+		return s[i+len(sep):]
+	}
+	return ""
+}
+
+// BeforeLast get substring before last sep.
+func BeforeLast(s, sep string) string {
+	if i := strings.LastIndex(s, sep); i >= 0 {
+		return s[:i]
+	}
+	return s
+}
+
+// AfterLast get substring after last sep.
+func AfterLast(s, sep string) string {
+	if i := strings.LastIndex(s, sep); i >= 0 {
+		return s[i+len(sep):]
+	}
+	return ""
+}
+
 /*************************************************************
  * String split operation
  *************************************************************/
