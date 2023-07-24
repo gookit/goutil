@@ -50,7 +50,7 @@ func (ffn *FullFcName) FuncName() string {
 	return ffn.funcName
 }
 
-// String get full func name string.
+// String get full func name string, pkg path and func name.
 func (ffn *FullFcName) String() string {
 	return ffn.FullName
 }
@@ -59,13 +59,16 @@ func (ffn *FullFcName) String() string {
 //
 // eg:
 //
-//	// OUTPUT: github.com/gookit/goutil/goinfo.PanicIf
+//	// OUTPUT: github.com/gookit/goutil/goinfo.PkgName
 //	goinfo.FuncName(goinfo.PkgName)
 func FuncName(fn any) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
 
 // CutFuncName get pkg path and short func name
+// eg:
+//
+//	"github.com/gookit/goutil/goinfo.FuncName" => [github.com/gookit/goutil/goinfo, FuncName]
 func CutFuncName(fullFcName string) (pkgPath, shortFnName string) {
 	ffn := FullFcName{FullName: fullFcName}
 	return ffn.PkgPath(), ffn.FuncName()

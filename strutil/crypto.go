@@ -22,9 +22,13 @@ func GenMd5(src any) string { return Md5(src) }
 // Md5Bytes Generate a 32-bit md5 bytes
 func Md5Bytes(src any) []byte {
 	h := md5.New()
-	if s, ok := src.(string); ok {
-		h.Write([]byte(s))
-	} else {
+
+	switch val := src.(type) {
+	case []byte:
+		h.Write(val)
+	case string:
+		h.Write([]byte(val))
+	default:
 		h.Write([]byte(fmt.Sprint(src)))
 	}
 	return h.Sum(nil)

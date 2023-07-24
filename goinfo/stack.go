@@ -5,6 +5,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/gookit/goutil/basefn"
 )
 
 // some commonly consts
@@ -46,11 +48,7 @@ func GetCallStacks(all bool) []byte {
 func GetCallerInfo(skip int) string {
 	skip++ // ignore current func
 	cs := GetCallersInfo(skip, skip+1)
-
-	if len(cs) > 0 {
-		return cs[0]
-	}
-	return ""
+	return basefn.FirstOr(cs, "")
 }
 
 // SimpleCallersInfo returns an array of strings containing

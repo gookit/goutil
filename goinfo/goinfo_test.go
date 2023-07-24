@@ -22,6 +22,9 @@ func TestOsGoInfo(t *testing.T) {
 	assert.Eq(t, "darwin", info.GoOS)
 	assert.Eq(t, "amd64", info.Arch)
 
+	_, err = goinfo.ParseGoVersion("invalid version")
+	assert.Err(t, err)
+
 	info, err = goinfo.OsGoInfo()
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, info)

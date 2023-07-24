@@ -44,7 +44,7 @@ func ParseGoVersion(line string) (*GoInfo, error) {
 	// eg: [" go1.19 darwin/amd64", "1.19", "darwin", "amd64"]
 	lines := goVerRegex.FindStringSubmatch(line)
 	if len(lines) != 4 {
-		return nil, errors.New("returns go info is not full")
+		return nil, errors.New("input go version info is invalid")
 	}
 
 	info := &GoInfo{

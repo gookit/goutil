@@ -74,9 +74,9 @@ func Utf8Width(s string) int { return RunesWidth([]rune(s)) }
 //
 //	str := "hi,你好"
 //
-//	strutil.Utf8Width(str)	=> 7
-//	len(str) => 9
-//	len([]rune(str)) = utf8.RuneCountInString(s) => 5
+//	len(str) // 9
+//	strutil.Utf8Width(str) // 7
+//	len([]rune(str)) = utf8.RuneCountInString(s) // 5
 func RunesWidth(rs []rune) (w int) {
 	if len(rs) == 0 {
 		return

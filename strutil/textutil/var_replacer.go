@@ -33,11 +33,17 @@ type VarReplacer struct {
 	keepMissVars bool
 	// missing vars list
 	missVars []string
-	// NotFound handler
+	// NotFound hook func. on varname not found
 	NotFound FallbackFn
+	// RenderFn custom render func
+	RenderFn func(s string, vs map[string]string) string
 }
 
-// NewVarReplacer instance
+// NewVarReplacer instance.
+//
+// Usage:
+//
+//	rpl := NewVarReplacer("{{,}}")
 func NewVarReplacer(format string, opFns ...func(vp *VarReplacer)) *VarReplacer {
 	vp := &VarReplacer{flatSubs: true}
 	for _, fn := range opFns {
@@ -46,7 +52,11 @@ func NewVarReplacer(format string, opFns ...func(vp *VarReplacer)) *VarReplacer 
 	return vp.WithFormat(format)
 }
 
-// NewFullReplacer instance
+// NewFullReplacer instance. will enable parse env and parse default.
+//
+// Usage:
+//
+//	rpl := NewFullReplacer("{{,}}")
 func NewFullReplacer(format string) *VarReplacer {
 	return NewVarReplacer(format, func(vp *VarReplacer) {
 		vp.WithParseEnv().WithParseDefault().KeepMissingVars()
@@ -90,8 +100,8 @@ func (r *VarReplacer) WithFormat(format string) *VarReplacer {
 	return r
 }
 
-// Init var matcher
-func (r *VarReplacer) Init() *VarReplacer {
+// Init var replacer
+func (r *VarReplacer) Init() {
 	if !r.init {
 		r.lLen, r.rLen = len(r.Left), len(r.Right)
 		if r.Right != "" {
@@ -101,8 +111,6 @@ func (r *VarReplacer) Init() *VarReplacer {
 			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `(\w[\w-]*(?:\.[\w-]+)*)`)
 		}
 	}
-
-	return r
 }
 
 // ParseVars the text contents and collect vars
@@ -147,7 +155,8 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 		varMap = maputil.ToStringMap(tplVars)
 	}
 
-	return r.Init().doReplace(s, varMap)
+	r.Init()
+	return r.doReplace(s, varMap)
 }
 
 // ReplaceSMap string-map vars in the text contents
@@ -167,7 +176,8 @@ func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
 		}
 	}
 
-	return r.Init().doReplace(s, varMap)
+	r.Init()
+	return r.doReplace(s, varMap)
 }
 
 // MissVars list
@@ -184,6 +194,11 @@ func (r *VarReplacer) ResetMissVars() {
 func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
 	if !r.keepMissVars {
 		r.missVars = make([]string, 0) // clear on each replace
+	}
+
+	// use custom render func
+	if r.RenderFn != nil {
+		return r.RenderFn(s, varMap)
 	}
 
 	return r.varReg.ReplaceAllStringFunc(s, func(sub string) string {
