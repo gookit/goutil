@@ -26,6 +26,21 @@ func QuietGet(mp map[string]any, path string) (val any) {
 	return
 }
 
+// GetFromAny get value by key path from any(map,slice) data. eg "top" "top.sub"
+func GetFromAny(path string, data any) (val any, ok bool) {
+	// empty data
+	if data == nil {
+		return nil, false
+	}
+
+	keys := strings.Split(path, ".")
+	if len(keys) == 0 {
+		return data, true
+	}
+
+	return getByPathKeys(data, keys)
+}
+
 // GetByPath get value by key path from a map(map[string]any). eg "top" "top.sub"
 func GetByPath(path string, mp map[string]any) (val any, ok bool) {
 	if val, ok := mp[path]; ok {
@@ -60,14 +75,19 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 
 	// find top item data use top key
 	var item any
-
 	topK := keys[0]
 	if item, ok = mp[topK]; !ok {
 		return
 	}
 
 	// find sub item data use sub key
-	for i, k := range keys[1:] {
+	return getByPathKeys(item, keys[1:])
+}
+
+func getByPathKeys(item any, keys []string) (val any, ok bool) {
+	kl := len(keys)
+
+	for i, k := range keys {
 		switch tData := item.(type) {
 		case map[string]string: // is string map
 			if item, ok = tData[k]; !ok {
@@ -83,14 +103,14 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 			}
 		case []map[string]any: // is an any-map slice
 			if k == Wildcard {
-				if kl == i+2 { // * is last key
+				if kl == i+1 { // * is last key
 					return tData, true
 				}
 
 				// * is not last key, find sub item data
-				sl := make([]any, 0)
+				sl := make([]any, 0, len(tData))
 				for _, v := range tData {
-					if val, ok = GetByPathKeys(v, keys[i+2:]); ok {
+					if val, ok = getByPathKeys(v, keys[i+1:]); ok {
 						sl = append(sl, val)
 					}
 				}
@@ -108,7 +128,7 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 			}
 			item = tData[idx]
 		default:
-			if k == Wildcard && kl == i+2 { // * is last key
+			if k == Wildcard && kl == i+1 { // * is last key
 				return tData, true
 			}
 
@@ -117,7 +137,7 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 			if rv.Kind() == reflect.Slice {
 				if k == Wildcard {
 					// * is not last key, find sub item data
-					sl := make([]any, 0)
+					sl := make([]any, 0, rv.Len())
 					for si := 0; si < rv.Len(); si++ {
 						el := reflects.Indirect(rv.Index(si))
 						if el.Kind() != reflect.Map {
@@ -125,7 +145,7 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 						}
 
 						// el is map value.
-						if val, ok = GetByPathKeys(ToAnyMap(el.Interface()), keys[i+2:]); ok {
+						if val, ok = getByPathKeys(el.Interface(), keys[i+1:]); ok {
 							sl = append(sl, val)
 						}
 					}
@@ -148,6 +168,11 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 
 			// as error
 			return nil, false
+		}
+
+		// next is last key and it is *
+		if kl == i+2 && keys[i+1] == Wildcard {
+			return item, true
 		}
 	}
 

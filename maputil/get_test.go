@@ -69,9 +69,9 @@ func TestGetByPath(t *testing.T) {
 		assert.Eq(t, tt.want, v, tt.path)
 	}
 
-	// v, ok := maputil.GetByPath("mlMp.*.names.1", mp)
-	// assert.True(t, ok)
-	// assert.Eq(t, []any{"abc", "def"}, v)
+	v, ok := maputil.GetByPath("mlMp.*.names.1", mp)
+	assert.True(t, ok)
+	assert.Eq(t, []any{"abc", "def"}, v)
 }
 
 var mlMp = map[string]any{
@@ -104,10 +104,10 @@ var mlMp = map[string]any{
 						// "resident_provider": "Test Resident Provider",
 					},
 					{
-						"code":              "OBS01",
-						"encounter_uid":     "3",
-						"work_item_uid":     "4",
-						"billing_provider":  "Test provider OBS01",
+						"code":          "OBS01",
+						"encounter_uid": "3",
+						"work_item_uid": "4",
+						// "billing_provider":  "Test provider OBS01",
 						"resident_provider": "Test Resident Provider",
 					},
 					{
@@ -124,20 +124,32 @@ var mlMp = map[string]any{
 }
 
 func TestGetByPath_deepPath(t *testing.T) {
-	val, ok := maputil.GetByPath("coding.0.details.em.code", mlMp)
-	assert.True(t, ok)
-	assert.NotEmpty(t, val)
+	t.Run("direct multi level key", func(t *testing.T) {
+		val, ok := maputil.GetByPath("coding.0.details.em.code", mlMp)
+		assert.True(t, ok)
+		assert.NotEmpty(t, val)
+	})
 
-	val, ok = maputil.GetByPath("coding.*.details", mlMp)
-	assert.True(t, ok)
-	assert.NotEmpty(t, val)
-	// dump.P(ok, val)
+	t.Run("dot star 2-level", func(t *testing.T) {
+		val, ok := maputil.GetByPath("coding.*.details", mlMp)
+		assert.True(t, ok)
+		assert.NotEmpty(t, val)
+		// dump.P(ok, val)
+	})
 
-	val, ok = maputil.GetByPath("coding.*.details.em", mlMp)
-	dump.P(ok, val)
-	assert.True(t, ok)
+	t.Run("dot star 3-level", func(t *testing.T) {
+		val, ok := maputil.GetByPath("coding.*.details.em", mlMp)
+		dump.P(ok, val)
+		assert.True(t, ok)
+	})
 
-	val, ok = maputil.GetByPath("coding.*.details.em.code", mlMp)
+	t.Run("last is dot star", func(t *testing.T) {
+		val, ok := maputil.GetByPath("coding.*.details.em.*", mlMp)
+		dump.P(ok, val)
+		assert.True(t, ok)
+	})
+
+	val, ok := maputil.GetByPath("coding.*.details.em.code", mlMp)
 	dump.P(ok, val)
 	assert.True(t, ok)
 	assert.IsType(t, []any{}, val)
@@ -148,10 +160,12 @@ func TestGetByPath_deepPath(t *testing.T) {
 	assert.Len(t, val, 1)
 	assert.IsType(t, []any{}, val)
 
-	val, ok = maputil.GetByPath("coding.*.details.cpt.*.work_item_uid", mlMp)
-	// dump.P(ok, val)
-	assert.True(t, ok)
-	assert.IsType(t, []any{}, val)
+	t.Run("missing a field", func(t *testing.T) {
+		val, ok = maputil.GetByPath("coding.*.details.cpt.*.billing_provider", mlMp)
+		dump.P(ok, val)
+		assert.True(t, ok)
+		assert.IsType(t, []any{}, val)
+	})
 
 	val, ok = maputil.GetByPath("coding.*.details.cpt.*.resident_provider", mlMp)
 	// dump.P(ok, val)
@@ -161,6 +175,28 @@ func TestGetByPath_deepPath(t *testing.T) {
 	val, ok = maputil.GetByPath("coding.*.details.cpt.*.not-exists", mlMp)
 	assert.Nil(t, val)
 	assert.False(t, ok)
+}
+
+func TestGetFromAny_sliceSubValue(t *testing.T) {
+	val, ok := maputil.GetByPath("coding.*.details.cpt", mlMp)
+	assert.True(t, ok)
+	assert.IsKind(t, reflect.Slice, val)
+	dump.P(val)
+
+	// get sub value in slice
+	for _, sl := range val.([]any) {
+		val, ok = maputil.GetFromAny("*.code", sl)
+		assert.True(t, ok)
+		dump.P(val)
+	}
+
+	val, ok = maputil.GetFromAny("", map[string]any{"a": "b"})
+	assert.True(t, ok)
+	assert.NotEmpty(t, val)
+
+	val, ok = maputil.GetFromAny("a", nil)
+	assert.False(t, ok)
+	assert.Nil(t, val)
 }
 
 func TestKeys(t *testing.T) {
