@@ -104,9 +104,7 @@ func TwowaySearch[T any](data []T, item T, fn Comparer[T]) (int, error) {
 //	returns: the cloned slice.
 func CloneSlice[T any](data []T) []T {
 	nt := make([]T, 0, len(data))
-	for _, v := range data {
-		nt = append(nt, v)
-	}
+	nt = append(nt, data...)
 	return nt
 }
 

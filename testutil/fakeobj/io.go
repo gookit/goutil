@@ -6,6 +6,35 @@ import (
 	"github.com/gookit/goutil/byteutil"
 )
 
+// IOWriter only implements the io.Writer
+type IOWriter struct {
+	Buf []byte
+	// ErrOnWrite return error on write, useful for testing
+	ErrOnWrite bool
+}
+
+// NewIOWriter instance
+func NewIOWriter() *IOWriter {
+	return &IOWriter{
+		Buf: make([]byte, 0, 1024),
+	}
+}
+
+// Write implements
+func (w *IOWriter) Write(p []byte) (n int, err error) {
+	if w.ErrOnWrite {
+		return 0, errors.New("fake write error")
+	}
+
+	w.Buf = append(w.Buf, p...)
+	return len(p), nil
+}
+
+// Reset the buffer
+func (w *IOWriter) Reset() {
+	w.Buf = w.Buf[:0]
+}
+
 // Reader implements the io.Reader
 type Reader struct {
 	byteutil.Buffer

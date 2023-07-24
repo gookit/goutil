@@ -55,13 +55,13 @@ func (b *LineBuilder) WriteString(a string) (int, error) {
 	if pos := strings.IndexByte(a, '"'); pos > -1 {
 		quote = '\''
 		// fix: a = `--pretty=format:"one two three"`
-		if pos > 0 && '"' == a[len(a)-1] {
+		if pos > 0 && a[len(a)-1] == '"' {
 			quote = 0
 		}
 	} else if pos := strings.IndexByte(a, '\''); pos > -1 {
 		quote = '"'
 		// fix: a = "--pretty=format:'one two three'"
-		if pos > 0 && '\'' == a[len(a)-1] {
+		if pos > 0 && a[len(a)-1] == '\'' {
 			quote = 0
 		}
 	} else if a == "" || strings.ContainsRune(a, ' ') {

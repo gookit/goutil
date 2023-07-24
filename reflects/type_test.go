@@ -22,4 +22,19 @@ func TestTypeOf(t *testing.T) {
 
 	assert.Eq(t, reflect.Int64, rt.Kind())
 	assert.Eq(t, reflects.Int, rt.BaseKind())
+
+	assert.Eq(t, reflect.Int64, rt.RealType().Kind())
+	assert.Eq(t, reflect.Int64, rt.SafeElem().Kind())
+
+	s := new(string)
+	*s = "abc"
+	rt = reflects.TypeOf(s)
+	assert.Eq(t, reflect.Pointer, rt.Kind())
+	assert.Eq(t, reflect.String, rt.RealType().Kind())
+	assert.Eq(t, reflect.Pointer, rt.SafeElem().Kind())
+
+	ss := []string{"abc"}
+	rt = reflects.TypeOf(ss)
+	assert.Eq(t, reflect.Slice, rt.Kind())
+	assert.Eq(t, reflect.String, rt.SafeElem().Kind())
 }

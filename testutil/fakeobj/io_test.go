@@ -7,6 +7,20 @@ import (
 	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
+func TestIOWriter(t *testing.T) {
+	w := fakeobj.NewIOWriter()
+
+	m, err := w.Write([]byte("hello"))
+	assert.Eq(t, 5, m)
+	assert.NoErr(t, err)
+	assert.Eq(t, "hello", string(w.Buf))
+
+	w.Reset()
+	w.ErrOnWrite = true
+	_, err = w.Write([]byte("hello"))
+	assert.Err(t, err)
+}
+
 func TestNewReader(t *testing.T) {
 	tr := fakeobj.NewReader()
 	tr.Write([]byte("hello"))

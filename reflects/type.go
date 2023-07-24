@@ -55,6 +55,8 @@ type Type interface {
 	reflect.Type
 	// BaseKind value
 	BaseKind() BKind
+	// RealType returns a ptr type's real type. otherwise, will return self.
+	RealType() reflect.Type
 	// SafeElem returns a type's element type. otherwise, will return self.
 	SafeElem() reflect.Type
 }
@@ -81,18 +83,10 @@ func (t *xType) BaseKind() BKind {
 
 // RealType returns a ptr type's real type. otherwise, will return self.
 func (t *xType) RealType() reflect.Type {
-	if t.Kind() == reflect.Pointer {
-		return t.Type.Elem()
-	}
-	return t.Type
+	return TypeReal(t.Type)
 }
 
 // SafeElem returns the array, slice, chan, map type's element type. otherwise, will return self.
 func (t *xType) SafeElem() reflect.Type {
-	switch t.Kind() {
-	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice:
-		return t.Type.Elem()
-	default:
-		return t.Type
-	}
+	return TypeElem(t.Type)
 }

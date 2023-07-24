@@ -22,11 +22,18 @@ func TestValueOf(t *testing.T) {
 	assert.Eq(t, int64(23), rv.Int())
 	assert.False(t, rv.HasChild())
 	assert.Eq(t, reflects.Uint, rv.Type().BaseKind())
+	assert.Eq(t, reflects.Uint, rv.Indirect().BaseKind())
 
 	rv = reflects.ValueOf(reflect.ValueOf("abc"))
 	assert.Eq(t, "abc", rv.String())
 	assert.Eq(t, "abc", rv.Elem().String())
 	assert.Eq(t, reflect.String, rv.Type().BaseKind())
+
+	// pointer
+	s := new(string)
+	*s = "abc"
+	rv = reflects.ValueOf(s)
+	assert.Eq(t, reflect.String, rv.Elem().Kind())
 
 	rv = reflects.ValueOf("abc")
 	assert.Panics(t, func() {
