@@ -1,6 +1,7 @@
 package fsutil_test
 
 import (
+	"fmt"
 	"io/fs"
 	"testing"
 
@@ -10,19 +11,13 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	err := fsutil.RemoveSub("./testdata", func(fPath string, ent fs.DirEntry) bool {
-		return fsutil.PathMatch(ent.Name(), "*.txt")
+	fmt.Println("before test ... clean testdata/*.txt files")
+	err := fsutil.RemoveSub("testdata", func(fPath string, ent fs.DirEntry) bool {
+		return fsutil.PathMatch("*.txt", ent.Name())
 	})
 	basefn.MustOK(err)
 
 	m.Run()
-}
-
-func TestTempDir(t *testing.T) {
-	dir, err := fsutil.TempDir("testdata", "temp.*")
-	assert.NoErr(t, err)
-	assert.True(t, fsutil.IsDir(dir))
-	assert.NoErr(t, fsutil.Remove(dir))
 }
 
 func TestSplitPath(t *testing.T) {

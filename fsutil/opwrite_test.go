@@ -3,6 +3,7 @@ package fsutil_test
 import (
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -70,4 +71,38 @@ func TestUpdateContents(t *testing.T) {
 	err := fsutil.UpdateContents("testdata/not-exists-file", nil)
 	assert.Err(t, err)
 
+	of, err := fsutil.TempFile("testdata", "test-update-contents-*.txt")
+	assert.NoErr(t, err)
+
+	dump.P(of.Name())
+	_, err = of.WriteString("hello")
+	assert.NoErr(t, err)
+	assert.NoErr(t, of.Close())
+
+	err = fsutil.UpdateContents(of.Name(), func(bs []byte) []byte {
+		return []byte("hello, world")
+	})
+	assert.NoErr(t, err)
+	assert.Eq(t, "hello, world", fsutil.ReadString(of.Name()))
+}
+
+func TestOSTempFile(t *testing.T) {
+	of, err := fsutil.OSTempFile("test-os-tmpfile-*.txt")
+	assert.NoErr(t, err)
+	defer of.Close()
+
+	dump.P(of.Name())
+	assert.StrContains(t, of.Name(), "test-os-tmpfile-")
+}
+
+func TestTempDir(t *testing.T) {
+	dir, err := fsutil.TempDir("testdata", "temp-dir-*")
+	assert.NoErr(t, err)
+	assert.True(t, fsutil.IsDir(dir))
+	assert.NoErr(t, fsutil.Remove(dir))
+
+	dir, err = fsutil.OSTempDir("os-temp-dir-*")
+	assert.NoErr(t, err)
+	assert.True(t, fsutil.IsDir(dir))
+	assert.True(t, fsutil.IsEmptyDir(dir))
 }

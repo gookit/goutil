@@ -39,7 +39,7 @@ func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error {
 	return nil
 }
 
-// MkParentDir quick create parent dir
+// MkParentDir quick create parent dir for given path.
 func MkParentDir(fpath string) error {
 	dirPath := filepath.Dir(fpath)
 	if !IsDir(dirPath) {
@@ -261,6 +261,11 @@ func RemoveSub(dirPath string, fns ...FilterFunc) error {
 		if ent.IsDir() {
 			if err := RemoveSub(fPath, fns...); err != nil {
 				return err
+			}
+
+			// skip rm not empty subdir
+			if !IsEmptyDir(fPath) {
+				return nil
 			}
 		}
 		return os.Remove(fPath)

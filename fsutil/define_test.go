@@ -2,7 +2,9 @@ package fsutil_test
 
 import (
 	"fmt"
+	"sort"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -26,4 +28,23 @@ func TestNewEntry(t *testing.T) {
 
 	nfi := fsutil.NewFileInfo(fPath, fi)
 	assert.Equal(t, fPath, nfi.Path())
+}
+
+func TestFileInfos_Len(t *testing.T) {
+	fi1 := fakeobj.NewFile("/path/to/file1.txt")
+	fi1.Mt = time.Now()
+
+	fi2 := fakeobj.NewFile("/path/to/file2.txt")
+	fi2.Mt = time.Now().Add(-time.Minute)
+
+	fis := fsutil.FileInfos{
+		fsutil.NewFileInfo(fi1.Path, fi1),
+		fsutil.NewFileInfo(fi2.Path, fi2),
+	}
+
+	assert.Equal(t, 2, fis.Len())
+	assert.Eq(t, fi1.Path, fis[0].Path())
+
+	sort.Sort(fis)
+	assert.Eq(t, fi2.Path, fis[0].Path())
 }

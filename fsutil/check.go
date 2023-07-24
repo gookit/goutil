@@ -2,6 +2,7 @@ package fsutil
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"path"
 	"path/filepath"
@@ -80,6 +81,18 @@ func IsAbsPath(aPath string) bool {
 		return filepath.IsAbs(aPath)
 	}
 	return false
+}
+
+// IsEmptyDir reports whether the named directory is empty.
+func IsEmptyDir(dirPath string) bool {
+	f, err := os.Open(dirPath)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+
+	_, err = f.Readdirnames(1)
+	return err == io.EOF
 }
 
 // ImageMimeTypes refer net/http package

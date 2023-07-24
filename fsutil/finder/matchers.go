@@ -76,7 +76,11 @@ func MatchExts(exts []string) MatcherFunc {
 //	f.Not(MatchName("README.md", "*_test.go"))
 func MatchName(names ...string) MatcherFunc { return MatchNames(names) }
 
-// MatchNames match filepath by given names.
+// MatchNames match filepath by given names or patterns.
+//
+// Usage:
+//
+//	f.Not(MatchNames([]string{"README.md", "*_test.go"}))
 func MatchNames(names []string) MatcherFunc {
 	return func(el Elem) bool {
 		elName := el.Name()

@@ -24,7 +24,10 @@ func OSTempFile(pattern string) (*os.File, error) {
 //
 // Usage:
 //
+//	// create temp file on os.TempDir()
 //	fsutil.TempFile("", "example.*.txt")
+//	// create temp file on "testdata" dir
+//	fsutil.TempFile("testdata", "example.*.txt")
 func TempFile(dir, pattern string) (*os.File, error) {
 	return os.CreateTemp(dir, pattern)
 }
@@ -158,7 +161,7 @@ func MustCopyFile(srcPath, dstPath string) {
 
 // UpdateContents read file contents, call handleFn(contents) handle, then write updated contents to file
 func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error {
-	osFile, err := os.OpenFile(filePath, os.O_RDWR, 0600)
+	osFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0600)
 	if err != nil {
 		return err
 	}

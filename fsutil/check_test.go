@@ -56,6 +56,8 @@ func TestIsDir(t *testing.T) {
 	assert.False(t, fsutil.IsDir("/not-exist"))
 	assert.True(t, fsutil.IsDir("testdata"))
 	assert.True(t, fsutil.DirExist("testdata"))
+	assert.False(t, fsutil.IsEmptyDir("testdata"))
+	assert.False(t, fsutil.IsEmptyDir("testdata/not-exist-dir"))
 }
 
 func TestIsAbsPath(t *testing.T) {
