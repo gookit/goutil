@@ -35,6 +35,10 @@ func TestStringToBool(t *testing.T) {
 		is.Eq(want, strutil.MustBool(str))
 	}
 
+	is.Panics(func() {
+		strutil.MustBool("invalid")
+	})
+
 	blVal, err := strutil.ToBool("1")
 	is.Nil(err)
 	is.True(blVal)
@@ -106,9 +110,8 @@ func TestAnyToString(t *testing.T) {
 	is.NoErr(err)
 	is.Eq("true", str)
 
-	str, err = strutil.String(nil)
-	is.NoErr(err)
-	is.Eq("", str)
+	_, err = strutil.String(nil)
+	is.Err(err)
 
 	_, err = strutil.String([]string{"a"})
 	is.Err(err)
@@ -116,6 +119,18 @@ func TestAnyToString(t *testing.T) {
 	str, err = strutil.AnyToString([]string{"a"}, false)
 	is.NoErr(err)
 	is.Eq("[a]", str)
+
+	str = strutil.QuietString(nil)
+	is.Eq("", str)
+
+	str = strutil.StringOrDefault(nil, "default")
+	is.Eq("default", str)
+	str = strutil.StringOrDefault("value", "default")
+	is.Eq("value", str)
+
+	is.Panics(func() {
+		strutil.StringOrPanic([]string{"a"})
+	})
 }
 
 func TestByte2string(t *testing.T) {
@@ -144,7 +159,7 @@ func TestStrToInt(t *testing.T) {
 	iVal = strutil.QuietInt("-23")
 	is.Eq(-23, iVal)
 
-	iVal = strutil.Int2("-23")
+	iVal = strutil.SafeInt("-23")
 	is.Eq(-23, iVal)
 
 	iVal = strutil.IntOrPanic("-23")
