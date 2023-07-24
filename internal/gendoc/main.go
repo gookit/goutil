@@ -21,6 +21,7 @@ import (
 )
 
 var (
+	// hidden pacakges.
 	hidden = []string{
 		"basefn",
 		"netutil",
@@ -48,6 +49,15 @@ var (
 	// 	"en":    1,
 	// 	"zh-CN": 1,
 	// }
+	exFileNames = []string{
+		"color_print.go",
+	}
+	exSuffixes = []string{
+		"_test.go",
+		"_windows.go",
+		"_darwin.go",
+		// "_linux",
+	}
 )
 
 type genOptsSt struct {
@@ -185,20 +195,13 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	color.Info.Println("- find and collect exported functions...")
 	for _, filename := range ms { // for each go file
 		// "jsonutil/jsonutil_test.go"
-		if strings.HasSuffix(filename, "_test.go") {
-			continue
-		}
-
 		// "sysutil/sysutil_windows.go"
-		if strings.HasSuffix(filename, "_windows.go") {
+		if strutil.HasOneSuffix(filename, exSuffixes) {
 			continue
 		}
-		if strings.HasSuffix(filename, "_darwin.go") {
+		if strutil.ContainsOne(filename, exFileNames) {
 			continue
 		}
-		// if strings.HasSuffix(filename, "_linux.go") {
-		// 	continue
-		// }
 
 		idx := strings.IndexRune(filename, '/')
 		dir := filename[:idx] // sub pkg name.
@@ -250,9 +253,9 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			for _, line := range lines {
 				idx := strings.IndexByte(line, '{')
 				if idx > 0 {
-					bufWriteln(buf, line[:idx])
+					bufWriteln(buf, strings.TrimSpace(line[:idx]))
 				} else {
-					bufWriteln(buf, line)
+					bufWriteln(buf, strings.TrimSpace(line))
 				}
 			}
 		}
