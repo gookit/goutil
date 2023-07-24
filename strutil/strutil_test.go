@@ -59,6 +59,7 @@ func TestReplaces(t *testing.T) {
 }
 
 func TestWrapTag(t *testing.T) {
+	assert.Eq(t, "", strutil.WrapTag("", "info"))
 	assert.Eq(t, "<info>abc</info>", strutil.WrapTag("abc", "info"))
 }
 
@@ -68,15 +69,26 @@ func TestSubstrCount(t *testing.T) {
 	res, err := strutil.SubstrCount(s, substr)
 	assert.NoErr(t, err)
 	assert.Eq(t, 2, res)
+
 	res1, err := strutil.SubstrCount(s, substr, 18)
 	assert.NoErr(t, err)
 	assert.Eq(t, 1, res1)
+
 	res2, err := strutil.SubstrCount(s, substr, 17, 100)
 	assert.NoErr(t, err)
 	assert.Eq(t, 1, res2)
-	res3, err := strutil.SubstrCount(s, substr, 16)
+
+	res, err = strutil.SubstrCount(s, substr, 16)
 	assert.NoErr(t, err)
-	assert.Eq(t, 2, res3)
+	assert.Eq(t, 2, res)
+
+	res, err = strutil.SubstrCount(s, substr)
+	assert.NoErr(t, err)
+	assert.Eq(t, 2, res)
+
+	res, err = strutil.SubstrCount(s, substr, 1, 2, 3)
+	assert.Err(t, err)
+	assert.Eq(t, 0, res)
 }
 
 func TestPrettyJSON(t *testing.T) {

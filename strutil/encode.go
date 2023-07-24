@@ -114,7 +114,6 @@ func B64Encode(str string) string {
 func B64EncodeBytes(src []byte) []byte {
 	buf := make([]byte, base64.StdEncoding.EncodedLen(len(src)))
 	base64.StdEncoding.Encode(buf, src)
-
 	return buf
 }
 
@@ -125,10 +124,9 @@ func B64Decode(str string) string {
 }
 
 // B64DecodeBytes base64 decode
-func B64DecodeBytes(str string) []byte {
+func B64DecodeBytes(str []byte) []byte {
 	dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(str)))
-	n, _ := base64.StdEncoding.Decode(dbuf, []byte(str))
-
+	n, _ := base64.StdEncoding.Decode(dbuf, str)
 	return dbuf[:n]
 }
 
@@ -152,7 +150,7 @@ const (
 	BaseTypeRawURL
 )
 
-// Encoding instance
+// Encoding instance. base: 32 or 64, typ: 0 - 4
 func Encoding(base int, typ BaseType) BaseEncoder {
 	if base == 32 {
 		switch typ {

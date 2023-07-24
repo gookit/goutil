@@ -10,6 +10,11 @@ type WriteWrapper struct {
 	Out io.Writer
 }
 
+// WrapW instance
+func WrapW(w io.Writer) *WriteWrapper {
+	return &WriteWrapper{Out: w}
+}
+
 // NewWriteWrapper instance
 func NewWriteWrapper(w io.Writer) *WriteWrapper {
 	return &WriteWrapper{Out: w}

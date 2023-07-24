@@ -6,10 +6,26 @@ import (
 
 	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
+
+func TestMustReadReader(t *testing.T) {
+	r := fakeobj.NewReader()
+	r.WriteString("hi")
+	assert.Eq(t, "hi", stdio.ReadString(r))
+
+	r.WriteString("hi")
+	r.SetErrOnRead()
+	assert.Empty(t, stdio.ReadString(r))
+
+	assert.Panics(t, func() {
+		stdio.MustReadReader(r)
+	})
+}
 
 func TestNewScanner(t *testing.T) {
 	s := stdio.NewScanner("hi\nmy\nname\nis\ninhere")
+	s = stdio.NewScanner(s)
 
 	var ss []string
 	// scan each line
@@ -19,6 +35,14 @@ func TestNewScanner(t *testing.T) {
 
 	assert.Len(t, ss, 5)
 	assert.Eq(t, "hi", ss[0])
+
+	s = stdio.NewScanner(strings.NewReader("hi\nmy\nname\nis\ninhere"))
+	assert.True(t, s.Scan())
+	assert.Eq(t, "hi", s.Text())
+
+	s = stdio.NewScanner([]byte("hi\nmy\nname\nis\ninhere"))
+	assert.True(t, s.Scan())
+	assert.Eq(t, "hi", s.Text())
 }
 
 func TestNewIOReader(t *testing.T) {

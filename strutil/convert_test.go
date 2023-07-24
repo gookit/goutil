@@ -1,8 +1,11 @@
 package strutil_test
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -70,7 +73,7 @@ func BenchmarkAnyToString_string(b *testing.B) {
 	}
 }
 
-func TestAnyToString(t *testing.T) {
+func TestToString(t *testing.T) {
 	is := assert.New(t)
 
 	tests := []any{
@@ -79,13 +82,15 @@ func TestAnyToString(t *testing.T) {
 		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
 		"2",
 		[]byte("2"),
+		time.Duration(2),
+		json.Number("2"),
 	}
 	for _, in := range tests {
-		is.Eq("2", strutil.MustString(in))
 		is.Eq("2", strutil.QuietString(in))
 	}
 
 	is.Eq("2", strutil.SafeString(2))
+	is.Eq("err msg", strutil.SafeString(errors.New("err msg")))
 
 	tests1 := []any{
 		float32(2.3), 2.3,
@@ -156,17 +161,14 @@ func TestStrToInt(t *testing.T) {
 	is.Nil(err)
 	is.Eq(-23, iVal)
 
-	iVal = strutil.QuietInt("-23")
-	is.Eq(-23, iVal)
+	is.Eq(-23, strutil.QuietInt("-23"))
+	is.Eq(-23, strutil.SafeInt("-23"))
 
-	iVal = strutil.SafeInt("-23")
-	is.Eq(-23, iVal)
+	is.Eq(23, strutil.IntOrDefault("invalid", 23))
+	is.Eq(23, strutil.IntOrDefault("23", 25))
 
-	iVal = strutil.IntOrPanic("-23")
-	is.Eq(-23, iVal)
-
-	iVal = strutil.MustInt("-23")
-	is.Eq(-23, iVal)
+	is.Eq(-23, strutil.IntOrPanic("-23"))
+	is.Eq(-23, strutil.MustInt("-23"))
 
 	is.PanicsErrMsg(func() {
 		strutil.IntOrPanic("abc")
@@ -188,14 +190,40 @@ func TestStrToInt64(t *testing.T) {
 	is.Nil(err)
 	is.Eq(int64(23), iVal)
 
-	iVal = strutil.QuietInt64("-23")
-	is.Eq(int64(-23), iVal)
+	is.Eq(int64(23), strutil.Int64OrDefault("invalid", 23))
+	is.Eq(int64(23), strutil.Int64OrDefault("23", 25))
 
-	iVal = strutil.MustInt64("-23")
-	is.Eq(int64(-23), iVal)
+	is.Eq(int64(-23), strutil.QuietInt64("-23"))
+	is.Eq(int64(-23), strutil.MustInt64("-23"))
 
 	is.Panics(func() {
 		strutil.MustInt64("abc")
+	})
+}
+
+func TestStrToUint(t *testing.T) {
+	is := assert.New(t)
+
+	iVal, err := strutil.ToUint("23")
+	is.Nil(err)
+	is.Eq(uint(23), iVal)
+
+	iVal, err = strutil.UintOrErr("23")
+	is.Nil(err)
+	is.Eq(uint(23), iVal)
+
+	iVal = strutil.Uint("23")
+	is.Nil(err)
+	is.Eq(uint(23), iVal)
+
+	is.Eq(uint(23), strutil.UintOrDefault("invalid", 23))
+	is.Eq(uint(23), strutil.UintOrDefault("23", 25))
+
+	is.Eq(uint(23), strutil.SafeUint("23"))
+	is.Eq(uint(23), strutil.MustUint("23"))
+
+	is.Panics(func() {
+		strutil.MustUint("abc")
 	})
 }
 

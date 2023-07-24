@@ -91,35 +91,41 @@ func PrettyJSON(v any) (string, error) {
 	return string(out), err
 }
 
-// RenderTemplate render text template
+var builtInFuncs = template.FuncMap{
+	// don't escape content
+	"raw": func(s string) string {
+		return s
+	},
+	"trim": func(s string) string {
+		return strings.TrimSpace(s)
+	},
+	// join strings
+	"join": func(ss []string, sep string) string {
+		return strings.Join(ss, sep)
+	},
+	// lower first char
+	"lcFirst": func(s string) string {
+		return LowerFirst(s)
+	},
+	// upper first char
+	"upFirst": func(s string) string {
+		return UpperFirst(s)
+	},
+}
+
+// RenderTemplate quickly render text template.
+//
+// Deprecated: please use textutil.RenderTpl() instead it
 func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string {
 	return RenderText(input, data, fns, isFile...)
 }
 
-// RenderText render text template
+// RenderText quickly render text template
+//
+// Deprecated: please use textutil.RenderTpl() instead it
 func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string {
 	t := template.New("simple-text")
-	t.Funcs(template.FuncMap{
-		// don't escape content
-		"raw": func(s string) string {
-			return s
-		},
-		"trim": func(s string) string {
-			return strings.TrimSpace(s)
-		},
-		// join strings
-		"join": func(ss []string, sep string) string {
-			return strings.Join(ss, sep)
-		},
-		// lower first char
-		"lcFirst": func(s string) string {
-			return LowerFirst(s)
-		},
-		// upper first char
-		"upFirst": func(s string) string {
-			return UpperFirst(s)
-		},
-	})
+	t.Funcs(builtInFuncs)
 
 	// add custom template functions
 	if len(fns) > 0 {
@@ -150,10 +156,11 @@ func WrapTag(s, tag string) string {
 
 // SubstrCount returns the number of times the substr substring occurs in the s string.
 // Actually, it comes from strings.Count().
-// s The string to search in
-// substr The substring to search for
-// params[0] The offset where to start counting.
-// params[1] The maximum length after the specified offset to search for the substring.
+//
+//   - s The string to search in
+//   - substr The substring to search for
+//   - params[0] The offset where to start counting.
+//   - params[1] The maximum length after the specified offset to search for the substring.
 func SubstrCount(s, substr string, params ...uint64) (int, error) {
 	larg := len(params)
 	hasArgs := larg != 0
