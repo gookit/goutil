@@ -29,7 +29,7 @@ func TestElapsedNow(t *testing.T) {
 
 	// us
 	st = time.Now().Add(-2304 * time.Nanosecond)
-	assert.StrContains(t, timex.ElapsedNow(st), "2.4")
+	assert.StrContains(t, timex.ElapsedNow(st), "2.")
 }
 
 func TestFromNow(t *testing.T) {

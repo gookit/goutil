@@ -206,21 +206,21 @@ func TestStrToUint(t *testing.T) {
 
 	iVal, err := strutil.ToUint("23")
 	is.Nil(err)
-	is.Eq(uint(23), iVal)
+	is.Eq(uint64(23), iVal)
 
 	iVal, err = strutil.UintOrErr("23")
 	is.Nil(err)
-	is.Eq(uint(23), iVal)
+	is.Eq(uint64(23), iVal)
 
 	iVal = strutil.Uint("23")
 	is.Nil(err)
-	is.Eq(uint(23), iVal)
+	is.Eq(uint64(23), iVal)
 
-	is.Eq(uint(23), strutil.UintOrDefault("invalid", 23))
-	is.Eq(uint(23), strutil.UintOrDefault("23", 25))
+	is.Eq(uint64(23), strutil.UintOrDefault("invalid", 23))
+	is.Eq(uint64(23), strutil.UintOrDefault("23", 25))
 
-	is.Eq(uint(23), strutil.SafeUint("23"))
-	is.Eq(uint(23), strutil.MustUint("23"))
+	is.Eq(uint64(23), strutil.SafeUint("23"))
+	is.Eq(uint64(23), strutil.MustUint("23"))
 
 	is.Panics(func() {
 		strutil.MustUint("abc")
