@@ -42,7 +42,7 @@ func PIDByName(keywords string) int {
 			return 0
 		}
 
-		return strutil.Int2(string(byteutil.FirstLine(output)))
+		return strutil.SafeInt(string(byteutil.FirstLine(output)))
 	}
 
 	return 0

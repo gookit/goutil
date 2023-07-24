@@ -76,7 +76,7 @@ func BaseTypeVal(val any) (value any, err error) {
 	return reflects.BaseTypeVal(reflect.ValueOf(val))
 }
 
-// BoolString convert
+// BoolString convert bool to string
 func BoolString(bl bool) string {
 	return strconv.FormatBool(bl)
 }

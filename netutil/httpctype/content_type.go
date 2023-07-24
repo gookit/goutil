@@ -30,6 +30,8 @@ const (
 	PROTOBUF = "application/x-protobuf"
 
 	Form = "application/x-www-form-urlencoded"
+	// FormUtf8 for form data with charset=utf-8
+	FormUtf8 = "application/x-www-form-urlencoded; charset=utf-8"
 	// FormData for upload file
 	FormData = "multipart/form-data"
 

@@ -59,6 +59,9 @@ type FileInfo struct {
 	Mod fs.FileMode
 	Mt  time.Time
 
+	// Path full path
+	Path string
+
 	Contents string
 	CloseErr error
 	offset   int
@@ -71,8 +74,12 @@ func NewFile(fpath string) *FileInfo {
 
 // NewFileInfo instance
 func NewFileInfo(fpath string, isDir ...bool) *FileInfo {
-	isd := basefn.FirstOr(isDir, false)
-	return &FileInfo{Dir: isd, Nam: path.Base(fpath), Mod: fs.ModePerm}
+	return &FileInfo{
+		Dir:  basefn.FirstOr(isDir, false),
+		Nam:  path.Base(fpath),
+		Mod:  fs.ModePerm,
+		Path: fpath,
+	}
 }
 
 // WithBody set file body contents
