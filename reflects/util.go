@@ -8,24 +8,38 @@ import (
 )
 
 // Elem returns the value that the interface v contains
-// or that the pointer v points to.
+// or that the pointer v points to. otherwise, will return self
 func Elem(v reflect.Value) reflect.Value {
-	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+	if v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
 		return v.Elem()
 	}
-
-	// otherwise, will return self
 	return v
 }
 
-// Indirect like reflect.Indirect(), but can also indirect reflect.Interface
+// Indirect like reflect.Indirect(), but can also indirect reflect.Interface. otherwise, will return self
 func Indirect(v reflect.Value) reflect.Value {
-	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+	if v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
 		return v.Elem()
 	}
-
-	// otherwise, will return self
 	return v
+}
+
+// TypeReal returns a ptr type's real type. otherwise, will return self.
+func TypeReal(t reflect.Type) reflect.Type {
+	if t.Kind() == reflect.Pointer {
+		return t.Elem()
+	}
+	return t
+}
+
+// TypeElem returns the array, slice, chan, map type's element type. otherwise, will return self.
+func TypeElem(t reflect.Type) reflect.Type {
+	switch t.Kind() {
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice:
+		return t.Elem()
+	default:
+		return t
+	}
 }
 
 // Len get reflect value length

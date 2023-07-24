@@ -46,7 +46,7 @@ func (v Value) Indirect() Value {
 //
 // TIP: not like reflect.Value.Elem. otherwise, will return self.
 func (v Value) Elem() Value {
-	if v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface {
+	if v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface {
 		elem := v.Value.Elem()
 
 		return Value{

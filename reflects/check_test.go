@@ -38,6 +38,10 @@ func TestIsEqual(t *testing.T) {
 	is.True(reflects.IsEqual([]byte{}, []byte{}))
 	is.True(reflects.IsEqual([]byte("abc"), []byte("abc")))
 	is.False(reflects.IsEqual([]byte("abc"), 123))
+
+	var data []string
+	// fmt.Printf("%+v %+v\n", data, []string{})
+	is.False(reflects.IsEqual([]string{}, data))
 }
 
 func TestIsEmpty(t *testing.T) {

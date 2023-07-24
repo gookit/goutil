@@ -104,8 +104,15 @@ func TestSliceAddItem_ok(t *testing.T) {
 	assert.Len(t, sl, 2)
 
 	rv.Index(1).Set(reflect.ValueOf("def"))
-
 	dump.P(sl)
+
+	slv := reflects.MakeSliceByElem(reflect.TypeOf("str"), 0, 2)
+	slv = reflect.Append(slv, reflect.ValueOf("a"))
+	slv = reflect.Append(slv, reflect.ValueOf("b"))
+	sl = slv.Interface().([]string)
+	dump.P(sl)
+	assert.Len(t, sl, 2)
+	assert.Eq(t, "a", sl[0])
 }
 
 func TestSlice_subMap_addItem(t *testing.T) {
