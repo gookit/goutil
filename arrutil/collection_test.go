@@ -40,9 +40,11 @@ func TestDifferencesShouldPassed(t *testing.T) {
 	data := []string{"a", "b", "c"}
 	result := arrutil.Differences[string](data, []string{"a", "b"}, arrutil.StringEqualsComparer)
 	assert.Eq(t, []string{"c"}, result)
+
 	result = arrutil.Differences[string]([]string{"a", "b"}, data, arrutil.StringEqualsComparer)
 	assert.Eq(t, []string{"c"}, result)
-	result = arrutil.Differences[string]([]string{"a", "b", "d"}, data, arrutil.ReflectEqualsComparer[string])
+
+	result = arrutil.Diff([]string{"a", "b", "d"}, data, arrutil.ReflectEqualsComparer[string])
 	assert.Eq(t, 2, len(result))
 }
 

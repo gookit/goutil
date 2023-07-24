@@ -91,6 +91,9 @@ func TestWorkdir(t *testing.T) {
 	assert.NotEmpty(t, cliutil.BinFile())
 	assert.NotEmpty(t, cliutil.BinName())
 	fmt.Println(cliutil.GetTermSize())
+	// repeat call
+	w, h := cliutil.GetTermSize()
+	fmt.Println(w, h)
 }
 
 func TestColorPrint(t *testing.T) {

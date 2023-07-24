@@ -61,4 +61,5 @@ func TestErrors_usage(t *testing.T) {
 	assert.False(t, es.IsEmpty())
 	assert.NotEmpty(t, es.Error())
 	assert.Err(t, es.ErrorOrNil())
+	assert.Err(t, es.First())
 }

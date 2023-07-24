@@ -11,6 +11,7 @@ func TestAssert_methods(t *testing.T) {
 	// IsFalse
 	assert.NoErr(t, errorx.IsFalse(false))
 	assert.Err(t, errorx.IsFalse(true))
+	assert.Err(t, errorx.IsFalse(true, "error msg"))
 
 	// IsTrue
 	assert.NoErr(t, errorx.IsTrue(true))
@@ -25,4 +26,5 @@ func TestAssert_methods(t *testing.T) {
 	// NotIn
 	assert.NoErr(t, errorx.NotIn(4, []int{1, 2, 3}))
 	assert.Err(t, errorx.NotIn(1, []int{1, 2, 3}))
+	assert.Err(t, errorx.NotIn(1, []int{1, 2, 3}, "error msg"))
 }

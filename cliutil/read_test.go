@@ -5,13 +5,13 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
 func TestRead_cases(t *testing.T) {
-	buf := byteutil.NewBuffer()
+	buf := fakeobj.NewReader()
 	cliutil.Input = buf
 	defer func() {
 		cliutil.Input = os.Stdin
@@ -23,6 +23,13 @@ func TestRead_cases(t *testing.T) {
 		fmt.Println("ans:", ans)
 		assert.NoError(t, err)
 		assert.Equal(t, "inhere", ans)
+
+		// error
+		buf.SetErrOnRead()
+		_, err = cliutil.ReadInput("hi, your name? ")
+		assert.Error(t, err)
+		fmt.Println(err)
+		buf.ErrOnRead = false
 	})
 
 	// test ReadLine

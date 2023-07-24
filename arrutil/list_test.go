@@ -57,6 +57,10 @@ func TestStrings_methods(t *testing.T) {
 	assert.Eq(t, "a", ss.First())
 	assert.Eq(t, "b", ss.Last())
 
+	ss = arrutil.Strings{"b", "a"}
+	ss.Sort()
+	assert.Eq(t, "a", ss.First())
+
 	ss = arrutil.Strings{}
 	assert.Eq(t, "default1", ss.First("default1"))
 	assert.Eq(t, "default2", ss.Last("default2"))

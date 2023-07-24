@@ -2,7 +2,6 @@ package arrutil
 
 import (
 	"errors"
-	"reflect"
 
 	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/reflects"
@@ -97,15 +96,6 @@ func TwowaySearch[T any](data []T, item T, fn Comparer[T]) (int, error) {
 	}
 
 	return -1, ErrElementNotFound
-}
-
-// MakeEmptySlice Create a new slice with the elements of the source that satisfy the predicate.
-//
-// itemType: the type of the elements in the source.
-// returns: the new slice.
-func MakeEmptySlice(itemType reflect.Type) any {
-	ret := reflect.MakeSlice(reflect.SliceOf(itemType), 0, 0).Interface()
-	return ret
 }
 
 // CloneSlice Clone a slice.
