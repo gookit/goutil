@@ -2,14 +2,18 @@ package mathutil
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gookit/goutil/comdef"
 )
+
+var ErrInconvertible = errors.New("unable to complete value-to-target type conversion")
 
 // ToIntFunc convert value to int
 type ToIntFunc func(any) (int, error)
@@ -593,4 +597,268 @@ func Percent(val, total int) float64 {
 // Deprecated: use timex.ElapsedTime()
 func ElapsedTime(startTime time.Time) string {
 	return fmt.Sprintf("%.3f", time.Since(startTime).Seconds()*1000)
+}
+
+func MustBe[T comdef.Numeric | ~bool | ~string](v any) T {
+	be, _ := Be[T](v)
+	return be
+}
+
+// Be convert any type v to target type T
+func Be[T comdef.Numeric | ~bool | ~string](v any) (T, error) {
+	var t T
+	if v == nil {
+		return t, nil
+	}
+	indrv := reflect.Indirect(reflect.ValueOf(v))
+
+	// int type try to convert to uint type
+	if indrv.Type().Kind() >= reflect.Int &&
+		indrv.Type().Kind() <= reflect.Int64 &&
+		reflect.TypeOf(t).Kind() >= reflect.Uint &&
+		reflect.TypeOf(t).Kind() <= reflect.Uintptr {
+		if indrv.Int() < 0 {
+			return t, ErrInconvertible
+		}
+	}
+
+	if indrv.CanConvert(reflect.TypeOf(t)) &&
+		!(indrv.Type().Kind() >= reflect.Int && indrv.Type().Kind() < reflect.Array && reflect.TypeOf(t).Kind() == reflect.String) { // not numeric convert to string
+		return indrv.Convert(reflect.TypeOf(t)).Interface().(T), nil
+	}
+
+	// convert ptr value
+	v = indrv.Interface()
+
+	if b, ok := v.([]byte); ok {
+		v = string(b)
+	}
+
+	// convert string to numeric/string/bool
+	if str, ok := v.(string); ok {
+		switch any(t).(type) {
+		case string:
+			return v.(T), nil
+		case int:
+			i, err := strconv.Atoi(str)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxInt ||
+				i < math.MinInt {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case int8:
+			i, err := strconv.ParseInt(str, 10, 8)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxInt8 ||
+				i < math.MinInt8 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case int16:
+			i, err := strconv.ParseInt(str, 10, 16)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxInt16 ||
+				i < math.MinInt16 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case int32:
+			i, err := strconv.ParseInt(str, 10, 32)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxInt32 ||
+				i < math.MinInt32 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case int64:
+			i, err := strconv.ParseInt(str, 10, 64)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			return any(i).(T), err
+		case uint:
+			i, err := strconv.ParseUint(str, 10, 0)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxUint {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case uint8:
+			i, err := strconv.ParseUint(str, 10, 8)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxUint8 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case uint16:
+			i, err := strconv.ParseUint(str, 10, 16)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxUint16 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case uint32:
+			i, err := strconv.ParseUint(str, 10, 32)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxUint32 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case uint64:
+			i, err := strconv.ParseUint(str, 10, 64)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			return any(i).(T), err
+		case float32:
+			i, err := strconv.ParseFloat(str, 32)
+			if i > math.MaxFloat32 ||
+				i < math.SmallestNonzeroFloat32 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case float64:
+			i, err := strconv.ParseFloat(str, 64)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if i > math.MaxFloat64 ||
+				i < math.SmallestNonzeroFloat64 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case complex64:
+			i, err := strconv.ParseComplex(str, 64)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if real(i) > math.MaxFloat32 ||
+				real(i) < math.SmallestNonzeroFloat32 ||
+				imag(i) > math.MaxFloat32 ||
+				imag(i) < math.SmallestNonzeroFloat32 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case complex128:
+			i, err := strconv.ParseComplex(str, 128)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			if real(i) > math.MaxFloat64 ||
+				real(i) < math.SmallestNonzeroFloat64 ||
+				imag(i) > math.MaxFloat64 ||
+				imag(i) < math.SmallestNonzeroFloat64 {
+				return any(0).(T), ErrInconvertible
+			}
+			return any(i).(T), err
+		case bool:
+			i, err := strconv.ParseBool(str)
+			if err != nil {
+				return t, ErrInconvertible
+			}
+			return any(i).(T), err
+		default:
+			return t, ErrInconvertible
+		}
+	}
+
+	// convert value to string
+	if _, ok := any(t).(string); ok {
+		// convert value to string if value is a struct
+		// call String() method if it exists
+		// otherwise, JSON marshal the struct
+		if reflect.Indirect(reflect.ValueOf(v)).Type().Kind() == reflect.Struct {
+			if m, ok := v.(fmt.Stringer); ok {
+				return any(m.String()).(T), nil
+			}
+			jsonBytes, err := json.Marshal(v)
+			return any(string(jsonBytes)).(T), err
+		}
+
+		switch v.(type) {
+		case int:
+			return any(strconv.Itoa(v.(int))).(T), nil
+		case int8:
+			return any(strconv.FormatInt(int64(v.(int8)), 10)).(T), nil
+		case int16:
+			return any(strconv.FormatInt(int64(v.(int16)), 10)).(T), nil
+		case int32:
+			return any(strconv.FormatInt(int64(v.(int32)), 10)).(T), nil
+		case int64:
+			return any(strconv.FormatInt(v.(int64), 10)).(T), nil
+		case uint:
+			return any(strconv.FormatUint(uint64(v.(uint)), 10)).(T), nil
+		case uint8:
+			return any(strconv.FormatUint(uint64(v.(uint8)), 10)).(T), nil
+		case uint16:
+			return any(strconv.FormatUint(uint64(v.(uint16)), 10)).(T), nil
+		case uint32:
+			return any(strconv.FormatUint(uint64(v.(uint32)), 10)).(T), nil
+		case uint64:
+			return any(strconv.FormatUint(v.(uint64), 10)).(T), nil
+		case float32:
+			return any(strconv.FormatFloat(float64(v.(float32)), 'f', -1, 32)).(T), nil
+		case float64:
+			return any(strconv.FormatFloat(v.(float64), 'f', -1, 64)).(T), nil
+		case complex64:
+			return any(strconv.FormatComplex(complex128(v.(complex64)), 'f', -1, 64)).(T), nil
+		case complex128:
+			return any(strconv.FormatComplex(v.(complex128), 'f', -1, 128)).(T), nil
+		case bool:
+			if v.(bool) {
+				return any("true").(T), nil
+			}
+			return any("false").(T), nil
+		default:
+			return t, ErrInconvertible
+		}
+	}
+
+	// convert float to int
+	if reflect.TypeOf(v).Kind() == reflect.Float32 ||
+		reflect.TypeOf(v).Kind() == reflect.Float64 {
+		switch any(t).(type) {
+		case int:
+			return any(int(v.(float64))).(T), nil
+		case int8:
+			return any(int8(v.(float64))).(T), nil
+		case int16:
+			return any(int16(v.(float64))).(T), nil
+		case int32:
+			return any(int32(v.(float64))).(T), nil
+		case int64:
+			return any(int64(v.(float64))).(T), nil
+		case uint:
+			return any(uint(v.(float64))).(T), nil
+		case uint8:
+			return any(uint8(v.(float64))).(T), nil
+		case uint16:
+			return any(uint16(v.(float64))).(T), nil
+		case uint32:
+			return any(uint32(v.(float64))).(T), nil
+		case uint64:
+			return any(uint64(v.(float64))).(T), nil
+		default:
+			return t, ErrInconvertible
+		}
+	}
+
+	return t, ErrInconvertible
 }

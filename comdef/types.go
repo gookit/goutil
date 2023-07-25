@@ -67,3 +67,7 @@ type SimpleType interface {
 type ScalarType interface {
 	Int | Uint | Float | ~string | ~bool
 }
+
+type Numeric interface {
+	Xint | Float | ~complex128 | ~complex64
+}

@@ -256,3 +256,108 @@ func TestElapsedTime(t *testing.T) {
 
 	assert.Eq(t, 3000, int(mathutil.MustFloat(num)))
 }
+
+type Person struct {
+	Name string `json:"name"`
+}
+
+func (p Person) String() string {
+	return "person name: " + p.Name
+}
+
+func TestBe(t *testing.T) {
+	var person = Person{Name: "inhere"}
+	var a any = 1.111
+	var b any = 1
+	var c any = "1"
+	var d any = []byte("1")
+	var signa any = -1
+
+	v, err := mathutil.Be[int](a)
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(1))
+
+	v, err = mathutil.Be[int](b)
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(1))
+
+	v, err = mathutil.Be[int](c)
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(1))
+
+	v, err = mathutil.Be[int](d)
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(1))
+
+	str, err := mathutil.Be[string](1)
+	assert.NoError(t, err)
+	assert.Equal(t, str, "1")
+
+	str, err = mathutil.Be[string](1.1)
+	assert.NoError(t, err)
+	assert.Equal(t, str, "1.1")
+
+	str, err = mathutil.Be[string](person)
+	assert.NoError(t, err)
+	assert.Equal(t, str, "person name: inhere")
+
+	fv, err := mathutil.Be[float64](1)
+	assert.NoError(t, err)
+	assert.Equal(t, fv, float64(1))
+
+	fv, err = mathutil.Be[float64]("1.1")
+	assert.NoError(t, err)
+	assert.Equal(t, fv, float64(1.1))
+
+	v, err = mathutil.Be[int](1.1)
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(1))
+
+	v64, err := mathutil.Be[int64](&a)
+	assert.NoError(t, err)
+	assert.Equal(t, v64, int64(1))
+
+	v64, err = mathutil.Be[int64](&c)
+	assert.NoError(t, err)
+	assert.Equal(t, v64, int64(1))
+
+	uv, err := mathutil.Be[uint](signa)
+	assert.Error(t, err, mathutil.ErrInconvertible)
+	assert.Equal(t, uv, uint(0))
+
+	s, err := mathutil.Be[string](&c)
+	assert.NoError(t, err)
+	assert.Equal(t, s, "1")
+
+	s, err = mathutil.Be[string](nil)
+	assert.NoError(t, err)
+	assert.Equal(t, s, "")
+
+	uv, err = mathutil.Be[uint]("-1")
+	assert.Error(t, err, mathutil.ErrInconvertible)
+	assert.Equal(t, uv, uint(0))
+
+	v, err = mathutil.Be[int]("-1")
+	assert.NoError(t, err)
+	assert.Equal(t, v, int(-1))
+
+	boolv, err := mathutil.Be[bool]("1")
+	assert.NoError(t, err)
+	assert.Equal(t, boolv, true)
+
+	boolv, err = mathutil.Be[bool]("2")
+	assert.Error(t, err, mathutil.ErrInconvertible)
+	assert.Equal(t, boolv, false)
+
+	boolv, err = mathutil.Be[bool]("false")
+	assert.NoError(t, err)
+	assert.Equal(t, boolv, false)
+
+	boolv, err = mathutil.Be[bool]("f")
+	assert.NoError(t, err)
+	assert.Equal(t, boolv, false)
+
+	boolv, err = mathutil.Be[bool]("true")
+	assert.NoError(t, err)
+	assert.Equal(t, boolv, true)
+}
