@@ -1,7 +1,6 @@
 package jsonutil_test
 
 import (
-	"bytes"
 	"testing"
 
 	"github.com/gookit/goutil/jsonutil"
@@ -14,6 +13,7 @@ type user struct {
 }
 
 var testUser = user{"inhere", 200}
+var invalid = jsonutil.Encode
 
 func TestPretty(t *testing.T) {
 	tests := []any{
@@ -36,76 +36,96 @@ func TestPretty(t *testing.T) {
 	assert.Eq(t, want, string(bts))
 }
 
-func TestEncode(t *testing.T) {
-	bts, err := jsonutil.Encode(testUser)
-	assert.NoErr(t, err)
-	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
+func TestMustPretty(t *testing.T) {
+	type T1 struct {
+		A1 int    `json:"a1"`
+		B1 string `json:"b1"`
+	}
 
-	bts, err = jsonutil.Encode(&testUser)
-	assert.NoErr(t, err)
-	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
+	type T2 struct {
+		T1        // embedded without json tag
+		C  T1     `json:"c"` // as field and with json tag
+		A  int    `json:"a"`
+		B  string `json:"b"`
+	}
 
-	bts, err = jsonutil.EncodeUnescapeHTML(&testUser)
-	assert.NoErr(t, err)
-	assert.Eq(t, `{"name":"inhere","age":200}
-`, string(bts))
+	t1 := T1{A1: 1, B1: "b1-at-T1"}
+	t2 := T2{T1: t1, A: 1, B: "b-at-T2", C: t1}
+
+	str := jsonutil.MustPretty(t2)
+	assert.StrContains(t, str, `"c": {`)
+	assert.NotContains(t, str, `"T1": {`)
+	// fmt.Println(str)
+	/*Output:
+	{
+	    "a1": 1,
+	    "b1": "b1-at-T1",
+	    "c": {
+	        "a1": 1,
+	        "b1": "b1-at-T1"
+	    },
+	    "a": 1,
+	    "b": "b-at-T2"
+	}
+	*/
+
+	type T3 struct {
+		T1 `json:"t1"` // with json tag
+		A  int         `json:"a"`
+		B  string      `json:"b"`
+	}
+
+	t3 := T3{T1: t1, A: 1, B: "b-at-T3"}
+	str = jsonutil.MustPretty(t3)
+	assert.StrContains(t, str, `"t1": {`)
+	// fmt.Println(str)
+	/*Output:
+	{
+	    "t1": {
+	        "a1": 1,
+	        "b1": "b1-at-T1"
+	    },
+	    "a": 1,
+	    "b": "b-at-T3"
+	}
+	*/
+
+	assert.Panics(t, func() {
+		jsonutil.MustPretty(jsonutil.Encode)
+	})
 }
 
-func TestEncodeUnescapeHTML(t *testing.T) {
-	bts, err := jsonutil.Encode(&testUser)
-	assert.NoErr(t, err)
-	assert.Eq(t, `{"name":"inhere","age":200}`, string(bts))
-}
+func TestMapping(t *testing.T) {
+	mp := map[string]any{"name": "inhere", "age": 200}
 
-func TestEncodeToWriter(t *testing.T) {
-	buf := &bytes.Buffer{}
-
-	err := jsonutil.EncodeToWriter(testUser, buf)
-	assert.NoErr(t, err)
-	assert.Eq(t, `{"name":"inhere","age":200}
-`, buf.String())
-}
-
-func TestDecode(t *testing.T) {
-	str := `{"name":"inhere","age":200}`
 	usr := &user{}
-	err := jsonutil.Decode([]byte(str), usr)
-
+	err := jsonutil.Mapping(mp, usr)
 	assert.NoErr(t, err)
 	assert.Eq(t, "inhere", usr.Name)
 	assert.Eq(t, 200, usr.Age)
-}
 
-func TestDecodeString(t *testing.T) {
-	str := `{"name":"inhere","age":200}`
-	usr := &user{}
-	err := jsonutil.DecodeString(str, usr)
-
-	assert.NoErr(t, err)
-	assert.Eq(t, "inhere", usr.Name)
-	assert.Eq(t, 200, usr.Age)
+	assert.Err(t, jsonutil.Mapping(invalid, usr))
 }
 
 func TestWriteReadFile(t *testing.T) {
-	user := struct {
-		Name string `json:"name"`
-		Age  int    `json:"age"`
-	}{"inhere", 200}
+	usr := user{"inhere", 200}
 
-	err := jsonutil.WriteFile("testdata/test.json", &user)
+	err := jsonutil.WriteFile("testdata/test.json", &usr)
+	assert.NoErr(t, err)
+	assert.Err(t, jsonutil.WriteFile("testdata/test.json", jsonutil.Encode))
+
+	err = jsonutil.WritePretty("testdata/test2.json", &usr)
+	assert.NoErr(t, err)
+	assert.Err(t, jsonutil.WritePretty("testdata/test2.json", jsonutil.Encode))
+
+	err = jsonutil.ReadFile("testdata/test.json", &usr)
 	assert.NoErr(t, err)
 
-	err = jsonutil.WritePretty("testdata/test2.json", &user)
-	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", usr.Name)
+	assert.Eq(t, 200, usr.Age)
 
-	// err = jsonutil.WritePretty("/path/to/not-exist.json", &user)
-	// assert.Err(t, err)
-
-	err = jsonutil.ReadFile("testdata/test.json", &user)
-	assert.NoErr(t, err)
-
-	assert.Eq(t, "inhere", user.Name)
-	assert.Eq(t, 200, user.Age)
+	err = jsonutil.ReadFile("testdata/not-exist.json", &usr)
+	assert.Err(t, err)
 }
 
 func TestIsJsonFast(t *testing.T) {
