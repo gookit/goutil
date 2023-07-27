@@ -44,6 +44,11 @@ func TestIsEqual(t *testing.T) {
 	is.False(reflects.IsEqual([]string{}, data))
 }
 
+// ST for testing
+type ST struct {
+	v any
+}
+
 func TestIsEmpty(t *testing.T) {
 	is := assert.New(t)
 
@@ -58,11 +63,10 @@ func TestIsEmpty(t *testing.T) {
 	is.True(reflects.IsEmpty(reflect.ValueOf(float32(0))))
 	is.True(reflects.IsEmpty(reflect.ValueOf(comdef.StringMatchFunc(nil))))
 
-	type T struct {
-		v any //lint:ignore U1000 for test
-	}
-	rv := reflect.ValueOf(T{}).Field(0)
+	rv := reflect.ValueOf(ST{}).Field(0)
 	is.True(reflects.IsEmpty(rv))
+
+	is.True(reflects.IsEmpty(reflect.ValueOf(ST{})))
 }
 
 func TestIsEmptyValue(t *testing.T) {
@@ -78,13 +82,12 @@ func TestIsEmptyValue(t *testing.T) {
 	is.True(reflects.IsEmptyValue(reflect.ValueOf(float32(0))))
 	is.True(reflects.IsEmptyReal(reflect.ValueOf(comdef.StringMatchFunc(nil))))
 
-	type T struct {
-		v any //lint:ignore U1000 for test
-	}
-	rv := reflect.ValueOf(T{}).Field(0)
+	rv := reflect.ValueOf(ST{}).Field(0)
 	is.True(reflects.IsEmptyValue(rv))
 
-	rv = reflect.ValueOf(&T{v: "abc"})
+	is.True(reflects.IsEmptyReal(reflect.ValueOf(ST{})))
+
+	rv = reflect.ValueOf(&ST{v: "abc"})
 	is.False(reflects.IsEmptyValue(rv))
 }
 

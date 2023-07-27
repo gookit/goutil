@@ -1,6 +1,7 @@
 package checkfn
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -25,27 +26,31 @@ func IsEmpty(v any) bool {
 
 // Contains try loop over the data check if the data includes the element.
 //
-// TIP: only support types: string, map, array, slice
+// data allow types: string, map, array, slice
 //
 //	map         - check key exists
-//	string 	    - check sub-string exists
+//	string      - check sub-string exists
 //	array,slice - check sub-element exists
+//
+// Returns:
+//   - valid: data is valid
+//   - found: element was found
 //
 // return (false, false) if impossible.
 // return (true, false) if element was not found.
 // return (true, true) if element was found.
 func Contains(data, elem any) (valid, found bool) {
-	dataRv := reflect.ValueOf(data)
-	dataRt := reflect.TypeOf(data)
-	if dataRt == nil {
+	if data == nil {
 		return false, false
 	}
 
+	dataRv := reflect.ValueOf(data)
+	dataRt := reflect.TypeOf(data)
 	dataKind := dataRt.Kind()
 
 	// string
 	if dataKind == reflect.String {
-		return true, strings.Contains(dataRv.String(), reflect.ValueOf(elem).String())
+		return true, strings.Contains(dataRv.String(), fmt.Sprint(elem))
 	}
 
 	// map

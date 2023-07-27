@@ -3,6 +3,7 @@ package fsutil_test
 import (
 	"strings"
 	"testing"
+	"text/scanner"
 
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -29,10 +30,16 @@ func TestReadReader(t *testing.T) {
 	fr := fakeobj.NewReader()
 	assert.Empty(t, fsutil.ReadReader(fr))
 
+	fr.ErrOnRead = true
 	assert.Panics(t, func() {
-		fr.ErrOnRead = true
 		fsutil.ReadReader(fr)
 	})
+
+	_, err := fsutil.ReadStringOrErr(fr)
+	assert.Err(t, err)
+
+	_, err = fsutil.ReadStringOrErr([]string{"invalid-type"})
+	assert.Err(t, err)
 }
 
 func TestGetContents(t *testing.T) {
@@ -50,5 +57,29 @@ func TestGetContents(t *testing.T) {
 	})
 	assert.Panics(t, func() {
 		fsutil.ReadFile("/path-not-exist")
+	})
+}
+
+func TestTextScanner(t *testing.T) {
+	r := strings.NewReader("hello\ngolang")
+
+	ts := fsutil.TextScanner(r)
+	assert.Neq(t, scanner.EOF, ts.Scan())
+	assert.Eq(t, "hello", ts.TokenText())
+
+	assert.Panics(t, func() {
+		fsutil.TextScanner([]string{"invalid-type"})
+	})
+}
+
+func TestLineScanner(t *testing.T) {
+	r := strings.NewReader("hello\ngolang")
+
+	ls := fsutil.LineScanner(r)
+	assert.True(t, ls.Scan())
+	assert.Eq(t, "hello", ls.Text())
+
+	assert.Panics(t, func() {
+		fsutil.LineScanner([]string{"invalid-type"})
 	})
 }

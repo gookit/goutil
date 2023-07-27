@@ -134,7 +134,7 @@ func (t *StringToken) HasMore() bool {
 }
 
 // ScanMore implements
-func (t *StringToken) ScanMore(ts *TextScanner) error {
+func (t *StringToken) ScanMore(_ *TextScanner) error {
 	return nil
 }
 

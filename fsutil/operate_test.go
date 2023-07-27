@@ -41,38 +41,38 @@ func TestCreateFile(t *testing.T) {
 	// 	return
 	// }
 
-	file, err := fsutil.CreateFile("./testdata/test.txt", 0664, 0666)
+	file, err := fsutil.CreateFile("testdata/test.txt", 0664, 0666)
 	if assert.NoErr(t, err) {
-		assert.Eq(t, "./testdata/test.txt", file.Name())
+		assert.Eq(t, "testdata/test.txt", file.Name())
 		assert.NoErr(t, file.Close())
 		assert.NoErr(t, os.Remove(file.Name()))
 	}
 
-	file, err = fsutil.CreateFile("./testdata/sub/test.txt", 0664, 0777)
+	file, err = fsutil.CreateFile("testdata/sub/test.txt", 0664, 0777)
 	if assert.NoErr(t, err) {
-		assert.Eq(t, "./testdata/sub/test.txt", file.Name())
+		assert.Eq(t, "testdata/sub/test.txt", file.Name())
 		assert.NoErr(t, file.Close())
-		assert.NoErr(t, os.RemoveAll("./testdata/sub"))
+		assert.NoErr(t, os.RemoveAll("testdata/sub"))
 	}
 
-	file, err = fsutil.CreateFile("./testdata/sub/sub2/test.txt", 0664, 0777)
+	file, err = fsutil.CreateFile("testdata/sub/sub2/test.txt", 0664, 0777)
 	if assert.NoErr(t, err) {
-		assert.Eq(t, "./testdata/sub/sub2/test.txt", file.Name())
+		assert.Eq(t, "testdata/sub/sub2/test.txt", file.Name())
 		assert.NoErr(t, file.Close())
-		assert.NoErr(t, os.RemoveAll("./testdata/sub"))
+		assert.NoErr(t, os.RemoveAll("testdata/sub"))
 	}
 
-	fpath := "./testdata/sub/sub3/test-must-create.txt"
-	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
+	fpath := "testdata/sub/sub3/test-must-create.txt"
 	file = fsutil.MustCreateFile(fpath, 0, 0766)
 	assert.NoErr(t, file.Close())
+	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
 
-	err = fsutil.RemoveSub("./testdata/sub")
+	err = fsutil.RemoveSub("testdata/sub")
 	assert.NoErr(t, err)
 }
 
 func TestQuickOpenFile(t *testing.T) {
-	fpath := "./testdata/quick-open-file.txt"
+	fpath := "testdata/quick-open-file.txt"
 	assert.NoErr(t, fsutil.RmFileIfExist(fpath))
 
 	file, err := fsutil.QuickOpenFile(fpath)

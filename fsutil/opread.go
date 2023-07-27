@@ -103,7 +103,8 @@ func ReadExistFile(filePath string) []byte {
 	return nil
 }
 
-// TextScanner from filepath or io.Reader, will panic on in type error
+// TextScanner from filepath or io.Reader, will panic on in type error.
+// Will scan parse text to tokens: Ident, Int, Float, Char, String, RawString, Comment, etc.
 //
 // Usage:
 //
@@ -123,7 +124,8 @@ func TextScanner(in any) *scanner.Scanner {
 	return &s
 }
 
-// LineScanner create from filepath or io.Reader
+// LineScanner create from filepath or io.Reader, will panic on in type error.
+// Will scan and parse text to lines.
 //
 //	s := fsutil.LineScanner("/path/to/file")
 //	for s.Scan() {

@@ -42,7 +42,9 @@ func TypeElem(t reflect.Type) reflect.Type {
 	}
 }
 
-// Len get reflect value length
+// Len get reflect value length. allow: intX, uintX, floatX, string, map, array, chan, slice.
+//
+// Note: (u)intX use width. float to string then calc len.
 func Len(v reflect.Value) int {
 	v = reflect.Indirect(v)
 
