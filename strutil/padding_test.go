@@ -55,8 +55,8 @@ func TestRepeat(t *testing.T) {
 	assert.Eq(t, "aaa", strutil.Repeat("a", 3))
 	assert.Eq(t, "DD", strutil.Repeat("D", 2))
 	assert.Eq(t, "D", strutil.Repeat("D", 1))
-	assert.Eq(t, "A", strutil.Repeat("A", 0))
-	assert.Eq(t, "D", strutil.Repeat("D", -3))
+	assert.Eq(t, "", strutil.Repeat("A", 0))
+	assert.Eq(t, "", strutil.Repeat("D", -3))
 }
 
 func TestRepeatRune(t *testing.T) {

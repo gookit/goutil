@@ -136,7 +136,10 @@ func PadRunesRight(rs []rune, pad rune, length int) []rune {
 
 // Repeat a string by given times.
 func Repeat(s string, times int) string {
-	if times <= 1 {
+	if times < 1 {
+		return ""
+	}
+	if times == 1 {
 		return s
 	}
 
