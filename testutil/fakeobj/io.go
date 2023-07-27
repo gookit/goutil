@@ -35,11 +35,31 @@ func (w *IOWriter) Reset() {
 	w.Buf = w.Buf[:0]
 }
 
-// Reader implements the io.Reader
+// Reader implements the io.Reader, io.Closer
 type Reader struct {
 	byteutil.Buffer
 	// ErrOnRead return error on read, useful for testing
 	ErrOnRead bool
+}
+
+// NewReader instance
+func NewReader() *Reader {
+	return &Reader{}
+}
+
+// NewStrReader instance
+func NewStrReader(s string) *Reader {
+	buf := byteutil.NewBuffer()
+	buf.WriteStr1(s)
+
+	return &Reader{
+		Buffer: *buf,
+	}
+}
+
+// SetErrOnRead mark
+func (r *Reader) SetErrOnRead() {
+	r.ErrOnRead = true
 }
 
 // Read implements the io.Reader
@@ -48,16 +68,6 @@ func (r *Reader) Read(p []byte) (n int, err error) {
 		return 0, errors.New("fake read error")
 	}
 	return r.Buffer.Read(p)
-}
-
-// SetErrOnRead mark
-func (r *Reader) SetErrOnRead() {
-	r.ErrOnRead = true
-}
-
-// NewReader instance
-func NewReader() *Reader {
-	return &Reader{}
 }
 
 // Writer implements the io.Writer, stdio.Flusher, io.Closer.

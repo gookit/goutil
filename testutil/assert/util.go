@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"strings"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/comdef"
-	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
@@ -106,7 +106,7 @@ func callerInfos() []string {
 		}
 
 		fcName := fc.Name()
-		if fcName == "testing.tRunner" || strings.Contains(fcName, "goutil/testutil/assert") {
+		if fcName == "testing.tRunner" || strings.Contains(fcName, "goutil/testutil/assert.") {
 			continue
 		}
 
@@ -117,7 +117,7 @@ func callerInfos() []string {
 
 		filePath := file
 		if !ShowFullPath {
-			filePath = fsutil.Name(filePath)
+			filePath = filepath.Base(filePath)
 		}
 
 		ss = append(ss, fmt.Sprintf("%s:%d", filePath, line))

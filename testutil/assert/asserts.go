@@ -7,10 +7,8 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/internal/checkfn"
-	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
@@ -100,10 +98,8 @@ func runPanicFunc(f PanicRunFunc) (didPanic bool, message any, stack string) {
 func Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 	if hasPanic, panicVal, _ := runPanicFunc(fn); !hasPanic {
 		t.Helper()
-
-		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+		return fail(t, fmt.Sprintf("func '%#v' should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
 	}
-
 	return true
 }
 
@@ -115,8 +111,7 @@ func NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 		return fail(t, fmt.Sprintf(
 			"func %#v should not panic\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
 			fn, panicVal, stackMsg,
-		), fmtAndArgs,
-		)
+		), fmtAndArgs)
 	}
 
 	return true
@@ -135,8 +130,7 @@ func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal any, fmtAndArgs ...any) bool
 		return fail(t, fmt.Sprintf(
 			"func %#v should panic.\n\tWant  value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
 			fn, wantVal, panicVal, stackMsg),
-			fmtAndArgs,
-		)
+			fmtAndArgs)
 	}
 
 	return true
@@ -220,14 +214,10 @@ func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 	if !maputil.HasKey(mp, key) {
 		t.Helper()
-		return fail(t,
-			fmt.Sprintf(
-				"Map should contains the key: %#v\nMap data:\n%v",
-				key,
-				maputil.FormatIndent(mp, "  "),
-			),
-			fmtAndArgs,
-		)
+		return fail(t, fmt.Sprintf(
+			"Map should contains the key: %#v\nMap data:\n%v",
+			key, maputil.FormatIndent(mp, "  "),
+		), fmtAndArgs)
 	}
 
 	return true
@@ -265,14 +255,10 @@ func ContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 	ok, noKey := maputil.HasAllKeys(mp, anyKeys...)
 	if !ok {
 		t.Helper()
-		return fail(t,
-			fmt.Sprintf(
-				"Map should contains the key: %#v\nMap data:\n%v",
-				noKey,
-				maputil.FormatIndent(mp, "  "),
-			),
-			fmtAndArgs,
-		)
+		return fail(t, fmt.Sprintf(
+			"Map should contains the key: %#v\nMap data:\n%v",
+			noKey, maputil.FormatIndent(mp, "  "),
+		), fmtAndArgs)
 	}
 
 	return true
@@ -293,14 +279,9 @@ func NotContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 	ok, hasKey := maputil.HasOneKey(mp, anyKeys...)
 	if ok {
 		t.Helper()
-		return fail(t,
-			fmt.Sprintf(
-				"Map should not contains the key: %#v\nMap data:\n%v",
-				hasKey,
-				maputil.FormatIndent(mp, "  "),
-			),
-			fmtAndArgs,
-		)
+		return fail(t, fmt.Sprintf("Map should not contains the key: %#v\nMap data:\n%v",
+			hasKey, maputil.FormatIndent(mp, "  "),
+		), fmtAndArgs)
 	}
 
 	return true
@@ -426,14 +407,14 @@ func Len(t TestingT, give any, wantLn int, fmtAndArgs ...any) bool {
 	gln := reflects.Len(reflect.ValueOf(give))
 	if gln < 0 {
 		t.Helper()
-		return fail(t, fmt.Sprintf("\"%s\" could not be calc length", give), fmtAndArgs)
+		return fail(t, fmt.Sprintf("type '%T' could not be calc length", give), fmtAndArgs)
 	}
 
 	if gln != wantLn {
 		t.Helper()
 		return fail(t, fmt.Sprintf("\"%s\" should have %d item(s), but has %d", give, wantLn, gln), fmtAndArgs)
 	}
-	return false
+	return true
 }
 
 // LenGt assert given length is greater than to minLn
@@ -441,14 +422,14 @@ func LenGt(t TestingT, give any, minLn int, fmtAndArgs ...any) bool {
 	gln := reflects.Len(reflect.ValueOf(give))
 	if gln < 0 {
 		t.Helper()
-		return fail(t, fmt.Sprintf("\"%s\" could not be calc length", give), fmtAndArgs)
+		return fail(t, fmt.Sprintf("type '%T' could not be calc length", give), fmtAndArgs)
 	}
 
-	if gln < minLn {
+	if gln <= minLn {
 		t.Helper()
-		return fail(t, fmt.Sprintf("\"%s\" should less have %d item(s), but has %d", give, minLn, gln), fmtAndArgs)
+		return fail(t, fmt.Sprintf("\"%s\" should have more than %d item(s), but has %d", give, minLn, gln), fmtAndArgs)
 	}
-	return false
+	return true
 }
 
 //
@@ -506,14 +487,11 @@ func NotEq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
 
 	if err := checkEqualArgs(want, give); err != nil {
-		return fail(t,
-			fmt.Sprintf("Cannot compare: %#v == %#v (%s)", want, give, err),
-			fmtAndArgs,
-		)
+		return fail(t, fmt.Sprintf("Cannot compare: %#v == %#v (%s)", want, give, err), fmtAndArgs)
 	}
 
 	if reflects.IsEqual(want, give) {
-		return fail(t, fmt.Sprintf("Given should not be: %#v\n", give), fmtAndArgs)
+		return fail(t, fmt.Sprintf("Given should not be: %#v, but give: %+v\n", want, give), fmtAndArgs)
 	}
 	return true
 }
@@ -525,7 +503,7 @@ func Lt(t TestingT, give, max any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given %v should later than %v", give, max), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should less than %v", give, max), fmtAndArgs)
 }
 
 // Lte asserts that the give(intX,uintX,floatX) should not be less than or equals to max
@@ -535,7 +513,7 @@ func Lte(t TestingT, give, max any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given %v should later than %v", give, max), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should less than or equal %v", give, max), fmtAndArgs)
 }
 
 // Gt asserts that the give(intX,uintX,floatX) should not be greater than min
@@ -545,7 +523,7 @@ func Gt(t TestingT, give, min any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given %v should gater than %v", give, min), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should greater than %v", give, min), fmtAndArgs)
 }
 
 // Gte asserts that the give(intX,uintX,floatX) should not be greater than or equals to min
@@ -555,7 +533,7 @@ func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Given %v should gater than or equal %v", give, min), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Given %v should greater than or equal %v", give, min), fmtAndArgs)
 }
 
 // IsType assert data type equals
@@ -605,6 +583,7 @@ func Same(t TestingT, wanted, actual any, fmtAndArgs ...any) bool {
 		return true
 	}
 
+	t.Helper()
 	return fail(t, fmt.Sprintf("Not same: \n"+
 		"wanted: %p %#v\n"+
 		"actual: %p %#v", wanted, wanted, actual, actual), fmtAndArgs)
@@ -622,7 +601,7 @@ func NotSame(t TestingT, want, actual any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Expect and actual point to the same object: %p %#v", want, want), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Expect and actual is same object: %p %#v", want, want), fmtAndArgs)
 }
 
 // samePointers compares two generic interface objects and returns whether
@@ -664,50 +643,5 @@ func FailNow(t TestingT, failMsg string, fmtAndArgs ...any) bool {
 	if fnr, ok := t.(failNower); ok {
 		fnr.FailNow()
 	}
-	return false
-}
-
-//
-// -------------------- render error --------------------
-//
-
-var (
-	// ShowFullPath on show error trace
-	ShowFullPath = true
-	// EnableColor on show error trace
-	EnableColor = true
-)
-
-// DisableColor render
-func DisableColor() {
-	EnableColor = false
-}
-
-// HideFullPath render
-func HideFullPath() {
-	ShowFullPath = false
-}
-
-// fail reports a failure through
-func fail(t TestingT, failMsg string, fmtAndArgs []any) bool {
-	t.Helper()
-
-	tName := t.Name()
-	if EnableColor {
-		tName = color.Red.Sprint(tName)
-	}
-
-	labeledTexts := []labeledText{
-		{"Test Name", tName},
-		{"Error At", strings.Join(callerInfos(), "\n")},
-		{"Error Msg", failMsg},
-	}
-
-	// user custom message
-	if userMsg := comfunc.FormatWithArgs(fmtAndArgs); len(userMsg) > 0 {
-		labeledTexts = append(labeledTexts, labeledText{"User Msg", userMsg})
-	}
-
-	t.Error("\n" + formatLabeledTexts(labeledTexts))
 	return false
 }

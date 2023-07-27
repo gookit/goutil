@@ -8,14 +8,16 @@ import (
 )
 
 func TestAssertions_Chain(t *testing.T) {
-	// err := "error message"
 	err := errors.New("error message")
 
 	as := assert.New(t).
 		NotEmpty(err).
 		NotNil(err).
 		Err(err).
+		Error(err).
+		ErrIs(err, err).
 		ErrMsg(err, "error message").
+		ErrSubMsg(err, "message").
 		Eq("error message", err.Error()).
 		Neq("message", err.Error()).
 		Equal("error message", err.Error()).
@@ -29,16 +31,49 @@ func TestAssertions_Chain(t *testing.T) {
 	assert.False(t, as.IsFail())
 
 	iv := 23
-	as = assert.New(t).
+	ss := []string{"a", "b"}
+
+	as = assert.New(t).WithMsg("prefix").
 		IsType(1, iv).
 		NotEq(22, iv).
 		NotEqual(22, iv).
+		Len(ss, 2).
+		LenGt(ss, 1).
 		Lte(iv, 23).
 		Gte(iv, 23).
 		Empty(0).
 		True(true).
 		False(false).
-		Nil(nil)
+		NoErr(nil).
+		NoError(nil).
+		Nil(nil).
+		ContainsKey(map[string]int{"a": 1}, "a")
 
 	assert.True(t, as.IsOk())
+
+	// Panics
+	assert.New(t).
+		Panics(func() { panic("panic") }).
+		NotPanics(func() {}).
+		PanicsMsg(func() { panic("panic") }, "panic").
+		PanicsErrMsg(func() { panic(errors.New("panic")) }, "panic")
+}
+
+func TestAssertions_chain_fail(t *testing.T) {
+	assert.HideFullPath()
+	defer func() {
+		assert.ShowFullPath = true
+	}()
+
+	tc := &tCustomTesting{T: t}
+	ts := assert.New(tc)
+
+	ts.Fail("fail message")
+	str := tc.ResetGet()
+	assert.StrContains(t, str, "fail message")
+	assert.StrContains(t, str, "assertions_test.go")
+	assert.NotContains(t, str, "testutil/assert/assertions_test.go")
+
+	ts.FailNow("fail now message")
+	assert.StrContains(t, tc.ResetGet(), "fail now message")
 }

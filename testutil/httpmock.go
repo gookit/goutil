@@ -68,7 +68,6 @@ func NewHTTPRequest(method, path string, data *MD) *http.Request {
 	req.RequestURI = req.URL.String()
 	if data != nil {
 		if len(data.Headers) > 0 {
-			// req.Header.Set("Content-Type", "text/plain")
 			for k, v := range data.Headers {
 				req.Header.Set(k, v)
 			}
@@ -246,7 +245,7 @@ func (ht *HTTPTool) ParseBodyToReply(bd io.ReadCloser) *EchoReply {
 // ParseRespToReply parse http response to reply
 func ParseRespToReply(w *http.Response) *EchoReply {
 	if w.Body == nil {
-		return nil
+		return &EchoReply{}
 	}
 
 	if w.Request != nil && w.Request.Method == "HEAD" {

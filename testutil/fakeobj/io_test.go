@@ -1,6 +1,7 @@
 package fakeobj_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/gookit/goutil/testutil/assert"
@@ -34,6 +35,10 @@ func TestNewReader(t *testing.T) {
 	tr.SetErrOnRead()
 	_, err = tr.Read(buf)
 	assert.Err(t, err)
+
+	tr = fakeobj.NewStrReader("hello")
+	tr.CloseErr = errors.New("fake close error")
+	assert.Err(t, tr.Close())
 }
 
 func TestNewWriter(t *testing.T) {

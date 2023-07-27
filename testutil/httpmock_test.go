@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
 var testSrvAddr string
@@ -38,6 +38,10 @@ func TestNewHTTPRequest(t *testing.T) {
 	assert.Eq(t, testSrvAddr+"/hello", r.URL.String())
 	assert.Eq(t, "val", r.Header.Get("X-Test"))
 	assert.Eq(t, "val2", r.Header.Get("X-Test2"))
+
+	assert.Panics(t, func() {
+		testutil.NewHTTPRequest("invalid", "://", nil)
+	})
 }
 
 func TestMockRequest(t *testing.T) {
@@ -66,7 +70,7 @@ func TestNewEchoServer(t *testing.T) {
 	assert.NoErr(t, err)
 
 	rr := testutil.ParseRespToReply(r)
-	dump.P(rr)
+	// dump.P(rr)
 	assert.Eq(t, "POST", rr.Method)
 	assert.Eq(t, "text/plain", rr.ContentType())
 	assert.Eq(t, "hello!", rr.Body)
@@ -75,8 +79,24 @@ func TestNewEchoServer(t *testing.T) {
 	assert.NoErr(t, err)
 
 	rr = testutil.ParseRespToReply(r)
-	dump.P(rr)
+	// dump.P(rr)
 	assert.Eq(t, "POST", rr.Method)
 	assert.Eq(t, "application/json", rr.ContentType())
 	assert.Eq(t, `{"name": "inhere", "age": 18}`, rr.Body)
+
+	r, err = http.Head(testSrvAddr + "/head")
+	assert.NoErr(t, err)
+	rr = testutil.ParseRespToReply(r)
+	assert.Eq(t, "HEAD", rr.Method)
+
+	rr = testutil.ParseRespToReply(&http.Response{})
+	assert.Empty(t, *rr)
+
+	rr = testutil.ParseBodyToReply(nil)
+	assert.Empty(t, *rr)
+
+	assert.Panics(t, func() {
+		tr := fakeobj.NewStrReader("invalid-json")
+		testutil.ParseBodyToReply(tr)
+	})
 }
