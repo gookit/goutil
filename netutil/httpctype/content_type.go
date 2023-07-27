@@ -24,17 +24,14 @@ const (
 	JS  = "application/javascript; charset=utf-8"
 	JS2 = "text/javascript; charset=utf-8"
 
-	MSGPACK  = "application/x-msgpack; charset=utf-8"
-	MSGPACK2 = "application/msgpack; charset=utf-8"
-
-	PROTOBUF = "application/x-protobuf"
-
-	Form = "application/x-www-form-urlencoded"
-	// FormUtf8 for form data with charset=utf-8
-	FormUtf8 = "application/x-www-form-urlencoded; charset=utf-8"
+	Form = "application/x-www-form-urlencoded; charset=utf-8"
 	// FormData for upload file
 	FormData = "multipart/form-data"
+	DataForm = FormData
 
 	// Binary represents content type application/octet-stream
-	Binary = "application/octet-stream"
+	Binary   = "application/octet-stream"
+	PROTOBUF = "application/x-protobuf"
+	MSGPACK  = "application/x-msgpack; charset=utf-8"
+	MSGPACK2 = "application/msgpack; charset=utf-8"
 )

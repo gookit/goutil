@@ -3,15 +3,21 @@ package httpctype
 // there are some Content-Type MIME of the most common data formats.
 const (
 	MIMEHTML  = "text/html"
+	MIMEHtml  = MIMEHTML
 	MIMEText  = "text/plain" // equals MIMEPlain
-	MIMEPlain = "text/plain"
-	MIMEJSON  = "application/json"
-	MIMEXML   = "application/xml"
-	MIMEXML2  = "text/xml"
-	MIMEYAML  = "application/x-yaml"
+	MIMEPlain = MIMEText
 
-	MIMEPOSTForm      = "application/x-www-form-urlencoded"
-	MIMEMultiDataForm = "multipart/form-data"
+	MIMEJSON = "application/json"
+
+	MIMEYAML = "application/x-yaml"
+	MIMEYaml = MIMEYAML
+	MIMEXML  = "application/xml"
+	MIMEXML2 = "text/xml"
+
+	MIMEForm          = "application/x-www-form-urlencoded"
+	MIMEPOSTForm      = MIMEForm
+	MIMEDataForm      = "multipart/form-data"
+	MIMEMultiDataForm = MIMEDataForm
 
 	MIMEPROTOBUF = "application/x-protobuf"
 	MIMEMSGPACK  = "application/x-msgpack"

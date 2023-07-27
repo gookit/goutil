@@ -6,4 +6,5 @@ const (
 	KindFormData = "dataForm"
 	KindJSON     = "json"
 	KindXML      = "xml"
+	KindYAML     = "yaml"
 )

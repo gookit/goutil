@@ -8,6 +8,13 @@ func ToKind(cType, defaultType string) string {
 		return defaultType
 	}
 
+	return ToKindWithFunc(cType, func(_ string) string {
+		return defaultType
+	})
+}
+
+// ToKindWithFunc match base kind name by content-type, with a fallback func
+func ToKindWithFunc(cType string, fbFunc func(cType string) string) string {
 	// JSON body request: "application/json"
 	if strings.Contains(cType, "/json") {
 		return KindJSON
@@ -29,5 +36,8 @@ func ToKind(cType, defaultType string) string {
 		return KindXML
 	}
 
-	return defaultType
+	if fbFunc != nil {
+		return fbFunc(cType)
+	}
+	return ""
 }
