@@ -1,3 +1,4 @@
+// Package byteutil provides some useful functions for byte slice.
 package byteutil
 
 import (

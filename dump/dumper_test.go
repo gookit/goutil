@@ -154,7 +154,7 @@ func TestDump_Ptr(t *testing.T) {
 }
 
 // code from https://stackoverflow.com/questions/42664837/how-to-access-unexported-struct-fields-in-golang
-func TestDumper_AccessCantExportedField(t *testing.T) {
+func TestDumper_AccessCantExportedField(_ *testing.T) {
 	type MyStruct struct {
 		// id string
 		id any

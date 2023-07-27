@@ -103,8 +103,7 @@ func ToBytesWithFunc(v any, usrFn ToBytesFunc) ([]byte, error) {
 	default:
 		if usrFn == nil {
 			return nil, comdef.ErrConvType
-		} else {
-			return usrFn(val)
 		}
+		return usrFn(val)
 	}
 }

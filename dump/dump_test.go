@@ -290,7 +290,7 @@ func ExampleStruct_mapInterfacedValue() {
 	fmt.Println(s2)
 }
 
-func TestStruct_ptrField(t *testing.T) {
+func TestStruct_ptrField(_ *testing.T) {
 	type userOpts struct {
 		Int *int
 		// use ptr
