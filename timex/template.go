@@ -8,13 +8,13 @@ import (
 
 // some common datetime templates
 const (
-	DefaultTemplate = "Y-m-d H:i:s"
-	TemplateWithMs3 = "Y-m-d H:i:s.v" // end with ".000"
-	TemplateWithMs6 = "Y-m-d H:i:s.u" // end with ".000000"
+	DefaultTemplate = "Y-m-d H:I:S"   // equals layout: "2006-01-02 15:04:05"
+	TemplateWithMs3 = "Y-m-d H:I:S.v" // end with ".000"
+	TemplateWithMs6 = "Y-m-d H:I:S.u" // end with ".000000"
 )
 
 // char to Go date layout
-// eg: "Y-m-d H:i:s" => "2006-01-02 15:04:05",
+// eg: "Y-m-d H:I:S" => "2006-01-02 15:04:05",
 //
 // # More see time.stdLongMonth
 //

@@ -9,6 +9,11 @@ import (
 // NowUnix is short of time.Now().Unix()
 func NowUnix() int64 { return time.Now().Unix() }
 
+// NowDate quick get current date string. if template is empty, will use DefaultTemplate.
+func NowDate(template ...string) string {
+	return FormatByTpl(time.Now(), basefn.FirstOr(template, DefaultTemplate))
+}
+
 // Format convert time to string use default layout
 func Format(t time.Time) string { return t.Format(DefaultLayout) }
 

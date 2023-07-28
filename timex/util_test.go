@@ -42,6 +42,7 @@ func TestNowAddDay(t *testing.T) {
 
 func TestDateFormat(t *testing.T) {
 	now := time.Now()
+	assert.Eq(t, now.Format("2006-01-02 15:04:05"), timex.NowDate())
 
 	tests := []struct{ layout, template string }{
 		{"20060102 15:04:05", "Ymd H:I:S"},
