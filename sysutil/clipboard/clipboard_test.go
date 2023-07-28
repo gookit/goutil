@@ -1,6 +1,7 @@
 package clipboard_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
@@ -16,6 +17,10 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 		t.Skipf("skip test on program '%s' not found", clipboard.GetReaderBin())
 		return
 	}
+
+	cb.WithVerbose(true)
+	assert.True(t, cb.Writeable())
+	assert.True(t, cb.Readable())
 
 	srcFile := "testdata/testcb.txt"
 	srcStr := string(fsutil.MustReadFile(srcFile))
@@ -38,4 +43,12 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 
 	dstStr := string(fsutil.MustReadFile(dstFile))
 	assert.Eq(t, srcStr, strutil.Trim(dstStr))
+
+	assert.NoErr(t, cb.Clean())
+
+	_, err = cb.Write([]byte("hello"))
+	assert.NoErr(t, err)
+	assert.NoErr(t, cb.Flush())
+	assert.Eq(t, "hello", cb.SafeString())
+	fmt.Println("...end...")
 }

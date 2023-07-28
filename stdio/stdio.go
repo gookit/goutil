@@ -61,28 +61,28 @@ func NewScanner(in any) *bufio.Scanner {
 	}
 }
 
-// WriteByte to stdout
+// WriteByte to stdout, will ignore error
 func WriteByte(b byte) {
 	_, _ = os.Stdout.Write([]byte{b})
 }
 
-// WriteBytes to stdout
+// WriteBytes to stdout, will ignore error
 func WriteBytes(bs []byte) {
 	_, _ = os.Stdout.Write(bs)
 }
 
-// WritelnBytes to stdout
+// WritelnBytes to stdout, will ignore error
 func WritelnBytes(bs []byte) {
 	_, _ = os.Stdout.Write(bs)
 	_, _ = os.Stdout.Write([]byte("\n"))
 }
 
-// WriteString to stdout
+// WriteString to stdout, will ignore error
 func WriteString(s string) {
 	_, _ = os.Stdout.WriteString(s)
 }
 
-// Writeln string to stdout
+// Writeln string to stdout, will ignore error
 func Writeln(s string) {
 	_, _ = os.Stdout.WriteString(s)
 	_, _ = os.Stdout.Write([]byte("\n"))

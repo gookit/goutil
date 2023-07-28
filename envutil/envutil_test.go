@@ -81,7 +81,7 @@ func TestSetEnvs(t *testing.T) {
 		assert.Eq(t, val, Getenv(key))
 	}
 	assert.Panics(t, func() {
-		SetEnvs("name")
+		SetEnvs("name", "one", "two")
 	})
 
 	UnsetEnvs(keys...)

@@ -79,12 +79,12 @@ func (c *Clipboard) Reset() error {
 // ---------------------------------------- write ----------------------------------------
 //
 
-// Write bytes data to clipboard
+// Write bytes data to buffer. should call Flush() to write to clipboard
 func (c *Clipboard) Write(p []byte) (int, error) {
 	return c.WriteString(string(p))
 }
 
-// WriteString data to clipboard
+// WriteString data to buffer. should call Flush() to write to clipboard
 func (c *Clipboard) WriteString(s string) (int, error) {
 	// if c.addSlashes {
 	// 	s = strutil.AddSlashes(s)
@@ -104,8 +104,6 @@ func (c *Clipboard) Flush() error {
 
 // WriteFromFile contents to clipboard
 func (c *Clipboard) WriteFromFile(filepath string) error {
-	// eg:
-	// 	Mac: pbcopy < tempfile.txt
 	file, err := fsutil.OpenReadFile(filepath)
 	if err != nil {
 		return err
@@ -134,7 +132,7 @@ func (c *Clipboard) WriteFrom(r io.Reader) error {
 // ---------------------------------------- read ----------------------------------------
 //
 
-// Read contents from clipboard
+// Read bytes contents from clipboard
 func (c *Clipboard) Read() ([]byte, error) {
 	buf, err := c.ReadToBuffer()
 	if err != nil {
@@ -143,13 +141,22 @@ func (c *Clipboard) Read() ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// ReadToBuffer contents from clipboard
+// ReadToBuffer read clipboard contents to new buffer.
 func (c *Clipboard) ReadToBuffer() (*bytes.Buffer, error) {
 	var buf bytes.Buffer
 	if err := c.ReadTo(&buf); err != nil {
 		return nil, err
 	}
 	return &buf, nil
+}
+
+// SafeString read contents as string from clipboard, will return empty string on error
+func (c *Clipboard) SafeString() string {
+	s, err := c.ReadString()
+	if err != nil {
+		return ""
+	}
+	return s
 }
 
 // ReadString contents as string from clipboard

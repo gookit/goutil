@@ -16,8 +16,8 @@ type Wrapper struct {
 	FieldTagName string
 
 	// caches for field rv and name and tag name TODO
-	fieldNames []string
-	fvCacheMap map[string]reflect.Value
+	fieldNames []string                 //lint:ignore U1000 for unused
+	fvCacheMap map[string]reflect.Value //lint:ignore U1000 for unused
 }
 
 // Wrap create a struct wrapper

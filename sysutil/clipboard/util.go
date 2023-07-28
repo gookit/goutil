@@ -42,11 +42,12 @@ const (
 )
 
 var (
-	writerOnLin = []string{"xclip", "xsel"}
-)
+	// TODO select an valid driver on New()
+	writerOnLin = []string{"xclip", "xsel"} //lint:ignore U1000 for TODO
 
-// std instance
-var std = New()
+	// std instance
+	std = New()
+)
 
 // Std get
 func Std() *Clipboard {
