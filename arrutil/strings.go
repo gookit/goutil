@@ -2,13 +2,18 @@ package arrutil
 
 import "strconv"
 
-// StringsToSlice convert []string to []any
-func StringsToSlice(ss []string) []any {
+// StringsToAnys convert []string to []any
+func StringsToAnys(ss []string) []any {
 	args := make([]any, len(ss))
 	for i, s := range ss {
 		args[i] = s
 	}
 	return args
+}
+
+// StringsToSlice convert []string to []any. alias of StringsToAnys()
+func StringsToSlice(ss []string) []any {
+	return StringsToAnys(ss)
 }
 
 // StringsAsInts convert and ignore error

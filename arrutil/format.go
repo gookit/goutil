@@ -26,6 +26,11 @@ func NewFormatter(arr any) *ArrFormatter {
 	return f
 }
 
+// FormatIndent array data to string.
+func FormatIndent(arr any, indent string) string {
+	return NewFormatter(arr).WithIndent(indent).Format()
+}
+
 // WithFn for config self
 func (f *ArrFormatter) WithFn(fn func(f *ArrFormatter)) *ArrFormatter {
 	fn(f)
@@ -115,9 +120,4 @@ func (f *ArrFormatter) doFormat() {
 		writer.WriteString(f.ClosePrefix)
 	}
 	writer.WriteByte(']')
-}
-
-// FormatIndent array data to string.
-func FormatIndent(arr any, indent string) string {
-	return NewFormatter(arr).WithIndent(indent).Format()
 }

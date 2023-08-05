@@ -113,7 +113,7 @@ func MockRequest(h http.Handler, method, path string, data *MD) *httptest.Respon
 // EchoReply http response data reply model
 type EchoReply struct {
 	Origin string `json:"origin"`
-	Url    string `json:"url"`
+	URL    string `json:"url"`
 	Method string `json:"method"`
 	// Query data
 	Query   map[string]any `json:"query,omitempty"`
@@ -121,7 +121,7 @@ type EchoReply struct {
 	Form    map[string]any `json:"form,omitempty"`
 	// Body data string
 	Body  string         `json:"body,omitempty"`
-	Json  any            `json:"json,omitempty"`
+	JSON  any            `json:"json,omitempty"`
 	Files map[string]any `json:"files,omitempty"`
 }
 
@@ -213,11 +213,11 @@ func BuildEchoReply(r *http.Request) *EchoReply {
 	}
 
 	return &EchoReply{
-		Url:     r.URL.String(),
+		URL:     r.URL.String(),
 		Origin:  r.RemoteAddr,
 		Method:  method,
 		Body:    bodyStr,
-		Json:    jsonBody,
+		JSON:    jsonBody,
 		Query:   args,
 		Form:    form,
 		Files:   files,
@@ -251,7 +251,7 @@ func ParseRespToReply(w *http.Response) *EchoReply {
 	if w.Request != nil && w.Request.Method == "HEAD" {
 		req := w.Request
 		rpl := &EchoReply{
-			Url:     req.URL.String(),
+			URL:     req.URL.String(),
 			Method:  req.Method,
 			Headers: stringsMapToAnyMap(req.Header),
 		}
