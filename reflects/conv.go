@@ -87,6 +87,9 @@ func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 		}
 	case reflect.Int32:
 		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+			if dstV > math.MaxInt32 {
+				return rv, fmt.Errorf("value overflow int32. val: %v", val)
+			}
 			rv = reflect.ValueOf(int32(dstV))
 		}
 	case reflect.Int64:
