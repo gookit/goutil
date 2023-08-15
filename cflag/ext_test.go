@@ -2,6 +2,7 @@ package cflag_test
 
 import (
 	"errors"
+	"flag"
 	"testing"
 
 	"github.com/gookit/goutil/cflag"
@@ -150,6 +151,18 @@ func TestStrings_methods(t *testing.T) {
 	assert.NoErr(t, ss.Set("val2"))
 	assert.Eq(t, "val,val2", ss.String())
 	assert.True(t, ss.IsRepeatable())
+
+	var v1 any
+
+	v1 = &cflag.Strings{}
+	val, ok := v1.(flag.Value)
+	assert.True(t, ok)
+	assert.NotNil(t, val)
+
+	v1 = cflag.Strings{}
+	val, ok = v1.(flag.Value)
+	assert.False(t, ok)
+	assert.Nil(t, val)
 }
 
 func TestBooleans_methods(t *testing.T) {
@@ -161,4 +174,15 @@ func TestBooleans_methods(t *testing.T) {
 	assert.NoErr(t, bs.Set("false"))
 	assert.Eq(t, "[true,false]", bs.String())
 	assert.True(t, bs.IsRepeatable())
+}
+
+func TestSafeFuncVar(t *testing.T) {
+	var s string
+	fv := cflag.SafeFuncVar(func(val string) {
+		s = val
+	})
+
+	assert.NoErr(t, fv.Set("val"))
+	assert.Eq(t, "val", s)
+	assert.Eq(t, "", fv.String())
 }

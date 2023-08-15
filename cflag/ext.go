@@ -474,3 +474,12 @@ func (s *ConfString) Set(value string) error {
 	}
 	return nil
 }
+
+// SafeFuncVar safe func Value
+type SafeFuncVar func(string)
+
+// Set value
+func (f SafeFuncVar) Set(s string) error { f(s); return nil }
+
+// String get
+func (f SafeFuncVar) String() string { return "" }
