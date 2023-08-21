@@ -63,7 +63,7 @@ func MustSave(filePath string, data any, optFns ...OpenOptionFunc) {
 	basefn.MustOK(SaveFile(filePath, data, optFns...))
 }
 
-// SaveFile create file and write contents to file.
+// SaveFile create file and write contents to file. will auto create dir.
 //
 // default option see NewOpenOption()
 func SaveFile(filePath string, data any, optFns ...OpenOptionFunc) error {
@@ -73,7 +73,7 @@ func SaveFile(filePath string, data any, optFns ...OpenOptionFunc) error {
 
 // PutContents create file and write contents to file at once.
 //
-// data type allow: string, []byte, io.Reader
+// data type allow: string, []byte, io.Reader. will auto create dir.
 //
 // Tip: file flag default is FsCWTFlags (override write)
 //

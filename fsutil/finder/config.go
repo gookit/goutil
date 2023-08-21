@@ -1,6 +1,12 @@
 package finder
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/gookit/goutil/errorx"
+	"github.com/gookit/goutil/strutil"
+)
 
 // commonly dot file and dirs
 var (
@@ -103,6 +109,88 @@ func NewEmptyConfig() *Config {
 	return &Config{FindFlags: FlagFile}
 }
 
+// LoadRules load rules and parse to config
+//
+// Rule Format:
+//
+//	NAME:pattern1,pattern2
+//
+// Examples:
+//
+//	ext:.go,.yaml
+//	name:*_test.go,go.mod
+func (c *Config) LoadRules(addOrNot bool, rules []string) error {
+	es := errorx.Errors{}
+	for i, rule := range rules {
+		if !strings.Contains(rule, ":") {
+			es = append(es, fmt.Errorf("invalid rule#%d: %s", i, rule))
+			break
+		}
+
+		name, pattern := strutil.TrimCut(rule, ":")
+		if name == "" || pattern == "" {
+			es = append(es, fmt.Errorf("invalid rule#%d: %s", i, rule))
+			break
+		}
+
+		patterns := strutil.Split(pattern, ",")
+		switch name {
+		case "ext", "exts":
+			if addOrNot {
+				c.IncludeExts = append(c.IncludeExts, patterns...)
+			} else {
+				c.ExcludeExts = append(c.ExcludeExts, patterns...)
+			}
+		case "name", "names":
+			if addOrNot {
+				c.IncludeNames = append(c.IncludeNames, patterns...)
+			} else {
+				c.ExcludeNames = append(c.ExcludeNames, patterns...)
+			}
+		case "file", "files":
+			if addOrNot {
+				c.IncludeFiles = append(c.IncludeFiles, patterns...)
+			} else {
+				c.ExcludeFiles = append(c.ExcludeFiles, patterns...)
+			}
+		case "path", "paths":
+			if addOrNot {
+				c.IncludePaths = append(c.IncludePaths, patterns...)
+			} else {
+				c.ExcludePaths = append(c.ExcludePaths, patterns...)
+			}
+		case "dir", "dirs":
+			if addOrNot {
+				c.IncludeDirs = append(c.IncludeDirs, patterns...)
+			} else {
+				c.ExcludeDirs = append(c.ExcludeDirs, patterns...)
+			}
+		case "size": // size:>=1M,<=10M
+			if addOrNot {
+				for _, expr := range patterns {
+					c.FileMatchers = append(c.FileMatchers, HumanSize(expr))
+				}
+			} else {
+				for _, expr := range patterns {
+					c.FileExMatchers = append(c.FileExMatchers, HumanSize(expr))
+				}
+			}
+		case "time", "mtime": // mtime:>=1d,<=10d
+			if addOrNot {
+				for _, expr := range patterns {
+					c.FileMatchers = append(c.FileMatchers, HumanModTime(expr))
+				}
+			} else {
+				for _, expr := range patterns {
+					c.FileExMatchers = append(c.FileExMatchers, HumanModTime(expr))
+				}
+			}
+		}
+	}
+
+	return es.ErrorOrNil()
+}
+
 // NewFinder create a new Finder by config
 func (c *Config) NewFinder() *Finder {
 	return NewWithConfig(c.Init())
@@ -158,6 +246,49 @@ func (c *Config) Init() *Config {
 	}
 
 	return c
+}
+
+//
+// --------- config finder by rules ---------
+//
+
+// IncludeRule include rules for finder
+func (f *Finder) IncludeRule(rules ...string) *Finder {
+	f.err = f.c.LoadRules(true, rules)
+	return f
+}
+
+// IncludeRules include rules for finder
+func (f *Finder) IncludeRules(rules []string) *Finder {
+	f.err = f.c.LoadRules(true, rules)
+	return f
+}
+
+// ExcludeRule exclude rules for finder
+func (f *Finder) ExcludeRule(rules ...string) *Finder {
+	f.err = f.c.LoadRules(false, rules)
+	return f
+}
+
+// ExcludeRules exclude rules for finder
+func (f *Finder) ExcludeRules(rules []string) *Finder {
+	f.err = f.c.LoadRules(false, rules)
+	return f
+}
+
+// WithRules on the finder
+//
+// Rule Format:
+//
+//	NAME:pattern1,pattern2
+//
+// Examples:
+//
+//	ext:.go,.yaml
+//	name:*_test.go,go.mod
+func (f *Finder) WithRules(addOrNot bool, rules []string) *Finder {
+	f.err = f.c.LoadRules(addOrNot, rules)
+	return f
 }
 
 //
