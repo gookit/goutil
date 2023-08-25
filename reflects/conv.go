@@ -13,13 +13,18 @@ import (
 )
 
 // BaseTypeVal convert custom type or intX,uintX,floatX to generic base type.
+func BaseTypeVal(v reflect.Value) (value any, err error) {
+	return ToBaseVal(v)
+}
+
+// ToBaseVal convert custom type or intX,uintX,floatX to generic base type.
 //
 //	intX/unitX 	=> int64
 //	floatX      => float64
 //	string 	    => string
 //
 // returns int64,string,float or error
-func BaseTypeVal(v reflect.Value) (value any, err error) {
+func ToBaseVal(v reflect.Value) (value any, err error) {
 	v = reflect.Indirect(v)
 
 	switch v.Kind() {
@@ -41,7 +46,7 @@ func BaseTypeVal(v reflect.Value) (value any, err error) {
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 	// handle kind: string, bool, intX, uintX, floatX
 	if typ.Kind() == reflect.String || typ.Kind() <= reflect.Float64 {
-		return ValueByKind(val, typ.Kind())
+		return ConvToKind(val, typ.Kind())
 	}
 
 	newRv := reflect.ValueOf(val)
@@ -60,90 +65,112 @@ func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 	return
 }
 
-// ValueByKind create reflect.Value by give reflect.Kind
+// ValueByKind convert and create reflect.Value by give reflect.Kind
+func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
+	return ConvToKind(val, kind)
+}
+
+// ConvToKind convert and create reflect.Value by give reflect.Kind
 //
 // TIPs:
 //
 //	Only support kind: string, bool, intX, uintX, floatX
-func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
+func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 	switch kind {
 	case reflect.Int:
-		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+		var dstV int
+		if dstV, err = mathutil.ToInt(val); err == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Int8:
-		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+		var dstV int
+		if dstV, err = mathutil.ToInt(val); err == nil {
 			if dstV > math.MaxInt8 {
 				return rv, fmt.Errorf("value overflow int8. val: %v", val)
 			}
 			rv = reflect.ValueOf(int8(dstV))
 		}
 	case reflect.Int16:
-		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+		var dstV int
+		if dstV, err = mathutil.ToInt(val); err == nil {
 			if dstV > math.MaxInt16 {
 				return rv, fmt.Errorf("value overflow int16. val: %v", val)
 			}
 			rv = reflect.ValueOf(int16(dstV))
 		}
 	case reflect.Int32:
-		if dstV, err1 := mathutil.ToInt(val); err1 == nil {
+		var dstV int
+		if dstV, err = mathutil.ToInt(val); err == nil {
 			if dstV > math.MaxInt32 {
 				return rv, fmt.Errorf("value overflow int32. val: %v", val)
 			}
 			rv = reflect.ValueOf(int32(dstV))
 		}
 	case reflect.Int64:
-		if dstV, err1 := mathutil.ToInt64(val); err1 == nil {
+		var dstV int64
+		if dstV, err = mathutil.ToInt64(val); err == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Uint:
-		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+		var dstV uint64
+		if dstV, err = mathutil.ToUint(val); err == nil {
 			rv = reflect.ValueOf(uint(dstV))
 		}
 	case reflect.Uint8:
-		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+		var dstV uint64
+		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint8 {
 				return rv, fmt.Errorf("value overflow uint8. val: %v", val)
 			}
 			rv = reflect.ValueOf(uint8(dstV))
 		}
 	case reflect.Uint16:
-		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+		var dstV uint64
+		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint16 {
 				return rv, fmt.Errorf("value overflow uint16. val: %v", val)
 			}
 			rv = reflect.ValueOf(uint16(dstV))
 		}
 	case reflect.Uint32:
-		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+		var dstV uint64
+		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint32 {
 				return rv, fmt.Errorf("value overflow uint32. val: %v", val)
 			}
 			rv = reflect.ValueOf(uint32(dstV))
 		}
 	case reflect.Uint64:
-		if dstV, err1 := mathutil.ToUint(val); err1 == nil {
+		var dstV uint64
+		if dstV, err = mathutil.ToUint(val); err == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Float32:
-		if dstV, err1 := mathutil.ToFloat(val); err1 == nil {
+		var dstV float64
+		if dstV, err = mathutil.ToFloat(val); err == nil {
+			if dstV > math.MaxFloat32 {
+				return rv, fmt.Errorf("value overflow float32. val: %v", val)
+			}
 			rv = reflect.ValueOf(float32(dstV))
 		}
 	case reflect.Float64:
-		if dstV, err1 := mathutil.ToFloat(val); err1 == nil {
+		var dstV float64
+		if dstV, err = mathutil.ToFloat(val); err == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.String:
 		if dstV, err1 := strutil.ToString(val); err1 == nil {
 			rv = reflect.ValueOf(dstV)
+		} else {
+			err = err1
 		}
 	case reflect.Bool:
-		if bl, err := comfunc.ToBool(val); err == nil {
+		if bl, err1 := comfunc.ToBool(val); err1 == nil {
 			rv = reflect.ValueOf(bl)
+		} else {
+			err = err1
 		}
-	}
-
-	if !rv.IsValid() {
+	default:
 		err = comdef.ErrConvType
 	}
 	return
