@@ -2,15 +2,15 @@ package strutil
 
 import (
 	"crypto/hmac"
-	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
+
+	"github.com/gookit/goutil/byteutil"
 )
 
 // Md5 Generate a 32-bit md5 string
 func Md5(src any) string {
-	return hex.EncodeToString(Md5Bytes(src))
+	return string(Md5Bytes(src))
 }
 
 // MD5 Generate a 32-bit md5 string
@@ -21,17 +21,12 @@ func GenMd5(src any) string { return Md5(src) }
 
 // Md5Bytes Generate a 32-bit md5 bytes
 func Md5Bytes(src any) []byte {
-	h := md5.New()
+	return byteutil.Md5(src)
+}
 
-	switch val := src.(type) {
-	case []byte:
-		h.Write(val)
-	case string:
-		h.Write([]byte(val))
-	default:
-		h.Write([]byte(fmt.Sprint(src)))
-	}
-	return h.Sum(nil)
+// ShortMd5 Generate a 16-bit md5 string. remove first 8 and last 8 bytes from 32-bit md5 string.
+func ShortMd5(src any) string {
+	return string(byteutil.ShortMd5(src))
 }
 
 // HashPasswd for quick hash an input password string

@@ -30,6 +30,13 @@ func TestFirstLine(t *testing.T) {
 func TestMd5(t *testing.T) {
 	assert.NotEmpty(t, byteutil.Md5("abc"))
 	assert.NotEmpty(t, byteutil.Md5([]int{12, 34}))
+
+	assert.Eq(t, "202cb962ac59075b964b07152d234b70", string(byteutil.Md5("123")))
+	assert.Eq(t, "900150983cd24fb0d6963f7d28e17f72", string(byteutil.Md5("abc")))
+
+	// short md5
+	assert.Eq(t, "ac59075b964b0715", string(byteutil.ShortMd5("123")))
+	assert.Eq(t, "3cd24fb0d6963f7d", string(byteutil.ShortMd5("abc")))
 }
 
 func TestAppendAny(t *testing.T) {

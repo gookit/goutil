@@ -4,6 +4,7 @@ package byteutil
 import (
 	"bytes"
 	"crypto/md5"
+	"encoding/hex"
 	"fmt"
 	"math/rand"
 	"strconv"
@@ -14,12 +15,24 @@ import (
 func Md5(src any) []byte {
 	h := md5.New()
 
-	if s, ok := src.(string); ok {
-		h.Write([]byte(s))
-	} else {
+	switch val := src.(type) {
+	case []byte:
+		h.Write(val)
+	case string:
+		h.Write([]byte(val))
+	default:
 		h.Write([]byte(fmt.Sprint(src)))
 	}
-	return h.Sum(nil)
+
+	bs := h.Sum(nil) // cap(bs) == 16
+	dst := make([]byte, hex.EncodedLen(len(bs)))
+	hex.Encode(dst, bs)
+	return dst
+}
+
+// ShortMd5 Generate a 16-bit md5 bytes. remove first 8 and last 8 bytes from 32-bit md5.
+func ShortMd5(src any) []byte {
+	return Md5(src)[8:24]
 }
 
 // Random bytes generate
