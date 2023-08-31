@@ -94,14 +94,20 @@ func URLDecode(s string) string {
 // -------------------- base encode --------------------
 //
 
+// base32 encoding with no padding
+var (
+	B32Std = base32.StdEncoding.WithPadding(base32.NoPadding)
+	B32Hex = base32.HexEncoding.WithPadding(base32.NoPadding)
+)
+
 // B32Encode base32 encode
 func B32Encode(str string) string {
-	return base32.StdEncoding.EncodeToString([]byte(str))
+	return B32Std.EncodeToString([]byte(str))
 }
 
 // B32Decode base32 decode
 func B32Decode(str string) string {
-	dec, _ := base32.StdEncoding.DecodeString(str)
+	dec, _ := B32Std.DecodeString(str)
 	return string(dec)
 }
 

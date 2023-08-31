@@ -2,6 +2,7 @@ package strutil_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -41,8 +42,12 @@ func TestURLEnDecode(t *testing.T) {
 func TestBaseDecode(t *testing.T) {
 	is := assert.New(t)
 
-	is.Eq("MFRGG===", strutil.B32Encode("abc"))
-	is.Eq("abc", strutil.B32Decode("MFRGG==="))
+	is.Eq("GEZGCYTD", strutil.B32Encode("12abc"))
+	is.Eq("12abc", strutil.B32Decode("GEZGCYTD"))
+
+	// b23 hex
+	is.Eq("64P62OJ3", strutil.B32Hex.EncodeToString([]byte("12abc")))
+	is.Eq("68O34CPG70P3IC9M6GO32CO", strutil.B32Hex.EncodeToString([]byte(time.Now().Format("20060102150405"))))
 
 	is.Eq("YWJj", strutil.B64Encode("abc"))
 	is.Eq("abc", strutil.B64Decode("YWJj"))
