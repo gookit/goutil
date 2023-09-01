@@ -4,17 +4,18 @@ import (
 	"reflect"
 	"runtime"
 	"strings"
+	"unicode"
 
 	"github.com/gookit/goutil/strutil"
 )
 
 // FullFcName struct.
 type FullFcName struct {
-	// FullName eg: github.com/gookit/goutil/goinfo.PanicIf
+	// FullName eg: "github.com/gookit/goutil/goinfo.PanicIf"
 	FullName string
-	pkgPath  string
-	pkgName  string
-	funcName string
+	pkgPath  string // "github.com/gookit/goutil/goinfo"
+	pkgName  string // "goinfo"
+	funcName string // "PanicIf"
 }
 
 // Parse the full func name.
@@ -28,7 +29,6 @@ func (ffn *FullFcName) Parse() {
 	ffn.pkgPath = ffn.FullName[:i+1]
 	// spilt get pkg and func name
 	ffn.pkgName, ffn.funcName = strutil.MustCut(ffn.FullName[i+1:], ".")
-
 	ffn.pkgPath += ffn.pkgName
 }
 
@@ -92,4 +92,22 @@ func PkgName(fullFcName string) string {
 		}
 	}
 	return fullFcName
+}
+
+// GoodFuncName reports whether the function name is a valid identifier.
+func GoodFuncName(name string) bool {
+	if name == "" {
+		return false
+	}
+
+	for i, r := range name {
+		switch {
+		case r == '_':
+		case i == 0 && !unicode.IsLetter(r):
+			return false
+		case !unicode.IsLetter(r) && !unicode.IsDigit(r):
+			return false
+		}
+	}
+	return true
 }

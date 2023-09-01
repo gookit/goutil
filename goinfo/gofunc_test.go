@@ -11,6 +11,11 @@ import (
 func TestFuncName(t *testing.T) {
 	name := goinfo.FuncName(goinfo.PkgName)
 	assert.Eq(t, "github.com/gookit/goutil/goinfo.PkgName", name)
+
+	assert.True(t, goinfo.GoodFuncName("MyFunc"))
+	assert.False(t, goinfo.GoodFuncName(""))
+	assert.False(t, goinfo.GoodFuncName("+MyFunc"))
+	assert.False(t, goinfo.GoodFuncName("My+Func"))
 }
 
 func TestPkgName(t *testing.T) {

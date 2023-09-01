@@ -139,6 +139,6 @@ func (t *StringToken) ScanMore(_ *TextScanner) error {
 }
 
 // MergeSame implements
-func (t *StringToken) MergeSame(tok Token) error {
+func (t *StringToken) MergeSame(_ Token) error {
 	return errorx.Raw("cannot merge any token to Invalid token")
 }

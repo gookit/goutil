@@ -1,7 +1,6 @@
 package mathutil
 
 import (
-	"encoding/json"
 	"fmt"
 	"math"
 	"strconv"
@@ -132,7 +131,7 @@ func ToIntWithFunc(in any, usrFn ToIntFunc) (iVal int, err error) {
 		}
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
-	case json.Number:
+	case interface{ Int64() (int64, error) }: // eg: json.Number
 		var i64 int64
 		if i64, err = tVal.Int64(); err == nil {
 			if i64 > math.MaxInt32 {
@@ -248,7 +247,7 @@ func ToUintWithFunc(in any, usrFn ToUintFunc) (u64 uint64, err error) {
 		u64 = uint64(tVal)
 	case time.Duration:
 		u64 = uint64(tVal)
-	case json.Number:
+	case interface{ Int64() (int64, error) }: // eg: json.Number
 		var i64 int64
 		i64, err = tVal.Int64()
 		u64 = uint64(i64)
@@ -348,7 +347,7 @@ func ToInt64WithFunc(in any, usrFn ToInt64Func) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case time.Duration:
 		i64 = int64(tVal)
-	case json.Number:
+	case interface{ Int64() (int64, error) }: // eg: json.Number
 		i64, err = tVal.Int64()
 	default:
 		if usrFn != nil {
@@ -449,7 +448,7 @@ func ToFloatWithFunc(in any, usrFn ToFloatFunc) (f64 float64, err error) {
 		f64 = tVal
 	case time.Duration:
 		f64 = float64(tVal)
-	case json.Number:
+	case interface{ Float64() (float64, error) }: // eg: json.Number
 		f64, err = tVal.Float64()
 	default:
 		if usrFn != nil {
