@@ -23,7 +23,7 @@ func MustToTime(s string, layouts ...string) time.Time {
 // key is layout length.
 var layoutMap = map[int][]string{
 	6:  {"200601", "060102", time.Kitchen},
-	8:  {"20060102"},
+	8:  {"20060102", "06-01-02"},
 	10: {"2006-01-02"},
 	13: {"2006-01-02 15"},
 	15: {time.Stamp},
@@ -81,7 +81,7 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 			layout = strings.Replace(layout, "-", "/", -1)
 		}
 
-		t, err = time.Parse(layout, s)
+		t, err = time.ParseInLocation(layout, s, time.Local)
 		if err == nil {
 			return
 		}

@@ -111,28 +111,34 @@ func B32Decode(str string) string {
 	return string(dec)
 }
 
+// base64 encoding with no padding
+var (
+	B64Std = base64.StdEncoding.WithPadding(base64.NoPadding)
+	B64URL = base64.URLEncoding.WithPadding(base64.NoPadding)
+)
+
 // B64Encode base64 encode
 func B64Encode(str string) string {
-	return base64.StdEncoding.EncodeToString([]byte(str))
+	return B64Std.EncodeToString([]byte(str))
 }
 
 // B64EncodeBytes base64 encode
 func B64EncodeBytes(src []byte) []byte {
-	buf := make([]byte, base64.StdEncoding.EncodedLen(len(src)))
-	base64.StdEncoding.Encode(buf, src)
+	buf := make([]byte, B64Std.EncodedLen(len(src)))
+	B64Std.Encode(buf, src)
 	return buf
 }
 
 // B64Decode base64 decode
 func B64Decode(str string) string {
-	dec, _ := base64.StdEncoding.DecodeString(str)
+	dec, _ := B64Std.DecodeString(str)
 	return string(dec)
 }
 
 // B64DecodeBytes base64 decode
 func B64DecodeBytes(str []byte) []byte {
-	dbuf := make([]byte, base64.StdEncoding.DecodedLen(len(str)))
-	n, _ := base64.StdEncoding.Decode(dbuf, str)
+	dbuf := make([]byte, B64Std.DecodedLen(len(str)))
+	n, _ := B64Std.Decode(dbuf, str)
 	return dbuf[:n]
 }
 

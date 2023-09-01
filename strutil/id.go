@@ -20,11 +20,18 @@ var (
 )
 
 // MicroTimeID generate.
-// return like: 16074145697981929446(len: 20)
+//   - return like: 16074145697981929446(len: 20)
+//
+// Conv Base:
+//
+//	mtId := MicroTimeID() // eg: 16935349145643425047 len: 20
+//	b16id := Base10Conv(mtId, 16) // eg: eb067252154a9d17 len: 16
+//	b32id := Base10Conv(mtId, 32) // eg: em1jia8akl78n len: 13
+//	b36id := Base10Conv(mtId, 36) // eg: 3ko088phiuoev len: 13
+//	b62id := Base10Conv(mtId, 62) // eg: kb24SKgsQ9V len: 11
 func MicroTimeID() string {
 	ms := time.Now().UnixNano() / 1000
 	ri := mathutil.RandomInt(DefMinInt, DefMaxInt)
-
 	return strconv.FormatInt(ms, 10) + strconv.FormatInt(int64(ri), 10)
 }
 
@@ -49,7 +56,7 @@ func DatetimeNo(prefix string) string {
 		bs = append(bs, prefix...)
 	}
 
-	// micro datatime
+	// micro datetime
 	bs = nt.AppendFormat(bs, "20060102150405.000000")
 	bs[14+pl] = '0'
 
