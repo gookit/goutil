@@ -52,7 +52,7 @@ func (as *Aliases) HasAlias(alias string) bool {
 	return false
 }
 
-// ResolveAlias by given name.
+// ResolveAlias by given name. if not exists, return the alias self
 func (as *Aliases) ResolveAlias(alias string) string {
 	if name, ok := as.mapping[alias]; ok {
 		return name

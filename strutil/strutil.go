@@ -21,7 +21,7 @@ func OrCond(cond bool, s1, s2 string) string {
 	return s2
 }
 
-// BlankOr return default value on val is blank, else return val
+// BlankOr return default value on val is blank, otherwise return val
 func BlankOr(val, defVal string) string {
 	val = strings.TrimSpace(val)
 	if val != "" {
@@ -30,7 +30,7 @@ func BlankOr(val, defVal string) string {
 	return defVal
 }
 
-// ZeroOr return default value on val is zero, else return val. same of OrElse()
+// ZeroOr return default value on val is zero, otherwise return val. same of OrElse()
 func ZeroOr[T ~string](val, defVal T) T {
 	if val != "" {
 		return val
@@ -38,7 +38,7 @@ func ZeroOr[T ~string](val, defVal T) T {
 	return defVal
 }
 
-// OrElse return default value on val is zero, else return s
+// OrElse return default value on s is empty, otherwise return s
 func OrElse(s, orVal string) string {
 	if s != "" {
 		return s

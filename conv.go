@@ -75,11 +75,12 @@ func BoolString(bl bool) string {
 
 // BaseTypeVal convert custom type or intX,uintX,floatX to generic base type.
 //
-//	intX/unitX 	=> int64
+//	intX 	    => int64
+//	unitX 	    => uint64
 //	floatX      => float64
 //	string 	    => string
 //
-// returns int64,string,float or error
+// returns int64,uint64,string,float or error
 func BaseTypeVal(val any) (value any, err error) {
 	return reflects.BaseTypeVal(reflect.ValueOf(val))
 }
