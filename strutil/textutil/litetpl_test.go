@@ -1,18 +1,23 @@
 package textutil_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/strutil/textutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestRenderString(t *testing.T) {
-	data := map[string]any{
-		"name": "inhere",
-		"age":  2000,
-	}
+var data = map[string]any{
+	"name": "inhere",
+	"age":  2000,
+	"subMp": map[string]any{
+		"city": "cd",
+		"addr": "addr 001",
+	},
+}
 
+func TestRenderString(t *testing.T) {
 	t.Run("basic", func(t *testing.T) {
 		tpl := "hi, My name is {{ .name | upFirst }}, age is {{ .age }}"
 		str := textutil.RenderString(tpl, data)
@@ -25,4 +30,18 @@ func TestRenderString(t *testing.T) {
 		str := textutil.RenderString(tpl, map[string]any{})
 		assert.Eq(t, "name: guest, age: 18, city: cd", str)
 	})
+}
+
+func TestRenderFile(t *testing.T) {
+	s, err := textutil.RenderFile("testdata/test-lite.tpl", data)
+	assert.NoError(t, err)
+	fmt.Println(s)
+
+	assert.StrContains(t, s, "hi, My name is Inhere, age is 2000")
+	assert.StrContains(t, s, "City: CD")
+	assert.StrContains(t, s, "Addr: addr 001")
+
+	// file not exist
+	_, err = textutil.RenderFile("testdata/not-exist.tpl", nil)
+	assert.Error(t, err)
 }

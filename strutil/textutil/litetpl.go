@@ -15,11 +15,11 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// STemplateOptFn template option func
-type STemplateOptFn func(opt *StrTemplateOpt)
+// LTemplateOptFn lite template option func
+type LTemplateOptFn func(opt *LiteTemplateOpt)
 
-// StrTemplateOpt template options for StrTemplate
-type StrTemplateOpt struct {
+// LiteTemplateOpt template options for LiteTemplate
+type LiteTemplateOpt struct {
 	// func name alias map. eg: {"up_first": "upFirst"}
 	nameMp structs.Aliases
 	Funcs  template.FuncMap
@@ -30,7 +30,7 @@ type StrTemplateOpt struct {
 	ParseEnv bool
 }
 
-// StrTemplate implement a simple string template
+// LiteTemplate implement a simple text template engine.
 //
 //   - support parse template vars
 //   - support access multi-level map field. eg: {{ user.name }}
@@ -39,8 +39,8 @@ type StrTemplateOpt struct {
 //   - support custom pipeline func handle. eg: {{ name | upper }} {{ name | def:guest }}
 //
 // NOTE: not support control flow, eg: if/else/for/with
-type StrTemplate struct {
-	StrTemplateOpt
+type LiteTemplate struct {
+	LiteTemplateOpt
 	vr VarReplacer
 	// template func map. refer the text/template
 	//
@@ -48,43 +48,37 @@ type StrTemplate struct {
 	fxs map[string]*reflects.FuncX
 }
 
-// NewStrTemplate instance
-func NewStrTemplate(opFns ...STemplateOptFn) *StrTemplate {
-	st := &StrTemplate{
+// NewLiteTemplate instance
+func NewLiteTemplate(opFns ...LTemplateOptFn) *LiteTemplate {
+	st := &LiteTemplate{
 		fxs: make(map[string]*reflects.FuncX),
-		vr: VarReplacer{
-			Left:  "{{",
-			Right: "}}",
+		// with default options
+		LiteTemplateOpt: LiteTemplateOpt{
+			Left:     "{{",
+			Right:    "}}",
+			ParseDef: true,
+			ParseEnv: true,
 		},
 	}
 
-	st.ParseDef = true
-	st.ParseEnv = true
 	st.vr.RenderFn = st.renderVars
 	for _, fn := range opFns {
-		fn(&st.StrTemplateOpt)
+		fn(&st.LiteTemplateOpt)
 	}
 
 	st.Init()
 	return st
 }
 
-// Init StrTemplate
-func (t *StrTemplate) Init() {
+// Init LiteTemplate
+func (t *LiteTemplate) Init() {
 	if t.vr.init {
 		return
 	}
 
-	basefn.PanicIf(t.vr.Right == "", "var format Right chars is required")
-
+	// init var replacer
 	t.vr.init = true
-	t.vr.parseDef = t.ParseDef
-	t.vr.parseEnv = t.ParseEnv
-
-	t.vr.lLen, t.vr.rLen = len(t.vr.Left), len(t.vr.Right)
-	// (?s:...) - 让 "." 匹配换行
-	// (?s:(.+?)) - 第二个 "?" 非贪婪匹配
-	t.vr.varReg = regexp.MustCompile(regexp.QuoteMeta(t.vr.Left) + `(?s:(.+?))` + regexp.QuoteMeta(t.vr.Right))
+	t.initReplacer(&t.vr)
 
 	// add built-in funcs
 	t.AddFuncs(builtInFuncs)
@@ -93,26 +87,40 @@ func (t *StrTemplate) Init() {
 		"lc_first": "lcFirst",
 		"def":      "default",
 	})
+
+	// add custom funcs
+	if len(t.Funcs) > 0 {
+		t.AddFuncs(t.Funcs)
+	}
+}
+
+func (t *LiteTemplate) initReplacer(vr *VarReplacer) {
+	vr.flatSubs = true
+	vr.parseDef = t.ParseDef
+	vr.parseEnv = t.ParseEnv
+	vr.Left, vr.Right = t.Left, t.Right
+	basefn.PanicIf(vr.Right == "", "var format right chars is required")
+
+	vr.lLen, vr.rLen = len(vr.Left), len(vr.Right)
+	// (?s:...) - 让 "." 匹配换行
+	// (?s:(.+?)) - 第二个 "?" 非贪婪匹配
+	vr.varReg = regexp.MustCompile(regexp.QuoteMeta(vr.Left) + `(?s:(.+?))` + regexp.QuoteMeta(vr.Right))
 }
 
 // AddFuncs add custom template functions
-func (t *StrTemplate) AddFuncs(fns map[string]any) {
+func (t *LiteTemplate) AddFuncs(fns map[string]any) {
 	for name, fn := range fns {
 		t.fxs[name] = reflects.NewFunc(fn)
 	}
 }
 
 // RenderString render template string with vars
-func (t *StrTemplate) RenderString(s string, vars map[string]any) string {
+func (t *LiteTemplate) RenderString(s string, vars map[string]any) string {
 	return t.vr.Replace(s, vars)
 }
 
 // RenderFile render template file with vars
-func (t *StrTemplate) RenderFile(filePath string, vars map[string]any) (string, error) {
-	if !fsutil.FileExists(filePath) {
-		return "", fmt.Errorf("template file not exists: %s", filePath)
-	}
-
+func (t *LiteTemplate) RenderFile(filePath string, vars map[string]any) (string, error) {
 	// read file contents
 	s, err := fsutil.ReadStringOrErr(filePath)
 	if err != nil {
@@ -122,18 +130,18 @@ func (t *StrTemplate) RenderFile(filePath string, vars map[string]any) (string, 
 	return t.vr.Replace(s, vars), nil
 }
 
-// RenderWrite render template string with vars, and write to writer
-func (t *StrTemplate) RenderWrite(wr io.Writer, s string, vars map[string]any) error {
+// RenderWrite render template string with vars, and write result to writer
+func (t *LiteTemplate) RenderWrite(wr io.Writer, s string, vars map[string]any) error {
 	s = t.vr.Replace(s, vars)
 	_, err := io.WriteString(wr, s)
 	return err
 }
 
-func (t *StrTemplate) renderVars(s string, varMap map[string]string) string {
+func (t *LiteTemplate) renderVars(s string, varMap map[string]string) string {
 	return t.vr.varReg.ReplaceAllStringFunc(s, func(sub string) string {
 		// var name or pipe expression.
 		name := strings.TrimSpace(sub[t.vr.lLen : len(sub)-t.vr.rLen])
-		name = strings.TrimLeft(name, ".")
+		name = strings.TrimLeft(name, "$.")
 
 		var defVal string
 		var pipes []string
@@ -183,7 +191,7 @@ func (t *StrTemplate) renderVars(s string, varMap map[string]string) string {
 	})
 }
 
-func (t *StrTemplate) applyPipes(val any, pipes []string) (string, error) {
+func (t *LiteTemplate) applyPipes(val any, pipes []string) (string, error) {
 	var err error
 
 	// pipe expr: "trim|upper|substr:1,2"
@@ -218,7 +226,7 @@ func (t *StrTemplate) applyPipes(val any, pipes []string) (string, error) {
 	return strutil.ToString(val)
 }
 
-func (t *StrTemplate) isFunc(name string) bool {
+func (t *LiteTemplate) isFunc(name string) bool {
 	_, ok := t.fxs[name]
 	if !ok {
 		// check name alias
@@ -227,15 +235,25 @@ func (t *StrTemplate) isFunc(name string) bool {
 	return ok
 }
 
-func (t *StrTemplate) isDefaultFunc(name string) bool {
+func (t *LiteTemplate) isDefaultFunc(name string) bool {
 	return name == "default" || name == "def"
 }
 
-var stdTpl = NewStrTemplate()
+var stdTpl = NewLiteTemplate()
+
+// RenderFile render template file with vars
+func RenderFile(filePath string, vars map[string]any) (string, error) {
+	return stdTpl.RenderFile(filePath, vars)
+}
 
 // RenderString render str template string or file.
-func RenderString(input string, data map[string]any, optFns ...RenderOptFn) string {
+func RenderString(input string, data map[string]any) string {
 	return stdTpl.RenderString(input, data)
+}
+
+// RenderWrite render template string with vars, and write result to writer
+func RenderWrite(wr io.Writer, s string, vars map[string]any) error {
+	return stdTpl.RenderWrite(wr, s, vars)
 }
 
 func parseArgStr(argStr string) (ss []any) {

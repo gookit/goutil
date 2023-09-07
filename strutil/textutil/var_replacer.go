@@ -124,13 +124,13 @@ func (r *VarReplacer) ParseVars(s string) []string {
 	return arrutil.Unique(ss)
 }
 
-// Render any-map vars in the text contents
-func (r *VarReplacer) Render(s string, tplVars map[string]any) string {
-	return r.Replace(s, tplVars)
-}
-
 // Replace any-map vars in the text contents
 func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
+	return r.Render(s, tplVars)
+}
+
+// Render any-map vars in the text contents
+func (r *VarReplacer) Render(s string, tplVars map[string]any) string {
 	if !strings.Contains(s, r.Left) {
 		return s
 	}
@@ -139,8 +139,8 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 	}
 
 	r.Init()
-	var varMap map[string]string
 
+	var varMap map[string]string
 	if r.flatSubs {
 		varMap = make(map[string]string, len(tplVars)*2)
 		maputil.FlatWithFunc(tplVars, func(path string, val reflect.Value) {
