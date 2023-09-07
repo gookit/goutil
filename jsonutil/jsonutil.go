@@ -65,17 +65,15 @@ func Mapping(src, dst any) error {
 	return Decode(bts, dst)
 }
 
-// IsJSON check if the string is valid JSON. (Note: uses json.Unmarshal)
+// IsJSON check if the string is valid JSON. (Note: uses json.Valid)
 func IsJSON(s string) bool {
 	if s == "" {
 		return false
 	}
-
-	var js json.RawMessage
-	return json.Unmarshal([]byte(s), &js) == nil
+	return json.Valid([]byte(s))
 }
 
-// IsJSONFast simple and fast check input string is valid JSON.
+// IsJSONFast simple and fast check input is valid JSON array or object.
 func IsJSONFast(s string) bool {
 	ln := len(s)
 	if ln < 2 {
@@ -92,6 +90,32 @@ func IsJSONFast(s string) bool {
 
 	// array
 	return s[0] == '[' && s[ln-1] == ']'
+}
+
+// IsArray check if the string is valid JSON array.
+func IsArray(s string) bool {
+	ln := len(s)
+	if ln < 2 {
+		return false
+	}
+	return s[0] == '[' && s[ln-1] == ']'
+}
+
+// IsObject check if the string is valid JSON object.
+func IsObject(s string) bool {
+	ln := len(s)
+	if ln < 2 {
+		return false
+	}
+	if ln == 2 {
+		return s == "{}"
+	}
+
+	// object
+	if s[0] == '{' {
+		return s[ln-1] == '}' && s[1] == '"'
+	}
+	return false
 }
 
 // `(?s:` enable match multi line

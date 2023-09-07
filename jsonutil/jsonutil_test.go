@@ -152,6 +152,23 @@ func TestIsJsonFast(t *testing.T) {
 			}
 		})
 	}
+
+	// test IsArray
+	t.Run("IsArray", func(t *testing.T) {
+		assert.True(t, jsonutil.IsArray(`[]`))
+		assert.True(t, jsonutil.IsArray(`[1]`))
+		assert.False(t, jsonutil.IsArray(`{"a": 1}`))
+		assert.False(t, jsonutil.IsArray(`a`))
+	})
+
+	// test IsObject
+	t.Run("IsObject", func(t *testing.T) {
+		assert.True(t, jsonutil.IsObject(`{}`))
+		assert.True(t, jsonutil.IsObject(`{"a": 1}`))
+		assert.False(t, jsonutil.IsObject(`[1]`))
+		assert.False(t, jsonutil.IsObject(``))
+		assert.False(t, jsonutil.IsObject(`a`))
+	})
 }
 
 func TestStripComments(t *testing.T) {
