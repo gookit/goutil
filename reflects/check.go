@@ -27,8 +27,13 @@ func IsSimpleKind(k reflect.Kind) bool {
 	return k > reflect.Invalid && k <= reflect.Float64
 }
 
-// IsAnyInt check is intX or uintX type
+// IsAnyInt check is intX or uintX type. alias of the IsIntLike()
 func IsAnyInt(k reflect.Kind) bool {
+	return k >= reflect.Int && k <= reflect.Uintptr
+}
+
+// IsIntLike reports whether the type is int-like(intX, uintX).
+func IsIntLike(k reflect.Kind) bool {
 	return k >= reflect.Int && k <= reflect.Uintptr
 }
 
@@ -50,6 +55,17 @@ func IsNil(v reflect.Value) bool {
 	default:
 		return false
 	}
+}
+
+// CanBeNil reports whether an untyped nil can be assigned to the type. See reflect.Zero.
+func CanBeNil(typ reflect.Type) bool {
+	switch typ.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
+		return true
+	case reflect.Struct:
+		return typ == reflectValueType
+	}
+	return false
 }
 
 // IsFunc value

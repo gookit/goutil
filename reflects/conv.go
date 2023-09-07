@@ -19,7 +19,8 @@ func BaseTypeVal(v reflect.Value) (value any, err error) {
 
 // ToBaseVal convert custom type or intX,uintX,floatX to generic base type.
 //
-//	intX/unitX 	=> int64
+//	intX 	    => int64
+//	unitX 	    => uint64
 //	floatX      => float64
 //	string 	    => string
 //
@@ -33,13 +34,18 @@ func ToBaseVal(v reflect.Value) (value any, err error) {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		value = v.Int()
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		value = int64(v.Uint()) // always return int64
+		value = v.Uint() // always return int64
 	case reflect.Float32, reflect.Float64:
 		value = v.Float()
 	default:
 		err = comdef.ErrConvType
 	}
 	return
+}
+
+// ConvToType convert and create reflect.Value by give reflect.Type
+func ConvToType(val any, typ reflect.Type) (rv reflect.Value, err error) {
+	return ValueByType(val, typ)
 }
 
 // ValueByType create reflect.Value by give reflect.Type
@@ -49,7 +55,11 @@ func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 		return ConvToKind(val, typ.Kind())
 	}
 
-	newRv := reflect.ValueOf(val)
+	var ok bool
+	var newRv reflect.Value
+	if newRv, ok = val.(reflect.Value); !ok {
+		newRv = reflect.ValueOf(val)
+	}
 
 	// try auto convert slice type
 	if IsArrayOrSlice(newRv.Kind()) && IsArrayOrSlice(typ.Kind()) {
@@ -76,6 +86,10 @@ func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 //
 //	Only support kind: string, bool, intX, uintX, floatX
 func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
+	if rv, ok := val.(reflect.Value); ok {
+		val = rv.Interface()
+	}
+
 	switch kind {
 	case reflect.Int:
 		var dstV int

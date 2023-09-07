@@ -7,6 +7,32 @@ import (
 	"unsafe"
 )
 
+// loopIndirect returns the item at the end of indirection, and a bool to indicate
+// if it's nil. If the returned bool is true, the returned value's kind will be
+// either a pointer or interface.
+func loopIndirect(v reflect.Value) (rv reflect.Value, isNil bool) {
+	for ; v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface; v = v.Elem() {
+		if v.IsNil() {
+			return v, true
+		}
+	}
+	return v, false
+}
+
+// indirectInterface returns the concrete value in an interface value,
+// or else the zero reflect.Value.
+// That is, if v represents the interface value x, the result is the same as reflect.ValueOf(x):
+// the fact that x was an interface value is forgotten.
+func indirectInterface(v reflect.Value) reflect.Value {
+	if v.Kind() != reflect.Interface {
+		return v
+	}
+	if v.IsNil() {
+		return emptyValue
+	}
+	return v.Elem()
+}
+
 // Elem returns the value that the interface v contains
 // or that the pointer v points to. otherwise, will return self
 func Elem(v reflect.Value) reflect.Value {
@@ -76,28 +102,6 @@ func Len(v reflect.Value) int {
 
 	// cannot get length
 	return -1
-}
-
-// IsIntLike reports whether the type is int-like(intX, uintX).
-func IsIntLike(typ reflect.Kind) bool {
-	switch typ {
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return true
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return true
-	}
-	return false
-}
-
-// CanBeNil reports whether an untyped nil can be assigned to the type. See reflect.Zero.
-func CanBeNil(typ reflect.Type) bool {
-	switch typ.Kind() {
-	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Pointer, reflect.Slice:
-		return true
-	case reflect.Struct:
-		return typ == reflectValueType
-	}
-	return false
 }
 
 // SliceSubKind get sub-elem kind of the array, slice, variadic-var. alias SliceElemKind()

@@ -82,9 +82,50 @@ func (f *FuncX) Call(args ...any) ([]any, error) {
 	return rets, nil
 }
 
+// Call2 returns the result of evaluating the first argument as a function.
+// The function must return 1 result, or 2 results, the second of which is an error.
+//
+//   - Only support func with 1 or 2 return values: (val) OR (val, err)
+//   - Will check args and try convert input args to func args type.
+func (f *FuncX) Call2(args ...any) (any, error) {
+	// convert args to []reflect.Value
+	argRvs := make([]reflect.Value, len(args))
+	for i, arg := range args {
+		argRvs[i] = reflect.ValueOf(arg)
+	}
+
+	if f.TypeChecker == nil {
+		f.TypeChecker = OneOrTwoOutChecker
+	}
+
+	// do call func
+	ret, err := Call(f.rv, argRvs, &f.CallOpt)
+	if err != nil {
+		return emptyValue, err
+	}
+
+	// func return like: (val, err)
+	if len(ret) == 2 && !ret[1].IsNil() {
+		return ret[0].Interface(), ret[1].Interface().(error)
+	}
+	return ret[0].Interface(), nil
+}
+
 // CallRV call the function with given reflect.Value arguments.
 func (f *FuncX) CallRV(args []reflect.Value) ([]reflect.Value, error) {
 	return Call(f.rv, args, &f.CallOpt)
+}
+
+// WithTypeChecker set type checker
+func (f *FuncX) WithTypeChecker(checker TypeCheckerFn) *FuncX {
+	f.TypeChecker = checker
+	return f
+}
+
+// WithEnhanceConv set enhance convert
+func (f *FuncX) WithEnhanceConv() *FuncX {
+	f.EnhanceConv = true
+	return f
 }
 
 // String of func
@@ -92,12 +133,16 @@ func (f *FuncX) String() string {
 	return f.rt.String()
 }
 
+// TypeCheckerFn type checker func
+type TypeCheckerFn func(typ reflect.Type) error
+
 // CallOpt call options
 type CallOpt struct {
 	// TypeChecker check func type before call func. eg: check return values
-	TypeChecker func(typ reflect.Type) error
-	// AutoConvert try auto convert args to func args type
-	AutoConvert bool
+	TypeChecker TypeCheckerFn
+	// EnhanceConv try to enhance auto convert args to func args type
+	// 	- support more type: string, int, uint, float, bool
+	EnhanceConv bool
 }
 
 // OneOrTwoOutChecker check func type. only allow 1 or 2 return values
@@ -133,11 +178,8 @@ func good1or2outFunc(typ reflect.Type) bool {
 // Call2 returns the result of evaluating the first argument as a function.
 // The function must return 1 result, or 2 results, the second of which is an error.
 //
-// will check args and try convert input args to func args type.
-//
-// NOTE: Only support func with 1 or 2 return values: (val) OR (val, err)
-//
-// from text/template/funcs.go#call
+//   - Only support func with 1 or 2 return values: (val) OR (val, err)
+//   - Will check args and try convert input args to func args type.
 func Call2(fn reflect.Value, args []reflect.Value) (reflect.Value, error) {
 	ret, err := Call(fn, args, &CallOpt{
 		TypeChecker: OneOrTwoOutChecker,
@@ -155,7 +197,7 @@ func Call2(fn reflect.Value, args []reflect.Value) (reflect.Value, error) {
 
 // Call returns the result of evaluating the first argument as a function.
 //
-// will check args and try convert input args to func args type.
+//   - Will check args and try convert input args to func args type.
 //
 // from text/template/funcs.go#call
 func Call(fn reflect.Value, args []reflect.Value, opt *CallOpt) ([]reflect.Value, error) {
@@ -202,7 +244,7 @@ func Call(fn reflect.Value, args []reflect.Value, opt *CallOpt) ([]reflect.Value
 		}
 
 		var err error
-		if argv[i], err = prepareArg(arg, argType); err != nil {
+		if argv[i], err = prepareArg(arg, argType, opt.EnhanceConv); err != nil {
 			return nil, fmt.Errorf("arg %d: %w", i, err)
 		}
 	}
@@ -248,7 +290,7 @@ func SafeCall(fun reflect.Value, args []reflect.Value) (ret []reflect.Value, err
 
 // prepareArg checks if value can be used as an argument of type argType, and
 // converts an invalid value to appropriate zero if possible.
-func prepareArg(value reflect.Value, argType reflect.Type) (reflect.Value, error) {
+func prepareArg(value reflect.Value, argType reflect.Type, enhanced bool) (reflect.Value, error) {
 	if !value.IsValid() {
 		if !CanBeNil(argType) {
 			return emptyValue, fmt.Errorf("value is nil; should be of type %s", argType)
@@ -261,35 +303,15 @@ func prepareArg(value reflect.Value, argType reflect.Type) (reflect.Value, error
 		return value, nil
 	}
 
+	// If the argument is an int-like type, and the value is an int-like type, auto-convert.
 	if IsIntLike(value.Kind()) && IsIntLike(argType.Kind()) && value.Type().ConvertibleTo(argType) {
 		value = value.Convert(argType)
 		return value, nil
 	}
+
+	// enhance convert value to argType, support more type: string, int, uint, float, bool
+	if enhanced {
+		return ValueByType(value.Interface(), argType)
+	}
 	return emptyValue, fmt.Errorf("value has type %s; should be %s", value.Type(), argType)
-}
-
-// indirect returns the item at the end of indirection, and a bool to indicate
-// if it's nil. If the returned bool is true, the returned value's kind will be
-// either a pointer or interface.
-func indirect(v reflect.Value) (rv reflect.Value, isNil bool) {
-	for ; v.Kind() == reflect.Pointer || v.Kind() == reflect.Interface; v = v.Elem() {
-		if v.IsNil() {
-			return v, true
-		}
-	}
-	return v, false
-}
-
-// indirectInterface returns the concrete value in an interface value,
-// or else the zero reflect.Value.
-// That is, if v represents the interface value x, the result is the same as reflect.ValueOf(x):
-// the fact that x was an interface value is forgotten.
-func indirectInterface(v reflect.Value) reflect.Value {
-	if v.Kind() != reflect.Interface {
-		return v
-	}
-	if v.IsNil() {
-		return reflect.Value{}
-	}
-	return v.Elem()
 }
