@@ -33,7 +33,7 @@ type VarReplacer struct {
 	keepMissVars bool
 	// missing vars list
 	missVars []string
-	// NotFound hook func. on varname not found
+	// NotFound hook func. on var-name not found
 	NotFound FallbackFn
 	// RenderFn custom render func
 	RenderFn func(s string, vs map[string]string) string
@@ -110,6 +110,8 @@ func (r *VarReplacer) Init() {
 			// no right tag. eg: $name, $user.age
 			r.varReg = regexp.MustCompile(regexp.QuoteMeta(r.Left) + `(\w[\w-]*(?:\.[\w-]+)*)`)
 		}
+
+		r.init = true
 	}
 }
 
@@ -136,6 +138,7 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 		return s
 	}
 
+	r.Init()
 	var varMap map[string]string
 
 	if r.flatSubs {
@@ -155,7 +158,6 @@ func (r *VarReplacer) Replace(s string, tplVars map[string]any) string {
 		varMap = maputil.ToStringMap(tplVars)
 	}
 
-	r.Init()
 	return r.doReplace(s, varMap)
 }
 
