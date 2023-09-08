@@ -14,7 +14,7 @@ func TestBaseTypeVal(t *testing.T) {
 		want, give any
 	}{
 		{int64(23), 23},
-		{int64(23), uint(23)},
+		{uint64(23), uint(23)},
 		{23.4, 23.4},
 		// {23.4, float32(23.4)},
 		{"abc", "abc"},

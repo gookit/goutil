@@ -49,7 +49,7 @@ func ToTime(s string, layouts ...string) (t time.Time, err error) {
 	// custom layout
 	if len(layouts) > 0 {
 		if len(layouts[0]) > 0 {
-			return time.Parse(layouts[0], s)
+			return time.ParseInLocation(layouts[0], s, time.Local)
 		}
 
 		err = ErrDateLayout

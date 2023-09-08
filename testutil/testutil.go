@@ -4,6 +4,7 @@ package testutil
 import (
 	"io"
 	"os"
+	"time"
 )
 
 var oldStdout, oldStderr, newReader *os.File
@@ -126,4 +127,28 @@ func RestoreStderr(printData ...bool) (s string) {
 	_ = newReader.Close()
 	newReader = nil
 	return
+}
+
+var timeLocBak *time.Location
+
+// SetTimeLocal custom time.Local for testing.
+func SetTimeLocal(tl *time.Location) {
+	if timeLocBak != nil {
+		panic("time local already set, please restore it before set")
+	}
+
+	timeLocBak = time.Local
+	time.Local = tl
+}
+
+// SetTimeLocalUTC custom time.Local=UTC for testing.
+func SetTimeLocalUTC() {
+	SetTimeLocal(time.UTC)
+}
+
+// RestoreTimeLocal restore time.Local
+func RestoreTimeLocal() {
+	if timeLocBak != nil {
+		time.Local = timeLocBak
+	}
 }

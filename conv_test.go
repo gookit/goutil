@@ -70,7 +70,7 @@ func TestBaseTypeVal(t *testing.T) {
 
 	val, err := goutil.BaseTypeVal(uint64(23))
 	is.NoErr(err)
-	is.Eq(int64(23), val)
+	is.Eq(uint64(23), val)
 
 	val, err = goutil.BaseTypeVal(23)
 	is.NoErr(err)

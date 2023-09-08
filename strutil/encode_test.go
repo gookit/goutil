@@ -2,7 +2,6 @@ package strutil_test
 
 import (
 	"testing"
-	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -47,7 +46,9 @@ func TestBaseDecode(t *testing.T) {
 
 	// b23 hex
 	is.Eq("64P62OJ3", strutil.B32Hex.EncodeToString([]byte("12abc")))
-	is.Eq("68O34CPG70P3IC9M6GO32CO", strutil.B32Hex.EncodeToString([]byte(time.Now().Format("20060102150405"))))
+	// fmt.Println(time.Now().Format("20060102150405"))
+	dateStr := "20230908101122"
+	is.Eq("68O34CPG74O3GC9G64OJ4CG", strutil.B32Hex.EncodeToString([]byte(dateStr)))
 
 	is.Eq("YWJj", strutil.B64Encode("abc"))
 	is.Eq("abc", strutil.B64Decode("YWJj"))

@@ -4,12 +4,17 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
 )
 
 func TestToTime(t *testing.T) {
 	is := assert.New(t)
+
+	testutil.SetTimeLocalUTC()
+	defer testutil.RestoreTimeLocal()
+
 	tests := map[string]string{
 		"20180927":             "2018-09-27 00:00:00 +0000 UTC",
 		"2018-09-27":           "2018-09-27 00:00:00 +0000 UTC",

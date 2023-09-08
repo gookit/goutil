@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
 )
@@ -106,6 +107,9 @@ func TestTryToTime(t *testing.T) {
 }
 
 func TestParseRange(t *testing.T) {
+	testutil.SetTimeLocalUTC()
+	defer testutil.RestoreTimeLocal()
+
 	tests := []struct {
 		input string
 		start int64
