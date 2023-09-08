@@ -1,11 +1,11 @@
 package reflects
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 
 	"github.com/gookit/goutil/basefn"
-	"github.com/pkg/errors"
 )
 
 // FuncX wrap a go func. represent a function
