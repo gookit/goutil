@@ -5,7 +5,7 @@ import (
 
 	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/strutil/secutil"
+	"github.com/gookit/goutil/encodes/secutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 

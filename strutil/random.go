@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/byteutil"
-	"github.com/gookit/goutil/encodx"
 )
 
 // some consts string chars
@@ -89,7 +88,7 @@ func RandWithTpl(n int, letters string) string {
 //	token, err := RandomString(16) // eg: "I7S4yFZddRMxQoudLZZ-eg"
 func RandomString(length int) (string, error) {
 	b, err := RandomBytes(length)
-	return encodx.B64URL.EncodeToString(b), err
+	return encodes.B64URL.EncodeToString(b), err
 }
 
 // RandomBytes generate

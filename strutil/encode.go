@@ -111,11 +111,8 @@ func B32Decode(str string) string {
 	return string(dec)
 }
 
-// base64 encoding with no padding
-var (
-	B64Std = base64.StdEncoding.WithPadding(base64.NoPadding)
-	B64URL = base64.URLEncoding.WithPadding(base64.NoPadding)
-)
+// B64Std base64 encoding with no padding
+var B64Std = base64.StdEncoding.WithPadding(base64.NoPadding)
 
 // B64Encode base64 encode
 func B64Encode(str string) string {

@@ -1,4 +1,4 @@
-package encodx
+package encodes
 
 import (
 	"encoding/base32"

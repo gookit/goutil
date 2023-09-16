@@ -12,7 +12,7 @@ import (
 	"hash/crc64"
 	"strings"
 
-	"github.com/gookit/goutil/encodx"
+	"github.com/gookit/goutil/encodes"
 )
 
 // hash algorithm names
@@ -59,8 +59,8 @@ func Hash32(algo string, src any) string {
 // Base32Bytes generate base32 hash bytes by given algorithm
 func Base32Bytes(algo string, src any) []byte {
 	bs := HashSum(algo, src)
-	dst := make([]byte, encodx.B32Hex.EncodedLen(len(bs)))
-	encodx.B32Hex.Encode(dst, bs)
+	dst := make([]byte, encodes.B32Hex.EncodedLen(len(bs)))
+	encodes.B32Hex.Encode(dst, bs)
 	return dst
 }
 
@@ -72,8 +72,8 @@ func Hash64(algo string, src any) string {
 // Base64Bytes generate base64 hash bytes by given algorithm
 func Base64Bytes(algo string, src any) []byte {
 	bs := HashSum(algo, src)
-	dst := make([]byte, encodx.B64Std.EncodedLen(len(bs)))
-	encodx.B64Std.Encode(dst, bs)
+	dst := make([]byte, encodes.B64Std.EncodedLen(len(bs)))
+	encodes.B64Std.Encode(dst, bs)
 	return dst
 }
 
