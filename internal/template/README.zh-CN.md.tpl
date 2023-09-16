@@ -35,7 +35,7 @@
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
 - netutil 子包:
-  - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端
+  - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端, 和一些 http 工具函数
 - strutil 子包:
   - [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
   - [textutil](strutil/textutil) 提供一些常用的扩展文本处理功能函数。

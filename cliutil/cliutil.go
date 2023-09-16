@@ -10,6 +10,15 @@ import (
 	"github.com/gookit/goutil/sysutil"
 )
 
+// SplitMulti split multi string by sep string.
+func SplitMulti(ss []string, sep string) []string {
+	ns := make([]string, 0, len(ss)+1)
+	for _, s := range ss {
+		ns = append(ns, strings.Split(s, sep)...)
+	}
+	return ns
+}
+
 // LineBuild build command line string by given args.
 func LineBuild(binFile string, args []string) string {
 	return cmdline.NewBuilder(binFile, args...).String()

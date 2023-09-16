@@ -10,6 +10,15 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+// test SplitMulti
+func TestSplitMulti(t *testing.T) {
+	ss := cliutil.SplitMulti([]string{"a,b", "c,d"}, ",")
+	assert.Equal(t, []string{"a", "b", "c", "d"}, ss)
+
+	ss = cliutil.SplitMulti([]string{"a,b", "c,d"}, ",,")
+	assert.Equal(t, []string{"a,b", "c,d"}, ss)
+}
+
 func TestCurrentShell(t *testing.T) {
 	path := cliutil.CurrentShell(true)
 

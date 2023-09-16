@@ -9,7 +9,7 @@ import (
 
 func TestAliases_AddAlias(t *testing.T) {
 	as := make(maputil.Aliases)
-	as.AddAlias("real", "a")
+	as.AddAlias("a", "real")
 	as.AddAliases("real", []string{"b"})
 	as.AddAliasMap(map[string]string{"a1": "real1"})
 
@@ -24,6 +24,6 @@ func TestAliases_AddAlias(t *testing.T) {
 	assert.Eq(t, "notExist", as.ResolveAlias("notExist"))
 
 	assert.PanicsMsg(t, func() {
-		as.AddAlias("real3", "a")
+		as.AddAlias("a", "real3")
 	}, "The alias 'a' is already used by 'real'")
 }

@@ -28,7 +28,7 @@
 - [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](sysutil) System util functions. eg: sysenv, exec, user, process
 
-**Advance packages:**
+**Extra packages:**
 
 - [`cflag`](cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
 - cli util:
@@ -38,7 +38,7 @@
 - file util:
   - [`finder`](fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - net util:
-  - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client
+  - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client, and with some http utils.
 - string util:
   - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
   - [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.

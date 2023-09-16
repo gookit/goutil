@@ -13,8 +13,8 @@ import (
 //	RandomInt(100, 999)
 //	RandomInt(1000, 9999)
 func RandomInt(min, max int) int {
-	rand.Seed(time.Now().UnixNano())
-	return min + rand.Intn(max-min)
+	rr := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return min + rr.Intn(max-min)
 }
 
 // RandInt alias of RandomInt()
@@ -32,6 +32,6 @@ func RandIntWithSeed(min, max int, seed int64) int {
 //	seed := time.Now().UnixNano()
 //	RandomIntWithSeed(1000, 9999, seed)
 func RandomIntWithSeed(min, max int, seed int64) int {
-	rand.Seed(seed)
-	return min + rand.Intn(max-min)
+	rr := rand.New(rand.NewSource(seed))
+	return min + rr.Intn(max-min)
 }
