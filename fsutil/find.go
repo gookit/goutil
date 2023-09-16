@@ -7,8 +7,29 @@ import (
 	"path/filepath"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/strutil"
 )
+
+// FilePathInDirs get full file path in dirs.
+//
+// Params:
+//   - file: can be relative path, file name, full path.
+//   - dirs: dir paths
+func FilePathInDirs(file string, dirs ...string) string {
+	file = comfunc.ExpandHome(file)
+	if FileExists(file) {
+		return file
+	}
+
+	for _, dirPath := range dirs {
+		fPath := JoinSubPaths(dirPath, file)
+		if FileExists(fPath) {
+			return fPath
+		}
+	}
+	return "" // not found
+}
 
 // FirstExists check multi paths and return first exists path.
 func FirstExists(paths ...string) string {
