@@ -74,8 +74,12 @@ func TestIsStartOf(t *testing.T) {
 		assert.Eq(t, item.want, strutil.IsStartOf(item.give, item.sub))
 	}
 
+	assert.True(t, strutil.StartsWith("abc", "a"))
+
 	assert.True(t, strutil.IsStartsOf("abc", []string{"a", "b"}))
+	assert.True(t, strutil.StartsWithAny("abc", []string{"a", "c"}))
 	assert.False(t, strutil.IsStartsOf("abc", []string{"d", "e"}))
+	assert.False(t, strutil.StartsWithAny("abc", []string{"d", "e"}))
 }
 
 func TestIsEndOf(t *testing.T) {

@@ -30,6 +30,11 @@ type LiteTemplateOpt struct {
 	ParseEnv bool
 }
 
+// SetVarFmt custom sets the variable format in template
+func (o *LiteTemplateOpt) SetVarFmt(varFmt string) {
+	o.Left, o.Right = strutil.TrimCut(varFmt, ",")
+}
+
 // LiteTemplate implement a simple text template engine.
 //
 //   - support parse template vars

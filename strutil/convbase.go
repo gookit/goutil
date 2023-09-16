@@ -40,7 +40,6 @@ func BaseConv(src string, from, to int) string {
 	if to > 64 || to < 2 {
 		return ""
 	}
-
 	return BaseConvByTpl(src, Base64Chars[:from], Base64Chars[:to])
 }
 

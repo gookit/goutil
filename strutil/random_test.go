@@ -84,8 +84,6 @@ func TestRandomBytes(t *testing.T) {
 	fmt.Println(rn.Intn(12), rn.Intn(12))
 
 	fmt.Println(string(b))
-	fmt.Println(strutil.B64Std.EncodeToString(b))
-	fmt.Println(strutil.B64URL.EncodeToString(b))
 	fmt.Println(hex.EncodeToString(b))
 	assert.NoErr(t, err)
 }

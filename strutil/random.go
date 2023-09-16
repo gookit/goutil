@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/byteutil"
+	"github.com/gookit/goutil/encodx"
 )
 
 // some consts string chars
@@ -20,11 +21,15 @@ const (
 	AlphaNum3 = "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
 )
 
+func newRand() *mRand.Rand {
+	return mRand.New(mRand.NewSource(time.Now().UnixNano()))
+}
+
 // RandomChars generate give length random chars at `a-z`
 func RandomChars(ln int) string {
 	cs := make([]byte, ln)
 	// UnixNano: 1607400451937462000
-	rn := mRand.New(mRand.NewSource(time.Now().UnixNano()))
+	rn := newRand()
 
 	for i := 0; i < ln; i++ {
 		// rand in 0 - 25
@@ -37,7 +42,7 @@ func RandomChars(ln int) string {
 func RandomCharsV2(ln int) string {
 	cs := make([]byte, ln)
 	// UnixNano: 1607400451937462000
-	rn := mRand.New(mRand.NewSource(time.Now().UnixNano()))
+	rn := newRand()
 
 	for i := 0; i < ln; i++ {
 		// rand in 0 - 35
@@ -50,7 +55,7 @@ func RandomCharsV2(ln int) string {
 func RandomCharsV3(ln int) string {
 	cs := make([]byte, ln)
 	// UnixNano: 1607400451937462000
-	rn := mRand.New(mRand.NewSource(time.Now().UnixNano()))
+	rn := newRand()
 
 	for i := 0; i < ln; i++ {
 		// rand in 0 - 61
@@ -67,12 +72,12 @@ func RandWithTpl(n int, letters string) string {
 
 	ln := len(letters)
 	cs := make([]byte, n)
+	rn := newRand()
+
 	for i := 0; i < n; i++ {
-		rn := mRand.New(mRand.NewSource(time.Now().UnixNano()))
 		// rand in 0 - ln
 		cs[i] = letters[rn.Intn(ln)]
 	}
-
 	return byteutil.String(cs)
 }
 
@@ -84,7 +89,7 @@ func RandWithTpl(n int, letters string) string {
 //	token, err := RandomString(16) // eg: "I7S4yFZddRMxQoudLZZ-eg"
 func RandomString(length int) (string, error) {
 	b, err := RandomBytes(length)
-	return B64URL.EncodeToString(b), err
+	return encodx.B64URL.EncodeToString(b), err
 }
 
 // RandomBytes generate

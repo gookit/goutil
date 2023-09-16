@@ -60,6 +60,9 @@ func ContainsByte(s string, c byte) bool {
 	return strings.IndexByte(s, c) >= 0
 }
 
+// InArray alias of HasOneSub()
+var InArray = HasOneSub
+
 // ContainsOne substr(s) in the given string. alias of HasOneSub()
 func ContainsOne(s string, subs []string) bool { return HasOneSub(s, subs) }
 
@@ -86,6 +89,9 @@ func HasAllSubs(s string, subs []string) bool {
 	return true
 }
 
+// StartsWithAny alias of the HasOnePrefix
+var StartsWithAny = HasOneSuffix
+
 // IsStartsOf alias of the HasOnePrefix
 func IsStartsOf(s string, prefixes []string) bool {
 	return HasOnePrefix(s, prefixes)
@@ -100,6 +106,9 @@ func HasOnePrefix(s string, prefixes []string) bool {
 	}
 	return false
 }
+
+// StartsWith alias func for HasPrefix
+var StartsWith = strings.HasPrefix
 
 // HasPrefix substr in the given string.
 func HasPrefix(s string, prefix string) bool { return strings.HasPrefix(s, prefix) }

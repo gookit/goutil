@@ -38,6 +38,14 @@ func ZeroOr[T ~string](val, defVal T) T {
 	return defVal
 }
 
+// ErrorOr return default value on err is not nil, otherwise return s
+// func ErrorOr(s string, err error, defVal string) string {
+// 	if err != nil {
+// 		return defVal
+// 	}
+// 	return s
+// }
+
 // OrElse return default value on s is empty, otherwise return s
 func OrElse(s, orVal string) string {
 	if s != "" {

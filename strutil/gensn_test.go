@@ -27,17 +27,39 @@ func TestMicroTimeID(t *testing.T) {
 	fmt.Println("b62id:", b62id, "len:", len(b62id))
 }
 
-func TestMicroTimeHexID(t *testing.T) {
+func TestMicroTimeBaseID(t *testing.T) {
+	fmt.Println("Base 16:")
 	for i := 0; i < 10; i++ {
 		id := strutil.MicroTimeHexID()
 		fmt.Println(id, "len:", len(id))
 		assert.NotEmpty(t, id)
 	}
+
+	fmt.Println("Base 36:")
+	for i := 0; i < 10; i++ {
+		id := strutil.MTimeBaseID(36)
+		fmt.Println(id, "len:", len(id))
+		assert.NotEmpty(t, id)
+	}
 }
 
-func TestDatetimeNo(t *testing.T) {
+func TestDateSN(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		no := strutil.DatetimeNo("test")
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+}
+
+func TestDateSNV2(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		no := strutil.DateSNV2("test")
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+
+	for i := 0; i < 10; i++ {
+		no := strutil.DateSNV2("test", 36)
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
