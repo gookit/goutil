@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/byteutil"
+	"github.com/gookit/goutil/encodes"
 )
 
 // some consts string chars
