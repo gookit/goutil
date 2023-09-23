@@ -1,10 +1,9 @@
 module github.com/gookit/goutil
 
-go 1.18
+go 1.19
 
 require (
 	github.com/gookit/color v1.5.4
-	github.com/pkg/errors v0.9.1
 	golang.org/x/sync v0.3.0
 	golang.org/x/sys v0.12.0
 	golang.org/x/term v0.12.0
