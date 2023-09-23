@@ -107,9 +107,13 @@ func (t *LiteTemplate) initReplacer(vr *VarReplacer) {
 	basefn.PanicIf(vr.Right == "", "var format right chars is required")
 
 	vr.lLen, vr.rLen = len(vr.Left), len(vr.Right)
+	rightLast := string(vr.Right[vr.rLen-1]) // 排除匹配，防止匹配到类似 "{} adb ddf {var}"
+
+	// eg: \{(?s:([^\}]+?))\}
 	// (?s:...) - 让 "." 匹配换行
 	// (?s:(.+?)) - 第二个 "?" 非贪婪匹配
-	vr.varReg = regexp.MustCompile(regexp.QuoteMeta(vr.Left) + `(?s:(.+?))` + regexp.QuoteMeta(vr.Right))
+	pattern := regexp.QuoteMeta(vr.Left) + `(?s:([^` + regexp.QuoteMeta(rightLast) + `]+?))` + regexp.QuoteMeta(vr.Right)
+	vr.varReg = regexp.MustCompile(pattern)
 }
 
 // AddFuncs add custom template functions

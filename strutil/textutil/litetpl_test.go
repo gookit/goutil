@@ -32,6 +32,22 @@ func TestRenderString(t *testing.T) {
 	})
 }
 
+func TestCustomVarFmt(t *testing.T) {
+	lt := textutil.NewLiteTemplate(func(opt *textutil.LiteTemplateOpt) {
+		opt.SetVarFmt("{,}")
+	})
+
+	tpl := "hi, My name is { name | upFirst }, age is { age }"
+	str := lt.RenderString(tpl, data)
+	assert.Eq(t, "hi, My name is Inhere, age is 2000", str)
+
+	t.Run("with invalid var format", func(t *testing.T) {
+		tpl := "hi, My name is { name | upFirst }, empty {}, age is { age }"
+		str := lt.RenderString(tpl, data)
+		assert.Eq(t, "hi, My name is Inhere, empty {}, age is 2000", str)
+	})
+}
+
 func TestRenderFile(t *testing.T) {
 	s, err := textutil.RenderFile("testdata/test-lite.tpl", data)
 	assert.NoError(t, err)
