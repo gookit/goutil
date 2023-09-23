@@ -23,6 +23,7 @@
 - [`jsonutil`](jsonutil) 一些用于快速读取、写入、编码、解码 JSON 数据的实用函数。
 - [`maputil`](maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
+- [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [`reflects`](reflects) 提供一些扩展性的反射使用工具函数.
 - [`structs`](structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
@@ -32,6 +33,7 @@
 
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以方便快速的构建简单的命令行应用程序
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
+- [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
 - netutil 子包:

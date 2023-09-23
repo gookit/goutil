@@ -55,7 +55,10 @@ func InternalIP() (ip string) {
 }
 
 // InternalIPv4 get internal IPv4 for host.
-func InternalIPv4() (ip string) {
+func InternalIPv4() string { return IPv4() }
+
+// IPv4 get internal IPv4 for host.
+func IPv4() (ip string) {
 	addr := netip.IPv4Unspecified()
 	if addr.IsValid() {
 		return addr.String()
@@ -64,7 +67,10 @@ func InternalIPv4() (ip string) {
 }
 
 // InternalIPv6 get internal IPv6
-func InternalIPv6() (ip string) {
+func InternalIPv6() string { return IPv6() }
+
+// IPv6 get internal IPv6
+func IPv6() (ip string) {
 	addr := netip.IPv6Unspecified()
 	if addr.IsValid() {
 		return addr.String()

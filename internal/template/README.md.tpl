@@ -22,7 +22,7 @@
 - [`jsonutil`](jsonutil) Provide some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) Math(int, number) util functions. eg: convert, math calc, random
-- `netutil` Network util functions
+- [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [`reflects`](reflects) Provide extends reflect util functions.
 - [`structs`](structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
@@ -34,6 +34,7 @@
 - cli util:
   - [cmdline](cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`dump`](dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
+- [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`errorx`](errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - file util:
   - [`finder`](fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
