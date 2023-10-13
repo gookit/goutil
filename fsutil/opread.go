@@ -85,6 +85,14 @@ func MustRead(in any) []byte {
 // ReadOrErr read contents from path or io.Reader, will panic on in type error
 func ReadOrErr(in any) ([]byte, error) {
 	r, err := NewIOReader(in)
+	defer func() {
+		if r != nil {
+			file, ok := r.(*os.File)
+			if ok {
+				err = file.Close()
+			}
+		}
+	}()
 	if err != nil {
 		return nil, err
 	}
