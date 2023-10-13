@@ -110,16 +110,15 @@ func DateSNV2(prefix string, extBase ...int) string {
 	// micro datetime
 	nt := time.Now()
 	bs = nt.AppendFormat(bs, "20060102150405.000000")
-	bs = bs[:14+pl]   // prefix + yyyyMMddHHmmss
-	ext := bs[15+pl:] // 6bit micro + 5bit rand
 
 	// rand 10000 - 99999
 	rs := rand.New(rand.NewSource(nt.UnixNano()))
-	ext = strconv.AppendInt(ext, 10000+rs.Int63n(89999), 10)
+	// 6bit micro + 5bit rand
+	ext := strconv.AppendInt(bs[16+pl:], 10000+rs.Int63n(89999), 10)
 
 	base := basefn.FirstOr(extBase, 16)
-	// convert ext to base
-	bs = append(bs[:15+pl], strconv.FormatInt(SafeInt64(string(ext)), base)...)
+	// prefix + yyyyMMddHHmmss + ext(convert to base)
+	bs = append(bs[:14+pl], strconv.FormatInt(SafeInt64(string(ext)), base)...)
 
 	return string(bs)
 }
