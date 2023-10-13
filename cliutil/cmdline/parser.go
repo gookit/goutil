@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/comdef"
-	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/internal/varexpr"
 	"github.com/gookit/goutil/strutil"
 )
 
@@ -86,7 +86,7 @@ func (p *LineParser) Parse() []string {
 
 	// enable parse Env var
 	if p.ParseEnv {
-		p.Line = comfunc.ParseEnvVar(p.Line, nil)
+		p.Line = varexpr.SafeParse(p.Line)
 	}
 
 	p.nodes = strings.Split(p.Line, " ")

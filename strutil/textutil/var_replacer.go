@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/internal/varexpr"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -146,7 +146,7 @@ func (r *VarReplacer) Render(s string, tplVars map[string]any) string {
 		maputil.FlatWithFunc(tplVars, func(path string, val reflect.Value) {
 			if val.Kind() == reflect.String {
 				if r.parseEnv {
-					varMap[path] = comfunc.ParseEnvVar(val.String(), nil)
+					varMap[path] = varexpr.SafeParse(val.String())
 				} else {
 					varMap[path] = val.String()
 				}
@@ -174,7 +174,7 @@ func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
 
 	if r.parseEnv {
 		for name, val := range varMap {
-			varMap[name] = comfunc.ParseEnvVar(val, nil)
+			varMap[name] = varexpr.SafeParse(val)
 		}
 	}
 

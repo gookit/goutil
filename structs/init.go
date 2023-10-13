@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/internal/varexpr"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
 )
@@ -174,7 +174,7 @@ func initDefaultValue(fv reflect.Value, val string, parseEnv bool) error {
 
 	// parse env var
 	if parseEnv {
-		val = comfunc.ParseEnvVar(val, nil)
+		val = varexpr.SafeParse(val)
 	}
 
 	var anyVal any = val

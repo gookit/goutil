@@ -65,6 +65,22 @@ func TestParseEnvValue(t *testing.T) {
 	})
 }
 
+func TestParseOrErr(t *testing.T) {
+	val, err := ParseOrErr("${NotExist | ?error msg}")
+	assert.ErrMsg(t, err, "error msg")
+	assert.Eq(t, "", val)
+
+	val, err = ParseOrErr("${NotExist | ?}")
+	assert.ErrMsg(t, err, "value is required for var: NotExist")
+	assert.Eq(t, "", val)
+
+	testutil.MockEnvValue("NotExist", "val", func(eVal string) {
+		val, err = ParseOrErr("${NotExist | ?}")
+		assert.NoErr(t, err)
+		assert.Eq(t, "val", val)
+	})
+}
+
 func TestSetEnvs(t *testing.T) {
 	envMp := map[string]string{
 		"FirstEnv":  "abc",

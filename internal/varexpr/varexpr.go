@@ -1,0 +1,145 @@
+// Package varexpr provides some commonly ENV var parse functions.
+//
+// parse env value, allow expressions:
+//
+//	${VAR_NAME}            Only var name
+//	${VAR_NAME | default}  With default value, if value is empty.
+//	${VAR_NAME | ?error}   With error on value is empty.
+//
+// Examples:
+//
+//	only key     - "${SHELL}"
+//	with default - "${NotExist | defValue}"
+//	multi key    - "${GOPATH}/${APP_ENV | prod}/dir"
+package varexpr
+
+import (
+	"errors"
+	"os"
+	"regexp"
+	"strings"
+)
+
+// SepChar separator char
+const SepChar = "|"
+
+// ParseOptFn option func
+type ParseOptFn func(o *ParseOpts)
+
+// ParseOpts parse options for ParseValue
+type ParseOpts struct {
+	// Getter Env value provider func.
+	Getter func(string) string
+	// ParseFn custom parse expr func. expr like "${SHELL}" "${NotExist|defValue}"
+	ParseFn func(string) (string, error)
+	// Regexp custom expression regex.
+	Regexp *regexp.Regexp
+	// Keyword check chars for expression. default is "${"
+	Keyword string
+}
+
+// must add "?" - To ensure that there is no greedy match
+var envRegex = regexp.MustCompile(`\${.+?}`)
+var std = New()
+
+// Parse parse ENV var value from input string, support default value.
+//
+// Format:
+//
+//	${var_name}            Only var name
+//	${var_name | default}  With default value
+//	${var_name | ?error}   With error on value is empty.
+func Parse(val string) (string, error) {
+	return std.Parse(val)
+}
+
+// SafeParse parse ENV var value from input string, support default value.
+func SafeParse(val string) string {
+	s, _ := std.Parse(val)
+	return s
+}
+
+// ParseWith parse ENV var value from input string, support default value.
+func ParseWith(val string, optFns ...ParseOptFn) (string, error) {
+	return New(optFns...).Parse(val)
+}
+
+// Parser parse ENV var value from input string, support default value.
+type Parser struct {
+	ParseOpts
+}
+
+// New create a new Parser
+func New(optFns ...ParseOptFn) *Parser {
+	opts := &ParseOpts{
+		Getter:  os.Getenv,
+		Regexp:  envRegex,
+		Keyword: "${",
+	}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
+	return &Parser{ParseOpts: *opts}
+}
+
+// Parse parse ENV var value from input string, support default value.
+//
+// Format:
+//
+//	${var_name}            Only var name
+//	${var_name | default}  With default value
+//	${var_name | ?error}   With error on value is empty.
+func (p *Parser) Parse(val string) (newVal string, err error) {
+	if p.Regexp == nil {
+		p.Regexp = envRegex
+	}
+
+	if p.Keyword != "" && !strings.Contains(val, p.Keyword) {
+		return val, nil
+	}
+
+	// parse expression
+	newVal = p.Regexp.ReplaceAllStringFunc(val, func(s string) string {
+		if err != nil {
+			return s
+		}
+		s, err = p.parseOne(s)
+		return s
+	})
+	return
+}
+
+// parse one node expression.
+func (p *Parser) parseOne(eVar string) (val string, err error) {
+	if p.ParseFn != nil {
+		return p.ParseFn(eVar)
+	}
+
+	// eVar like "${NotExist|defValue}", first remove "${" and "}", then split it
+	ss := strings.SplitN(eVar[2:len(eVar)-1], SepChar, 2)
+	var name, def string
+
+	// with default value. ${NotExist|defValue}
+	if len(ss) == 2 {
+		name, def = strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
+	} else {
+		name = strings.TrimSpace(ss[0])
+	}
+
+	// get ENV value by name
+	val = p.Getter(name)
+	if val == "" && def != "" {
+		// check def is "?error"
+		if def[0] == '?' {
+			msg := "value is required for var: " + name
+			if len(def) > 1 {
+				msg = def[1:]
+			}
+			err = errors.New(msg)
+		} else {
+			val = def
+		}
+	}
+	return
+}
