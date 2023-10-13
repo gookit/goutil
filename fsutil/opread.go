@@ -87,12 +87,12 @@ func ReadOrErr(in any) ([]byte, error) {
 	r, err := NewIOReader(in)
 	defer func() {
 		if r != nil {
-			file, ok := r.(*os.File)
-			if ok {
+			if file, ok := r.(*os.File); ok {
 				err = file.Close()
 			}
 		}
 	}()
+
 	if err != nil {
 		return nil, err
 	}

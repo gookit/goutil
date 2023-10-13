@@ -111,7 +111,6 @@ func TestMustOpenFile(t *testing.T) {
 
 	of := fsutil.MustOpenFile(fpath, fsutil.FsRWFlags, 0600)
 	assert.Eq(t, "must-open-file", fsutil.ReadString(of))
-	assert.NoErr(t, of.Close())
 }
 
 func TestOpenAppendFile(t *testing.T) {
