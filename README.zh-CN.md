@@ -85,6 +85,16 @@ i64Val = goutil.Int64("-2") // -2
 u64Val = goutil.Uint("2") // 2
 ```
 
+### Dump go variable
+
+```go
+dump.Print(somevar, somevar2, ...)
+```
+
+**dump nested struct**
+
+![preview-nested-struct](dump/_examples/preview-nested-struct.png)
+
 ## Packages
 
 ### Array and Slice
@@ -456,9 +466,10 @@ func B64DecodeBytes(str []byte) []byte
 ```go
 // source at envutil/envutil.go
 func VarReplace(s string) string
+func ParseOrErr(val string) (string, error)
+func ParseValue(val string) string
 func VarParse(val string) string
 func ParseEnvValue(val string) string
-func ParseValue(val string) (newVal string)
 func SetEnvMap(mp map[string]string)
 func SetEnvs(kvPairs ...string)
 func UnsetEnvs(keys ...string)

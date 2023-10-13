@@ -85,6 +85,16 @@ i64Val = goutil.Int64("-2") // -2
 u64Val = goutil.Uint("2") // 2
 ```
 
+### Dump go variable
+
+```go
+dump.Print(somevar, somevar2, ...)
+```
+
+**dump nested struct**
+
+![preview-nested-struct](dump/_examples/preview-nested-struct.png)
+
 ## Packages
 {{pgkFuncs}}
 ## Code Check & Testing
