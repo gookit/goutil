@@ -192,10 +192,19 @@ func TestInitDefaults_initStructSlice(t *testing.T) {
 
 	u := &User{}
 	err := structs.Init(u)
+	// dump.P(u)
+	assert.NoErr(t, err)
+	assert.Empty(t, u.Extra)
+
+	u = &User{Extra: []ExtraDefault{{City: "sh"}, {Github: "some url"}}}
+	err = structs.Init(u)
 	dump.P(u)
 	assert.NoErr(t, err)
 	assert.NotEmpty(t, u.Extra)
-	assert.Eq(t, "chengdu", u.Extra[0].City)
+	assert.Eq(t, "sh", u.Extra[0].City)
+	assert.NotEmpty(t, u.Extra[0].Github)
+	assert.Eq(t, "chengdu", u.Extra[1].City)
+	assert.Eq(t, "some url", u.Extra[1].Github)
 
 	// test for slice struct field
 	type User1 struct {
@@ -208,8 +217,7 @@ func TestInitDefaults_initStructSlice(t *testing.T) {
 	err = structs.Init(u1)
 	dump.P(u1)
 	assert.NoErr(t, err)
-	assert.NotEmpty(t, u1.Extra)
-	assert.Eq(t, "chengdu", u1.Extra[0].City)
+	assert.Empty(t, u1.Extra)
 
 	// test for not empty slice struct field
 	u2 := &User1{Extra: []*ExtraDefault{{City: "sh"}}}
@@ -217,6 +225,7 @@ func TestInitDefaults_initStructSlice(t *testing.T) {
 	// dump.P(u2)
 	assert.NoErr(t, err)
 	assert.Eq(t, "sh", u2.Extra[0].City)
+	assert.NotEmpty(t, "sh", u2.Extra[0].Github)
 }
 
 func TestInitDefaults_ptrField(t *testing.T) {

@@ -89,7 +89,7 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 			continue
 		}
 
-		// skip on field has value
+		// Skip init on field has value. but will check slice and pointer field
 		if !fv.IsZero() {
 			// special: handle for pointer struct field
 			if fv.Kind() == reflect.Pointer {
@@ -140,6 +140,11 @@ func initDefaults(rv reflect.Value, opt *InitOptions) error {
 
 			// init sub struct in slice. like `[]SubStruct` or `[]*SubStruct`
 			if el.Kind() == reflect.Struct {
+				// up: if slice elem is struct and slice len=0, will be skip init default value
+				if fv.Len() == 0 {
+					continue
+				}
+
 				// make sub-struct and init. like: `SubStruct`
 				subFv := reflect.New(el)
 				subFvE := subFv.Elem()
