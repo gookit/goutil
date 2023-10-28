@@ -410,7 +410,7 @@ func (s *KVString) Get() any {
 
 // Data map get
 func (s *KVString) Data() maputil.SMap {
-	return s.SMap
+	return s.Init().SMap
 }
 
 // Set new value, will check value is right

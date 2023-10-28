@@ -223,6 +223,16 @@ func (d Data) Sub(key string) Data {
 	return nil
 }
 
+// Slice get []any value from data map
+func (d Data) Slice(key string) ([]any, error) {
+	val, ok := d.GetByPath(key)
+	if !ok {
+		return nil, nil
+	}
+
+	return arrutil.AnyToSlice(val)
+}
+
 // Keys of the data map
 func (d Data) Keys() []string {
 	keys := make([]string, 0, len(d))

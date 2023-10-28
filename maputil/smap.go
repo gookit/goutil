@@ -105,6 +105,20 @@ func (m SMap) Strings(key string) (ss []string) {
 	return
 }
 
+// IfExist key, then call the fn with value.
+func (m SMap) IfExist(key string, fn func(val string)) {
+	if val, ok := m[key]; ok {
+		fn(val)
+	}
+}
+
+// IfValid value is not empty, then call the fn
+func (m SMap) IfValid(key string, fn func(val string)) {
+	if val, ok := m[key]; ok && val != "" {
+		fn(val)
+	}
+}
+
 // Keys of the string-map
 func (m SMap) Keys() []string {
 	keys := make([]string, 0, len(m))
