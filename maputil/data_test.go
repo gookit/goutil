@@ -24,7 +24,7 @@ func TestData_usage(t *testing.T) {
 	assert.True(t, mp.Has("k1"))
 	assert.True(t, mp.Bool("k3"))
 	assert.False(t, mp.Bool("k4"))
-	assert.False(t, mp.IsEmtpy())
+	assert.False(t, mp.IsEmpty())
 	assert.Eq(t, 23, mp.Get("k1"))
 	assert.Eq(t, "b", mp.Get("k5.a"))
 	assert.Eq(t, 23, mp.Get("anyMp.b"))

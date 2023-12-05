@@ -20,8 +20,8 @@ func (d Data) Has(key string) bool {
 	return ok
 }
 
-// IsEmtpy if the data map
-func (d Data) IsEmtpy() bool {
+// IsEmpty if the data map
+func (d Data) IsEmpty() bool {
 	return len(d) == 0
 }
 

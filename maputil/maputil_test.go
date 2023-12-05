@@ -49,6 +49,11 @@ func TestMergeStringMap(t *testing.T) {
 
 	ret = maputil.MergeSMap(nil, map[string]string{"a": "v1"}, true)
 	assert.Eq(t, map[string]string{"a": "v1"}, ret)
+
+	ret = maputil.MergeMultiSMap(maputil.SMap{"a": "v1"}, maputil.SMap{"a": "v2"}, maputil.SMap{"b": "v3"})
+	assert.ContainsKeys(t, ret, []string{"a", "b"})
+
+	assert.Eq(t, map[string]string{"a": "v1"}, maputil.FilterSMap(map[string]string{"a": "v1", "b": ""}))
 }
 
 func TestMakeByPath(t *testing.T) {
