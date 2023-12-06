@@ -22,6 +22,7 @@ import (
 
 // SepChar separator char
 const SepChar = "|"
+const VarLeft = "${"
 
 // ParseOptFn option func
 type ParseOptFn func(o *ParseOpts)
@@ -74,7 +75,7 @@ func New(optFns ...ParseOptFn) *Parser {
 	opts := &ParseOpts{
 		Getter:  os.Getenv,
 		Regexp:  envRegex,
-		Keyword: "${",
+		Keyword: VarLeft,
 	}
 	for _, fn := range optFns {
 		fn(opts)
@@ -97,6 +98,11 @@ func (p *Parser) Parse(val string) (newVal string, err error) {
 
 	if p.Keyword != "" && !strings.Contains(val, p.Keyword) {
 		return val, nil
+	}
+
+	// enhance: see https://github.com/gookit/goutil/issues/135
+	if strings.HasPrefix(val, VarLeft) && strings.HasSuffix(val, "}") {
+		return p.parseOne(val)
 	}
 
 	// parse expression
