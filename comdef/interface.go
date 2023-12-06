@@ -24,6 +24,11 @@ type Int64able interface {
 	Int64() (int64, error)
 }
 
+// Float64able interface
+type Float64able interface {
+	Float64() (float64, error)
+}
+
 //
 //
 // Matcher type

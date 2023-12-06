@@ -17,10 +17,19 @@ type ToIntFunc func(any) (int, error)
 type ToInt64Func func(any) (int64, error)
 
 // ToUintFunc convert value to uint
-type ToUintFunc func(any) (uint64, error)
+type ToUintFunc func(any) (uint, error)
+
+// ToUint64Func convert value to uint
+type ToUint64Func func(any) (uint64, error)
 
 // ToFloatFunc convert value to float
 type ToFloatFunc func(any) (float64, error)
+
+// ConvOption convert option
+type ConvOption struct {
+	NilAsZero  bool // nil value convert to zero value
+	UserConvFn any
+}
 
 /*************************************************************
  * convert value to int
@@ -131,7 +140,7 @@ func ToIntWithFunc(in any, usrFn ToIntFunc) (iVal int, err error) {
 		}
 	case string:
 		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
-	case interface{ Int64() (int64, error) }: // eg: json.Number
+	case comdef.Int64able: // eg: json.Number
 		var i64 int64
 		if i64, err = tVal.Int64(); err == nil {
 			if i64 > math.MaxInt32 {
@@ -170,23 +179,23 @@ func StrIntOr(s string, defVal int) int {
  *************************************************************/
 
 // Uint convert any to uint, return error on failed
-func Uint(in any) (uint64, error) {
+func Uint(in any) (uint, error) {
 	return ToUint(in)
 }
 
 // SafeUint convert any to uint, will ignore error
-func SafeUint(in any) uint64 {
+func SafeUint(in any) uint {
 	val, _ := ToUint(in)
 	return val
 }
 
 // QuietUint convert any to uint, will ignore error
-func QuietUint(in any) uint64 {
+func QuietUint(in any) uint {
 	return SafeUint(in)
 }
 
 // MustUint convert any to uint, will panic on error
-func MustUint(in any) uint64 {
+func MustUint(in any) uint {
 	val, err := ToUintWithFunc(in, nil)
 	if err != nil {
 		panic(err)
@@ -195,12 +204,12 @@ func MustUint(in any) uint64 {
 }
 
 // UintOrDefault convert any to uint, return default val on failed
-func UintOrDefault(in any, defVal uint64) uint64 {
+func UintOrDefault(in any, defVal uint) uint {
 	return UintOr(in, defVal)
 }
 
 // UintOr convert any to uint, return default val on failed
-func UintOr(in any, defVal uint64) uint64 {
+func UintOr(in any, defVal uint) uint {
 	val, err := ToUintWithFunc(in, nil)
 	if err != nil {
 		return defVal
@@ -209,17 +218,117 @@ func UintOr(in any, defVal uint64) uint64 {
 }
 
 // UintOrErr convert value to uint, return error on failed
-func UintOrErr(in any) (uint64, error) {
+func UintOrErr(in any) (uint, error) {
 	return ToUintWithFunc(in, nil)
 }
 
 // ToUint convert value to uint, return error on failed
-func ToUint(in any) (u64 uint64, err error) {
+func ToUint(in any) (u64 uint, err error) {
 	return ToUintWithFunc(in, nil)
 }
 
 // ToUintWithFunc convert value to uint, will call usrFn on value type not supported.
-func ToUintWithFunc(in any, usrFn ToUintFunc) (u64 uint64, err error) {
+func ToUintWithFunc(in any, usrFn ToUintFunc) (uVal uint, err error) {
+	switch tVal := in.(type) {
+	case int:
+		uVal = uint(tVal)
+	case int8:
+		uVal = uint(tVal)
+	case int16:
+		uVal = uint(tVal)
+	case int32:
+		uVal = uint(tVal)
+	case int64:
+		uVal = uint(tVal)
+	case uint:
+		uVal = tVal
+	case uint8:
+		uVal = uint(tVal)
+	case uint16:
+		uVal = uint(tVal)
+	case uint32:
+		uVal = uint(tVal)
+	case uint64:
+		uVal = uint(tVal)
+	case float32:
+		uVal = uint(tVal)
+	case float64:
+		uVal = uint(tVal)
+	case time.Duration:
+		uVal = uint(tVal)
+	case comdef.Int64able: // eg: json.Number
+		var i64 int64
+		i64, err = tVal.Int64()
+		uVal = uint(i64)
+	case string:
+		var u64 uint64
+		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
+		uVal = uint(u64)
+	default:
+		if usrFn != nil {
+			uVal, err = usrFn(in)
+		} else {
+			err = comdef.ErrConvType
+		}
+	}
+	return
+}
+
+/*************************************************************
+ * convert value to uint
+ *************************************************************/
+
+// Uint64 convert any to uint, return error on failed
+func Uint64(in any) (uint64, error) {
+	return ToUint64(in)
+}
+
+// SafeUint64 convert any to uint, will ignore error
+func SafeUint64(in any) uint64 {
+	val, _ := ToUint64(in)
+	return val
+}
+
+// QuietUint64 convert any to uint, will ignore error
+func QuietUint64(in any) uint64 {
+	return SafeUint64(in)
+}
+
+// MustUint64 convert any to uint, will panic on error
+func MustUint64(in any) uint64 {
+	val, err := ToUint64WithFunc(in, nil)
+	if err != nil {
+		panic(err)
+	}
+	return val
+}
+
+// Uint64OrDefault convert any to uint, return default val on failed
+func Uint64OrDefault(in any, defVal uint64) uint64 {
+	return Uint64Or(in, defVal)
+}
+
+// Uint64Or convert any to uint, return default val on failed
+func Uint64Or(in any, defVal uint64) uint64 {
+	val, err := ToUint64WithFunc(in, nil)
+	if err != nil {
+		return defVal
+	}
+	return val
+}
+
+// Uint64OrErr convert value to uint, return error on failed
+func Uint64OrErr(in any) (uint64, error) {
+	return ToUint64WithFunc(in, nil)
+}
+
+// ToUint64 convert value to uint, return error on failed
+func ToUint64(in any) (u64 uint64, err error) {
+	return ToUint64WithFunc(in, nil)
+}
+
+// ToUint64WithFunc convert value to uint, will call usrFn on value type not supported.
+func ToUint64WithFunc(in any, usrFn ToUint64Func) (u64 uint64, err error) {
 	switch tVal := in.(type) {
 	case int:
 		u64 = uint64(tVal)
@@ -247,7 +356,7 @@ func ToUintWithFunc(in any, usrFn ToUintFunc) (u64 uint64, err error) {
 		u64 = uint64(tVal)
 	case time.Duration:
 		u64 = uint64(tVal)
-	case interface{ Int64() (int64, error) }: // eg: json.Number
+	case comdef.Int64able: // eg: json.Number
 		var i64 int64
 		i64, err = tVal.Int64()
 		u64 = uint64(i64)
@@ -347,7 +456,7 @@ func ToInt64WithFunc(in any, usrFn ToInt64Func) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case time.Duration:
 		i64 = int64(tVal)
-	case interface{ Int64() (int64, error) }: // eg: json.Number
+	case comdef.Int64able: // eg: json.Number
 		i64, err = tVal.Int64()
 	default:
 		if usrFn != nil {
@@ -448,7 +557,7 @@ func ToFloatWithFunc(in any, usrFn ToFloatFunc) (f64 float64, err error) {
 		f64 = tVal
 	case time.Duration:
 		f64 = float64(tVal)
-	case interface{ Float64() (float64, error) }: // eg: json.Number
+	case comdef.Float64able: // eg: json.Number
 		f64, err = tVal.Float64()
 	default:
 		if usrFn != nil {
@@ -585,11 +694,4 @@ func Percent(val, total int) float64 {
 		return float64(0)
 	}
 	return (float64(val) / float64(total)) * 100
-}
-
-// ElapsedTime calc elapsed time 计算运行时间消耗 单位 ms(毫秒)
-//
-// Deprecated: use timex.ElapsedTime()
-func ElapsedTime(startTime time.Time) string {
-	return fmt.Sprintf("%.3f", time.Since(startTime).Seconds()*1000)
 }

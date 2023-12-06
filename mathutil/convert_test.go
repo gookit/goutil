@@ -85,30 +85,61 @@ func TestToInt(t *testing.T) {
 	t.Run("To uint", func(t *testing.T) {
 		uintVal, err := mathutil.Uint("2")
 		is.Nil(err)
-		is.Eq(uint64(2), uintVal)
+		is.Eq(uint(2), uintVal)
 
 		uintVal, err = mathutil.UintOrErr("2")
 		is.Nil(err)
-		is.Eq(uint64(2), uintVal)
+		is.Eq(uint(2), uintVal)
 
 		_, err = mathutil.ToUint(nil)
 		is.Err(err)
 		_, err = mathutil.ToUint("-2")
 		is.Err(err)
 
-		is.Eq(uint64(0), mathutil.QuietUint("-2"))
+		is.Eq(uint(0), mathutil.QuietUint("-2"))
 		for _, in := range tests {
-			is.Eq(uint64(2), mathutil.SafeUint(in))
+			is.Eq(uint(2), mathutil.SafeUint(in))
 		}
 		for _, in := range errTests {
-			is.Eq(uint64(0), mathutil.QuietUint(in))
+			is.Eq(uint(0), mathutil.QuietUint(in))
 		}
 
-		is.Eq(uint64(0), mathutil.QuietUint(nil))
-		is.Eq(uint64(2), mathutil.MustUint("2"))
-		is.Eq(uint64(2), mathutil.UintOrDefault("invalid", 2))
+		is.Eq(uint(0), mathutil.QuietUint(nil))
+		is.Eq(uint(2), mathutil.MustUint("2"))
+		is.Eq(uint(2), mathutil.UintOrDefault("invalid", 2))
 		is.Panics(func() {
 			mathutil.MustUint([]int{23})
+		})
+	})
+
+	// To uint64
+	t.Run("To uint64", func(t *testing.T) {
+		uintVal, err := mathutil.Uint64("2")
+		is.Nil(err)
+		is.Eq(uint64(2), uintVal)
+
+		uintVal, err = mathutil.Uint64OrErr("2")
+		is.Nil(err)
+		is.Eq(uint64(2), uintVal)
+
+		_, err = mathutil.ToUint64(nil)
+		is.Err(err)
+		_, err = mathutil.ToUint64("-2")
+		is.Err(err)
+
+		is.Eq(uint64(0), mathutil.QuietUint64("-2"))
+		for _, in := range tests {
+			is.Eq(uint64(2), mathutil.SafeUint64(in))
+		}
+		for _, in := range errTests {
+			is.Eq(uint64(0), mathutil.QuietUint64(in))
+		}
+
+		is.Eq(uint64(0), mathutil.QuietUint64(nil))
+		is.Eq(uint64(2), mathutil.MustUint64("2"))
+		is.Eq(uint64(2), mathutil.Uint64OrDefault("invalid", 2))
+		is.Panics(func() {
+			mathutil.MustUint64([]int{23})
 		})
 	})
 
@@ -248,11 +279,4 @@ func TestPercent(t *testing.T) {
 	assert.Eq(t, float64(34), mathutil.Percent(34, 100))
 	assert.Eq(t, float64(0), mathutil.Percent(34, 0))
 	assert.Eq(t, float64(-100), mathutil.Percent(34, -34))
-}
-
-func TestElapsedTime(t *testing.T) {
-	nt := time.Now().Add(-time.Second * 3)
-	num := mathutil.ElapsedTime(nt)
-
-	assert.Eq(t, 3000, int(mathutil.MustFloat(num)))
 }
