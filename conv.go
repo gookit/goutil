@@ -57,15 +57,26 @@ func ToInt64(v any) (int64, error) {
 	return mathutil.ToInt64(v)
 }
 
-// Uint convert value to uint64
-func Uint(v any) uint64 {
+// Uint convert value to uint
+func Uint(v any) uint {
 	iv, _ := mathutil.ToUint(v)
 	return iv
 }
 
-// ToUint try to convert value to uint64
-func ToUint(v any) (uint64, error) {
+// ToUint try to convert value to uint
+func ToUint(v any) (uint, error) {
 	return mathutil.ToUint(v)
+}
+
+// Uint64 convert value to uint64
+func Uint64(v any) uint64 {
+	iv, _ := mathutil.ToUint64(v)
+	return iv
+}
+
+// ToUint64 try to convert value to uint64
+func ToUint64(v any) (uint64, error) {
+	return mathutil.ToUint64(v)
 }
 
 // BoolString convert bool to string
@@ -166,12 +177,12 @@ func ToKind(val any, kind reflect.Kind, fbFunc func(val any) (any, error)) (newV
 			newVal = dstV
 		}
 	case reflect.Uint:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
-			newVal = uint(dstV)
+			newVal = dstV
 		}
 	case reflect.Uint8:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint8 {
 				return nil, fmt.Errorf("value overflow uint8. val: %v", val)
@@ -179,7 +190,7 @@ func ToKind(val any, kind reflect.Kind, fbFunc func(val any) (any, error)) (newV
 			newVal = uint8(dstV)
 		}
 	case reflect.Uint16:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint16 {
 				return nil, fmt.Errorf("value overflow uint16. val: %v", val)
@@ -187,7 +198,7 @@ func ToKind(val any, kind reflect.Kind, fbFunc func(val any) (any, error)) (newV
 			newVal = uint16(dstV)
 		}
 	case reflect.Uint32:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint32 {
 				return nil, fmt.Errorf("value overflow uint32. val: %v", val)
@@ -196,7 +207,7 @@ func ToKind(val any, kind reflect.Kind, fbFunc func(val any) (any, error)) (newV
 		}
 	case reflect.Uint64:
 		var dstV uint64
-		if dstV, err = mathutil.ToUint(val); err == nil {
+		if dstV, err = mathutil.ToUint64(val); err == nil {
 			newVal = dstV
 		}
 	case reflect.Float32:

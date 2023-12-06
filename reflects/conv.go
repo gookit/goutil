@@ -126,12 +126,12 @@ func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Uint:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
-			rv = reflect.ValueOf(uint(dstV))
+			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Uint8:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint8 {
 				return rv, fmt.Errorf("value overflow uint8. val: %v", val)
@@ -139,7 +139,7 @@ func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 			rv = reflect.ValueOf(uint8(dstV))
 		}
 	case reflect.Uint16:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint16 {
 				return rv, fmt.Errorf("value overflow uint16. val: %v", val)
@@ -147,7 +147,7 @@ func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 			rv = reflect.ValueOf(uint16(dstV))
 		}
 	case reflect.Uint32:
-		var dstV uint64
+		var dstV uint
 		if dstV, err = mathutil.ToUint(val); err == nil {
 			if dstV > math.MaxUint32 {
 				return rv, fmt.Errorf("value overflow uint32. val: %v", val)
@@ -156,7 +156,7 @@ func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 		}
 	case reflect.Uint64:
 		var dstV uint64
-		if dstV, err = mathutil.ToUint(val); err == nil {
+		if dstV, err = mathutil.ToUint64(val); err == nil {
 			rv = reflect.ValueOf(dstV)
 		}
 	case reflect.Float32:
