@@ -2,8 +2,6 @@
 package strutil
 
 import (
-	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strings"
@@ -92,66 +90,20 @@ func NewReplacer(pairs map[string]string) *strings.Replacer {
 	return strings.NewReplacer(ss...)
 }
 
-// PrettyJSON get pretty Json string
-// Deprecated: please use fmtutil.PrettyJSON() or jsonutil.Pretty() instead it
-func PrettyJSON(v any) (string, error) {
-	out, err := json.MarshalIndent(v, "", "    ")
-	return string(out), err
-}
-
 var builtInFuncs = template.FuncMap{
 	// don't escape content
 	"raw": func(s string) string {
 		return s
 	},
-	"trim": func(s string) string {
-		return strings.TrimSpace(s)
-	},
+	"trim": strings.TrimSpace,
 	// join strings
 	"join": func(ss []string, sep string) string {
 		return strings.Join(ss, sep)
 	},
 	// lower first char
-	"lcFirst": func(s string) string {
-		return LowerFirst(s)
-	},
+	"lcFirst": LowerFirst,
 	// upper first char
-	"upFirst": func(s string) string {
-		return UpperFirst(s)
-	},
-}
-
-// RenderTemplate quickly render text template.
-//
-// Deprecated: please use textutil.RenderTpl() instead it
-func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string {
-	return RenderText(input, data, fns, isFile...)
-}
-
-// RenderText quickly render text template
-//
-// Deprecated: please use textutil.RenderTpl() instead it
-func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string {
-	t := template.New("simple-text")
-	t.Funcs(builtInFuncs)
-
-	// add custom template functions
-	if len(fns) > 0 {
-		t.Funcs(fns)
-	}
-
-	if len(isFile) > 0 && isFile[0] {
-		template.Must(t.ParseFiles(input))
-	} else {
-		template.Must(t.Parse(input))
-	}
-
-	// use buffer receive rendered content
-	buf := new(bytes.Buffer)
-	if err := t.Execute(buf, data); err != nil {
-		panic(err)
-	}
-	return buf.String()
+	"upFirst": UpperFirst,
 }
 
 // WrapTag for given string.
