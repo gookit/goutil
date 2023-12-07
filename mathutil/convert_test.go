@@ -11,6 +11,92 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestWithUserConvFn(t *testing.T) {
+	is := assert.New(t)
+	in := []int{1}
+
+	// to int
+	iv, err := mathutil.ToIntWith(in, mathutil.WithUserConvFn(func(v any) (int, error) {
+		return 2, nil
+	}))
+	is.NoErr(err)
+	is.Eq(2, iv)
+
+	// to int64
+	i64, err := mathutil.ToInt64With(in, mathutil.WithUserConvFn(func(v any) (int64, error) {
+		return 2, nil
+	}))
+	is.NoErr(err)
+	is.Eq(int64(2), i64)
+
+	// to uint
+	u, err := mathutil.ToUintWith(in, mathutil.WithUserConvFn(func(v any) (uint, error) {
+		return 2, nil
+	}))
+	is.NoErr(err)
+	is.Eq(uint(2), u)
+
+	// to uint64
+	u64, err := mathutil.ToUint64With(in, mathutil.WithUserConvFn(func(v any) (uint64, error) {
+		return 2, nil
+	}))
+	is.NoErr(err)
+	is.Eq(uint64(2), u64)
+
+	// to float
+	f, err := mathutil.ToFloatWith(in, mathutil.WithUserConvFn(func(v any) (float64, error) {
+		return 2, nil
+	}))
+	is.NoErr(err)
+	is.Eq(2.0, f)
+
+	// to string
+	s, err := mathutil.ToStringWith(in, mathutil.WithUserConvFn(func(v any) (string, error) {
+		return "2", nil
+	}))
+	is.NoErr(err)
+	is.Eq("2", s)
+}
+
+func TestWithNilAsFail(t *testing.T) {
+	var err error
+	is := assert.New(t)
+
+	var iv int
+	iv, err = mathutil.ToIntWith(nil)
+	is.NoErr(err)
+	is.Eq(0, iv)
+	iv, err = mathutil.ToIntWith(nil, mathutil.WithNilAsFail[int])
+	is.Err(err)
+	is.Eq(0, iv)
+
+	var i64 int64
+	i64, err = mathutil.ToInt64With(nil)
+	is.NoErr(err)
+	is.Eq(int64(0), i64)
+	i64, err = mathutil.ToInt64With(nil, mathutil.WithNilAsFail[int64])
+	is.Err(err)
+	is.Eq(int64(0), i64)
+
+	// to uint
+	_, err = mathutil.ToUint(nil)
+	is.NoErr(err)
+	_, err = mathutil.ToUintWith(nil, mathutil.WithNilAsFail[uint])
+	is.Err(err)
+
+	// to uint64
+	_, err = mathutil.ToUint64(nil)
+	is.NoErr(err)
+	_, err = mathutil.ToUint64With(nil, mathutil.WithNilAsFail[uint64])
+	is.Err(err)
+
+	// to float
+	_, err = mathutil.Float(nil)
+	is.NoErr(err)
+	_, err = mathutil.ToFloatWith(nil, mathutil.WithNilAsFail[float64])
+	is.Err(err)
+}
+
 func TestToInt(t *testing.T) {
 	is := assert.New(t)
 
@@ -49,7 +135,7 @@ func TestToInt(t *testing.T) {
 		is.Eq(-2, intVal)
 
 		_, err = mathutil.ToInt(nil)
-		is.Err(err)
+		is.NoErr(err)
 
 		intVal, err = mathutil.IntOrErr("-2")
 		is.Nil(err)
@@ -156,6 +242,9 @@ func TestToInt(t *testing.T) {
 		i64Val, err = mathutil.Int64OrErr("-2")
 		is.Nil(err)
 		is.Eq(int64(-2), i64Val)
+
+		_, err = mathutil.ToInt64(nil)
+		is.NoErr(err)
 
 		for _, in := range tests {
 			is.Eq(int64(2), mathutil.MustInt64(in))
@@ -269,9 +358,9 @@ func TestToFloat(t *testing.T) {
 	is.Eq(-123.5, fltVal)
 
 	// ToFloatWithFunc
-	_, err = mathutil.ToFloatWithFunc([]int{2}, func(v any) (float64, error) {
+	_, err = mathutil.ToFloatWith([]int{2}, mathutil.WithUserConvFn(func(v any) (float64, error) {
 		return 0, errors.New("invalid")
-	})
+	}))
 	is.ErrMsg(err, "invalid")
 }
 

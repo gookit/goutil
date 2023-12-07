@@ -9,6 +9,9 @@ type (
 	UnmarshalFunc func(bts []byte, ptr any) error
 )
 
+// ToTypeFunc convert value to defined type
+type ToTypeFunc[T any] func(any) (T, error)
+
 // IntCheckFunc check func
 type IntCheckFunc func(val int) error
 
