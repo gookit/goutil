@@ -25,6 +25,8 @@ func TestParseEnvValue(t *testing.T) {
 		{"EnvKey7", "", "${ EnvKey7 | app.run }", "app.run"},
 		{"EnvKey8", "", "${ EnvKey7 | app/run }", "app/run"},
 		{"EnvKey9", "", "test_value", "test_value"},
+		// use JSON string as default value
+		{"EnvKey10", "", `${ EnvKey10 | {"name": "inhere"} }`, `{"name": "inhere"}`},
 		{"TEST_SHELL", "/bin/zsh", "${TEST_SHELL|/bin/bash}", "/bin/zsh"},
 		{"TEST_SHELL", "", "${TEST_SHELL|/bin/bash}", "/bin/bash"},
 	}

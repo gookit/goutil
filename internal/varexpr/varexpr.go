@@ -20,9 +20,14 @@ import (
 	"strings"
 )
 
-// SepChar separator char
-const SepChar = "|"
-const VarLeft = "${"
+const (
+	// SepChar separator char split var name and default value
+	SepChar  = "|"
+	VarLeft  = "${" // default var left format chars
+	VarRight = "}"  // default var right format chars
+
+	mustPrefix = '?' // must prefix char
+)
 
 // ParseOptFn option func
 type ParseOptFn func(o *ParseOpts)
@@ -35,8 +40,15 @@ type ParseOpts struct {
 	ParseFn func(string) (string, error)
 	// Regexp custom expression regex.
 	Regexp *regexp.Regexp
-	// Keyword check chars for expression. default is "${"
-	Keyword string
+	// var format chars for expression.
+	// default left="${", right="}"
+	VarLeft, VarRight string
+}
+
+func (opt *ParseOpts) useDefaultRegex() {
+	opt.Regexp = envRegex
+	opt.VarLeft = VarLeft
+	opt.VarRight = VarRight
 }
 
 // must add "?" - To ensure that there is no greedy match
@@ -72,15 +84,12 @@ type Parser struct {
 
 // New create a new Parser
 func New(optFns ...ParseOptFn) *Parser {
-	opts := &ParseOpts{
-		Getter:  os.Getenv,
-		Regexp:  envRegex,
-		Keyword: VarLeft,
-	}
+	opts := &ParseOpts{Getter: os.Getenv}
+	opts.useDefaultRegex()
+
 	for _, fn := range optFns {
 		fn(opts)
 	}
-
 	return &Parser{ParseOpts: *opts}
 }
 
@@ -93,15 +102,16 @@ func New(optFns ...ParseOptFn) *Parser {
 //	${var_name | ?error}   With error on value is empty.
 func (p *Parser) Parse(val string) (newVal string, err error) {
 	if p.Regexp == nil {
-		p.Regexp = envRegex
+		p.useDefaultRegex()
 	}
 
-	if p.Keyword != "" && !strings.Contains(val, p.Keyword) {
+	times := strings.Count(val, p.VarLeft)
+	if times == 0 {
 		return val, nil
 	}
 
 	// enhance: see https://github.com/gookit/goutil/issues/135
-	if strings.HasPrefix(val, VarLeft) && strings.HasSuffix(val, "}") {
+	if times == 1 && strings.HasPrefix(val, p.VarLeft) && strings.HasSuffix(val, p.VarRight) {
 		return p.parseOne(val)
 	}
 
@@ -122,11 +132,11 @@ func (p *Parser) parseOne(eVar string) (val string, err error) {
 		return p.ParseFn(eVar)
 	}
 
-	// eVar like "${NotExist|defValue}", first remove "${" and "}", then split it
+	// like "${NotExist | defValue}". first remove "${" and "}", then split it
 	ss := strings.SplitN(eVar[2:len(eVar)-1], SepChar, 2)
 	var name, def string
 
-	// with default value. ${NotExist|defValue}
+	// with default value.
 	if len(ss) == 2 {
 		name, def = strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 	} else {
@@ -137,7 +147,7 @@ func (p *Parser) parseOne(eVar string) (val string, err error) {
 	val = p.Getter(name)
 	if val == "" && def != "" {
 		// check def is "?error"
-		if def[0] == '?' {
+		if def[0] == mustPrefix {
 			msg := "value is required for var: " + name
 			if len(def) > 1 {
 				msg = def[1:]
