@@ -2,8 +2,10 @@ package structs
 
 import (
 	"errors"
-	"fmt"
+	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/timex"
 	"reflect"
+	"time"
 
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/reflects"
@@ -100,7 +102,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		if ok {
 			info, err := ParseTagValueDefault(name, tagVal)
 			if err != nil {
-				return err
+				continue
 			}
 			name = info.Get("name")
 		}
@@ -112,7 +114,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		if !ok && opt.ParseDefault && fv.IsZero() {
 			defVal := ft.Tag.Get(opt.DefaultValTag)
 			if err := initDefaultValue(fv, defVal, opt.ParseDefaultEnv); err != nil {
-				return err
+				//return err
 			}
 			continue
 		}
@@ -128,19 +130,30 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		// field is struct
 		if fv.Kind() == reflect.Struct {
 			asMp, err := maputil.TryAnyMap(val)
-			if err != nil {
-				return fmt.Errorf("must provide map data for field %q, err=%v", ft.Name, err)
+			if err == nil {
+				continue
 			}
 
-			if err := setValues(fv, asMp, opt); err != nil {
-				return err
+			if _, ok := fv.Interface().(time.Time); ok {
+				tm, er := timex.TryToTime(strutil.StringOr(val, ""), time.Time{})
+				if er != nil {
+					continue
+				}
+				if er = reflects.SetValue(fv, tm); er == nil {
+					continue
+				}
 			}
+
+			if err = setValues(fv, asMp, opt); err == nil {
+				continue
+			}
+
 			continue
 		}
 
 		// set field value
 		if err := reflects.SetValue(fv, val); err != nil {
-			return err
+			continue
 		}
 	}
 
