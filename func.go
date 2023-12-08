@@ -46,7 +46,7 @@ func SafeRun(fn func()) (err error) {
 	return nil
 }
 
-// SafeRun sync run a func with error.
+// SafeRunWithError sync run a func with error.
 // If the func panics, the panic value is returned as an error.
 func SafeRunWithError(fn func() error) (err error) {
 	defer func() {

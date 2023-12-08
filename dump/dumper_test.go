@@ -194,6 +194,7 @@ func TestDumper_AccessCantExportedField(_ *testing.T) {
 func TestDumper_AccessCantExportedField1(t *testing.T) {
 	// init a nested struct
 	s1 := st1{st0{2}, 23, "inhere"}
+	assert.Eq(t, "inhere", s1.Name)
 	myS1 := struct {
 		// cannotExport any // ok
 		cannotExport st1 // ok
@@ -232,7 +233,7 @@ func TestDump_Map(t *testing.T) {
 	Print(m4)
 }
 
-func TestMap_Simpled(t *testing.T) {
+func TestMap_Simpled(_ *testing.T) {
 	m1 := map[int]int{
 		23: 12,
 		24: 13,
@@ -290,6 +291,7 @@ func TestMap_Simpled(t *testing.T) {
 
 func TestMap_InterfaceNested(t *testing.T) {
 	s1 := st1{st0{2}, 23, "inhere"}
+	assert.Eq(t, "inhere", s1.Name)
 	m1 := map[string]any{
 		"key1": 112,
 		"key2": uint(112),

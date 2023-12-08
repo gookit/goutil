@@ -1,3 +1,4 @@
+// Package hashutil provide some util for quickly generate hash
 package hashutil
 
 import (

@@ -1,3 +1,4 @@
+// Package encodes provide some util for encode/decode data
 package encodes
 
 import (
