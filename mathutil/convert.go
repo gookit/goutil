@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/comdef"
+	"github.com/gookit/goutil/internal/comfunc"
 )
 
 // ToIntFunc convert value to int
@@ -637,68 +638,15 @@ func SafeString(val any) string {
 // TryToString try convert intX/floatX value to string
 //
 // if defaultAsErr is False, will use fmt.Sprint convert other type
-func TryToString(val any, defaultAsErr bool) (str string, err error) {
-	var optFn ConvOptionFn[string]
+func TryToString(val any, defaultAsErr bool) (string, error) {
+	var optFn comfunc.ConvOptionFn
 	if !defaultAsErr {
-		optFn = WithUserConvFn(func(a any) (string, error) {
-			return fmt.Sprint(a), nil
-		})
+		optFn = comfunc.WithUserConvFn(comfunc.StrBySprintFn)
 	}
 	return ToStringWith(val, optFn)
 }
 
-// ToStringWith try to convert value to string. can with some option func, more see ConvOption.
-func ToStringWith(in any, optFns ...ConvOptionFn[string]) (str string, err error) {
-	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
-		return "", nil
-	}
-
-	switch value := in.(type) {
-	case int:
-		str = strconv.Itoa(value)
-	case int8:
-		str = strconv.Itoa(int(value))
-	case int16:
-		str = strconv.Itoa(int(value))
-	case int32: // same as `rune`
-		str = strconv.Itoa(int(value))
-	case int64:
-		str = strconv.FormatInt(value, 10)
-	case uint:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint8:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint16:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint32:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint64:
-		str = strconv.FormatUint(value, 10)
-	case float32:
-		str = strconv.FormatFloat(float64(value), 'f', -1, 32)
-	case float64:
-		str = strconv.FormatFloat(value, 'f', -1, 64)
-	case time.Duration:
-		str = strconv.FormatInt(int64(value), 10)
-	case string:
-		str = value
-	case fmt.Stringer:
-		str = value.String()
-	default:
-		if opt.UserConvFn != nil {
-			str, err = opt.UserConvFn(in)
-		} else {
-			err = comdef.ErrConvType
-		}
-	}
-	return
-}
-
-// Percent returns a values percent of the total
-func Percent(val, total int) float64 {
-	if total == 0 {
-		return float64(0)
-	}
-	return (float64(val) / float64(total)) * 100
+// ToStringWith try to convert value to string. can with some option func, more see comfunc.ConvOption.
+func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error) {
+	return comfunc.ToStringWith(in, optFns...)
 }

@@ -16,7 +16,6 @@ func Environ() map[string]string {
 
 	for _, str := range envList {
 		nodes := strings.SplitN(str, "=", 2)
-
 		if len(nodes) < 2 {
 			envMap[nodes[0]] = ""
 		} else {

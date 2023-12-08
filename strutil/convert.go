@@ -2,7 +2,6 @@ package strutil
 
 import (
 	"errors"
-	"fmt"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -10,7 +9,6 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 )
@@ -91,39 +89,29 @@ func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
  *************************************************************/
 
 // String convert value to string, return error on failed
-func String(val any) (string, error) {
-	return ToStringWithFunc(val, nil)
-}
+func String(val any) (string, error) { return ToStringWith(val) }
 
 // ToString convert value to string, return error on failed
-func ToString(val any) (string, error) {
-	return ToStringWithFunc(val, nil)
-}
+func ToString(val any) (string, error) { return ToStringWith(val) }
 
 // StringOrErr convert value to string, return error on failed
-func StringOrErr(val any) (string, error) {
-	return ToStringWithFunc(val, nil)
-}
+func StringOrErr(val any) (string, error) { return ToStringWith(val) }
 
 // QuietString convert value to string, will ignore error. same as SafeString()
-func QuietString(val any) string {
-	return SafeString(val)
-}
+func QuietString(val any) string { return SafeString(val) }
 
 // SafeString convert value to string, will ignore error
 func SafeString(in any) string {
-	val, _ := ToStringWithFunc(in, SprintToStrFunc)
-	return val
+	s, _ := AnyToString(in, false)
+	return s
 }
 
 // StringOrPanic convert value to string, will panic on error
-func StringOrPanic(val any) string {
-	return MustString(val)
-}
+func StringOrPanic(val any) string { return MustString(val) }
 
 // MustString convert value to string, will panic on error
 func MustString(val any) string {
-	s, err := ToStringWithFunc(val, nil)
+	s, err := ToStringWith(val)
 	if err != nil {
 		panic(err)
 	}
@@ -131,93 +119,34 @@ func MustString(val any) string {
 }
 
 // StringOrDefault convert any value to string, return default value on failed
-func StringOrDefault(val any, defVal string) string {
-	return StringOr(val, defVal)
-}
+func StringOrDefault(val any, defVal string) string { return StringOr(val, defVal) }
 
 // StringOr convert any value to string, return default value on failed
 func StringOr(val any, defVal string) string {
-	s, err := ToStringWithFunc(val, nil)
+	s, err := ToStringWith(val)
 	if err != nil {
 		return defVal
 	}
 	return s
 }
 
-// SprintToStrFunc convert any value to string by fmt.Sprint
-var SprintToStrFunc = func(v any) (string, error) {
-	if v == nil {
-		return "", nil
-	}
-	return fmt.Sprint(v), nil
-}
-
 // AnyToString convert any value to string.
 //
 // For defaultAsErr:
 //
-//   - False  will use fmt.Sprint convert complex type
-//   - True   will return error on fail.
+//   - False  will use fmt.Sprint convert unsupported type
+//   - True   will return error on convert fail.
 func AnyToString(val any, defaultAsErr bool) (s string, err error) {
-	var fbFunc comdef.ToStringFunc
+	var optFn comfunc.ConvOptionFn
 	if !defaultAsErr {
-		fbFunc = SprintToStrFunc
+		optFn = comfunc.WithUserConvFn(comfunc.StrBySprintFn)
 	}
-
-	return ToStringWithFunc(val, fbFunc)
+	return ToStringWith(val, optFn)
 }
 
-// ToStringWithFunc convert value to string, with a func to fallback handle.
-//
-// On not convert:
-//   - If fbFn is nil, will return comdef.ErrConvType.
-//   - If fbFn is not nil, will call it to convert.
-func ToStringWithFunc(val any, fbFn comdef.ToStringFunc) (str string, err error) {
-	switch value := val.(type) {
-	case int:
-		str = strconv.Itoa(value)
-	case int8:
-		str = strconv.Itoa(int(value))
-	case int16:
-		str = strconv.Itoa(int(value))
-	case int32: // same as `rune`
-		str = strconv.Itoa(int(value))
-	case int64:
-		str = strconv.FormatInt(value, 10)
-	case uint:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint8:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint16:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint32:
-		str = strconv.FormatUint(uint64(value), 10)
-	case uint64:
-		str = strconv.FormatUint(value, 10)
-	case float32:
-		str = strconv.FormatFloat(float64(value), 'f', -1, 32)
-	case float64:
-		str = strconv.FormatFloat(value, 'f', -1, 64)
-	case bool:
-		str = strconv.FormatBool(value)
-	case string:
-		str = value
-	case []byte:
-		str = string(value)
-	case time.Duration:
-		str = strconv.FormatInt(int64(value), 10)
-	case fmt.Stringer:
-		str = value.String()
-	case error:
-		str = value.Error()
-	default:
-		if fbFn == nil {
-			err = comdef.ErrConvType
-		} else {
-			str, err = fbFn(value)
-		}
-	}
-	return
+// ToStringWith try to convert value to string. can with some option func, more see comfunc.ConvOption.
+func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error) {
+	return comfunc.ToStringWith(in, optFns...)
 }
 
 /*************************************************************
@@ -230,9 +159,7 @@ func ToBool(s string) (bool, error) {
 }
 
 // QuietBool convert to bool, will ignore error
-func QuietBool(s string) bool {
-	return SafeBool(s)
-}
+func QuietBool(s string) bool { return SafeBool(s) }
 
 // SafeBool convert to bool, will ignore error
 func SafeBool(s string) bool {
@@ -289,14 +216,10 @@ func SafeInt(s string) int {
 }
 
 // QuietInt convert string to int, will ignore error
-func QuietInt(s string) int {
-	return SafeInt(s)
-}
+func QuietInt(s string) int { return SafeInt(s) }
 
 // MustInt convert string to int, will panic on error
-func MustInt(s string) int {
-	return IntOrPanic(s)
-}
+func MustInt(s string) int { return IntOrPanic(s) }
 
 // IntOrPanic convert value to int, will panic on error
 func IntOrPanic(s string) int {
@@ -312,20 +235,15 @@ func IntOrPanic(s string) int {
  *************************************************************/
 
 // Int64 convert string to int, will ignore error
-func Int64(s string) int64 {
-	val, _ := Int64OrErr(s)
-	return val
-}
+func Int64(s string) int64 { return SafeInt64(s) }
+
+// QuietInt64 convert string to int, will ignore error
+func QuietInt64(s string) int64 { return SafeInt64(s) }
 
 // SafeInt64 convert string to int, will ignore error
 func SafeInt64(s string) int64 {
 	val, _ := Int64OrErr(s)
 	return val
-}
-
-// QuietInt64 convert string to int, will ignore error
-func QuietInt64(s string) int64 {
-	return SafeInt64(s)
 }
 
 // ToInt64 convert string to int, return error on fail
@@ -353,9 +271,7 @@ func Int64OrErr(s string) (int64, error) {
 }
 
 // MustInt64 convert value to int, will panic on error
-func MustInt64(s string) int64 {
-	return Int64OrPanic(s)
-}
+func MustInt64(s string) int64 { return Int64OrPanic(s) }
 
 // Int64OrPanic convert value to int, will panic on error
 func Int64OrPanic(s string) int64 {
@@ -371,10 +287,7 @@ func Int64OrPanic(s string) int64 {
  *************************************************************/
 
 // Uint convert string to uint, will ignore error
-func Uint(s string) uint64 {
-	val, _ := UintOrErr(s)
-	return val
-}
+func Uint(s string) uint64 { return SafeUint(s) }
 
 // SafeUint convert string to uint, will ignore error
 func SafeUint(s string) uint64 {
@@ -393,9 +306,7 @@ func UintOrErr(s string) (uint64, error) {
 }
 
 // MustUint convert value to uint, will panic on error. alias of UintOrPanic()
-func MustUint(s string) uint64 {
-	return UintOrPanic(s)
-}
+func MustUint(s string) uint64 { return UintOrPanic(s) }
 
 // UintOrPanic convert value to uint, will panic on error
 func UintOrPanic(s string) uint64 {

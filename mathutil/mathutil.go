@@ -3,6 +3,7 @@ package mathutil
 
 import (
 	"github.com/gookit/goutil/comdef"
+	"math"
 )
 
 // OrElse return default value on val is zero, else return val
@@ -70,4 +71,33 @@ func GteOr[T comdef.XintOrFloat](val, min, defVal T) T {
 		return val
 	}
 	return defVal
+}
+
+// Mul computes a*b value, rounding the result.
+func Mul[T comdef.XintOrFloat](a, b T) float64 {
+	return math.Round(SafeFloat(a) * SafeFloat(b))
+}
+
+// Div computes the a/b value, result use round handle.
+func Div[T comdef.XintOrFloat](a, b T) float64 {
+	return math.Round(SafeFloat(a) / SafeFloat(b))
+}
+
+// DivInt computes the int type a / b value, rounding the result to an integer.
+func DivInt[T comdef.Integer](a, b T) int {
+	fv := math.Round(float64(a) / float64(b))
+	return int(fv)
+}
+
+// DivF2i computes the float64 type a / b value, rounding the result to an integer.
+func DivF2i(a, b float64) int {
+	return int(math.Round(a / b))
+}
+
+// Percent returns a values percent of the total
+func Percent(val, total int) float64 {
+	if total == 0 {
+		return float64(0)
+	}
+	return (float64(val) / float64(total)) * 100
 }
