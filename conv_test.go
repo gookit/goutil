@@ -55,12 +55,21 @@ func TestToInt(t *testing.T) {
 	is.Nil(err)
 	is.Eq(int64(-2), i64Val)
 
+	// To uint
+	uVal, err := goutil.ToUint("2")
+	is.Nil(err)
+	is.Eq(uint(2), uVal)
+
+	uVal = goutil.Uint("2")
+	is.Nil(err)
+	is.Eq(uint(2), uVal)
+
 	// To uint64
-	u64Val, err := goutil.ToUint("2")
+	u64Val, err := goutil.ToUint64("2")
 	is.Nil(err)
 	is.Eq(uint64(2), u64Val)
 
-	u64Val = goutil.Uint("2")
+	u64Val = goutil.Uint64("2")
 	is.Nil(err)
 	is.Eq(uint64(2), u64Val)
 }
@@ -104,8 +113,9 @@ func TestConvTo(t *testing.T) {
 		{"23", reflect.Float32, float32(23), true},
 		{"23", reflect.String, "23", true},
 		{"true", reflect.Bool, true, true},
+		{nil, reflect.Int, 0, true},
+		{nil, reflect.Uint, uint(0), true},
 		// failed
-		{nil, reflect.Int, nil, false},
 		{"23", reflect.Bool, nil, false},
 		{"abc", reflect.Float64, nil, false},
 		{"abc", reflect.Float32, nil, false},

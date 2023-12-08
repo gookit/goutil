@@ -178,7 +178,7 @@ func TestToInt(t *testing.T) {
 		is.Eq(uint(2), uintVal)
 
 		_, err = mathutil.ToUint(nil)
-		is.Err(err)
+		is.NoErr(err)
 		_, err = mathutil.ToUint("-2")
 		is.Err(err)
 
@@ -209,7 +209,7 @@ func TestToInt(t *testing.T) {
 		is.Eq(uint64(2), uintVal)
 
 		_, err = mathutil.ToUint64(nil)
-		is.Err(err)
+		is.NoErr(err)
 		_, err = mathutil.ToUint64("-2")
 		is.Err(err)
 
@@ -299,11 +299,11 @@ func TestToString(t *testing.T) {
 	is.Eq("2", val)
 
 	_, err = mathutil.ToString(nil)
-	is.Err(err)
+	is.NoErr(err)
 
 	is.Eq("", mathutil.SafeString(nil))
 	is.Eq("[1]", mathutil.QuietString([]int{1}))
-	is.Eq("23", mathutil.StringOrDefault(nil, "23"))
+	is.Eq("23", mathutil.StringOrDefault([]int{1}, "23"))
 	is.Eq("23", mathutil.StringOr("23", "2"))
 
 	is.Panics(func() {
