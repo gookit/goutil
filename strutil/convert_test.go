@@ -116,7 +116,7 @@ func TestToString(t *testing.T) {
 	is.Eq("true", str)
 
 	_, err = strutil.String(nil)
-	is.Err(err)
+	is.NoErr(err)
 
 	_, err = strutil.String([]string{"a"})
 	is.Err(err)
@@ -128,7 +128,7 @@ func TestToString(t *testing.T) {
 	str = strutil.QuietString(nil)
 	is.Eq("", str)
 
-	str = strutil.StringOrDefault(nil, "default")
+	str = strutil.StringOrDefault([]string{"a"}, "default")
 	is.Eq("default", str)
 	str = strutil.StringOrDefault("value", "default")
 	is.Eq("value", str)

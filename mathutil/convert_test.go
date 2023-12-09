@@ -7,6 +7,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -51,7 +52,7 @@ func TestWithUserConvFn(t *testing.T) {
 	is.Eq(2.0, f)
 
 	// to string
-	s, err := mathutil.ToStringWith(in, mathutil.WithUserConvFn(func(v any) (string, error) {
+	s, err := mathutil.ToStringWith(in, comfunc.WithUserConvFn(func(v any) (string, error) {
 		return "2", nil
 	}))
 	is.NoErr(err)
