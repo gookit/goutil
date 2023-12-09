@@ -2,13 +2,14 @@ package structs
 
 import (
 	"errors"
-	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/timex"
+	"fmt"
 	"reflect"
 	"time"
 
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/reflects"
+	"github.com/gookit/goutil/strutil"
 )
 
 // NewWriter create a struct writer
@@ -48,6 +49,9 @@ type SetOptions struct {
 	//
 	// default: false
 	ParseDefaultEnv bool
+
+	// StopOnError if true, will stop set value on error happened. default: false
+	// StopOnError bool
 }
 
 // WithParseDefault value by tag "default"
@@ -87,6 +91,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		return nil
 	}
 
+	var es comdef.Errors
 	rt := rv.Type()
 
 	for i := 0; i < rt.NumField(); i++ {
@@ -102,6 +107,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		if ok {
 			info, err := ParseTagValueDefault(name, tagVal)
 			if err != nil {
+				es = append(es, err)
 				continue
 			}
 			name = info.Get("name")
@@ -114,7 +120,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 		if !ok && opt.ParseDefault && fv.IsZero() {
 			defVal := ft.Tag.Get(opt.DefaultValTag)
 			if err := initDefaultValue(fv, defVal, opt.ParseDefaultEnv); err != nil {
-				//return err
+				es = append(es, err)
 			}
 			continue
 		}
@@ -129,33 +135,39 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions) error {
 
 		// field is struct
 		if fv.Kind() == reflect.Struct {
-			asMp, err := maputil.TryAnyMap(val)
-			if err == nil {
-				continue
-			}
-
+			// up: special handle time.Time struct
 			if _, ok := fv.Interface().(time.Time); ok {
-				tm, er := timex.TryToTime(strutil.StringOr(val, ""), time.Time{})
+				tm, er := strutil.ToTime(strutil.StringOr(val, ""))
 				if er != nil {
+					es = append(es, er)
 					continue
 				}
-				if er = reflects.SetValue(fv, tm); er == nil {
-					continue
+				if er = reflects.SetValue(fv, tm); er != nil {
+					es = append(es, er)
 				}
-			}
-
-			if err = setValues(fv, asMp, opt); err == nil {
 				continue
 			}
 
+			asMp, err := maputil.TryAnyMap(val)
+			if err != nil {
+				err = fmt.Errorf("must provide map for set struct field %q, err=%v", ft.Name, err)
+				es = append(es, err)
+				continue
+			}
+
+			// recursive processing sub-struct
+			if err = setValues(fv, asMp, opt); err != nil {
+				es = append(es, err)
+			}
 			continue
 		}
 
 		// set field value
 		if err := reflects.SetValue(fv, val); err != nil {
+			es = append(es, err)
 			continue
 		}
 	}
 
-	return nil
+	return es.ErrOrNil()
 }
