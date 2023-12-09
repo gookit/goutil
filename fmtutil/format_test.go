@@ -1,7 +1,6 @@
 package fmtutil_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/errorx"
@@ -92,15 +91,4 @@ func TestArgsWithSpaces(t *testing.T) {
 	}
 
 	assert.NotEmpty(t, fmtutil.ArgsWithSpaces([]any{timex.Now().T()}))
-}
-
-func TestStringsToInts(t *testing.T) {
-	is := assert.New(t)
-
-	ints, err := fmtutil.StringsToInts([]string{"1", "2"})
-	is.Nil(err)
-	is.Eq("[]int{1, 2}", fmt.Sprintf("%#v", ints))
-
-	_, err = fmtutil.StringsToInts([]string{"a", "b"})
-	is.Err(err)
 }

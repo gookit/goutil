@@ -2,8 +2,6 @@ package fmtutil
 
 import (
 	"encoding/json"
-	"strconv"
-
 	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
@@ -45,34 +43,22 @@ func PrettyJSON(v any) (string, error) {
 	return string(out), err
 }
 
-// StringsToInts string slice to int slice.
-// Deprecated: please use the arrutil.StringsToInts()
-func StringsToInts(ss []string) (ints []int, err error) {
-	for _, str := range ss {
-		iVal, err := strconv.Atoi(str)
-		if err != nil {
-			return []int{}, err
-		}
-
-		ints = append(ints, iVal)
-	}
-	return
-}
-
 // ArgsWithSpaces it like Println, will add spaces for each argument
 func ArgsWithSpaces(vs []any) (message string) {
-	if ln := len(vs); ln == 0 {
+	ln := len(vs)
+	if ln == 0 {
 		return ""
-	} else if ln == 1 {
-		return strutil.SafeString(vs[0])
-	} else {
-		bs := make([]byte, 0, ln*8)
-		for i := range vs {
-			if i > 0 { // add space
-				bs = append(bs, ' ')
-			}
-			bs = byteutil.AppendAny(bs, vs[i])
-		}
-		return string(bs)
 	}
+	if ln == 1 {
+		return strutil.SafeString(vs[0])
+	}
+
+	bs := make([]byte, 0, ln*8)
+	for i := range vs {
+		if i > 0 { // add space
+			bs = append(bs, ' ')
+		}
+		bs = byteutil.AppendAny(bs, vs[i])
+	}
+	return string(bs)
 }
