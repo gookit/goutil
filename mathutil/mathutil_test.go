@@ -42,4 +42,5 @@ func TestDiv(t *testing.T) {
 
 func TestMul(t *testing.T) {
 	assert.Eq(t, float64(5), mathutil.Mul(2, 2.35))
+	assert.Eq(t, 36, mathutil.MulF2i(27, 1.35))
 }
