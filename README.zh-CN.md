@@ -665,7 +665,6 @@ func SizeToString(size uint64) string
 func StringToByte(sizeStr string) uint64
 func ParseByte(sizeStr string) uint64
 func PrettyJSON(v any) (string, error)
-func StringsToInts(ss []string) (ints []int, err error)
 func ArgsWithSpaces(vs []any) (message string)
 // source at fmtutil/time.go
 func HowLongAgo(sec int64) string
@@ -910,6 +909,8 @@ func SimpleMerge(src, dst map[string]any) map[string]any
 func DeepMerge(src, dst map[string]any, deep int) map[string]any
 func MergeSMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
+func MergeMultiSMap(mps ...map[string]string) map[string]string
+func FilterSMap(sm map[string]string) map[string]string
 func MakeByPath(path string, val any) (mp map[string]any)
 func MakeByKeys(keys []string, val any) (mp map[string]any)
 // source at maputil/setval.go
@@ -943,36 +944,48 @@ func MaxI64(x, y int64) int64
 func SwapMaxI64(x, y int64) (int64, int64)
 func MaxFloat(x, y float64) float64
 // source at mathutil/convert.go
+func NewConvOption[T any](optFns ...ConvOptionFn[T]) *ConvOption[T]
+func WithNilAsFail[T any](opt *ConvOption[T])
+func WithUserConvFn[T any](fn ToTypeFunc[T]) ConvOptionFn[T]
 func Int(in any) (int, error)
 func SafeInt(in any) int
 func QuietInt(in any) int
-func MustInt(in any) int
 func IntOrPanic(in any) int
+func MustInt(in any) int
 func IntOrDefault(in any, defVal int) int
 func IntOr(in any, defVal int) int
-func IntOrErr(in any) (iVal int, err error)
-func ToInt(in any) (iVal int, err error)
-func ToIntWithFunc(in any, usrFn ToIntFunc) (iVal int, err error)
+func IntOrErr(in any) (int, error)
+func ToInt(in any) (int, error)
+func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error)
 func StrInt(s string) int
 func StrIntOr(s string, defVal int) int
-func Uint(in any) (uint64, error)
-func SafeUint(in any) uint64
-func QuietUint(in any) uint64
-func MustUint(in any) uint64
-func UintOrDefault(in any, defVal uint64) uint64
-func UintOr(in any, defVal uint64) uint64
-func UintOrErr(in any) (uint64, error)
-func ToUint(in any) (u64 uint64, err error)
-func ToUintWithFunc(in any, usrFn ToUintFunc) (u64 uint64, err error)
 func Int64(in any) (int64, error)
 func SafeInt64(in any) int64
 func QuietInt64(in any) int64
 func MustInt64(in any) int64
 func Int64OrDefault(in any, defVal int64) int64
 func Int64Or(in any, defVal int64) int64
+func ToInt64(in any) (int64, error)
 func Int64OrErr(in any) (int64, error)
-func ToInt64(in any) (i64 int64, err error)
-func ToInt64WithFunc(in any, usrFn ToInt64Func) (i64 int64, err error)
+func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error)
+func Uint(in any) (uint, error)
+func SafeUint(in any) uint
+func QuietUint(in any) uint
+func MustUint(in any) uint
+func UintOrDefault(in any, defVal uint) uint
+func UintOr(in any, defVal uint) uint
+func UintOrErr(in any) (uint, error)
+func ToUint(in any) (u64 uint, err error)
+func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error)
+func Uint64(in any) (uint64, error)
+func QuietUint64(in any) uint64
+func SafeUint64(in any) uint64
+func MustUint64(in any) uint64
+func Uint64OrDefault(in any, defVal uint64) uint64
+func Uint64Or(in any, defVal uint64) uint64
+func Uint64OrErr(in any) (uint64, error)
+func ToUint64(in any) (uint64, error)
+func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error)
 func QuietFloat(in any) float64
 func SafeFloat(in any) float64
 func FloatOrPanic(in any) float64
@@ -981,8 +994,8 @@ func FloatOrDefault(in any, defVal float64) float64
 func FloatOr(in any, defVal float64) float64
 func Float(in any) (float64, error)
 func FloatOrErr(in any) (float64, error)
-func ToFloat(in any) (f64 float64, err error)
-func ToFloatWithFunc(in any, usrFn ToFloatFunc) (f64 float64, err error)
+func ToFloat(in any) (float64, error)
+func ToFloatWith(in any, optFns ...ConvOptionFn[float64]) (f64 float64, err error)
 func MustString(val any) string
 func StringOrPanic(val any) string
 func StringOrDefault(val any, defVal string) string
@@ -992,10 +1005,8 @@ func StringOrErr(val any) (string, error)
 func QuietString(val any) string
 func String(val any) string
 func SafeString(val any) string
-func TryToString(val any, defaultAsErr bool) (str string, err error)
-func ToStringWithFunc(val any, usrFn comdef.ToStringFunc) (str string, err error)
-func Percent(val, total int) float64
-func ElapsedTime(startTime time.Time) string
+func TryToString(val any, defaultAsErr bool) (string, error)
+func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error)
 // source at mathutil/format.go
 func DataSize(size uint64) string
 func HowLongAgo(sec int64) string
@@ -1006,11 +1017,19 @@ func LessOr[T comdef.XintOrFloat](val, max, devVal T) T
 func LteOr[T comdef.XintOrFloat](val, max, devVal T) T
 func GreaterOr[T comdef.XintOrFloat](val, min, defVal T) T
 func GteOr[T comdef.XintOrFloat](val, min, defVal T) T
+func Mul[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func MulF2i(a, b float64) int
+func Div[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func DivInt[T comdef.Integer](a, b T) int
+func DivF2i(a, b float64) int
+func Percent(val, total int) float64
 // source at mathutil/random.go
 func RandomInt(min, max int) int
 func RandInt(min, max int) int
 func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
+// source at mathutil/value.go
+func New[T comdef.IntOrFloat](v T) *Num[T]
 ```
 
 ### Reflects
@@ -1224,7 +1243,7 @@ func MustString(val any) string
 func StringOrDefault(val any, defVal string) string
 func StringOr(val any, defVal string) string
 func AnyToString(val any, defaultAsErr bool) (s string, err error)
-func ToStringWithFunc(val any, fbFn comdef.ToStringFunc) (str string, err error)
+func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error)
 func ToBool(s string) (bool, error)
 func QuietBool(s string) bool
 func SafeBool(s string) bool
@@ -1239,8 +1258,8 @@ func QuietInt(s string) int
 func MustInt(s string) int
 func IntOrPanic(s string) int
 func Int64(s string) int64
-func SafeInt64(s string) int64
 func QuietInt64(s string) int64
+func SafeInt64(s string) int64
 func ToInt64(s string) (int64, error)
 func Int64OrDefault(s string, defVal int64) int64
 func Int64Or(s string, defVal int64) int64
@@ -1402,9 +1421,6 @@ func OrHandle(s string, fn comdef.StringHandleFunc) string
 func Valid(ss ...string) string
 func Replaces(str string, pairs map[string]string) string
 func NewReplacer(pairs map[string]string) *strings.Replacer
-func PrettyJSON(v any) (string, error)
-func RenderTemplate(input string, data any, fns template.FuncMap, isFile ...bool) string
-func RenderText(input string, data any, fns template.FuncMap, isFile ...bool) string
 func WrapTag(s, tag string) string
 func SubstrCount(s, substr string, params ...uint64) (int, error)
 ```
