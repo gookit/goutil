@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
@@ -150,7 +151,7 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 		case Ffname: // only file name
 			fName := path.Base(file) // file name
 			nodes = append(nodes, fName)
-		case Fline:
+		default: // Fline
 			nodes = append(nodes, ":", lineS)
 		}
 	}
@@ -274,6 +275,13 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 	case reflect.Struct:
 		if v.CanAddr() && !d.checkCyclicRef(t, v) {
 			break // don't print v again
+		}
+
+		// up: special handel time.Time struct
+		if t == timeType {
+			timeStr := v.Interface().(time.Time).Format(time.RFC3339)
+			d.printf("time.Time(%s),\n", d.ColorTheme.string(timeStr))
+			break
 		}
 
 		d.write(!isPtr, d.ColorTheme.msType(t.String()), " {\n")

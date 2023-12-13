@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"reflect"
+	"time"
 
 	"github.com/gookit/color"
 )
@@ -47,6 +48,8 @@ var (
 
 	// some type init
 	stringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+	// time.Time type
+	timeType = reflect.TypeOf(time.Time{})
 )
 
 // Theme color code/tag map for dump

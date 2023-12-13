@@ -76,7 +76,6 @@ func TestTryToTime(t *testing.T) {
 		} else {
 			assert.Err(t, err)
 		}
-
 		assert.Eq(t, item.out, timex.Format(tt))
 	}
 
