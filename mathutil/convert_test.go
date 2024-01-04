@@ -98,6 +98,104 @@ func TestWithNilAsFail(t *testing.T) {
 	is.Err(err)
 }
 
+func TestWithHandlePtr(t *testing.T) {
+	var err error
+	is := assert.New(t)
+
+	iv1 := 2
+	i641 := int64(2)
+
+	// int
+	t.Run("to int", func(t *testing.T) {
+		var iv int
+		iv, err = mathutil.ToIntWith(&iv1)
+		is.NoErr(err)
+		is.Eq(2, iv)
+
+		_, err = mathutil.ToIntWith(&i641)
+		is.Err(err)
+		iv, err = mathutil.ToIntWith(&i641, mathutil.WithHandlePtr[int])
+		is.NoErr(err)
+		is.Eq(2, iv)
+	})
+
+	// int64
+	t.Run("to int64", func(t *testing.T) {
+		var i64 int64
+		i64, err = mathutil.ToInt64With(&i641)
+		is.NoErr(err)
+		is.Eq(int64(2), i64)
+
+		_, err = mathutil.ToInt64With(&iv1)
+		is.Err(err)
+		i64, err = mathutil.ToInt64With(&iv1, mathutil.WithHandlePtr[int64])
+		is.NoErr(err)
+		is.Eq(int64(2), i64)
+	})
+
+	// uint
+	t.Run("to uint", func(t *testing.T) {
+		var u uint
+		u1 := uint(2)
+		u, err = mathutil.ToUintWith(&u1)
+		is.NoErr(err)
+		is.Eq(uint(2), u)
+
+		_, err = mathutil.ToUintWith(&iv1)
+		is.Err(err)
+		u, err = mathutil.ToUintWith(&iv1, mathutil.WithHandlePtr[uint])
+		is.NoErr(err)
+		is.Eq(uint(2), u)
+	})
+
+	// uint64
+	t.Run("to uint64", func(t *testing.T) {
+		var u64 uint64
+		u641 := uint64(2)
+		u64, err = mathutil.ToUint64With(&u641)
+		is.NoErr(err)
+		is.Eq(uint64(2), u64)
+
+		_, err = mathutil.ToUint64With(&iv1)
+		is.Err(err)
+		u64, err = mathutil.ToUint64With(&iv1, mathutil.WithHandlePtr[uint64])
+		is.NoErr(err)
+		is.Eq(uint64(2), u64)
+	})
+
+	// float
+	t.Run("to float", func(t *testing.T) {
+		var f float64
+		f1 := float64(2)
+		f, err = mathutil.ToFloatWith(&f1)
+		is.NoErr(err)
+		is.Eq(float64(2), f)
+
+		_, err = mathutil.ToFloatWith(&iv1)
+		is.Err(err)
+		f, err = mathutil.ToFloatWith(&iv1, mathutil.WithHandlePtr[float64])
+		is.NoErr(err)
+		is.Eq(float64(2), f)
+	})
+
+	// string
+	t.Run("to string", func(t *testing.T) {
+		var s string
+		s1 := "2"
+		s, err = mathutil.ToStringWith(&s1)
+		is.NoErr(err)
+		is.Eq("2", s)
+
+		_, err = mathutil.ToStringWith(&iv1)
+		is.Err(err)
+		s, err = mathutil.ToStringWith(&iv1, func(opt *comfunc.ConvOption) {
+			opt.HandlePtr = true
+		})
+		is.NoErr(err)
+		is.Eq("2", s)
+	})
+}
+
 func TestToInt(t *testing.T) {
 	is := assert.New(t)
 

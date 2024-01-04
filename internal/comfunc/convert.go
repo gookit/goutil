@@ -70,9 +70,10 @@ type ConvOption struct {
 	// if ture: value is nil, will return convert error;
 	// if false(default): value is nil, will convert to zero value
 	NilAsFail bool
-	// EnablePtr auto convert ptr type(int,float,string) value. eg: *int to int
+	// HandlePtr auto convert ptr type(int,float,string) value. eg: *int to int
 	// 	- if true: will use real type try convert. default is false
-	EnablePtr bool
+	//	- NOTE: current T type's ptr is default support.
+	HandlePtr bool
 	// set custom fallback convert func for not supported type.
 	UserConvFn comdef.ToStringFunc
 }
@@ -83,6 +84,11 @@ type ConvOptionFn func(opt *ConvOption)
 // StrBySprintFn convert any value to string by fmt.Sprint
 var StrBySprintFn = func(v any) (string, error) {
 	return fmt.Sprint(v), nil
+}
+
+// WithHandlePtr set ConvOption.HandlePtr option
+func WithHandlePtr(opt *ConvOption) {
+	opt.HandlePtr = true
 }
 
 // WithUserConvFn set ConvOption.UserConvFn option
@@ -155,7 +161,7 @@ func ToStringWith(in any, optFns ...ConvOptionFn) (str string, err error) {
 	case error:
 		str = value.Error()
 	default:
-		if opt.EnablePtr {
+		if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
 				if checkfn.IsSimpleKind(rv.Kind()) {

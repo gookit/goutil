@@ -3,11 +3,13 @@ package mathutil
 import (
 	"fmt"
 	"math"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gookit/goutil/comdef"
+	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
@@ -34,6 +36,10 @@ type ConvOption[T any] struct {
 	// if ture: value is nil, will return convert error;
 	// if false(default): value is nil, will convert to zero value
 	NilAsFail bool
+	// HandlePtr auto convert ptr type(int,float,string) value. eg: *int to int
+	// 	- if true: will use real type try convert. default is false
+	//	- NOTE: current T type's ptr is default support.
+	HandlePtr bool
 	// set custom fallback convert func for not supported type.
 	UserConvFn ToTypeFunc[T]
 }
@@ -64,6 +70,11 @@ type ConvOptionFn[T any] func(opt *ConvOption[T])
 //	ToIntWithFunc(val, mathutil.WithNilAsFail[int])
 func WithNilAsFail[T any](opt *ConvOption[T]) {
 	opt.NilAsFail = true
+}
+
+// WithHandlePtr set ConvOption.HandlePtr option
+func WithHandlePtr[T any](opt *ConvOption[T]) {
+	opt.HandlePtr = true
 }
 
 // WithUserConvFn set ConvOption.UserConvFn option
@@ -134,6 +145,8 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 	switch tVal := in.(type) {
 	case int:
 		iVal = tVal
+	case *int: // default support int ptr type
+		iVal = *tVal
 	case int8:
 		iVal = int(tVal)
 	case int16:
@@ -190,6 +203,15 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 			}
 		}
 	default:
+		if opt.HandlePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToIntWith(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			return opt.UserConvFn(in)
 		}
@@ -276,6 +298,8 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 		i64 = int64(tVal)
 	case int64:
 		i64 = tVal
+	case *int64: // default support int64 ptr type
+		i64 = *tVal
 	case uint:
 		i64 = int64(tVal)
 	case uint8:
@@ -295,6 +319,15 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case comdef.Int64able: // eg: json.Number
 		i64, err = tVal.Int64()
 	default:
+		if opt.HandlePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToInt64With(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			i64, err = opt.UserConvFn(in)
 		} else {
@@ -367,6 +400,8 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 		uVal = uint(tVal)
 	case uint:
 		uVal = tVal
+	case *uint: // default support uint ptr type
+		uVal = *tVal
 	case uint8:
 		uVal = uint(tVal)
 	case uint16:
@@ -390,6 +425,15 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 		uVal = uint(u64)
 	default:
+		if opt.HandlePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToUintWith(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			uVal, err = opt.UserConvFn(in)
 		} else {
@@ -470,6 +514,8 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 		u64 = uint64(tVal)
 	case uint64:
 		u64 = tVal
+	case *uint64: // default support uint64 ptr type
+		u64 = *tVal
 	case float32:
 		u64 = uint64(tVal)
 	case float64:
@@ -483,6 +529,15 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 	case string:
 		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
+		if opt.HandlePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToUint64With(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			u64, err = opt.UserConvFn(in)
 		} else {
@@ -572,11 +627,22 @@ func ToFloatWith(in any, optFns ...ConvOptionFn[float64]) (f64 float64, err erro
 		f64 = float64(tVal)
 	case float64:
 		f64 = tVal
+	case *float64: // default support float64 ptr type
+		f64 = *tVal
 	case time.Duration:
 		f64 = float64(tVal)
 	case comdef.Float64able: // eg: json.Number
 		f64, err = tVal.Float64()
 	default:
+		if opt.HandlePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToFloatWith(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			f64, err = opt.UserConvFn(in)
 		} else {
