@@ -10,8 +10,9 @@ func HasChild(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Array, reflect.Slice, reflect.Map, reflect.Struct:
 		return true
+	default:
+		return false
 	}
-	return false
 }
 
 // IsArrayOrSlice check. eg: array, slice
@@ -122,9 +123,9 @@ func IsEmpty(v reflect.Value) bool {
 		return v.Float() == 0
 	case reflect.Interface, reflect.Ptr, reflect.Func:
 		return v.IsNil()
+	default:
+		return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 	}
-
-	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }
 
 // IsEmptyValue reflect value check, alias of the IsEmptyReal()
@@ -158,7 +159,7 @@ func IsEmptyReal(v reflect.Value) bool {
 		return v.IsNil()
 	case reflect.Invalid:
 		return true
+	default:
+		return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 	}
-
-	return reflect.DeepEqual(v.Interface(), reflect.Zero(v.Type()).Interface())
 }

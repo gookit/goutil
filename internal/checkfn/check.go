@@ -1,11 +1,10 @@
 package checkfn
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"strings"
-
-	"github.com/gookit/goutil/reflects"
 )
 
 // IsNil value check
@@ -13,15 +12,46 @@ func IsNil(v any) bool {
 	if v == nil {
 		return true
 	}
-	return reflects.IsNil(reflect.ValueOf(v))
+
+	rv := reflect.ValueOf(v)
+	switch rv.Kind() {
+	case reflect.Chan, reflect.Func, reflect.Interface, reflect.Map, reflect.Ptr, reflect.Slice:
+		return rv.IsNil()
+	default:
+		return false
+	}
 }
 
-// IsEmpty value check
-func IsEmpty(v any) bool {
-	if v == nil {
+// IsSimpleKind kind in: string, bool, intX, uintX, floatX
+func IsSimpleKind(k reflect.Kind) bool {
+	if reflect.String == k {
 		return true
 	}
-	return reflects.IsEmpty(reflect.ValueOf(v))
+	return k > reflect.Invalid && k <= reflect.Float64
+}
+
+// IsEqual determines if two objects are considered equal.
+//
+// TIP: cannot compare function type
+func IsEqual(src, dst any) bool {
+	if src == nil || dst == nil {
+		return src == dst
+	}
+
+	bs1, ok := src.([]byte)
+	if !ok {
+		return reflect.DeepEqual(src, dst)
+	}
+
+	bs2, ok := dst.([]byte)
+	if !ok {
+		return false
+	}
+
+	if bs1 == nil || bs2 == nil {
+		return bs1 == nil && bs2 == nil
+	}
+	return bytes.Equal(bs1, bs2)
 }
 
 // Contains try loop over the data check if the data includes the element.
@@ -57,7 +87,7 @@ func Contains(data, elem any) (valid, found bool) {
 	if dataKind == reflect.Map {
 		mapKeys := dataRv.MapKeys()
 		for i := 0; i < len(mapKeys); i++ {
-			if reflects.IsEqual(mapKeys[i].Interface(), elem) {
+			if IsEqual(mapKeys[i].Interface(), elem) {
 				return true, true
 			}
 		}
@@ -70,7 +100,7 @@ func Contains(data, elem any) (valid, found bool) {
 	}
 
 	for i := 0; i < dataRv.Len(); i++ {
-		if reflects.IsEqual(dataRv.Index(i).Interface(), elem) {
+		if IsEqual(dataRv.Index(i).Interface(), elem) {
 			return true, true
 		}
 	}

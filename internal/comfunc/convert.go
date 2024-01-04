@@ -2,11 +2,13 @@ package comfunc
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gookit/goutil/comdef"
+	"github.com/gookit/goutil/internal/checkfn"
 )
 
 // Bool try to convert type to bool
@@ -68,6 +70,9 @@ type ConvOption struct {
 	// if ture: value is nil, will return convert error;
 	// if false(default): value is nil, will convert to zero value
 	NilAsFail bool
+	// EnablePtr auto convert ptr type(int,float,string) value. eg: *int to int
+	// 	- if true: will use real type try convert. default is false
+	EnablePtr bool
 	// set custom fallback convert func for not supported type.
 	UserConvFn comdef.ToStringFunc
 }
@@ -139,6 +144,8 @@ func ToStringWith(in any, optFns ...ConvOptionFn) (str string, err error) {
 		str = strconv.FormatBool(value)
 	case string:
 		str = value
+	case *string:
+		str = *value
 	case []byte:
 		str = string(value)
 	case time.Duration:
@@ -148,6 +155,15 @@ func ToStringWith(in any, optFns ...ConvOptionFn) (str string, err error) {
 	case error:
 		str = value.Error()
 	default:
+		if opt.EnablePtr {
+			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
+				rv = rv.Elem()
+				if checkfn.IsSimpleKind(rv.Kind()) {
+					return ToStringWith(rv.Interface(), optFns...)
+				}
+			}
+		}
+
 		if opt.UserConvFn != nil {
 			str, err = opt.UserConvFn(in)
 		} else {

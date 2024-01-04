@@ -1,8 +1,10 @@
 package panics
 
 import (
-	"github.com/gookit/goutil/internal/checkfn"
+	"reflect"
+
 	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/reflects"
 )
 
 // IsTrue assert result is true, otherwise will panic
@@ -35,14 +37,14 @@ func NotNil(result any, fmtAndArgs ...any) {
 
 // IsEmpty assert result is empty, otherwise will panic
 func IsEmpty(result any, fmtAndArgs ...any) {
-	if !checkfn.IsEmpty(result) {
+	if !isEmpty(result) {
 		panicWithMsg("result should be empty", fmtAndArgs)
 	}
 }
 
 // NotEmpty assert result is empty, otherwise will panic
 func NotEmpty(result any, fmtAndArgs ...any) {
-	if checkfn.IsEmpty(result) {
+	if isEmpty(result) {
 		panicWithMsg("result should not be empty", fmtAndArgs)
 	}
 }
@@ -52,4 +54,12 @@ func panicWithMsg(errMsg string, fmtAndArgs []any) {
 		errMsg = comfunc.FormatWithArgs(fmtAndArgs)
 	}
 	panic(errMsg)
+}
+
+// IsEmpty value check
+func isEmpty(v any) bool {
+	if v == nil {
+		return true
+	}
+	return reflects.IsEmpty(reflect.ValueOf(v))
 }
