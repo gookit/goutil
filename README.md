@@ -945,6 +945,7 @@ func MaxFloat(x, y float64) float64
 // source at mathutil/convert.go
 func NewConvOption[T any](optFns ...ConvOptionFn[T]) *ConvOption[T]
 func WithNilAsFail[T any](opt *ConvOption[T])
+func WithHandlePtr[T any](opt *ConvOption[T])
 func WithUserConvFn[T any](fn ToTypeFunc[T]) ConvOptionFn[T]
 func Int(in any) (int, error)
 func SafeInt(in any) int

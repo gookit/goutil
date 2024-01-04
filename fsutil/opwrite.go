@@ -57,13 +57,16 @@ func TempDir(dir, pattern string) (string, error) {
 
 // MustSave create file and write contents to file, panic on error.
 //
-// data type allow: string, []byte, io.Reader
+//   - data type allow: string, []byte, io.Reader
+//
 // default option see NewOpenOption()
 func MustSave(filePath string, data any, optFns ...OpenOptionFunc) {
 	basefn.MustOK(SaveFile(filePath, data, optFns...))
 }
 
 // SaveFile create file and write contents to file. will auto create dir.
+//
+//   - data type allow: string, []byte, io.Reader
 //
 // default option see NewOpenOption()
 func SaveFile(filePath string, data any, optFns ...OpenOptionFunc) error {

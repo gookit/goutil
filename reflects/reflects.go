@@ -2,7 +2,6 @@
 package reflects
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -12,6 +11,6 @@ var (
 	anyType   = reflect.TypeOf((*any)(nil)).Elem()
 	errorType = reflect.TypeOf((*error)(nil)).Elem()
 
-	fmtStringerType  = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+	// fmtStringerType  = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
 	reflectValueType = reflect.TypeOf((*reflect.Value)(nil)).Elem()
 )

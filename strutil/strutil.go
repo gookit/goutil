@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"text/template"
 
 	"github.com/gookit/goutil/comdef"
 )
@@ -88,22 +87,6 @@ func NewReplacer(pairs map[string]string) *strings.Replacer {
 		ss = append(ss, old, newVal)
 	}
 	return strings.NewReplacer(ss...)
-}
-
-var builtInFuncs = template.FuncMap{
-	// don't escape content
-	"raw": func(s string) string {
-		return s
-	},
-	"trim": strings.TrimSpace,
-	// join strings
-	"join": func(ss []string, sep string) string {
-		return strings.Join(ss, sep)
-	},
-	// lower first char
-	"lcFirst": LowerFirst,
-	// upper first char
-	"upFirst": UpperFirst,
 }
 
 // WrapTag for given string.
