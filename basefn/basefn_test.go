@@ -30,9 +30,18 @@ func TestPanicIf(t *testing.T) {
 }
 
 func TestPanicErr(t *testing.T) {
+	basefn.MustOK(nil)
 	basefn.PanicErr(nil)
 	assert.Panics(t, func() {
 		basefn.PanicErr(errors.New("a error"))
+	})
+
+	// must ignore
+	assert.NotPanics(t, func() {
+		basefn.MustIgnore(nil, nil)
+	})
+	assert.Panics(t, func() {
+		basefn.MustIgnore(nil, errors.New("a error"))
 	})
 }
 

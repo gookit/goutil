@@ -18,7 +18,7 @@ func TestMain(m *testing.M) {
 	s := testutil.NewEchoServer()
 	defer s.Close()
 
-	testSrvAddr = "http://" + s.Listener.Addr().String()
+	testSrvAddr = s.HTTPHost()
 	fmt.Println("server addr:", testSrvAddr)
 
 	m.Run()
