@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
@@ -54,3 +55,6 @@ func ToAbsPath(p string) string {
 	}
 	return filepath.Join(wd, p)
 }
+
+// Must2 ok for (any, error) result. if has error, will panic
+func Must2(_ any, err error) { basefn.MustOK(err) }
