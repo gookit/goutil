@@ -49,7 +49,7 @@ func Init(ptr any, optFns ...InitOptFunc) error {
 //	fmt.Printf("%+v\n", u1) // Output: {Name:inhere Age:30}
 func InitDefaults(ptr any, optFns ...InitOptFunc) error {
 	rv := reflect.ValueOf(ptr)
-	if rv.Kind() != reflect.Ptr {
+	if !reflects.IsValidatePtr(rv) {
 		return errors.New("must be provider an pointer value")
 	}
 
