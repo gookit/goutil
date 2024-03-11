@@ -58,6 +58,11 @@ func IsNil(v reflect.Value) bool {
 	}
 }
 
+// IsValidatePtr check variable is a valid pointer.
+func IsValidatePtr(v reflect.Value) bool {
+	return v.IsValid() && (v.Kind() == reflect.Ptr) && !v.IsNil()
+}
+
 // CanBeNil reports whether an untyped nil can be assigned to the type. See reflect.Zero.
 func CanBeNil(typ reflect.Type) bool {
 	switch typ.Kind() {

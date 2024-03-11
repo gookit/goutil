@@ -44,6 +44,13 @@ func TestInitDefaults_error(t *testing.T) {
 	err := structs.InitDefaults([]string{"invalid"})
 	assert.ErrMsg(t, err, "must be provider an pointer value")
 
+	err = structs.InitDefaults(nil)
+	assert.ErrMsg(t, err, "must be provider an pointer value")
+
+	var i1 *int
+	err = structs.InitDefaults(i1)
+	assert.ErrMsg(t, err, "must be provider an pointer value")
+
 	arr := []string{"invalid"}
 	err = structs.InitDefaults(&arr)
 	assert.ErrMsg(t, err, "must be provider an struct value")
