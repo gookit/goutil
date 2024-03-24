@@ -300,7 +300,7 @@ func ContainsElems[T comdef.ScalarType](t TestingT, list, sub []T, fmtAndArgs ..
 	return fail(t, fmt.Sprintf("%#v\nShould contain: %#v", list, sub), fmtAndArgs)
 }
 
-// StrContains asserts that the given strings is contains sub-string
+// StrContains asserts that the given string should contain sub-string
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if strings.Contains(s, sub) {
 		return true
@@ -313,7 +313,20 @@ func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	)
 }
 
-// StrCount asserts that the given strings is contains sub-string and count
+// StrNotContains asserts that the given string should not contain sub-string
+func StrNotContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
+	if !strings.Contains(s, sub) {
+		return true
+	}
+
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("String check fail:\nGiven string: %#v\nShould not contains: %#v", s, sub),
+		fmtAndArgs,
+	)
+}
+
+// StrCount asserts that the given string should contain sub-string and count
 func StrCount(t TestingT, s, sub string, count int, fmtAndArgs ...any) bool {
 	if strings.Count(s, sub) == count {
 		return true
