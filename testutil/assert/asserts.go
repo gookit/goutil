@@ -21,7 +21,7 @@ func Nil(t TestingT, give any, fmtAndArgs ...any) bool {
 	}
 
 	t.Helper()
-	return fail(t, fmt.Sprintf("Expected nil, but got: %#v", give), fmtAndArgs)
+	return fail(t, fmt.Sprintf("Expected nil, but got:\n %+v", give), fmtAndArgs)
 }
 
 // NotNil asserts that the given is a not nil value

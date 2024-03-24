@@ -376,6 +376,8 @@ func ResponseToString(w *http.Response) string {
 }
 
 // ParseAccept header to strings. referred from gin framework
+//
+// eg: acceptHeader = "application/json, text/plain, */*"
 func ParseAccept(acceptHeader string) []string {
 	if acceptHeader == "" {
 		return []string{}
