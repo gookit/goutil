@@ -58,8 +58,8 @@ func IsNil(v reflect.Value) bool {
 	}
 }
 
-// IsValidatePtr check variable is a valid pointer.
-func IsValidatePtr(v reflect.Value) bool {
+// IsValidPtr check variable is a valid pointer.
+func IsValidPtr(v reflect.Value) bool {
 	return v.IsValid() && (v.Kind() == reflect.Ptr) && !v.IsNil()
 }
 

@@ -17,13 +17,13 @@ func TestIsNil(t *testing.T) {
 }
 
 func TestIsValidatePtr(t *testing.T) {
-	assert.False(t, reflects.IsValidatePtr(reflect.ValueOf(nil)))
+	assert.False(t, reflects.IsValidPtr(reflect.ValueOf(nil)))
 
-	assert.False(t, reflects.IsValidatePtr(reflect.ValueOf((*int)(nil))))
+	assert.False(t, reflects.IsValidPtr(reflect.ValueOf((*int)(nil))))
 
 	var s string
-	assert.False(t, reflects.IsValidatePtr(reflect.ValueOf(s)))
-	assert.True(t, reflects.IsValidatePtr(reflect.ValueOf(&s)))
+	assert.False(t, reflects.IsValidPtr(reflect.ValueOf(s)))
+	assert.True(t, reflects.IsValidPtr(reflect.ValueOf(&s)))
 }
 
 func TestIsFunc(t *testing.T) {
