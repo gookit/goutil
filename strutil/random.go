@@ -12,7 +12,7 @@ import (
 
 // some consts string chars
 const (
-	MaximumCapacity = 1 << 31
+	MaximumCapacity = math.MaxInt>>1 + 1
 	Numbers         = "0123456789"
 	HexChars        = "0123456789abcdef" // base16
 
@@ -76,7 +76,7 @@ func buildRandomString(letters string, length int) string {
 			cache, remain = rn.Int63(), letterIdMax
 		}
 		// 从可用字符的字符串中随机选择一个字符
-		if idx := int(cache & letterIdMask); idx < len(letters) {
+		if idx := int(cache & letterIdMask); idx < strLength {
 			bytes[i] = letters[idx]
 			i--
 		}
