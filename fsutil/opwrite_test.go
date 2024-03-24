@@ -15,9 +15,7 @@ func TestMustCopyFile(t *testing.T) {
 	assert.NoErr(t, fsutil.RmIfExist(srcPath))
 	assert.NoErr(t, fsutil.RmFileIfExist(dstPath))
 
-	_, err := fsutil.PutContents(srcPath, "hello")
-	assert.NoErr(t, err)
-
+	fsutil.Must2(fsutil.PutContents(srcPath, "hello"))
 	fsutil.MustCopyFile(srcPath, dstPath)
 	assert.Eq(t, []byte("hello"), fsutil.GetContents(dstPath))
 	assert.Eq(t, "hello", fsutil.ReadString(dstPath))

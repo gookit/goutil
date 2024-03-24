@@ -203,21 +203,21 @@ func TestGetFromAny_sliceSubValue(t *testing.T) {
 	assert.Nil(t, val)
 }
 
-func TestKeys(t *testing.T) {
-	mp := map[string]any{
-		"key0": "v0",
-		"key1": "v1",
-		"key2": 34,
-	}
+var testMp01 = map[string]any{
+	"key0": "v0",
+	"key1": "v1",
+	"key2": 34,
+}
 
-	ln := len(mp)
-	ret := maputil.Keys(mp)
+func TestKeys(t *testing.T) {
+	ln := len(testMp01)
+	ret := maputil.Keys(testMp01)
 	assert.Len(t, ret, ln)
 	assert.Contains(t, ret, "key0")
 	assert.Contains(t, ret, "key1")
 	assert.Contains(t, ret, "key2")
 
-	ret = maputil.Keys(&mp)
+	ret = maputil.Keys(&testMp01)
 	assert.Len(t, ret, ln)
 	assert.Contains(t, ret, "key0")
 	assert.Contains(t, ret, "key1")
@@ -225,19 +225,18 @@ func TestKeys(t *testing.T) {
 	ret = maputil.Keys(struct {
 		a string
 	}{"v"})
-
 	assert.Len(t, ret, 0)
+
+	t.Run("typed map", func(t *testing.T) {
+		ret := maputil.TypedKeys(testMp01)
+		assert.Len(t, ret, ln)
+		assert.Contains(t, ret, "key0")
+	})
 }
 
 func TestValues(t *testing.T) {
-	mp := map[string]any{
-		"key0": "v0",
-		"key1": "v1",
-		"key2": 34,
-	}
-
-	ln := len(mp)
-	ret := maputil.Values(mp)
+	ln := len(testMp01)
+	ret := maputil.Values(testMp01)
 
 	assert.Len(t, ret, ln)
 	assert.Contains(t, ret, "v0")
@@ -247,8 +246,14 @@ func TestValues(t *testing.T) {
 	ret = maputil.Values(struct {
 		a string
 	}{"v"})
-
 	assert.Len(t, ret, 0)
+
+	t.Run("typed map", func(t *testing.T) {
+		ret := maputil.TypedValues(testMp01)
+		assert.Len(t, ret, ln)
+		assert.Contains(t, ret, "v0")
+		assert.Contains(t, ret, 34)
+	})
 }
 
 func TestEachAnyMap(t *testing.T) {
@@ -346,4 +351,42 @@ func TestIssues_109(t *testing.T) {
 	dump.P(ids, arrutil.AnyToStrings(ids))
 	assert.True(t, ok)
 	assert.Len(t, ids, 2)
+}
+
+func TestEachTypedMap_HappyPath(t *testing.T) {
+	mp := map[string]int{
+		"key1": 1,
+		"key2": 2,
+		"key3": 3,
+	}
+
+	var keys []string
+	var values []int
+
+	maputil.EachTypedMap(mp, func(key string, val int) {
+		keys = append(keys, key)
+		values = append(values, val)
+	})
+
+	assert.Eq(t, []string{"key1", "key2", "key3"}, keys)
+	assert.Eq(t, []int{1, 2, 3}, values)
+}
+
+func TestEachTypedMap_NonStringKeys(t *testing.T) {
+	mp := map[int]int{
+		1: 1,
+		2: 2,
+		3: 3,
+	}
+
+	var keys []int
+	var values []int
+
+	maputil.EachTypedMap(mp, func(key int, val int) {
+		keys = append(keys, key)
+		values = append(values, val)
+	})
+
+	assert.Eq(t, []int{1, 2, 3}, keys)
+	assert.Eq(t, []int{1, 2, 3}, values)
 }

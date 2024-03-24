@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
@@ -35,11 +36,21 @@ func UnixPath(path string) string {
 	return strings.ReplaceAll(path, "\\", "/")
 }
 
-// ToAbsPath convert process. will expand home dir
+// ToAbsPath convert path to absolute path.
+// Will expand home dir, if empty will return current work dir
 //
-// TIP: will don't check path
+// TIP: will don't check path is really exists
 func ToAbsPath(p string) string {
-	if len(p) == 0 || IsAbsPath(p) {
+	// return current work dir
+	if len(p) == 0 {
+		wd, err := os.Getwd()
+		if err != nil {
+			return p
+		}
+		return wd
+	}
+
+	if IsAbsPath(p) {
 		return p
 	}
 
@@ -54,3 +65,6 @@ func ToAbsPath(p string) string {
 	}
 	return filepath.Join(wd, p)
 }
+
+// Must2 ok for (any, error) result. if has error, will panic
+func Must2(_ any, err error) { basefn.MustOK(err) }

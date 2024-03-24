@@ -32,7 +32,7 @@ func NewHttpRequest(method, path string, data *MD) *http.Request {
 	return NewHTTPRequest(method, path, data)
 }
 
-// NewHTTPRequest for http testing
+// NewHTTPRequest quick create request for http testing
 // Usage:
 //
 //	req := NewHttpRequest("GET", "/path", nil)
@@ -130,6 +130,21 @@ func (r *EchoReply) ContentType() string {
 	return r.Headers["Content-Type"].(string)
 }
 
+// EchoServer for testing http request.
+type EchoServer struct {
+	*httptest.Server
+}
+
+// HostAddr get host address. eg: 127.0.0.1:8999
+func (s *EchoServer) HostAddr() string {
+	return s.Listener.Addr().String()
+}
+
+// HTTPHost get http host address. eg: http://127.0.0.1:8999
+func (s *EchoServer) HTTPHost() string {
+	return "http://" + s.HostAddr()
+}
+
 // NewEchoServer create an echo server for testing.
 //
 // Usage on testing:
@@ -140,7 +155,7 @@ func (r *EchoReply) ContentType() string {
 //		// create server
 //		s := testutil.NewEchoServer()
 //		defer s.Close()
-//		testSrvAddr = "http://" + s.Listener.Addr().String()
+//		testSrvAddr = s.HTTPHost()
 //		fmt.Println("Test server listen on:", testSrvAddr)
 //
 //		m.Run()
@@ -150,8 +165,8 @@ func (r *EchoReply) ContentType() string {
 //	res := http.Get(testSrvAddr)
 //	rpl := testutil.ParseRespToReply(res)
 //	// assert ...
-func NewEchoServer() *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func NewEchoServer() *EchoServer {
+	hs := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.Header().Set("Server", "goutil/echo-server")
 		w.WriteHeader(http.StatusOK)
@@ -164,6 +179,10 @@ func NewEchoServer() *httptest.Server {
 			_, _ = w.Write([]byte(`{"error": "encode error"}`))
 		}
 	}))
+
+	return &EchoServer{
+		Server: hs,
+	}
 }
 
 // BuildEchoReply build reply body data

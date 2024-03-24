@@ -15,7 +15,7 @@ var testSrvAddr string
 func TestMain(m *testing.M) {
 	s := testutil.NewEchoServer()
 	defer s.Close()
-	testSrvAddr = "http://" + s.Listener.Addr().String()
+	testSrvAddr = s.HTTPHost()
 	fmt.Println("Test server listen on:", testSrvAddr)
 
 	m.Run()
@@ -50,6 +50,13 @@ func TestPanicIfErr(t *testing.T) {
 	assert.Eq(t, "hi", goutil.Must("hi", nil))
 	assert.Panics(t, func() {
 		goutil.Must("hi", errors.New("a error"))
+	})
+
+	assert.NotPanics(t, func() {
+		goutil.MustIgnore(nil, nil)
+	})
+	assert.Panics(t, func() {
+		goutil.MustIgnore(nil, errors.New("a error"))
 	})
 }
 

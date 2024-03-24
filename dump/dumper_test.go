@@ -213,7 +213,7 @@ func TestDumper_AccessCantExportedField1(t *testing.T) {
 
 // ------------------------- map -------------------------
 
-func TestDump_Map(t *testing.T) {
+func TestDump_Map(_ *testing.T) {
 	m4 := map[string]any{
 		"key1": 12,
 		"key2": "val1",
@@ -360,11 +360,11 @@ var (
 	s1 = st1{st0{2}, 23, "inhere"}
 )
 
-func TestDump_Struct(t *testing.T) {
+func TestDump_Struct(_ *testing.T) {
 	P(user)
 }
 
-func TestStruct_WithNested(t *testing.T) {
+func TestStruct_WithNested(_ *testing.T) {
 	// buffer := new(bytes.Buffer)
 	dumper := newStd()
 	dumper.IndentChar = '.'
@@ -423,7 +423,7 @@ func TestStruct_WithNested(t *testing.T) {
 	// }
 }
 
-func TestDumper_Dump_userType(t *testing.T) {
+func TestDumper_Dump_userType(_ *testing.T) {
 	type testSt struct {
 		name string
 		mod  fs.FileMode
