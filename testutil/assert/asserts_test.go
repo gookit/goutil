@@ -315,4 +315,7 @@ func TestContains(t *testing.T) {
 	assert.ContainsKeys(t, mp, []string{"name", "age"})
 	assert.NotContainsKey(t, mp, "addr")
 	assert.NotContainsKeys(t, mp, []string{"addr"})
+
+	assert.ContainsElems(t, []string{"def"}, []string{"def"})
+	assert.ContainsElems(t, []string{"def", "abc"}, []string{"def"})
 }

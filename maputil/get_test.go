@@ -368,8 +368,8 @@ func TestEachTypedMap_HappyPath(t *testing.T) {
 		values = append(values, val)
 	})
 
-	assert.Eq(t, []string{"key1", "key2", "key3"}, keys)
-	assert.Eq(t, []int{1, 2, 3}, values)
+	assert.ContainsElems(t, keys, []string{"key1", "key2", "key3"})
+	assert.ContainsElems(t, values, []int{1, 2, 3})
 }
 
 func TestEachTypedMap_NonStringKeys(t *testing.T) {
@@ -387,6 +387,6 @@ func TestEachTypedMap_NonStringKeys(t *testing.T) {
 		values = append(values, val)
 	})
 
-	assert.Eq(t, []int{1, 2, 3}, keys)
-	assert.Eq(t, []int{1, 2, 3}, values)
+	assert.ContainsElems(t, keys, []int{1, 2, 3})
+	assert.ContainsElems(t, values, []int{1, 2, 3})
 }

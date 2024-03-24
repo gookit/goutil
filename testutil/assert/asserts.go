@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
@@ -285,6 +286,18 @@ func NotContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 	}
 
 	return true
+}
+
+// ContainsElems asserts that the given list should contains sub elements.
+func ContainsElems[T comdef.ScalarType](t TestingT, list, sub []T, fmtAndArgs ...any) bool {
+	if arrutil.ContainsAll(list, sub) {
+		return true
+	}
+
+	t.Helper()
+
+	// not contains all
+	return fail(t, fmt.Sprintf("%#v\nShould contain: %#v", list, sub), fmtAndArgs)
 }
 
 // StrContains asserts that the given strings is contains sub-string
