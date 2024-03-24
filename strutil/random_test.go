@@ -26,7 +26,7 @@ func TestRandomCharsV2(t *testing.T) {
 		fmt.Println(str)
 		assert.Len(t, str, 6)
 		keyMp[str] = true
-		time.Sleep(time.Microsecond * 10)
+		// time.Sleep(time.Microsecond * 10)
 	}
 
 	assert.Len(t, keyMp, 10)
@@ -41,7 +41,7 @@ func TestRandomCharsV2_issues121(t *testing.T) {
 		fmt.Println(str)
 		assert.Len(t, str, 32)
 		keyMp[str] = true
-		time.Sleep(time.Microsecond * 10)
+		// time.Sleep(time.Microsecond * 10)
 	}
 
 	assert.Len(t, keyMp, 10)
@@ -56,7 +56,7 @@ func TestRandomCharsV3(t *testing.T) {
 		fmt.Println(str)
 		assert.Len(t, str, 4)
 		keyMp[str] = true
-		time.Sleep(time.Microsecond * 10)
+		// time.Sleep(time.Microsecond * 10)
 	}
 
 	assert.Len(t, keyMp, size)
@@ -71,7 +71,7 @@ func TestRandWithTpl(t *testing.T) {
 		fmt.Println(str)
 		assert.Len(t, str, 4)
 		keyMp[str] = true
-		time.Sleep(time.Microsecond * 10)
+		// time.Sleep(time.Microsecond * 10)
 	}
 
 	assert.NotEmpty(t, strutil.RandWithTpl(8, ""))
