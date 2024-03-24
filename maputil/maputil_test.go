@@ -37,6 +37,18 @@ func TestSimpleMerge(t *testing.T) {
 	assert.Eq(t, "sv2", dm.Str("sub.s2"))
 }
 
+func TestMerge1level(t *testing.T) {
+	ret := maputil.Merge1level(map[string]any{"A": "v0"}, map[string]any{"A": "v1", "B": "v2"})
+	assert.Len(t, ret, 2)
+	assert.Eq(t, "v1", ret["A"])
+
+	ret = maputil.Merge1level(map[string]any{"A": "v0"}, nil)
+	assert.Eq(t, "v0", ret["A"])
+
+	ret = maputil.Merge1level(nil, map[string]any{"A": "v1", "B": "v2"})
+	assert.Eq(t, "v1", ret["A"])
+}
+
 func TestMergeStringMap(t *testing.T) {
 	ret := maputil.MergeSMap(map[string]string{"A": "v0"}, map[string]string{"A": "v1"}, false)
 	assert.Eq(t, map[string]string{"A": "v0"}, ret)
