@@ -10,6 +10,9 @@ import (
 	"github.com/gookit/goutil/internal/comfunc"
 )
 
+// PathSep alias of os.PathSeparator
+const PathSep = os.PathSeparator
+
 // JoinPaths elements, alias of filepath.Join()
 func JoinPaths(elem ...string) string {
 	return filepath.Join(elem...)

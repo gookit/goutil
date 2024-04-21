@@ -11,7 +11,7 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// provide some commonly time consts
+// provide some commonly time constants
 const (
 	OneSecond   = 1
 	OneMinSec   = 60
@@ -19,6 +19,12 @@ const (
 	OneDaySec   = 86400
 	OneWeekSec  = 7 * 86400
 	OneMonthSec = 30 * 86400
+
+	MinSec   = OneMinSec
+	HourSec  = OneHourSec
+	DaySec   = OneDaySec
+	WeekSec  = OneWeekSec
+	MonthSec = OneMonthSec
 
 	Microsecond = time.Microsecond
 	Millisecond = time.Millisecond
