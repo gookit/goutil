@@ -13,6 +13,10 @@ func TestIsEmpty(t *testing.T) {
 	is.True(goutil.IsEmpty(nil))
 	is.False(goutil.IsZero("abc"))
 	is.False(goutil.IsEmpty("abc"))
+
+	is.True(goutil.IsEmptyReal(nil))
+	is.False(goutil.IsZeroReal("abc"))
+	is.False(goutil.IsEmptyReal("abc"))
 }
 
 func TestIsFunc(t *testing.T) {
