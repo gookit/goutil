@@ -69,10 +69,15 @@ func TestInitDefaults_error(t *testing.T) {
 }
 
 func TestInitDefaults_parseEnv(t *testing.T) {
+	type Child struct {
+		Name string `default:"${ NAME | child-name }"`
+	}
 	type App struct {
-		Name  string `default:"${ APP_NAME | my-app }"`
-		Env   string `default:"${ APP_ENV | dev}"`
-		Debug bool   `default:"${ APP_DEBUG | false}"`
+		Name   string `default:"${ APP_NAME | my-app }"`
+		Env    string `default:"${ APP_ENV | dev}"`
+		Debug  bool   `default:"${ APP_DEBUG | false}"`
+		Child1 Child  `default:""`
+		Child2 Child  `default:"" defaultenvprefix:"APP_CHILD_"`
 	}
 
 	optFn := func(opt *structs.InitOptions) {
@@ -86,13 +91,17 @@ func TestInitDefaults_parseEnv(t *testing.T) {
 	assert.Eq(t, "my-app", obj.Name)
 	assert.Eq(t, "dev", obj.Env)
 	assert.False(t, obj.Debug)
+	assert.Eq(t, "child-name", obj.Child1.Name)
+	assert.Eq(t, "child-name", obj.Child2.Name)
 
 	// load from env
 	obj = &App{}
 	testutil.MockEnvValues(map[string]string{
-		"APP_NAME":  "goods",
-		"APP_ENV":   "prod",
-		"APP_DEBUG": "true",
+		"APP_NAME":       "goods",
+		"APP_ENV":        "prod",
+		"APP_DEBUG":      "true",
+		"NAME":           "child1",
+		"APP_CHILD_NAME": "child2",
 	}, func() {
 		err := structs.InitDefaults(obj, optFn)
 		assert.NoErr(t, err)
@@ -101,6 +110,8 @@ func TestInitDefaults_parseEnv(t *testing.T) {
 	assert.Eq(t, "goods", obj.Name)
 	assert.Eq(t, "prod", obj.Env)
 	assert.True(t, obj.Debug)
+	assert.Eq(t, "child1", obj.Child1.Name)
+	assert.Eq(t, "child2", obj.Child2.Name)
 }
 
 func TestInitDefaults_convTypeError(t *testing.T) {
