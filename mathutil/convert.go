@@ -196,7 +196,7 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 			// handle the case where the string might be a float
 			var floatVal float64
 			if floatVal, err = strconv.ParseFloat(strings.TrimSpace(tVal), 64); err == nil {
-				iVal = int(floatVal)
+				iVal = int(math.Round(floatVal))
 				err = nil
 			}
 		}
