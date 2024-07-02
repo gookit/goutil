@@ -192,7 +192,14 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 			iVal = int(tVal)
 		}
 	case string:
-		iVal, err = strconv.Atoi(strings.TrimSpace(tVal))
+		if iVal, err = strconv.Atoi(strings.TrimSpace(tVal)); err != nil {
+			// handle the case where the string might be a float
+			var floatVal float64
+			if floatVal, err = strconv.ParseFloat(strings.TrimSpace(tVal), 64); err == nil {
+				iVal = int(math.Round(floatVal))
+				err = nil
+			}
+		}
 	case comdef.Int64able: // eg: json.Number
 		var i64 int64
 		if i64, err = tVal.Int64(); err == nil {
