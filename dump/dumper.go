@@ -279,7 +279,12 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		// up: special handel time.Time struct
 		if t == timeType {
-			timeStr := v.Interface().(time.Time).Format(time.RFC3339)
+			var timeStr string
+			if v.CanInterface() {
+				timeStr = v.Interface().(time.Time).Format(time.RFC3339)
+			} else {
+				timeStr = v.String()
+			}
 			d.printf("time.Time(%s),\n", d.ColorTheme.string(timeStr))
 			break
 		}
