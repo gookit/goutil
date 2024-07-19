@@ -510,6 +510,7 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 			}
 		}
 
+		b.WriteByte('\n')
 		buf.WriteStr1(b.String())
 	})
 }
