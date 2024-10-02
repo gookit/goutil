@@ -20,7 +20,7 @@ type InitOptFunc func(opt *InitOptions)
 // InitOptions struct
 type InitOptions struct {
 	// TagName default value tag name. tag: default
-	TagName string
+	TagName          string
 	EnvPrefixTagName string
 	// ParseEnv var name on default value. eg: `default:"${APP_ENV}"`
 	//
@@ -181,7 +181,7 @@ func initDefaults(rv reflect.Value, opt *InitOptions, envPrefix string) error {
 func enhanceDefaultVar(val string, envPrefix string) string {
 	cleaned_var := strings.TrimSpace(val)
 	if strings.HasPrefix(cleaned_var, "${") && strings.HasSuffix(cleaned_var, "}") {
-		parts := strings.SplitN(cleaned_var[2 : len(cleaned_var) - 1], "|", 2)
+		parts := strings.SplitN(cleaned_var[2:len(cleaned_var)-1], "|", 2)
 		if len(parts) > 0 {
 			env := strings.TrimSpace(parts[0])
 			if env != "" {
@@ -189,7 +189,7 @@ func enhanceDefaultVar(val string, envPrefix string) string {
 					return fmt.Sprintf("${%s%s}", envPrefix, env)
 				} else {
 					return fmt.Sprintf("${%s%s|%s}", envPrefix, env, parts[1])
-				}	
+				}
 			}
 		}
 	}
@@ -214,7 +214,13 @@ func initDefaultValue(fv reflect.Value, val string, parseEnv bool, envPrefix str
 		ss := strutil.SplitTrimmed(val, ",")
 		valRv, err := reflects.ConvSlice(reflect.ValueOf(ss), fv.Type().Elem())
 		if err == nil {
-			reflects.SetRValue(fv, valRv)
+			if fv.Kind() == reflect.Array {
+				for i := 0; i < valRv.Len(); i++ {
+					fv.Index(i).Set(valRv.Index(i))
+				}
+			} else {
+				reflects.SetRValue(fv, valRv)
+			}
 		}
 		return err
 	}

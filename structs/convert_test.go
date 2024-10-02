@@ -217,3 +217,47 @@ func TestTryToMap_customTag(t *testing.T) {
 
 	assert.ContainsKeys(t, mp, []string{"name", "age", "full_name"})
 }
+
+// https://github.com/gookit/goutil/issues/192
+func TestIssue192(t *testing.T) {
+	// go code
+	type Structure struct {
+		// I don't want to expose too many infos, but here it goes only a set of float64 numbers, without any complex type or pointers
+	}
+
+	type MyStruct struct {
+		ID         string     `json:"id" gorm:"column:id"`
+		RefId      int        `json:"ref_id" gorm:"column:ref_id"`
+		PhotoURL   string     `json:"photoURL" gorm:"column:photo_url"`
+		Year       int        `json:"year" gorm:"column:year"`
+		SomeDate   string     `json:"someDate" gorm:"column:some_date"`
+		Trim       string     `json:"trim" gorm:"column:trim"`
+		Type       string     `json:"type" gorm:"column:type"`
+		BodyType   string     `json:"bodyType" gorm:"column:body_type"`
+		Counter    int        `json:"counter" gorm:"column:counter"`
+		Used       bool       `json:"used" gorm:"column:used"`
+		Price      float64    `json:"price" gorm:"column:price"`
+		Value      float64    `json:"value" gorm:"column:value"`
+		Amount     float64    `json:"amount" gorm:"-:all"`
+		MaxAmount  float64    `json:"maxAmount" gorm:"column:max_amount"`
+		StockNo    string     `json:"stockNo" gorm:"column:stock_no"`
+		ExpiresAt  *string    `json:"expiresAt" gorm:"column:expires_at"`
+		UpdatedBy  *string    `json:"updatedBy" gorm:"column:updated_by"`
+		Location   string     `json:"location" gorm:"column:location"`
+		IsFavorite bool       `json:"is_favorite,omitempty" gorm:"-"`
+		Structure  *Structure `json:"structure,omitempty" gorm:"-:all"`
+	}
+
+	data := MyStruct{
+		ID:       "ABC123",
+		RefId:    1,
+		Year:     1990,
+		SomeDate: "2020-01-03 15:02:15",
+		Counter:  9001,
+		Price:    20,
+	}
+
+	toMap, err := structs.TryToMap(data) // <- it panics!
+	assert.NoErr(t, err)
+	dump.P(toMap)
+}

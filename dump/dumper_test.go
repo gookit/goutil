@@ -7,6 +7,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 	"unsafe"
 
 	"github.com/gookit/color"
@@ -425,17 +426,19 @@ func TestStruct_WithNested(_ *testing.T) {
 
 func TestDumper_Dump_userType(_ *testing.T) {
 	type testSt struct {
-		name string
-		mod  fs.FileMode
-		Mod2 fs.FileMode
-		Age  int
+		name      string
+		mod       fs.FileMode
+		Mod2      fs.FileMode
+		Age       int
+		createdAt time.Time
 	}
 
 	st := testSt{
-		name: "inhere",
-		mod:  0777,
-		Mod2: 0775,
-		Age:  23,
+		name:      "inhere",
+		mod:       0777,
+		Mod2:      0775,
+		Age:       23,
+		createdAt: time.Now(),
 	}
 
 	fmt.Println("------ use dumper ------")

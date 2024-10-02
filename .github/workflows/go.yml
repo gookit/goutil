@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        go_version: [1.19, '1.20', 1.21, 1.22]
+        go_version: [1.19, '1.20', 1.21, 1.22, 1.23]
 
     steps:
     - name: Check out code
@@ -31,16 +31,16 @@ jobs:
       with:
         go-version: ${{ matrix.go_version }}
 
-    - name: Revive check
-      uses: morphy2k/revive-action@v2.5.7
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.go_version == '1.20' }}
-      with:
-        # Exclude patterns, separated by semicolons (optional)
-        exclude: "./internal/..."
+#    - name: Revive check
+#      uses: morphy2k/revive-action@v2.5.10
+#      if: ${{ matrix.os == 'ubuntu-latest' && matrix.go_version == '1.22' }}
+#      with:
+#        # Exclude patterns, separated by semicolons (optional)
+#        exclude: "./internal/..."
 
     - name: Run staticcheck
       uses: reviewdog/action-staticcheck@v1
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.go_version == '1.20' }}
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.go_version == '1.22' }}
       with:
         github_token: ${{ secrets.github_token }}
         # Change reviewdog reporter if you need [github-pr-check,github-check,github-pr-review].

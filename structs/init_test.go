@@ -261,3 +261,17 @@ func TestInitDefaults_ptrField(t *testing.T) {
 	assert.Eq(t, 30, *u.Age)
 	assert.Eq(t, "sh", u.City)
 }
+
+// https://github.com/gookit/goutil/issues/172
+// panic: reflect.Set: value of type []int is not assignable to type [3]int
+func TestIssues172(t *testing.T) {
+	type Config struct {
+		Ints [3]int `default:"1,2,3"`
+	}
+
+	var c Config
+
+	err := structs.InitDefaults(&c)
+	assert.NoErr(t, err)
+	assert.Eq(t, [3]int{1, 2, 3}, c.Ints)
+}
