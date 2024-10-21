@@ -49,7 +49,9 @@ func NewApp(fns ...func(app *App)) *App {
 	return app
 }
 
-// Add command(s) to app
+// Add command(s) to app.
+//
+// NOTE: command object should create use NewCmd()
 func (a *App) Add(cmds ...*Cmd) {
 	for _, cmd := range cmds {
 		a.addCmd(cmd)
@@ -72,6 +74,14 @@ func (a *App) addCmd(c *Cmd) {
 
 	// attach handle func
 	if c.Func != nil {
+		// fix: init c.CFlags on not exist
+		if c.CFlags == nil {
+			c.CFlags = NewEmpty(func(cf *CFlags) {
+				cf.Desc = c.Desc
+				cf.FlagSet = flag.NewFlagSet(c.Name, flag.ContinueOnError)
+			})
+		}
+
 		c.CFlags.Func = func(_ *CFlags) error {
 			return c.Func(c)
 		}
@@ -145,7 +155,7 @@ func (a *App) showHelp() error {
 	for _, name := range a.names {
 		c := a.cmds[name]
 		name := strutil.PadRight(name, " ", a.NameWidth)
-		buf.Printf("  <green>%s</>  %s\n", name, strutil.UpperFirst(c.Desc))
+		buf.Printf("  <green>%s</>  %s\n", name, strutil.UpperFirst(c.getDesc()))
 	}
 
 	name := strutil.PadRight("help", " ", a.NameWidth)
@@ -168,8 +178,9 @@ func (a *App) showHelp() error {
 type Cmd struct {
 	*CFlags
 	Name  string
-	Func  func(c *Cmd) error
+	Desc  string // desc for command, will sync to CFlags.Desc
 	OnAdd func(c *Cmd)
+	Func  func(c *Cmd) error
 }
 
 // NewCmd instance
@@ -191,4 +202,11 @@ func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
 		fn(c)
 	}
 	return c
+}
+
+func (c *Cmd) getDesc() string {
+	if c.CFlags.Desc != "" {
+		return c.CFlags.Desc
+	}
+	return c.Desc
 }

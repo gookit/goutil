@@ -191,6 +191,16 @@ func main() {
 		return nil
 	}
 
+	// add cmd by struct
+	app.Add(&cflag.Cmd{
+	    Name: "demo2",
+	    Desc: "this is demo2 command",
+	    Func: func(c *cflag.Cmd) error {
+		    dump.P("hi, on demo2 command")
+		    return nil
+	    },
+	})
+
 	// Multiple commands can be added
 	app.Add(c1)
 

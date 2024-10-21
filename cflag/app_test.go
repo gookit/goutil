@@ -96,6 +96,16 @@ func TestApp_Run(t *testing.T) {
 		app.Add(c1)
 	})
 
+	// add cmd by struct
+	app.Add(&cflag.Cmd{
+		Name: "demo2",
+		Desc: "this is demo2 command",
+		Func: func(c *cflag.Cmd) error {
+			dump.P("hi, on demo2 command")
+			return nil
+		},
+	})
+
 	// show help1
 	osArgs := os.Args
 	os.Args = []string{"./myapp"}

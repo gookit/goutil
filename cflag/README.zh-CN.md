@@ -195,6 +195,16 @@ func main() {
 		return nil
 	}
 
+	// add cmd by struct
+	app.Add(&cflag.Cmd{
+	  Name: "demo2",
+	  Desc: "this is demo2 command",
+	  Func: func(c *cflag.Cmd) error {
+	    dump.P("hi, on demo2 command")
+	    return nil
+	  },
+	})
+
 	// 可以添加多个命令
 	app.Add(c1)
 
