@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 	"sort"
 
 	"github.com/gookit/color"
@@ -127,7 +127,8 @@ func (a *App) RunWithArgs(args []string) error {
 
 func (a *App) init() {
 	if a.Name == "" {
-		a.Name = path.Base(os.Args[0])
+		// fix: path.Base not support windows
+		a.Name = filepath.Base(os.Args[0])
 	}
 }
 
