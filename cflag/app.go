@@ -31,7 +31,9 @@ type App struct {
 	// AfterHelpBuild hook
 	AfterHelpBuild func(buf *strutil.Buffer)
 	// BeforeRun hook func
-	BeforeRun func(c *Cmd) bool
+	//  - cmdArgs: input args for current command, not parsed.
+	//  - return false to stop run.
+	BeforeRun func(c *Cmd, cmdArgs []string) bool
 }
 
 // NewApp instance
@@ -124,10 +126,11 @@ func (a *App) RunWithArgs(args []string) error {
 		return fmt.Errorf("input not exists command %q", name)
 	}
 
-	if a.BeforeRun != nil && !a.BeforeRun(cmd) {
+	cmdArgs := args[1:]
+	if a.BeforeRun != nil && !a.BeforeRun(cmd, cmdArgs) {
 		return nil
 	}
-	return cmd.Parse(args[1:])
+	return cmd.Parse(cmdArgs)
 }
 
 func (a *App) init() {
