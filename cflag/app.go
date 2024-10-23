@@ -30,6 +30,8 @@ type App struct {
 
 	// AfterHelpBuild hook
 	AfterHelpBuild func(buf *strutil.Buffer)
+	// BeforeRun hook func
+	BeforeRun func(c *Cmd) bool
 }
 
 // NewApp instance
@@ -97,6 +99,7 @@ func (a *App) Run() {
 	err := a.RunWithArgs(os.Args[1:])
 	if err != nil {
 		cliutil.Errorln("ERROR:", err)
+		os.Exit(1)
 	}
 }
 
@@ -112,7 +115,6 @@ func (a *App) RunWithArgs(args []string) error {
 	if name == "help" || name == "--help" || name == "-h" {
 		return a.showHelp()
 	}
-
 	if name[0] == '-' {
 		return fmt.Errorf("provide undefined flag option %q", name)
 	}
@@ -122,6 +124,9 @@ func (a *App) RunWithArgs(args []string) error {
 		return fmt.Errorf("input not exists command %q", name)
 	}
 
+	if a.BeforeRun != nil && !a.BeforeRun(cmd) {
+		return nil
+	}
 	return cmd.Parse(args[1:])
 }
 
