@@ -106,3 +106,13 @@ func Contains(data, elem any) (valid, found bool) {
 	}
 	return true, false
 }
+
+// StringsContains check string slice contains string
+func StringsContains(ss []string, s string) bool {
+	for _, v := range ss {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}
