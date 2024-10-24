@@ -24,6 +24,7 @@ func TestNewCmd(t *testing.T) {
 		assert.Eq(t, "ls -l -h -a ./", c.Cmdline())
 	})
 
+	// SafeOutput
 	out := c.SafeOutput()
 	fmt.Println(out)
 	assert.NotEmpty(t, out)
@@ -33,4 +34,14 @@ func TestNewCmd(t *testing.T) {
 	c.ResetArgs()
 	assert.Len(t, c.Args, 1)
 	assert.Empty(t, c.OnlyArgs())
+}
+
+func TestCmdRun(t *testing.T) {
+	t.Run("AllOutput", func(t *testing.T) {
+		c := cmdr.NewCmd("echo", "OK")
+		assert.Eq(t, "OK", c.Args[1])
+		output, err := c.AllOutput()
+		assert.NoErr(t, err)
+		assert.Eq(t, "OK\n", output)
+	})
 }

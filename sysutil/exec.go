@@ -1,7 +1,6 @@
 package sysutil
 
 import (
-	"bytes"
 	"os/exec"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
@@ -19,12 +18,12 @@ func FlushExec(bin string, args ...string) error {
 	return cmdr.NewCmd(bin, args...).FlushRun()
 }
 
-// QuickExec quick exec a simple command line
+// QuickExec quick exec a simple command line, return combined output.
 func QuickExec(cmdLine string, workDir ...string) (string, error) {
 	return ExecLine(cmdLine, workDir...)
 }
 
-// ExecLine quick exec a command line string.
+// ExecLine quick exec a command line string, return combined output.
 //
 //	NOTE: not support | or ; in cmdLine
 func ExecLine(cmdLine string, workDir ...string) (string, error) {
@@ -36,11 +35,11 @@ func ExecLine(cmdLine string, workDir ...string) (string, error) {
 		cmd.Dir = workDir[0]
 	}
 
-	bs, err := cmd.Output()
+	bs, err := cmd.CombinedOutput()
 	return string(bs), err
 }
 
-// ExecCmd a command and return output.
+// ExecCmd a command and return combined output.
 //
 // Usage:
 //
@@ -52,11 +51,11 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 		cmd.Dir = workDir[0]
 	}
 
-	bs, err := cmd.Output()
+	bs, err := cmd.CombinedOutput()
 	return string(bs), err
 }
 
-// ShellExec exec command by shell cmdLine.
+// ShellExec exec command by shell cmdLine, return combined output.
 //
 // shells e.g. "/bin/sh", "bash", "cmd", "cmd.exe", "powershell", "powershell.exe", "pwsh", "pwsh.exe"
 //
@@ -82,12 +81,7 @@ func ShellExec(cmdLine string, shells ...string) (string, error) {
 		}
 	}
 
-	var out bytes.Buffer
 	cmd := exec.Command(shell, mark, cmdLine)
-	cmd.Stdout = &out
-
-	if err := cmd.Run(); err != nil {
-		return "", err
-	}
-	return out.String(), nil
+	bs, err := cmd.CombinedOutput()
+	return string(bs), err
 }

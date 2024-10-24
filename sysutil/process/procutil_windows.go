@@ -1,7 +1,6 @@
 package process
 
 import (
-	"errors"
 	"syscall"
 
 	"golang.org/x/sys/windows"
@@ -13,9 +12,17 @@ const (
 	stillActive = 259
 )
 
-// Kill a process by pid
+// Kill a process by pid. use taskkill on windows
+//
+// CMD example:
+//
+//	taskkill /pid 1234
+//	taskkill /pid 1234 /f
 func Kill(pid int, signal syscall.Signal) error {
-	return errors.New("not support")
+	taskKill := windows.NewLazySystemDLL("taskkill")
+	proc := taskKill.NewProc("TaskKill")
+	_, _, err := proc.Call(uintptr(pid), uintptr(signal), 0)
+	return err
 }
 
 // Exists check process running by given pid
