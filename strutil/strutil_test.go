@@ -25,6 +25,12 @@ func TestValid(t *testing.T) {
 	is.Eq("cd", strutil.OrElse("", "cd"))
 	is.Eq("ab", strutil.OrElse("ab", "cd"))
 
+	var str = "non-empty"
+	is.Equal(str, strutil.OrElseNilSafe(&str, "fallback"))
+	str = ""
+	is.Equal("fallback", strutil.OrElseNilSafe(&str, "fallback"))
+	is.Equal("default", strutil.OrElseNilSafe(nil, "default"))
+
 	is.Eq(" ", strutil.ZeroOr(" ", "cd"))
 	is.Eq("cd", strutil.ZeroOr("", "cd"))
 	is.Eq("ab", strutil.ZeroOr("ab", "cd"))
