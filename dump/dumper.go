@@ -279,13 +279,13 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		// up: special handel time.Time struct
 		if t == timeType {
-			var timeStr string
-			if v.CanInterface() {
-				timeStr = v.Interface().(time.Time).Format(time.RFC3339)
-			} else {
-				timeStr = v.String()
-			}
-			d.printf("time.Time(%s),\n", d.ColorTheme.string(timeStr))
+			d.printf("time.Time(%s),\n", d.ColorTheme.string(d.fmtTimeValue(v)))
+			break
+		}
+		// up: if is type alias of time.Time, use datetime format
+		if !isPtr && t.ConvertibleTo(timeType) {
+			tv := v.Convert(timeType)
+			d.printf("%s(%s),\n", t.String(), d.ColorTheme.string(d.fmtTimeValue(tv)))
 			break
 		}
 
@@ -414,6 +414,16 @@ func (d *Dumper) rvStringer(rt reflect.Type, rv reflect.Value) string {
 		return d.ColorTheme.valTip(` #str: "` + rv.Interface().(fmt.Stringer).String() + `"`)
 	}
 	return ""
+}
+
+func (d *Dumper) fmtTimeValue(v reflect.Value) string {
+	var timeStr string
+	if v.CanInterface() {
+		timeStr = v.Interface().(time.Time).Format(time.RFC3339)
+	} else {
+		timeStr = v.String()
+	}
+	return timeStr
 }
 
 func (d *Dumper) print(v ...any) {
