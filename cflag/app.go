@@ -31,9 +31,11 @@ type App struct {
 	// AfterHelpBuild hook
 	AfterHelpBuild func(buf *strutil.Buffer)
 	// BeforeRun hook func
-	//  - cmdArgs: input args for current command, not parsed.
+	//  - cmdArgs: input raw args for current command.
 	//  - return false to stop run.
 	BeforeRun func(c *Cmd, cmdArgs []string) bool
+	// AfterRun hook func
+	AfterRun func(c *Cmd, err error)
 }
 
 // NewApp instance
@@ -130,7 +132,14 @@ func (a *App) RunWithArgs(args []string) error {
 	if a.BeforeRun != nil && !a.BeforeRun(cmd, cmdArgs) {
 		return nil
 	}
-	return cmd.Parse(cmdArgs)
+
+	err := cmd.Parse(cmdArgs)
+
+	// fire after run hook
+	if a.AfterRun != nil {
+		a.AfterRun(cmd, err)
+	}
+	return err
 }
 
 func (a *App) init() {
