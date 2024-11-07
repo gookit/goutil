@@ -105,6 +105,14 @@ func TestSplitTrimmed(t *testing.T) {
 	assert.Eq(t, `[]string{"a", ", b,c"}`, fmt.Sprintf("%#v", ss))
 }
 
+func TestSplitByWhitespace(t *testing.T) {
+	ss := strutil.SplitByWhitespace("a  b c")
+	assert.Eq(t, `[]string{"a", "b", "c"}`, fmt.Sprintf("%#v", ss))
+
+	ss = strutil.SplitByWhitespace("a\r\nb\tc d")
+	assert.Eq(t, `[]string{"a", "b", "c", "d"}`, fmt.Sprintf("%#v", ss))
+}
+
 func TestSubstr(t *testing.T) {
 	assert.Eq(t, "abc", strutil.Substr("abcDef", 0, 3))
 	assert.Eq(t, "cD", strutil.Substr("abcDef", 2, 2))
