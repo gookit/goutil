@@ -15,7 +15,7 @@ import (
 	"flag"
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/gookit/color"
@@ -399,7 +399,7 @@ func (c *CFlags) RemainArgs() []string { return c.remainArgs }
 
 // Name for command
 func (c *CFlags) Name() string {
-	return path.Base(c.FlagSet.Name())
+	return filepath.Base(c.FlagSet.Name())
 }
 
 // BinFile path for command
@@ -497,7 +497,7 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 		} else {
 			// Four spaces before the tab triggers good alignment
 			// for both 4- and 8-space tab stops.
-			b.WriteString("\n    \t")
+			b.WriteString("\n          \t")
 		}
 		b.WriteString(strings.ReplaceAll(usage, "\n", "\n    \t"))
 

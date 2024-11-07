@@ -2,7 +2,7 @@ package cliutil
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 
 	"golang.org/x/term"
 )
@@ -15,7 +15,7 @@ func Workdir() string {
 
 // BinDir get
 func BinDir() string {
-	return path.Dir(os.Args[0])
+	return filepath.Dir(os.Args[0])
 }
 
 // BinFile get
@@ -25,7 +25,7 @@ func BinFile() string {
 
 // BinName get
 func BinName() string {
-	return path.Base(os.Args[0])
+	return filepath.Base(os.Args[0])
 }
 
 // exec: `stty -a 2>&1`

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
+	"path/filepath"
 	"reflect"
 	"runtime"
 	"strconv"
@@ -149,7 +149,7 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 		case Ffile: // full file path
 			nodes = append(nodes, file)
 		case Ffname: // only file name
-			fName := path.Base(file) // file name
+			fName := filepath.Base(file) // file name
 			nodes = append(nodes, fName)
 		default: // Fline
 			nodes = append(nodes, ":", lineS)

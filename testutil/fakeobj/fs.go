@@ -3,7 +3,7 @@ package fakeobj
 import (
 	"io"
 	"io/fs"
-	"path"
+	"path/filepath"
 	"time"
 
 	"github.com/gookit/goutil/basefn"
@@ -21,7 +21,7 @@ type DirEntry struct {
 // NewDirEntry create a fs.DirEntry
 func NewDirEntry(fpath string, isDir ...bool) *DirEntry {
 	isd := basefn.FirstOr(isDir, false)
-	return &DirEntry{Nam: path.Base(fpath), Dir: isd, Mod: fs.ModePerm}
+	return &DirEntry{Nam: filepath.Base(fpath), Dir: isd, Mod: fs.ModePerm}
 }
 
 // Name get
@@ -76,7 +76,7 @@ func NewFile(fpath string) *FileInfo {
 func NewFileInfo(fpath string, isDir ...bool) *FileInfo {
 	return &FileInfo{
 		Dir:  basefn.FirstOr(isDir, false),
-		Nam:  path.Base(fpath),
+		Nam:  filepath.Base(fpath),
 		Mod:  fs.ModePerm,
 		Path: fpath,
 	}

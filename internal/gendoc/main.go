@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -87,9 +86,9 @@ func (o genOptsSt) tplFilename() string {
 
 func (o genOptsSt) tplFilepath(givePath string) string {
 	if givePath != "" {
-		return path.Join(o.tplDir, givePath)
+		return filepath.Join(o.tplDir, givePath)
 	}
-	return path.Join(o.tplDir, o.tplFilename())
+	return filepath.Join(o.tplDir, o.tplFilename())
 }
 
 var (
