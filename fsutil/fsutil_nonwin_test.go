@@ -9,8 +9,9 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestSlashPath_nw(t *testing.T) {
+func TestJoinPaths_nw(t *testing.T) {
 	assert.Eq(t, "path/to/dir", fsutil.JoinPaths("path", "to", "dir"))
+	assert.Eq(t, "path/to/dir", fsutil.JoinPaths3("path", "to", "dir"))
 	assert.Eq(t, "path/to/dir", fsutil.JoinSubPaths("path", "to", "dir"))
 }
 

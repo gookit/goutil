@@ -18,12 +18,14 @@ func JoinPaths(elem ...string) string {
 	return filepath.Join(elem...)
 }
 
+// JoinPaths3 elements, like the filepath.Join()
+func JoinPaths3(basePath, secPath string, elems ...string) string {
+	return comfunc.JoinPaths3(basePath, secPath, elems)
+}
+
 // JoinSubPaths elements, like the filepath.Join()
-func JoinSubPaths(basePath string, elem ...string) string {
-	paths := make([]string, len(elem)+1)
-	paths[0] = basePath
-	copy(paths[1:], elem)
-	return filepath.Join(paths...)
+func JoinSubPaths(basePath string, elems ...string) string {
+	return comfunc.JoinPaths2(basePath, elems)
 }
 
 // SlashPath alias of filepath.ToSlash
@@ -69,5 +71,5 @@ func ToAbsPath(p string) string {
 	return filepath.Join(wd, p)
 }
 
-// Must2 ok for (any, error) result. if has error, will panic
+// Must2 ok for (any, error) result. if it has error, will panic
 func Must2(_ any, err error) { basefn.MustOK(err) }

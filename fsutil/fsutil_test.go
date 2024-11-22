@@ -24,6 +24,8 @@ func TestSplitPath(t *testing.T) {
 	dir, file := fsutil.SplitPath("/path/to/dir/some.txt")
 	assert.Eq(t, "/path/to/dir/", dir)
 	assert.Eq(t, "some.txt", file)
+
+	assert.NotEmpty(t, fsutil.PathSep)
 }
 
 func TestToAbsPath(t *testing.T) {
