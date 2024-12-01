@@ -40,11 +40,11 @@ func TestToInt(t *testing.T) {
 	// To int
 	iVal, err := goutil.ToInt("2")
 	is.Nil(err)
-	is.Eq(int(2), iVal)
+	is.Eq(2, iVal)
 
 	iVal = goutil.Int("-2")
 	is.Nil(err)
-	is.Eq(int(-2), iVal)
+	is.Eq(-2, iVal)
 
 	// To int64
 	i64Val, err := goutil.ToInt64("2")

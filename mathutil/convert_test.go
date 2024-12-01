@@ -241,6 +241,7 @@ func TestToInt(t *testing.T) {
 		is.Eq(-2, intVal)
 
 		is.Eq(0, mathutil.SafeInt(nil))
+		is.Eq(2, mathutil.SafeInt("2.3"))
 		is.Eq(-2, mathutil.MustInt("-2"))
 		is.Eq(-2, mathutil.IntOrPanic("-2"))
 		is.Eq(2, mathutil.IntOrDefault("invalid", 2))
@@ -353,6 +354,7 @@ func TestToInt(t *testing.T) {
 			is.Eq(int64(0), mathutil.SafeInt64(in))
 		}
 
+		is.Eq(int64(2), mathutil.SafeInt64("2.3"))
 		is.Eq(int64(0), mathutil.QuietInt64(nil))
 		is.Eq(int64(2), mathutil.Int64OrDefault("invalid", 2))
 		is.Panics(func() {

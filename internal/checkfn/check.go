@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -116,3 +117,9 @@ func StringsContains(ss []string, s string) bool {
 	}
 	return false
 }
+
+// check is number: int or float
+var numReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
+
+// IsNumeric returns true if the given string is a numeric, otherwise false.
+func IsNumeric(s string) bool { return numReg.MatchString(s) }
