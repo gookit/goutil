@@ -31,7 +31,7 @@ func ProcInfo(pid int) (*os.Process, error) {
 	return os.FindProcess(pid)
 }
 
-// PIDByName get PID by process name match
+// PIDByName get PID by process name match(by pgrep)
 func PIDByName(keywords string) int {
 	// pgrep keywords
 	binFile := "pgrep"
@@ -54,4 +54,18 @@ func KillByName(keywords string, sig syscall.Signal) error {
 		return Kill(pid, sig)
 	}
 	return errors.New("not found process pid of " + keywords)
+}
+
+// StopProcessOption stop process option
+type StopProcessOption struct {
+	// Check if the process exists before stopping it
+	CheckExist bool
+	// Whether to force exit the process
+	ForceKill bool
+	// Whether to wait for the process to exit
+	WaitExit bool
+	// How long to wait for the process to exit
+	ExitTimeout int
+	// Signal to send to the process(non-win)
+	Signal syscall.Signal
 }
