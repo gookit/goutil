@@ -13,6 +13,7 @@ package cflag
 
 import (
 	"flag"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -233,10 +234,10 @@ func (c *CFlags) Parse(args []string) error {
 
 	defer func() {
 		if err := recover(); err != nil {
-			if Debug {
-				cliutil.Errorln("recover error on run parse")
-			}
 			cliutil.Errorln("ERROR:", err)
+			if Debug {
+				fmt.Println(errorx.Newf("(debug mode)RECOVERD PARSE ERROR: %v", err))
+			}
 		}
 	}()
 
@@ -492,14 +493,14 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 
 		// Boolean flags of one ASCII letter are so common we
 		// treat them specially, putting their usage on the same line.
-		if b.Len() <= 20 { // space, space, '-', 'x'.
+		if b.Len() <= 32 { // space, space, '-', 'x'.
 			b.WriteString("\t")
 		} else {
 			// Four spaces before the tab triggers good alignment
 			// for both 4- and 8-space tab stops.
 			b.WriteString("\n          \t")
 		}
-		b.WriteString(strings.ReplaceAll(usage, "\n", "\n    \t"))
+		b.WriteString(strings.ReplaceAll(usage, "\n", "\n          \t"))
 
 		// put quotes on the string value
 		if isZero, isStr := IsZeroValue(opt, opt.DefValue); !isZero {

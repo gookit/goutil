@@ -11,6 +11,7 @@ import (
 	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -103,6 +104,9 @@ func (a *App) Run() {
 	err := a.RunWithArgs(os.Args[1:])
 	if err != nil {
 		cliutil.Errorln("ERROR:", err)
+		if Debug {
+			fmt.Println(errorx.Newf("(debug mode)RUNTIME ERROR: %v", err))
+		}
 		os.Exit(1)
 	}
 }
