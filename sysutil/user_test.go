@@ -20,17 +20,31 @@ func TestUserDir(t *testing.T) {
 	assert.NotEmpty(t, dir2)
 	assert.Eq(t, dir1, dir2)
 
-	dir = sysutil.UserDir("sub-path")
-	assert.Contains(t, dir, "/sub-path")
-	dump.P(dir)
+	if sysutil.IsWin() {
+		dir = sysutil.UserDir("sub-path")
+		assert.Contains(t, dir, "\\sub-path")
+		dump.P(dir)
 
-	dir = sysutil.UserCacheDir("my-logs")
-	assert.Contains(t, dir, ".cache/my-logs")
-	dump.P(dir)
+		dir = sysutil.UserCacheDir("my-logs")
+		assert.Contains(t, dir, ".cache\\my-logs")
+		dump.P(dir)
 
-	dir = sysutil.UserConfigDir("my-conf")
-	assert.Contains(t, dir, ".config/my-conf")
-	dump.P(dir)
+		dir = sysutil.UserConfigDir("my-conf")
+		assert.Contains(t, dir, ".config\\my-conf")
+		dump.P(dir)
+	} else {
+		dir = sysutil.UserDir("sub-path")
+		assert.Contains(t, dir, "/sub-path")
+		dump.P(dir)
+
+		dir = sysutil.UserCacheDir("my-logs")
+		assert.Contains(t, dir, ".cache/my-logs")
+		dump.P(dir)
+
+		dir = sysutil.UserConfigDir("my-conf")
+		assert.Contains(t, dir, ".config/my-conf")
+		dump.P(dir)
+	}
 
 	rawPath := "~/.kite"
 	assert.LenGt(t, sysutil.ExpandPath(rawPath), len(rawPath))
