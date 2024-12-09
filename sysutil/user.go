@@ -65,7 +65,7 @@ func UserCacheDir(subPaths ...string) string {
 
 // UserConfigDir will prepend user `$HOME/.config` to subPath
 func UserConfigDir(subPaths ...string) string {
-	return comfunc.JoinPaths3(UserHomeDir(), ".cache", subPaths)
+	return comfunc.JoinPaths3(UserHomeDir(), ".config", subPaths)
 }
 
 // ExpandPath will parse `~` as user home dir path.
