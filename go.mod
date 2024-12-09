@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/gookit/color v1.5.4
 	golang.org/x/sync v0.8.0
-	golang.org/x/sys v0.26.0
-	golang.org/x/term v0.25.0
+	golang.org/x/sys v0.28.0
+	golang.org/x/term v0.27.0
 	golang.org/x/text v0.19.0
 )
 
