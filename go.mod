@@ -7,7 +7,7 @@ require (
 	golang.org/x/sync v0.11.0
 	golang.org/x/sys v0.30.0
 	golang.org/x/term v0.28.0
-	golang.org/x/text v0.21.0
+	golang.org/x/text v0.22.0
 )
 
 require github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
