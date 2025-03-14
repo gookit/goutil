@@ -7,6 +7,32 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestIsInt(t *testing.T) {
+	assert.True(t, strutil.IsInt("123"))
+	assert.True(t, strutil.IsInt("0"))
+	assert.True(t, strutil.IsInt("456789"))
+
+	assert.False(t, strutil.IsInt("123.45"))
+	assert.False(t, strutil.IsInt("abc"))
+	assert.False(t, strutil.IsInt("123abc"))
+	assert.False(t, strutil.IsInt(""))
+}
+
+func TestIsFloat(t *testing.T) {
+	assert.True(t, strutil.IsFloat("123.45"))
+	assert.True(t, strutil.IsFloat("-123.45"))
+	assert.True(t, strutil.IsFloat("+123.45"))
+	assert.True(t, strutil.IsFloat("0.123"))
+	assert.True(t, strutil.IsFloat(".123"))
+	assert.True(t, strutil.IsFloat("123."))
+	assert.True(t, strutil.IsFloat("0"))
+
+	assert.False(t, strutil.IsFloat("123"))
+	assert.False(t, strutil.IsFloat("abc"))
+	assert.False(t, strutil.IsFloat("123abc"))
+	assert.False(t, strutil.IsFloat(""))
+}
+
 func TestIsAlphabet(t *testing.T) {
 	assert.True(t, strutil.IsNumChar('9'))
 	assert.False(t, strutil.IsNumChar('A'))

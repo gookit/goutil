@@ -6,18 +6,28 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/gookit/goutil/internal/checkfn"
 )
 
 // Equal check, alias of strings.EqualFold
 var Equal = strings.EqualFold
+var IsHttpURL = checkfn.IsHttpURL
 
 // IsNumChar returns true if the given character is a numeric, otherwise false.
 func IsNumChar(c byte) bool { return c >= '0' && c <= '9' }
 
-var numReg = regexp.MustCompile(`^\d+$`)
+var intReg = regexp.MustCompile(`^\d+$`)
+var floatReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
 
-// IsNumeric returns true if the given string is a numeric, otherwise false.
-func IsNumeric(s string) bool { return numReg.MatchString(s) }
+// IsInt check the string is an integer number
+func IsInt(s string) bool { return intReg.MatchString(s) }
+
+// IsFloat check the string is a float number
+func IsFloat(s string) bool { return floatReg.MatchString(s) }
+
+// IsNumeric returns true if the given string is a numeric(int/float), otherwise false.
+func IsNumeric(s string) bool { return checkfn.IsNumeric(s) }
 
 // IsAlphabet char
 func IsAlphabet(char uint8) bool {
