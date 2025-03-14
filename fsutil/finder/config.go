@@ -17,6 +17,18 @@ var (
 // FindFlag type for find result.
 type FindFlag uint8
 
+// String get string name
+func (f FindFlag) String() string {
+	switch f {
+	case FlagDir:
+		return "dir"
+	case FlagBoth:
+		return "both"
+	default:
+		return "file"
+	}
+}
+
 // flags for find result.
 const (
 	FlagFile FindFlag = iota + 1 // only find files(default)
@@ -24,7 +36,7 @@ const (
 	FlagBoth = FlagFile | FlagDir
 )
 
-// ToFlag convert string to FindFlag
+// ToFlag convert flag string to FindFlag
 func ToFlag(s string) FindFlag {
 	switch strings.ToLower(s) {
 	case "dirs", "dir", "d":
@@ -38,8 +50,9 @@ func ToFlag(s string) FindFlag {
 
 // Config for finder
 type Config struct {
-	init  bool
-	depth int
+	init bool
+	// DebugMode enable debug mode
+	DebugMode bool `json:"debug_mode"`
 
 	// ScanDirs scan dir paths for find.
 	ScanDirs []string `json:"scan_dirs"`
@@ -47,6 +60,8 @@ type Config struct {
 	FindFlags FindFlag `json:"find_flags"`
 	// MaxDepth for find result. default is 0 - not limit
 	MaxDepth int `json:"max_depth"`
+	// Concurrency goroutine number for find result. default is 1
+	Concurrency int `json:"concurrency"`
 	// UseAbsPath use abs path for find result. default is false
 	UseAbsPath bool `json:"use_abs_path"`
 	// CacheResult cache result for find result. default is false
@@ -79,7 +94,7 @@ type Config struct {
 	IncludeFiles []string `json:"include_files"`
 	// IncludePaths include file/dir path list. eg: {"path/to"}
 	IncludePaths []string `json:"include_paths"`
-	// IncludeNames include file/dir name list. eg: {"test", "some.go"}
+	// IncludeNames include file/dir name list. eg: {"test", "some.go", "*_test.go"}
 	IncludeNames []string `json:"include_names"`
 
 	// ExcludeDirs exclude dir name list. eg: {"test"}
@@ -90,7 +105,7 @@ type Config struct {
 	ExcludeFiles []string `json:"exclude_files"`
 	// ExcludePaths exclude file/dir path list. eg: {"path/to"}
 	ExcludePaths []string `json:"exclude_paths"`
-	// ExcludeNames exclude file/dir name list. eg: {"test", "some.go"}
+	// ExcludeNames exclude file/dir name list. eg: {"test", "some.go", "*_test.go"}
 	ExcludeNames []string `json:"exclude_names"`
 }
 
@@ -101,6 +116,7 @@ func NewConfig(dirs ...string) *Config {
 		FindFlags: FlagFile,
 		// with default setting.
 		ExcludeDotDir: true,
+		Concurrency:   1,
 	}
 }
 
@@ -201,6 +217,7 @@ func (c *Config) Init() *Config {
 	if c.init {
 		return c
 	}
+	c.init = true
 
 	// generic matchers
 	if len(c.IncludeNames) > 0 {
@@ -295,6 +312,16 @@ func (f *Finder) WithRules(addOrNot bool, rules []string) *Finder {
 // --------- config for finder ---------
 //
 
+// WithDebug enable debug mode
+func (f *Finder) WithDebug(enable ...bool) *Finder {
+	if len(enable) > 0 {
+		f.c.DebugMode = enable[0]
+	} else {
+		f.c.DebugMode = true
+	}
+	return f
+}
+
 // WithConfig on the finder
 func (f *Finder) WithConfig(c *Config) *Finder {
 	f.c = c
@@ -375,6 +402,12 @@ func (f *Finder) WithUseAbsPath(enable ...bool) *Finder {
 // WithMaxDepth set max depth for find.
 func (f *Finder) WithMaxDepth(i int) *Finder {
 	f.c.MaxDepth = i
+	return f
+}
+
+// WithConcurrency set goroutine number for find.
+func (f *Finder) WithConcurrency(i int) *Finder {
+	f.c.Concurrency = i
 	return f
 }
 

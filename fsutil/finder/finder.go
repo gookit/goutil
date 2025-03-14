@@ -4,10 +4,18 @@
 package finder
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"sync/atomic"
 )
+
+type scanDir struct {
+	path  string
+	depth int // current depth
+}
 
 // FileFinder type alias.
 type FileFinder = Finder
@@ -19,9 +27,12 @@ type Finder struct {
 	// last error
 	err error
 	// num - founded fs elem number
-	num int
+	num uint32
 	// ch - founded fs elem chan
 	ch chan Elem
+	wg sync.WaitGroup // 等待组跟踪任务
+	// dir queue channel, used for concurrency mode
+	dirQueue chan scanDir
 	// caches - cache found fs elem. if config.CacheResult is true
 	caches []Elem
 }
@@ -146,8 +157,6 @@ func (f *Finder) EachContents(fn func(contents, filePath string)) {
 // prepare for find.
 func (f *Finder) prepare() {
 	f.err = nil
-	f.ch = make(chan Elem, 8)
-
 	if f.CacheNum() == 0 {
 		f.num = 0
 	}
@@ -157,58 +166,93 @@ func (f *Finder) prepare() {
 	} else {
 		f.c.Init()
 	}
+
+	coNum := f.c.Concurrency
+	f.debugf("prepare done. flag: %s, co: %d", f.c.FindFlags, coNum)
+	f.debugf("config: %+v", f.c)
+	// 创建队列
+	f.ch = make(chan Elem, coNum*8)
+	f.dirQueue = make(chan scanDir, coNum*8)
 }
 
 // do finding
+//
+// Usage:
+//
+//	for el := range f.find() {
+//		fmt.Println(el.Path())
+//	}
 func (f *Finder) find() {
 	f.prepare()
 
+	// 启动工作goroutine
+	for i := 0; i < f.c.Concurrency; i++ {
+		go f.worker(i)
+	}
+
+	// 添加初始任务
+	f.addRootDirs()
+
+	// 等待所有任务完成并关闭通道
 	go func() {
-		defer close(f.ch)
-
-		// read from caches
-		if f.c.CacheResult && len(f.caches) > 0 {
-			for _, el := range f.caches {
-				f.ch <- el
-			}
-			return
-		}
-
-		// do finding
-		var err error
-		for _, dirPath := range f.c.ScanDirs {
-			if f.c.UseAbsPath {
-				dirPath, err = filepath.Abs(dirPath)
-				if err != nil {
-					f.err = err
-					continue
-				}
-			}
-
-			f.c.depth = 0
-			f.findDir(dirPath, f.c)
-		}
+		f.wg.Wait()
+		close(f.ch)
+		close(f.dirQueue)
+		f.debugf("all find task done. total: %d", f.num)
 	}()
+
+	f.debugf("find task started.")
+}
+
+// worker 处理目录的工作goroutine
+func (f *Finder) worker(index int) {
+	for sd := range f.dirQueue {
+		func() {
+			defer f.wg.Done()
+			f.debugf("worker#%d into dir: %s (depth: %d)", index, sd.path, sd.depth)
+			f.findDir(sd.path, sd.depth)
+		}()
+	}
+}
+
+func (f *Finder) addRootDirs() {
+	f.debugf("add scan root dirs: %v", f.c.ScanDirs)
+
+	var err error
+	for _, dirPath := range f.c.ScanDirs {
+		if f.c.UseAbsPath {
+			dirPath, err = filepath.Abs(dirPath)
+			if err != nil {
+				f.err = err
+				continue
+			}
+		}
+
+		// add task
+		f.wg.Add(1)
+		f.dirQueue <- scanDir{path: dirPath}
+	}
 }
 
 // code refer filepath.glob()
-func (f *Finder) findDir(dirPath string, c *Config) {
+func (f *Finder) findDir(dirPath string, depth int) {
 	des, err := os.ReadDir(dirPath)
 	if err != nil {
 		return // ignore I/O error
 	}
 
+	cfg := f.c
 	var ok bool
-	c.depth++
+	depth++
 	for _, ent := range des {
 		name := ent.Name()
 		isDir := ent.IsDir()
 		if name[0] == '.' {
 			if isDir {
-				if c.ExcludeDotDir {
+				if cfg.ExcludeDotDir {
 					continue
 				}
-			} else if c.ExcludeDotFile {
+			} else if cfg.ExcludeDotFile {
 				continue
 			}
 		}
@@ -217,71 +261,71 @@ func (f *Finder) findDir(dirPath string, c *Config) {
 		el := NewElem(fullPath, ent)
 
 		// apply generic filters
-		if !applyExMatchers(el, c.ExMatchers) {
+		if !applyExMatchers(el, cfg.ExMatchers) {
 			continue
 		}
 
 		// --- dir: apply dir filters
 		if isDir {
-			if !applyExMatchers(el, c.DirExMatchers) {
+			if !applyExMatchers(el, cfg.DirExMatchers) {
 				continue
 			}
 
-			if len(c.Matchers) > 0 {
-				ok = applyMatchers(el, c.Matchers)
-				if !ok && len(c.DirMatchers) > 0 {
-					ok = applyMatchers(el, c.DirMatchers)
+			if len(cfg.Matchers) > 0 {
+				ok = applyMatchers(el, cfg.Matchers)
+				if !ok && len(cfg.DirMatchers) > 0 {
+					ok = applyMatchers(el, cfg.DirMatchers)
 				}
 			} else {
-				ok = applyMatchers(el, c.DirMatchers)
+				ok = applyMatchers(el, cfg.DirMatchers)
 			}
 
-			if ok && c.FindFlags&FlagDir > 0 {
-				if c.CacheResult {
+			if ok && cfg.FindFlags&FlagDir > 0 {
+				if cfg.CacheResult {
 					f.caches = append(f.caches, el)
 				}
-				f.num++
 				f.ch <- el
+				atomic.AddUint32(&f.num, 1)
 
-				if c.FindFlags == FlagDir {
-					continue // only find subdir on ok=false
+				if cfg.FindFlags == FlagDir {
+					continue // only find sub-dir on ok=false
 				}
 			}
 
-			// find in sub dir.
-			if c.MaxDepth == 0 || c.depth < c.MaxDepth {
-				f.findDir(fullPath, c)
-				c.depth-- // restore depth
+			// find in sub dir. 添加子目录任务
+			if cfg.MaxDepth == 0 || depth < cfg.MaxDepth {
+				f.wg.Add(1)
+				f.dirQueue <- scanDir{path: fullPath, depth: depth}
 			}
 			continue
 		}
 
 		// --- type: file
-		if c.FindFlags&FlagFile == 0 {
+		if cfg.FindFlags&FlagFile == 0 {
 			continue
 		}
 
 		// apply file filters
-		if !applyExMatchers(el, c.FileExMatchers) {
+		if !applyExMatchers(el, cfg.FileExMatchers) {
 			continue
 		}
 
-		if len(c.Matchers) > 0 {
-			ok = applyMatchers(el, c.Matchers)
-			if !ok && len(c.FileMatchers) > 0 {
-				ok = applyMatchers(el, c.FileMatchers)
+		if len(cfg.Matchers) > 0 {
+			ok = applyMatchers(el, cfg.Matchers)
+			if !ok && len(cfg.FileMatchers) > 0 {
+				ok = applyMatchers(el, cfg.FileMatchers)
 			}
 		} else {
-			ok = applyMatchers(el, c.FileMatchers)
+			ok = applyMatchers(el, cfg.FileMatchers)
 		}
 
 		// write to consumer
-		if ok && c.FindFlags&FlagFile > 0 {
-			if c.CacheResult {
+		if ok && cfg.FindFlags&FlagFile > 0 {
+			if cfg.CacheResult {
 				f.caches = append(f.caches, el)
 			}
-			f.num++
 			f.ch <- el
+			atomic.AddUint32(&f.num, 1)
 		}
 	}
 }
@@ -324,31 +368,27 @@ func (f *Finder) ResetResult() {
 }
 
 // Num get found elem num. only valid after finding.
-func (f *Finder) Num() int {
-	return f.num
-}
+func (f *Finder) Num() uint32 { return f.num }
 
 // Err get last error
-func (f *Finder) Err() error {
-	return f.err
-}
+func (f *Finder) Err() error { return f.err }
 
 // Caches get cached results. only valid after finding.
-func (f *Finder) Caches() []Elem {
-	return f.caches
-}
+func (f *Finder) Caches() []Elem { return f.caches }
 
 // CacheNum get
-func (f *Finder) CacheNum() int {
-	return len(f.caches)
-}
+func (f *Finder) CacheNum() int { return len(f.caches) }
 
-// Config get
-func (f *Finder) Config() Config {
-	return *f.c
-}
+// Config get, NOTE: it's a copy of config.
+func (f *Finder) Config() Config { return *f.c }
 
 // String all dir paths
 func (f *Finder) String() string {
 	return strings.Join(f.c.ScanDirs, ";")
+}
+
+func (f *Finder) debugf(tpl string, vs ...any) {
+	if f.c.DebugMode {
+		fmt.Printf("Finder: "+tpl+"\n", vs...)
+	}
 }

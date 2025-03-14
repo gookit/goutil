@@ -2,9 +2,21 @@
 
 [![GoDoc](https://godoc.org/github.com/goutil/fsutil/finder?status.svg)](https://godoc.org/github.com/goutil/fsutil/finder)
 
-`finder` Provides a simple and convenient filedir lookup function, 
+`finder` Provides a simple and convenient file/dir lookup function, 
 supports filtering, excluding, matching, ignoring, etc.
 and with some commonly built-in matchers.
+
+- Support multiple paths to scan
+- Support concurrency scanning
+- Support find files and directories
+- Support filtering, excluding, matching, ignoring, etc.
+- Support built-in matchers, can also customize matchers
+
+## Install
+
+```shell
+go get github.com/gookit/goutil/fsutil/finder
+```
 
 ## Usage
 
@@ -13,13 +25,15 @@ package main
 
 import (
 	"github.com/gookit/goutil/dump"
-	"github.com/goutil/fsutil/finder"
+	"github.com/gookit/goutil/fsutil/finder"
 )
 
 func main() {
 	ff := finder.NewFinder()
 	ff.AddScan("/tmp", "/usr/local", "/usr/local/share")
 	ff.ExcludeDir("abc", "def").ExcludeFile("*.log", "*.tmp")
+	// add built-in matchers
+	ff.Exclude(finder.MatchSuffix("_test.go"), finder.MatchExt(".md"))
 
 	ss := ff.FindPaths()
 	dump.P(ss)

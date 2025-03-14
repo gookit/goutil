@@ -160,3 +160,16 @@ func TestFileFinder_ExcludeName(t *testing.T) {
 	assert.Contains(t, names, "matcher.go")
 	assert.NotContains(t, names, "elem.go")
 }
+
+func TestFileFinder_WithConcurrency(t *testing.T) {
+	// test with concurrency
+	f := finder.NewFinder("..").
+		WithDebug().
+		WithConcurrency(2).
+		ExcludeExt(".md").
+		ExcludeName("*_test.go")
+
+	for i, s := range f.FindPaths() {
+		fmt.Println(i+1, s)
+	}
+}
