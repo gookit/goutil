@@ -16,6 +16,13 @@ func Dir(fpath string) string { return filepath.Dir(fpath) }
 // PathName get file/dir name from full path
 func PathName(fpath string) string { return filepath.Base(fpath) }
 
+// PathNoExt get path from full path, without ext.
+//
+// eg: path/to/main.go => path/to/main
+func PathNoExt(fPath string) string {
+	return fPath[:len(fPath)-len(filepath.Ext(fPath))]
+}
+
 // Name get file/dir name from full path.
 //
 // eg: path/to/main.go => main.go

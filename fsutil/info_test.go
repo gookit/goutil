@@ -17,3 +17,21 @@ func TestExpandPath(t *testing.T) {
 	assert.Eq(t, "", fsutil.Expand(""))
 	assert.Eq(t, "/path/to", fsutil.Expand("/path/to"))
 }
+
+func TestPathNoExt(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"path/to/file.txt", "path/to/file"},
+		{"path/to/file", "path/to/file"},
+		{"path/to/.hiddenfile", "path/to/"},
+		{"path/to/file.tar.gz", "path/to/file.tar"},
+		{"", ""},
+	}
+
+	for _, test := range tests {
+		result := fsutil.PathNoExt(test.input)
+		assert.Eq(t, test.expected, result, "input: %s", test.input)
+	}
+}
