@@ -13,8 +13,8 @@ import (
 )
 
 type scanDir struct {
-	path  string
-	depth int // current depth
+	path  string // dir path to scan
+	depth int    // current depth
 }
 
 // FileFinder type alias.
@@ -30,7 +30,7 @@ type Finder struct {
 	num uint32
 	// ch - founded fs elem chan
 	ch chan Elem
-	wg sync.WaitGroup // 等待组跟踪任务
+	wg sync.WaitGroup // 等待组,跟踪任务完成
 	// dir queue channel, used for concurrency mode
 	dirQueue chan scanDir
 	// caches - cache found fs elem. if config.CacheResult is true
@@ -71,21 +71,18 @@ func EmptyFinder() *Finder { return NewEmpty() }
 //	for el := range f.Find() {
 //		fmt.Println(el.Path())
 //	}
-func (f *Finder) Find() <-chan Elem {
-	f.find()
-	return f.ch
-}
+func (f *Finder) Find() <-chan Elem { return f.find() }
 
 // Elems find and return founded file Elem. alias of Find()
-func (f *Finder) Elems() <-chan Elem { return f.Find() }
+func (f *Finder) Elems() <-chan Elem { return f.find() }
 
 // Results find and return founded file Elem. alias of Find()
-func (f *Finder) Results() <-chan Elem { return f.Find() }
+func (f *Finder) Results() <-chan Elem { return f.find() }
 
 // FindNames find and return founded file/dir names.
 func (f *Finder) FindNames() []string {
 	paths := make([]string, 0, 8*len(f.c.ScanDirs))
-	for el := range f.Find() {
+	for el := range f.find() {
 		paths = append(paths, el.Name())
 	}
 	return paths
@@ -94,7 +91,7 @@ func (f *Finder) FindNames() []string {
 // FindPaths find and return founded file/dir paths.
 func (f *Finder) FindPaths() []string {
 	paths := make([]string, 0, 8*len(f.c.ScanDirs))
-	for el := range f.Find() {
+	for el := range f.find() {
 		paths = append(paths, el.Path())
 	}
 	return paths
@@ -105,8 +102,7 @@ func (f *Finder) Each(fn func(el Elem)) { f.EachElem(fn) }
 
 // EachElem founded file or dir Elem.
 func (f *Finder) EachElem(fn func(el Elem)) {
-	f.find()
-	for el := range f.ch {
+	for el := range f.find() {
 		fn(el)
 	}
 }
@@ -161,6 +157,7 @@ func (f *Finder) prepare() {
 		f.num = 0
 	}
 
+	// ensure config
 	if f.c == nil {
 		f.c = NewConfig()
 	} else {
@@ -175,14 +172,24 @@ func (f *Finder) prepare() {
 	f.dirQueue = make(chan scanDir, coNum*8)
 }
 
-// do finding
+// Do finding
 //
 // Usage:
 //
 //	for el := range f.find() {
 //		fmt.Println(el.Path())
 //	}
-func (f *Finder) find() {
+func (f *Finder) find() <-chan Elem {
+	// has caches, return it
+	if len(f.caches) > 0 {
+		f.ch = make(chan Elem, 8)
+		defer close(f.ch)
+		for _, el := range f.caches {
+			f.ch <- el
+		}
+		return f.ch
+	}
+
 	f.prepare()
 
 	// 启动工作goroutine
@@ -202,6 +209,7 @@ func (f *Finder) find() {
 	}()
 
 	f.debugf("find task started.")
+	return f.ch
 }
 
 // worker 处理目录的工作goroutine

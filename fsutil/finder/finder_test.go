@@ -15,8 +15,33 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestFinder_findFile(t *testing.T) {
+func elemChanToStrings(ch <-chan finder.Elem) (list []string) {
+	for elem := range ch {
+		list = append(list, elem.Path())
+	}
+	return
+}
+
+func TestFinder_find_file(t *testing.T) {
 	f := finder.EmptyFinder().
+		WithDebug().
+		ScanDir(".").
+		NoDotFile().
+		NoDotDir().
+		ExcludeName("*_test.go").
+		WithoutExt(".jpg")
+
+	// find paths
+	assert.NotEmpty(t, f.FindNames())
+	assert.Eq(t, 0, f.CacheNum())
+
+	assert.NotEmpty(t, elemChanToStrings(f.Elems()))
+	assert.NotEmpty(t, elemChanToStrings(f.Results()))
+}
+
+func TestFinder_find_file_withCache(t *testing.T) {
+	f := finder.EmptyFinder().
+		WithDebug().
 		ScanDir("./testdata").
 		NoDotFile().
 		NoDotDir().
@@ -36,6 +61,10 @@ func TestFinder_findFile(t *testing.T) {
 	f.Each(func(elem finder.Elem) {
 		fmt.Println(elem)
 	})
+
+	assert.NotEmpty(t, elemChanToStrings(f.Find()))
+	assert.NotEmpty(t, elemChanToStrings(f.Elems()))
+	assert.NotEmpty(t, elemChanToStrings(f.Results()))
 
 	t.Run("each elem", func(t *testing.T) {
 		f.EachElem(func(elem finder.Elem) {

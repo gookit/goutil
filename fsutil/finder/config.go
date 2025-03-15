@@ -135,7 +135,7 @@ func NewEmptyConfig() *Config {
 //
 //	ext:.go,.yaml
 //	name:*_test.go,go.mod
-func (c *Config) LoadRules(addOrNot bool, rules []string) error {
+func (c *Config) LoadRules(addOrExclude bool, rules []string) error {
 	es := errorx.Errors{}
 	for i, rule := range rules {
 		if !strings.Contains(rule, ":") {
@@ -152,37 +152,37 @@ func (c *Config) LoadRules(addOrNot bool, rules []string) error {
 		patterns := strutil.Split(pattern, ",")
 		switch name {
 		case "ext", "exts":
-			if addOrNot {
+			if addOrExclude {
 				c.IncludeExts = append(c.IncludeExts, patterns...)
 			} else {
 				c.ExcludeExts = append(c.ExcludeExts, patterns...)
 			}
 		case "name", "names":
-			if addOrNot {
+			if addOrExclude {
 				c.IncludeNames = append(c.IncludeNames, patterns...)
 			} else {
 				c.ExcludeNames = append(c.ExcludeNames, patterns...)
 			}
 		case "file", "files":
-			if addOrNot {
+			if addOrExclude {
 				c.IncludeFiles = append(c.IncludeFiles, patterns...)
 			} else {
 				c.ExcludeFiles = append(c.ExcludeFiles, patterns...)
 			}
 		case "path", "paths":
-			if addOrNot {
+			if addOrExclude {
 				c.IncludePaths = append(c.IncludePaths, patterns...)
 			} else {
 				c.ExcludePaths = append(c.ExcludePaths, patterns...)
 			}
 		case "dir", "dirs":
-			if addOrNot {
+			if addOrExclude {
 				c.IncludeDirs = append(c.IncludeDirs, patterns...)
 			} else {
 				c.ExcludeDirs = append(c.ExcludeDirs, patterns...)
 			}
 		case "size": // size:>=1M,<=10M
-			if addOrNot {
+			if addOrExclude {
 				for _, expr := range patterns {
 					c.FileMatchers = append(c.FileMatchers, HumanSize(expr))
 				}
@@ -192,7 +192,7 @@ func (c *Config) LoadRules(addOrNot bool, rules []string) error {
 				}
 			}
 		case "time", "mtime": // mtime:>=1d,<=10d
-			if addOrNot {
+			if addOrExclude {
 				for _, expr := range patterns {
 					c.FileMatchers = append(c.FileMatchers, HumanModTime(expr))
 				}
@@ -218,6 +218,9 @@ func (c *Config) Init() *Config {
 		return c
 	}
 	c.init = true
+	if c.Concurrency < 1 {
+		c.Concurrency = 1
+	}
 
 	// generic matchers
 	if len(c.IncludeNames) > 0 {
@@ -303,8 +306,8 @@ func (f *Finder) ExcludeRules(rules []string) *Finder {
 //
 //	ext:.go,.yaml
 //	name:*_test.go,go.mod
-func (f *Finder) WithRules(addOrNot bool, rules []string) *Finder {
-	f.err = f.c.LoadRules(addOrNot, rules)
+func (f *Finder) WithRules(addOrExclude bool, rules []string) *Finder {
+	f.err = f.c.LoadRules(addOrExclude, rules)
 	return f
 }
 
@@ -471,7 +474,7 @@ func (f *Finder) ExcludeDir(dirs ...string) *Finder {
 // WithoutDir exclude dir names. alias of ExcludeDir()
 func (f *Finder) WithoutDir(dirs ...string) *Finder { return f.ExcludeDir(dirs...) }
 
-// WithoutNames exclude file or dir names.
+// WithoutNames exclude file or dir names. see Config.ExcludeNames
 func (f *Finder) WithoutNames(names []string) *Finder {
 	f.c.ExcludeNames = append(f.c.ExcludeNames, names...)
 	return f
