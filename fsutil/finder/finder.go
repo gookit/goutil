@@ -30,7 +30,8 @@ type Finder struct {
 	num uint32
 	// ch - founded fs elem chan
 	ch chan Elem
-	wg sync.WaitGroup // 等待组,跟踪任务完成
+	// 等待组,跟踪任务完成
+	wg sync.WaitGroup
 	// dir queue channel, used for concurrency mode
 	dirQueue chan scanDir
 	// caches - cache found fs elem. if config.CacheResult is true
@@ -39,17 +40,14 @@ type Finder struct {
 
 // New instance with source dir paths.
 func New(dirs []string) *Finder {
-	c := NewConfig(dirs...)
-	return NewWithConfig(c)
+	return NewWithConfig(NewConfig(dirs...))
 }
 
 // NewFinder new instance with source dir paths.
 func NewFinder(dirPaths ...string) *Finder { return New(dirPaths) }
 
 // NewWithConfig new instance with config.
-func NewWithConfig(c *Config) *Finder {
-	return &Finder{c: c}
-}
+func NewWithConfig(c *Config) *Finder { return &Finder{c: c} }
 
 // NewEmpty new empty Finder instance
 func NewEmpty() *Finder {
@@ -133,7 +131,7 @@ func (f *Finder) EachStat(fn func(fi os.FileInfo, filePath string)) {
 		if err == nil {
 			fn(fi, el.Path())
 		} else {
-			f.err = err
+			f.setError(err)
 		}
 	})
 }
@@ -145,7 +143,7 @@ func (f *Finder) EachContents(fn func(contents, filePath string)) {
 		if err == nil {
 			fn(string(bs), el.Path())
 		} else {
-			f.err = err
+			f.setError(err)
 		}
 	})
 }
@@ -165,7 +163,7 @@ func (f *Finder) prepare() {
 	}
 
 	coNum := f.c.Concurrency
-	f.debugf("prepare done. flag: %s, co: %d", f.c.FindFlags, coNum)
+	f.debugf("PREPARE done. type-flag: %s, concurrency: %d", f.c.FindFlags, coNum)
 	f.debugf("config: %+v", f.c)
 	// 创建队列
 	f.ch = make(chan Elem, coNum*8)
@@ -202,13 +200,18 @@ func (f *Finder) find() <-chan Elem {
 
 	// 等待所有任务完成并关闭通道
 	go func() {
+		f.debugf("waiting all task complete ...")
 		f.wg.Wait()
+
 		close(f.ch)
 		close(f.dirQueue)
-		f.debugf("all find task done. total: %d", f.num)
+		f.debugf("all find task DONE. total found: %d", f.num)
+
+		// reset wg
+		// f.wg = sync.WaitGroup{}
 	}()
 
-	f.debugf("find task started.")
+	f.debugf("find task STARTING ...")
 	return f.ch
 }
 
@@ -231,28 +234,29 @@ func (f *Finder) addRootDirs() {
 		if f.c.UseAbsPath {
 			dirPath, err = filepath.Abs(dirPath)
 			if err != nil {
-				f.err = err
+				f.setError(err)
 				continue
 			}
 		}
 
 		// add task
-		f.wg.Add(1)
+		f.debugf("add root-dir: %s", dirPath)
 		f.dirQueue <- scanDir{path: dirPath}
 	}
 }
 
 // code refer filepath.glob()
 func (f *Finder) findDir(dirPath string, depth int) {
-	des, err := os.ReadDir(dirPath)
+	deList, err := os.ReadDir(dirPath)
 	if err != nil {
 		return // ignore I/O error
 	}
 
 	cfg := f.c
-	var ok bool
 	depth++
-	for _, ent := range des {
+	var ok bool
+
+	for _, ent := range deList {
 		name := ent.Name()
 		isDir := ent.IsDir()
 		if name[0] == '.' {
@@ -288,6 +292,7 @@ func (f *Finder) findDir(dirPath string, depth int) {
 				ok = applyMatchers(el, cfg.DirMatchers)
 			}
 
+			// match ok, send to consumer
 			if ok && cfg.FindFlags&FlagDir > 0 {
 				if cfg.CacheResult {
 					f.caches = append(f.caches, el)
@@ -295,14 +300,14 @@ func (f *Finder) findDir(dirPath string, depth int) {
 				f.ch <- el
 				atomic.AddUint32(&f.num, 1)
 
-				if cfg.FindFlags == FlagDir {
-					continue // only find sub-dir on ok=false
-				}
+				// if cfg.FindFlags == FlagDir {
+				// 	continue // only find sub-dir on ok=false
+				// }
 			}
 
 			// find in sub dir. 添加子目录任务
 			if cfg.MaxDepth == 0 || depth < cfg.MaxDepth {
-				f.wg.Add(1)
+				f.debugf("add sub-dir: %s (depth: %d)", fullPath, depth)
 				f.dirQueue <- scanDir{path: fullPath, depth: depth}
 			}
 			continue
@@ -376,7 +381,7 @@ func (f *Finder) ResetResult() {
 }
 
 // Num get found elem num. only valid after finding.
-func (f *Finder) Num() uint32 { return f.num }
+func (f *Finder) Num() uint { return uint(f.num) }
 
 // Err get last error
 func (f *Finder) Err() error { return f.err }
@@ -398,5 +403,12 @@ func (f *Finder) String() string {
 func (f *Finder) debugf(tpl string, vs ...any) {
 	if f.c.DebugMode {
 		fmt.Printf("Finder: "+tpl+"\n", vs...)
+	}
+}
+
+func (f *Finder) setError(err error) {
+	if err != nil {
+		f.err = err
+		f.debugf("ERROR=%v", err)
 	}
 }
