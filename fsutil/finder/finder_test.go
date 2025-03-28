@@ -26,6 +26,7 @@ func TestFinder_find_file(t *testing.T) {
 	f := finder.EmptyFinder().
 		WithDebug().
 		ScanDir(".").
+		// ScanDir("C:\\Users\\inhere\\workspace\\godev\\gookit\\goutil").
 		NoDotFile().
 		NoDotDir().
 		ExcludeName("*_test.go").
@@ -41,6 +42,7 @@ func TestFinder_find_file(t *testing.T) {
 
 func TestFinder_find_file_withCache(t *testing.T) {
 	f := finder.EmptyFinder().
+		TypeFile().
 		WithDebug().
 		ScanDir("./testdata").
 		NoDotFile().
@@ -102,26 +104,36 @@ func TestFinder_find_file_withCache(t *testing.T) {
 }
 
 func TestFinder_OnlyFindDir(t *testing.T) {
+	// ff := finder.NewFinder("./../").
 	ff := finder.NewFinder("./../../").
+		// ff := finder.NewFinder("C:\\Users\\inhere\\workspace\\godev\\gookit").
+		// ff := finder.EmptyFinder().ScanDir("./../").
+		WithConcurrency(2).
 		OnlyFindDir().
 		UseAbsPath().
 		WithoutDotDir().
-		WithDirName("testdata")
+		WithDirName("testdata").
+		WithDebug()
 
-	ff.EachPath(func(filePath string) {
-		fmt.Println(filePath)
+	fmt.Println(ff.FindPaths())
+	// return
+
+	t.Run("EachPath", func(t *testing.T) {
+		ff.EachPath(func(filePath string) {
+			fmt.Println(filePath)
+		})
+		assert.Gt(t, ff.Num(), 0)
+		assert.Eq(t, 0, ff.CacheNum())
 	})
-	assert.Gt(t, ff.Num(), 0)
-	assert.Eq(t, 0, ff.CacheNum())
 
-	t.Run("each elem", func(t *testing.T) {
-		ff.Each(func(elem finder.Elem) {
-			fmt.Println(elem)
+	t.Run("Each", func(t *testing.T) {
+		ff.Each(func(el finder.Elem) {
+			fmt.Println(el)
 		})
 	})
 
 	ff.ResetResult()
-	assert.Eq(t, 0, ff.Num())
+	assert.Eq(t, uint(0), ff.Num())
 	assert.Eq(t, 0, ff.CacheNum())
 
 	t.Run("max depth", func(t *testing.T) {

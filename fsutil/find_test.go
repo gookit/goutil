@@ -12,6 +12,16 @@ import (
 	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
+func TestFilePathInDirs(t *testing.T) {
+	result := fsutil.FilePathInDirs("not_existing_file.txt")
+	assert.Empty(t, result)
+	result = fsutil.FilePathInDirs("not_existing_file.txt", "testdata")
+	assert.Empty(t, result)
+
+	result = fsutil.FilePathInDirs("find.go")
+	assert.NotEmpty(t, result)
+}
+
 func TestMatchFirst(t *testing.T) {
 	assert.Eq(t, "testdata", fsutil.MatchFirst([]string{"testdata"}, fsutil.IsDir, ""))
 
@@ -21,6 +31,8 @@ func TestMatchFirst(t *testing.T) {
 
 	ps := fsutil.MatchPaths([]string{"testdata", "testdata/test.jpg"}, fsutil.IsDir)
 	assert.Eq(t, []string{"testdata"}, ps)
+
+	assert.Eq(t, "default_dir", fsutil.MatchFirst([]string{"not_exist_dir"}, fsutil.IsDir, "default_dir"))
 }
 
 func TestSearchNameUp(t *testing.T) {

@@ -56,7 +56,7 @@ type Config struct {
 
 	// ScanDirs scan dir paths for find.
 	ScanDirs []string `json:"scan_dirs"`
-	// FindFlags for find result. default is FlagFile
+	// FindFlags type for find result. default is FlagFile
 	FindFlags FindFlag `json:"find_flags"`
 	// MaxDepth for find result. default is 0 - not limit
 	MaxDepth int `json:"max_depth"`
@@ -382,6 +382,12 @@ func (f *Finder) WithStrFlag(s string) *Finder {
 	f.c.FindFlags = ToFlag(s)
 	return f
 }
+
+// TypeFile only find file.
+func (f *Finder) TypeFile() *Finder { return f.WithFlags(FlagFile) }
+
+// TypeDir only find dir.
+func (f *Finder) TypeDir() *Finder { return f.WithFlags(FlagDir) }
 
 // OnlyFindDir only find dir.
 func (f *Finder) OnlyFindDir() *Finder { return f.WithFlags(FlagDir) }

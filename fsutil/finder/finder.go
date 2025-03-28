@@ -119,7 +119,7 @@ func (f *Finder) EachFile(fn func(file *os.File)) {
 		if err == nil {
 			fn(file)
 		} else {
-			f.err = err
+			f.setError(err)
 		}
 	})
 }
@@ -166,8 +166,8 @@ func (f *Finder) prepare() {
 	f.debugf("PREPARE done. type-flag: %s, concurrency: %d", f.c.FindFlags, coNum)
 	f.debugf("config: %+v", f.c)
 	// 创建队列
-	f.ch = make(chan Elem, coNum*8)
-	f.dirQueue = make(chan scanDir, coNum*8)
+	f.ch = make(chan Elem, coNum*8*3)
+	f.dirQueue = make(chan scanDir, coNum*8*2)
 }
 
 // Do finding
@@ -190,13 +190,13 @@ func (f *Finder) find() <-chan Elem {
 
 	f.prepare()
 
+	// 添加初始任务
+	f.addRootDirs()
+
 	// 启动工作goroutine
 	for i := 0; i < f.c.Concurrency; i++ {
 		go f.worker(i)
 	}
-
-	// 添加初始任务
-	f.addRootDirs()
 
 	// 等待所有任务完成并关闭通道
 	go func() {
@@ -217,13 +217,26 @@ func (f *Finder) find() <-chan Elem {
 
 // worker 处理目录的工作goroutine
 func (f *Finder) worker(index int) {
+	f.debugf("worker#%d STARTING ...", index)
 	for sd := range f.dirQueue {
-		func() {
-			defer f.wg.Done()
-			f.debugf("worker#%d into dir: %s (depth: %d)", index, sd.path, sd.depth)
-			f.findDir(sd.path, sd.depth)
-		}()
+		f.safeFindDir(index, sd.path, sd.depth)
 	}
+	f.debugf("worker#%d DONE.", index)
+}
+
+func (f *Finder) safeFindDir(index int, dirPath string, depth int) {
+	f.debugf("worker#%d into dir: %s (depth: %d)", index, dirPath, depth)
+
+	// recover error and always call wg.Done()
+	defer func() {
+		if err := recover(); err != nil {
+			f.debugf("worker#%d panic in dir: %s, ERROR: %v", index, dirPath, err)
+			f.setError(fmt.Errorf("worker#%d findDir panic, dir: %s, ERROR: %v", index, dirPath, err))
+		}
+		f.wg.Done()
+	}()
+
+	f.findDir(dirPath, depth)
 }
 
 func (f *Finder) addRootDirs() {
@@ -241,6 +254,7 @@ func (f *Finder) addRootDirs() {
 
 		// add task
 		f.debugf("add root-dir: %s", dirPath)
+		f.wg.Add(1)
 		f.dirQueue <- scanDir{path: dirPath}
 	}
 }
@@ -308,7 +322,11 @@ func (f *Finder) findDir(dirPath string, depth int) {
 			// find in sub dir. 添加子目录任务
 			if cfg.MaxDepth == 0 || depth < cfg.MaxDepth {
 				f.debugf("add sub-dir: %s (depth: %d)", fullPath, depth)
-				f.dirQueue <- scanDir{path: fullPath, depth: depth}
+				f.wg.Add(1)
+				// fix: 创建一个 goroutine 添加子目录任务，不然会造成阻塞
+				go func(p string, d int) {
+					f.dirQueue <- scanDir{path: p, depth: d}
+				}(fullPath, depth)
 			}
 			continue
 		}
