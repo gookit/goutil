@@ -30,6 +30,27 @@ func TestStringsToInts(t *testing.T) {
 	is.Nil(arrutil.StringsAsInts([]string{"abc"}))
 }
 
+func TestStringsUnique(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    []string
+		expected []string
+	}{
+		{"EmptyInput", []string{}, []string{}},
+		{"NoDuplicates", []string{"a", "b", "c"}, []string{"a", "b", "c"}},
+		{"WithDuplicates", []string{"a", "b", "a", "c", "b"}, []string{"a", "b", "c"}},
+		{"AllDuplicates", []string{"a", "a", "a"}, []string{"a"}},
+		{"Mixed", []string{"a", "b", "c", "a", "d", "b"}, []string{"a", "b", "c", "d"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := arrutil.StringsUnique(tt.input)
+			assert.Eq(t, tt.expected, result)
+		})
+	}
+}
+
 func TestStringsRemove(t *testing.T) {
 	ss := []string{"a", "b", "c"}
 	ns := arrutil.StringsRemove(ss, "b")

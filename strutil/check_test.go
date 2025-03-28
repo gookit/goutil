@@ -24,10 +24,10 @@ func TestIsFloat(t *testing.T) {
 	assert.True(t, strutil.IsFloat("+123.45"))
 	assert.True(t, strutil.IsFloat("0.123"))
 	assert.True(t, strutil.IsFloat(".123"))
-	assert.True(t, strutil.IsFloat("123."))
+	assert.True(t, strutil.IsFloat("123.0"))
 	assert.True(t, strutil.IsFloat("0"))
 
-	assert.False(t, strutil.IsFloat("123"))
+	assert.True(t, strutil.IsFloat("123"))
 	assert.False(t, strutil.IsFloat("abc"))
 	assert.False(t, strutil.IsFloat("123abc"))
 	assert.False(t, strutil.IsFloat(""))

@@ -237,7 +237,6 @@ func (d Data) Slice(key string) ([]any, error) {
 	if !ok {
 		return nil, nil
 	}
-
 	return arrutil.AnyToSlice(val)
 }
 

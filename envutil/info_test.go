@@ -15,6 +15,7 @@ func TestOS(t *testing.T) {
 		assert.True(t, isw)
 		assert.False(t, envutil.IsMac())
 		assert.False(t, envutil.IsLinux())
+		assert.True(t, envutil.IsWindows())
 	}
 
 	if ism := envutil.IsMac(); ism {

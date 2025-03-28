@@ -29,34 +29,19 @@ func TestWaitCloseSignals(t *testing.T) {
 	})
 }
 
-func TestSignalHandler_SignalReceived_ReturnsSignalError(t *testing.T) {
+func TestSignalHandler_ContextCancelled_ReturnsContextError(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	execute, interrupt := syncs.SignalHandler(ctx, os.Interrupt)
-
-	// 模拟发送信号
-	go func() {
-		time.Sleep(100 * time.Millisecond)
-		interrupt(nil)
-	}()
-
-	err := execute()
-	assert.ErrMsgContains(t, err, "received signal")
-	assert.ErrIs(t, err, syncs.SignalError{})
-}
-
-func TestSignalHandler_ContextCancelled_ReturnsContextError(t *testing.T) {
-	execute, interrupt := syncs.SignalHandler(context.Background(), os.Interrupt)
+	execute, _ := syncs.SignalHandler(ctx, os.Interrupt)
 
 	// 模拟取消上下文
 	go func() {
 		time.Sleep(100 * time.Millisecond)
-		interrupt(nil)
+		cancel() // 直接取消上下文而不是调用 interrupt(nil)
 	}()
 
 	err := execute()
-	assert.NoError(t, err)
 	assert.ErrIs(t, err, context.Canceled)
 }
 

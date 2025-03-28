@@ -43,7 +43,7 @@ func SafeRun(fn func()) (err error) {
 		}
 	}()
 	fn()
-	return nil
+	return err
 }
 
 // SafeRunWithError sync run a func with error.

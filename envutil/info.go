@@ -114,7 +114,7 @@ var specialColorTerms = map[string]bool{
 //
 // Supported:
 //
-//	linux, mac, or windows's ConEmu, Cmder, putty, git-bash.exe
+//	linux, mac, or Windows's ConEmu, Cmder, putty, git-bash.exe
 //
 // Not support:
 //
