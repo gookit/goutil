@@ -59,6 +59,18 @@ func NewApp(fns ...func(app *App)) *App {
 // Add command(s) to app.
 //
 // NOTE: command object should create use NewCmd()
+//
+// Usage:
+//
+//	app.Add(
+//		cflag.NewCmd("cmd1", "desc1"),
+//		cflag.NewCmd("cmd2", "desc2"),
+//	)
+//
+// Or:
+//
+//	app.Add(cflag.NewCmd("cmd1", "desc1"))
+//	app.Add(cflag.NewCmd("cmd2", "desc2"))
 func (a *App) Add(cmds ...*Cmd) {
 	for _, cmd := range cmds {
 		a.addCmd(cmd)
@@ -202,20 +214,26 @@ type Cmd struct {
 	Name  string
 	Desc  string // desc for command, will sync to CFlags.Desc
 	OnAdd func(c *Cmd)
-	Func  func(c *Cmd) error
+	// Func for run command, will call after options parsed.
+	Func func(c *Cmd) error
 }
 
 // NewCmd instance
-func NewCmd(name, desc string) *Cmd {
+func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
 	fs := NewEmpty(func(c *CFlags) {
 		c.Desc = desc
 		c.FlagSet = flag.NewFlagSet(name, flag.ContinueOnError)
 	})
 
-	return &Cmd{
+	cmd := &Cmd{
 		Name:   name,
 		CFlags: fs,
 	}
+
+	if len(runFunc) > 0 {
+		cmd.Func = runFunc[0]
+	}
+	return cmd
 }
 
 // Config the cmd

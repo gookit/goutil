@@ -31,6 +31,7 @@ func TestString_methods(t *testing.T) {
 
 	assert.NoErr(t, s.Set("val1,val2"))
 	assert.Eq(t, []string{"val1", "val2"}, s.Strings())
+	assert.Eq(t, []string{"val1", "val2"}, s.Split(","))
 
 	assert.NoErr(t, s.Set("23,34"))
 	assert.Eq(t, []int{23, 34}, s.Ints(","))

@@ -406,8 +406,8 @@ func ErrMsg(t TestingT, err error, wantMsg string, fmtAndArgs ...any) bool {
 	return true
 }
 
-// ErrSubMsg asserts that the given is a not nil error and the error message contains subMsg
-func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
+// ErrMsgContains asserts that the given is a not nil error and error message contains subMsg
+func ErrMsgContains(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
 	if err == nil {
 		t.Helper()
 		return fail(t, "An error is expected but got nil.", fmtAndArgs)
@@ -422,6 +422,11 @@ func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
 	}
 
 	return true
+}
+
+// ErrSubMsg asserts that the given is a not nil error and the error message contains subMsg
+func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
+	return ErrMsgContains(t, err, subMsg, fmtAndArgs...)
 }
 
 //

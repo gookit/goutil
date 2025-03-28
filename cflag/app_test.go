@@ -2,6 +2,7 @@ package cflag_test
 
 import (
 	"bytes"
+	"errors"
 	"os"
 	"testing"
 
@@ -142,4 +143,18 @@ func TestApp_Run(t *testing.T) {
 	assert.Eq(t, 230, c1Opts.age)
 	assert.Eq(t, "inhere", c1Opts.name)
 	assert.Eq(t, "val1", c1.Arg("arg1").String())
+}
+
+func TestApp_Run_error(t *testing.T) {
+	app := cflag.NewApp(func(app *cflag.App) {
+		app.Name = "myapp"
+		app.Desc = "this is my cli application"
+		app.Version = "1.0.2"
+	})
+
+	app.Add(cflag.NewCmd("demo", "this is a demo command", func(c *cflag.Cmd) error {
+		return errors.New("command run error")
+	}))
+	
+	assert.ErrMsg(t, app.RunWithArgs([]string{"demo"}), "command run error")
 }
