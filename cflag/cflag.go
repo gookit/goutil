@@ -39,6 +39,12 @@ func SetDebug(open bool) {
 	Debug = open
 }
 
+func debugMsg(format string, args ...any) {
+	if Debug {
+		fmt.Printf("CFLAG DEBUG: "+format, args...)
+	}
+}
+
 // CFlags wrap and extends the go flag.FlagSet
 //
 // eg:
@@ -292,7 +298,7 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 		return strutil.UpperFirst(desc)
 	}
 
-	// format: desc;required OR desc;required;shorts
+	// FORMAT: desc;required;shorts
 	parts := strutil.SplitNTrimmed(desc, ";", 3)
 	if ln := len(parts); ln > 1 {
 		// required
@@ -313,7 +319,7 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 	return desc
 }
 
-// do parse and validate
+// do parse and validate, collect args
 func (c *CFlags) doParse(args []string) error {
 	if len(c.shortcuts) > 0 && len(args) > 0 {
 		args = ReplaceShorts(args, c.shortcuts)
@@ -436,7 +442,6 @@ func (c *CFlags) showHelp(err error) {
 	}
 
 	buf := new(strutil.Buffer)
-
 	if err != nil {
 		buf.Printf("<error>ERROR:</> %s\n", err.Error())
 	} else {
@@ -473,6 +478,8 @@ func (c *CFlags) showHelp(err error) {
 	color.Println(strutil.Replaces(buf.String(), helpVars))
 }
 
+var optionIndentSpace = "\n" + strings.Repeat("    ", 7)
+
 // ShowOptionsHelp prints, to standard error unless configured otherwise, the
 // default values of all defined command-line flags in the set. See the
 // documentation for the global function PrintDefaults for more information.
@@ -481,6 +488,7 @@ func (c *CFlags) showHelp(err error) {
 func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 	c.VisitAll(func(opt *flag.Flag) {
 		var b strings.Builder
+		b.Grow(64)
 
 		mate := c.bindOpts[opt.Name]
 		stdio.QuietFprintf(&b, "  <info>%s</>", mate.HelpName(opt.Name))
@@ -493,14 +501,16 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 
 		// Boolean flags of one ASCII letter are so common we
 		// treat them specially, putting their usage on the same line.
-		if b.Len() <= 32 { // space, space, '-', 'x'.
-			b.WriteString("\t")
+		lnDiff := b.Len() - 9 - 24 // -9: <info></>
+		if lnDiff < 0 {
+			b.WriteString("    ")
+			b.WriteString(strings.Repeat(" ", -lnDiff))
 		} else {
 			// Four spaces before the tab triggers good alignment
 			// for both 4- and 8-space tab stops.
-			b.WriteString("\n          \t")
+			b.WriteString(optionIndentSpace)
 		}
-		b.WriteString(strings.ReplaceAll(usage, "\n", "\n          \t"))
+		b.WriteString(strings.ReplaceAll(usage, "\n", optionIndentSpace))
 
 		// put quotes on the string value
 		if isZero, isStr := IsZeroValue(opt, opt.DefValue); !isZero {

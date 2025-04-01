@@ -135,7 +135,7 @@ func TestApp_Run(t *testing.T) {
 	assert.ErrMsg(t, err, `input not exists command "notExists"`)
 
 	err = app.RunWithArgs([]string{"--invalid"})
-	assert.ErrMsg(t, err, `provide undefined flag option "--invalid"`)
+	assert.ErrMsg(t, err, `flag provided but not defined: -invalid`)
 
 	// run
 	err = app.RunWithArgs([]string{"demo", "-a", "230", "--name", "inhere", "val1"})
@@ -155,6 +155,6 @@ func TestApp_Run_error(t *testing.T) {
 	app.Add(cflag.NewCmd("demo", "this is a demo command", func(c *cflag.Cmd) error {
 		return errors.New("command run error")
 	}))
-	
+
 	assert.ErrMsg(t, app.RunWithArgs([]string{"demo"}), "command run error")
 }

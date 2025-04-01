@@ -7,42 +7,52 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/cliutil"
-	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
 
 // App struct
 type App struct {
-	cmds  map[string]*Cmd
+	*CFlags // save global flags
+	// added commands
 	names []string
+	cmds  map[string]*Cmd
 
 	Name string
 	Desc string
+	// Version for app
+	Version string
 	// NameWidth max width for command name
 	NameWidth  int
 	HelpWriter io.Writer
-	// Version for app
-	Version string
 
+	// OnAppFlagParsed hook func
+	OnAppFlagParsed func(app *App) bool
 	// AfterHelpBuild hook
 	AfterHelpBuild func(buf *strutil.Buffer)
-	// BeforeRun hook func
+
+	// BeforeRun each command hook func
 	//  - cmdArgs: input raw args for current command.
 	//  - return false to stop run.
 	BeforeRun func(c *Cmd, cmdArgs []string) bool
-	// AfterRun hook func
+	// AfterRun command hook func
 	AfterRun func(c *Cmd, err error)
 }
 
 // NewApp instance
 func NewApp(fns ...func(app *App)) *App {
+	gfs := NewEmpty(func(cf *CFlags) {
+		cf.FlagSet = flag.NewFlagSet("app-flags", flag.ContinueOnError)
+	})
+
 	app := &App{
-		cmds: make(map[string]*Cmd),
+		CFlags: gfs,
+		cmds:   make(map[string]*Cmd),
 		// with default version
 		Version: "0.0.1",
 		// NameWidth default value
@@ -115,33 +125,34 @@ func (a *App) addCmd(c *Cmd) {
 func (a *App) Run() {
 	err := a.RunWithArgs(os.Args[1:])
 	if err != nil {
+		debugMsg("app run error: %v", err)
 		cliutil.Errorln("ERROR:", err)
-		if Debug {
-			fmt.Println(errorx.Newf("(debug mode)RUNTIME ERROR: %v", err))
-		}
 		os.Exit(1)
 	}
 }
 
 // RunWithArgs run app by input args
 func (a *App) RunWithArgs(args []string) error {
+	// init for run
 	a.init()
 
-	if len(args) == 0 || args[0] == "" {
+	if ok, err := a.preRun(args); ok {
 		return a.showHelp()
+	} else if err != nil {
+		return err
 	}
 
-	name := args[0]
-	if name == "help" || name == "--help" || name == "-h" {
-		return a.showHelp()
-	}
-	if name[0] == '-' {
-		return fmt.Errorf("provide undefined flag option %q", name)
+	// fire onAppFlagParsed hook
+	if a.OnAppFlagParsed != nil && !a.OnAppFlagParsed(a) {
+		debugMsg("app onAppFlagParsed return false, stop continue run.")
+		return nil
 	}
 
-	cmd, ok := a.findCmd(name)
+	// first as command name
+	first := args[0]
+	cmd, ok := a.findCmd(first)
 	if !ok {
-		return fmt.Errorf("input not exists command %q", name)
+		return fmt.Errorf("input not exists command %q", first)
 	}
 
 	cmdArgs := args[1:]
@@ -149,6 +160,7 @@ func (a *App) RunWithArgs(args []string) error {
 		return nil
 	}
 
+	// parse command flags and execute func.
 	err := cmd.Parse(cmdArgs)
 
 	// fire after run hook
@@ -156,6 +168,26 @@ func (a *App) RunWithArgs(args []string) error {
 		a.AfterRun(cmd, err)
 	}
 	return err
+}
+
+func (a *App) preRun(args []string) (showHelp bool, err error) {
+	// parse global flags
+	err = a.Parse(args)
+	if err != nil {
+		if IsFlagHelpErr(err) {
+			return true, nil
+		}
+	}
+
+	if len(args) == 0 || args[0] == "" {
+		return true, nil
+	}
+
+	first := args[0]
+	if first == "help" || first == "--help" || first == "-h" {
+		return true, nil
+	}
+	return
 }
 
 func (a *App) init() {
@@ -172,9 +204,9 @@ func (a *App) findCmd(name string) (*Cmd, bool) {
 
 func (a *App) showHelp() error {
 	bin := a.Name
-	buf := strutil.NewBuffer()
-	buf.Printf("<cyan>%s</> - %s", bin, a.Desc)
+	buf := strutil.NewBuffer(512)
 
+	buf.Printf("<cyan>%s</> - %s", bin, a.Desc)
 	if a.Version != "" {
 		buf.Printf("(Version: <cyan>%s</>)", a.Version)
 	}
@@ -182,18 +214,22 @@ func (a *App) showHelp() error {
 	buf.Printf("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)
 
 	buf.WriteStr1Nl("<comment>Options:</>")
-	buf.WriteStr1Nl("  <green>-h, --help</>     Display application help")
-	buf.WriteStr1Nl("\n<comment>Commands:</>")
+	buf.WriteStr1Nl("  <green>-h, --help</>" + strings.Repeat("    ", 4) + "Display application help")
+	if a.CFlags != nil {
+		a.renderOptionsHelp(buf)
+	}
 
+	buf.WriteStr1Nl("\n<comment>Commands:</>")
 	sort.Strings(a.names)
+
 	for _, name := range a.names {
 		c := a.cmds[name]
 		name := strutil.PadRight(name, " ", a.NameWidth)
-		buf.Printf("  <green>%s</>  %s\n", name, strutil.UpperFirst(c.getDesc()))
+		buf.Printf("  <green>%s</>    %s\n", name, strutil.UpperFirst(c.getDesc()))
 	}
 
 	name := strutil.PadRight("help", " ", a.NameWidth)
-	buf.Printf("  <green>%s</>  Display application help\n", name)
+	buf.Printf("  <green>%s</>    Display application help\n", name)
 	buf.Printf("\nUse \"<cyan>%s COMMAND --help</>\" for about a command\n", bin)
 
 	if a.AfterHelpBuild != nil {
@@ -211,8 +247,9 @@ func (a *App) showHelp() error {
 // Cmd struct
 type Cmd struct {
 	*CFlags
-	Name  string
-	Desc  string // desc for command, will sync to CFlags.Desc
+	Name string
+	Desc string // desc for command, will sync set to CFlags.Desc
+	// OnAdd hook func. you can add some cli options or arguments.
 	OnAdd func(c *Cmd)
 	// Func for run command, will call after options parsed.
 	Func func(c *Cmd) error
@@ -236,7 +273,7 @@ func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
 	return cmd
 }
 
-// Config the cmd
+// Config the cmd. eg: bing flags
 func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
 	if fn != nil {
 		fn(c)
