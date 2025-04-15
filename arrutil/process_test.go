@@ -32,3 +32,10 @@ func TestFilter(t *testing.T) {
 	ss := arrutil.Filter([]string{"a", "", "b", ""})
 	is.Eq([]string{"a", "b"}, ss)
 }
+
+func TestFirstOr(t *testing.T) {
+	is := assert.New(t)
+	is.Eq("a", arrutil.FirstOr([]string{"a", "b"}, "c"))
+	is.Eq("c", arrutil.FirstOr([]string{}, "c"))
+	is.Eq("c", arrutil.FirstOr(nil, "c"))
+}
