@@ -124,10 +124,10 @@ func (mf *BodyMatchers) Apply(el Elem) bool {
 
 	_, err = buf.ReadFrom(file)
 	if err != nil {
-		file.Close()
+		_ = file.Close()
 		return false
 	}
-	file.Close()
+	_ = file.Close()
 
 	// apply matchers
 	for _, fl := range mf.Matchers {

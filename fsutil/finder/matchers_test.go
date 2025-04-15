@@ -2,14 +2,89 @@ package finder_test
 
 import (
 	"testing"
+	"time"
 
+	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/fsutil/finder"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/testutil/fakeobj"
 )
 
 func newMockElem(fp string, isDir ...bool) finder.Elem {
 	return finder.NewElem(fp, testutil.NewDirEnt(fp, isDir...))
+}
+
+func TestStartWithDot(t *testing.T) {
+	tests := []struct {
+		elemName string
+		expected bool
+	}{
+		{"abc", false},
+		{".gitignore", true},
+		{"README.md", false},
+		{".env", true},
+	}
+
+	for _, test := range tests {
+		matcher := finder.StartWithDot()
+		result := matcher(newMockElem(test.elemName))
+		assert.Equal(t, test.expected, result, "case:"+test.elemName)
+	}
+
+	t.Run("MatchDotFile", func(t *testing.T) {
+		matcher := finder.MatchDotFile()
+		assert.False(t, matcher(newMockElem("some.txt")))
+		assert.True(t, matcher(newMockElem(".gitignore")))
+		assert.False(t, matcher(newMockElem(".git", true)))
+	})
+
+	t.Run("MatchDotDir", func(t *testing.T) {
+		matcher := finder.MatchDotDir()
+		assert.False(t, matcher(newMockElem("some.txt")))
+		assert.False(t, matcher(newMockElem(".gitignore")))
+		assert.True(t, matcher(newMockElem(".git", true)))
+	})
+}
+
+func TestGlobMatch(t *testing.T) {
+	matcher := finder.GlobMatch("*.go")
+	assert.True(t, matcher(newMockElem("some.go")))
+	assert.False(t, matcher(newMockElem("some.txt")))
+}
+
+func TestNameLike(t *testing.T) {
+	matcher := finder.NameLike("some%")
+	assert.True(t, matcher(newMockElem("some_file.go")))
+	assert.False(t, matcher(newMockElem("other.txt")))
+}
+
+func TestMatchModTime(t *testing.T) {
+	now := time.Now()
+	start := now.Add(-1 * time.Hour)
+	end := now.Add(1 * time.Hour)
+	matcher := finder.MatchMtime(start, end)
+
+	// is dir
+	assert.False(t, matcher(newMockElem("some-dir", true)))
+
+	// match file mtime
+	fPath := "some_file.go"
+	fi := fakeobj.NewFileInfo(fPath)
+	fi.WithMtime(now)
+
+	ent := testutil.NewDirEnt(fPath)
+	ent.Fi = fi
+
+	elem := finder.NewElem(fPath, ent)
+	assert.True(t, matcher(elem))
+
+	// info with error
+	ent.Err = errorx.Raw("some error for file info")
+	assert.False(t, matcher(finder.NewElem(fPath, ent)))
+}
+
+func TestHumanModTime(t *testing.T) {
 }
 
 func TestMultiMatcher(t *testing.T) {

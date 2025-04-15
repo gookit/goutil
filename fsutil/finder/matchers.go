@@ -239,13 +239,16 @@ func MatchModTime(start, end time.Time) MatcherFunc {
 
 var timeNumReg = regexp.MustCompile(`(-?\d+)`)
 
-// HumanModTime filter file by modify time string.
+// HumanModTime filter file by modify time expr string.
 //
 // Usage:
 //
 //	f := finder.NewFinder()
-//	f.Include(HumanModTime(">10m")) // before 10 minutes
-//	f.Include(HumanModTime("<10m")) // latest 10 minutes, to Now
+//	// before 10 minutes - The modification takes more than 10 minutes
+//	f.Include(HumanModTime(">10m"))
+//	f.Include(HumanModTime("<24h >10m"))
+//	// eq: -10m to Now. Modified in the last 10 minutes
+//	f.Include(HumanModTime("<10m"))
 func HumanModTime(expr string) MatcherFunc {
 	opt := &timex.ParseRangeOpt{AutoSort: true}
 	// convert > to <, < to >
@@ -261,15 +264,14 @@ func HumanModTime(expr string) MatcherFunc {
 	if err != nil {
 		panic(err)
 	}
-
 	return MatchModTime(start, end)
 }
 
 // FileSize match file by file size. unit: byte
-func FileSize(min, max uint64) MatcherFunc { return SizeRange(min, max) }
+func FileSize(minSize, maxSize uint64) MatcherFunc { return SizeRange(minSize, maxSize) }
 
 // SizeRange match file by file size. unit: byte
-func SizeRange(min, max uint64) MatcherFunc {
+func SizeRange(minSize, maxSize uint64) MatcherFunc {
 	return func(el Elem) bool {
 		if el.IsDir() {
 			return false
@@ -279,16 +281,16 @@ func SizeRange(min, max uint64) MatcherFunc {
 		if err != nil {
 			return false
 		}
-		return mathutil.InUintRange(uint64(fi.Size()), min, max)
+		return mathutil.InUintRange(uint64(fi.Size()), minSize, maxSize)
 	}
 }
 
 // HumanSize match file by file size string. eg: ">1k", "<2m", "1g~3g"
 func HumanSize(expr string) MatcherFunc {
-	min, max, err := strutil.ParseSizeRange(expr, nil)
+	minSize, maxSize, err := strutil.ParseSizeRange(expr, nil)
 	if err != nil {
 		panic(err)
 	}
 
-	return SizeRange(min, max)
+	return SizeRange(minSize, maxSize)
 }

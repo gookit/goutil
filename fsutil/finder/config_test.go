@@ -117,7 +117,10 @@ func TestConfig_LoadRules(t *testing.T) {
 	t.Run("InvalidRule", func(t *testing.T) {
 		c := &finder.Config{}
 		err := c.LoadRules(true, []string{"invalidrule"})
-		assert.NotNil(t, err)
+		assert.Err(t, err)
+
+		err = c.LoadRules(false, []string{""})
+		assert.Err(t, err)
 	})
 
 	// tests the LoadRules method of Config with multiple rules
@@ -134,6 +137,20 @@ func TestConfig_LoadRules(t *testing.T) {
 		assert.Eq(t, "go.mod", c.IncludeNames[1])
 	})
 
+	// test file rule
+	t.Run("File", func(t *testing.T) {
+		c := &finder.Config{}
+		err := c.LoadRules(true, []string{"file:*.go"})
+
+		assert.Nil(t, err)
+		assert.Len(t, c.FileMatchers, 1)
+
+		// exclude
+		err = c.LoadRules(false, []string{"file:*.log"})
+		assert.Nil(t, err)
+		assert.Len(t, c.FileExMatchers, 1)
+	})
+
 	// tests the LoadRules method of Config with size rules
 	t.Run("Size", func(t *testing.T) {
 		c := &finder.Config{}
@@ -147,9 +164,13 @@ func TestConfig_LoadRules(t *testing.T) {
 	t.Run("Time", func(t *testing.T) {
 		c := &finder.Config{}
 		err := c.LoadRules(true, []string{"time:>=1d,<=10d"})
-
 		assert.Nil(t, err)
 		assert.Len(t, c.FileMatchers, 2)
+
+		// exclude
+		err = c.LoadRules(false, []string{"time:>=1d"})
+		assert.Nil(t, err)
+		assert.Len(t, c.FileExMatchers, 1)
 	})
 
 	// tests the LoadRules method of Config with empty rules

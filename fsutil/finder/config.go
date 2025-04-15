@@ -127,6 +127,9 @@ func NewEmptyConfig() *Config {
 
 // LoadRules load rules and parse to config
 //
+//   - addOrExclude: true - include, false - exclude
+//   - rule NAME allow: ext, name(names), file(files), path, dir(dirs), size, time(mtime)
+//
 // Rule Format:
 //
 //	NAME:pattern1,pattern2
@@ -151,13 +154,13 @@ func (c *Config) LoadRules(addOrExclude bool, rules []string) error {
 
 		patterns := strutil.Split(pattern, ",")
 		switch name {
-		case "ext", "exts":
+		case "ext", "exts": // ext:.go,.yaml
 			if addOrExclude {
 				c.IncludeExts = append(c.IncludeExts, patterns...)
 			} else {
 				c.ExcludeExts = append(c.ExcludeExts, patterns...)
 			}
-		case "name", "names":
+		case "name", "names": // names:*_test.go,go.mod
 			if addOrExclude {
 				c.IncludeNames = append(c.IncludeNames, patterns...)
 			} else {
