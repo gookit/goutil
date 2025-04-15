@@ -16,6 +16,6 @@ func NewTestWriter() *TestWriter {
 type DirEnt = fakeobj.DirEntry
 
 // NewDirEnt create a fs.DirEntry
-func NewDirEnt(fpath string, isDir ...bool) *fakeobj.DirEntry {
-	return fakeobj.NewDirEntry(fpath, isDir...)
+func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry {
+	return fakeobj.NewDirEntry(fPath, isDir...)
 }

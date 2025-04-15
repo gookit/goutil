@@ -75,9 +75,9 @@ func truncatingFormat(data any) string {
 	}
 
 	// Give us some space the type info too if needed.
-	max := bufio.MaxScanTokenSize - 1000
-	if len(value) > max {
-		value = value[0:max] + "<... truncated>"
+	maxSize := bufio.MaxScanTokenSize - 1000
+	if len(value) > maxSize {
+		value = value[0:maxSize] + "<... truncated>"
 	}
 	return value
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// define special chars consts
+// define special chars constants
 const (
 	MultiLineValMarkS = "'''"
 	MultiLineValMarkD = `"""`

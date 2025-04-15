@@ -15,13 +15,13 @@ type DirEntry struct {
 	Nam string // basename
 	Mod fs.FileMode
 	Fi  fs.FileInfo
-	Err error
+	Err error // for test info error
 }
 
 // NewDirEntry create a fs.DirEntry
-func NewDirEntry(fpath string, isDir ...bool) *DirEntry {
+func NewDirEntry(fPath string, isDir ...bool) *DirEntry {
 	isd := basefn.FirstOr(isDir, false)
-	return &DirEntry{Nam: filepath.Base(fpath), Dir: isd, Mod: fs.ModePerm}
+	return &DirEntry{Nam: filepath.Base(fPath), Dir: isd, Mod: fs.ModePerm}
 }
 
 // Name get
@@ -68,17 +68,17 @@ type FileInfo struct {
 }
 
 // NewFile instance
-func NewFile(fpath string) *FileInfo {
-	return NewFileInfo(fpath)
+func NewFile(fPath string) *FileInfo {
+	return NewFileInfo(fPath)
 }
 
 // NewFileInfo instance
-func NewFileInfo(fpath string, isDir ...bool) *FileInfo {
+func NewFileInfo(fPath string, isDir ...bool) *FileInfo {
 	return &FileInfo{
 		Dir:  basefn.FirstOr(isDir, false),
-		Nam:  filepath.Base(fpath),
+		Nam:  filepath.Base(fPath),
 		Mod:  fs.ModePerm,
-		Path: fpath,
+		Path: fPath,
 	}
 }
 

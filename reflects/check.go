@@ -70,8 +70,9 @@ func CanBeNil(typ reflect.Type) bool {
 		return true
 	case reflect.Struct:
 		return typ == reflectValueType
+	default:
+		return false
 	}
-	return false
 }
 
 // IsFunc value

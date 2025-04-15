@@ -98,10 +98,9 @@ func Len(v reflect.Value) int {
 		return len(strconv.FormatInt(v.Int(), 10))
 	case reflect.Float32, reflect.Float64:
 		return len(fmt.Sprint(v.Interface()))
+	default:
+		return -1 // cannot get length
 	}
-
-	// cannot get length
-	return -1
 }
 
 // SliceSubKind get sub-elem kind of the array, slice, variadic-var. alias SliceElemKind()
