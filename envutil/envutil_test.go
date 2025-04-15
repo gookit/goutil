@@ -102,6 +102,13 @@ func TestSetEnvs(t *testing.T) {
 		SetEnvs("name", "one", "two")
 	})
 
+	// MustGet
+	assert.Eq(t, "abc", MustGet("FirstEnv"))
+	assert.Panics(t, func() {
+		MustGet("NotExistEnvKey")
+	})
+
+	// UnsetEnvs
 	UnsetEnvs(keys...)
 	for key := range envMp {
 		assert.Empty(t, Getenv(key))

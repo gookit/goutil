@@ -43,6 +43,32 @@ func TestGetBool(t *testing.T) {
 	})
 }
 
+func TestGetOne(t *testing.T) {
+	testutil.MockEnvValues(map[string]string{
+		TestEnvName: TestEnvValue,
+	}, func() {
+		envValue := GetOne([]string{TestEnvName, TestNoEnvName}, defTestEnvValue)
+		assert.Eq(t, TestEnvValue, envValue, "env value not equals")
+		envValue = GetOne([]string{TestNoEnvName, TestEnvName}, defTestEnvValue)
+		assert.Eq(t, TestEnvValue, envValue, "env value not equals")
+		envValue = GetOne([]string{TestNoEnvName}, defTestEnvValue)
+		assert.Eq(t, defTestEnvValue, envValue)
+		envValue = GetOne([]string{TestNoEnvName})
+		assert.Empty(t, envValue)
+	})
+}
+
+func TestOnExist(t *testing.T) {
+	testutil.MockOsEnv(map[string]string{
+		TestEnvName: TestEnvValue,
+	}, func() {
+		assert.True(t, OnExist(TestEnvName, func(val string) {
+			assert.Eq(t, TestEnvValue, val)
+		}))
+		assert.False(t, OnExist(TestNoEnvName, func(val string) {}))
+	})
+}
+
 func TestEnviron(t *testing.T) {
 	assert.NotEmpty(t, EnvPaths())
 	assert.NotEmpty(t, EnvMap())
