@@ -1,16 +1,16 @@
 # Timex
 
-Provides an enhanced time.Time implementation, and add more commonly used functional methods.
+提供增强的时间 `time.Time` 实现，并添加更多常用的函数式方法。
 
-## Install
+## 安装
 
 ```go
 go get github.com/gookit/goutil/timex
 ```
 
-## Usage
+## 开始使用
 
-### Create timex instance
+### 创建timex实例
 
 ```go
 now := timex.Now()
@@ -34,7 +34,7 @@ tx, err  := timex.FromString("2022-04-20 19:40:34", "2006-01-02 15:04:05")
 tx, err  := timex.FromDate("2022-04-20 19:40:34", "Y-m-d H:I:S")
 ```
 
-### Use timex instance
+### 使用 timex 实例
 
 ```go
 tx := timex.Now()
@@ -73,13 +73,13 @@ tx.IsAfterUnix(1647411580)
 ```go
 ts := timex.NowUnix() // current unix timestamp
 
-t := NowAddDay(1) // from now add 1 day
-t := NowAddHour(1) // from now add 1 hour
-t := NowAddMinutes(3) // from now add 3 minutes
-t := NowAddSeconds(180) // from now add 180 seconds
+t := timex.NowAddDay(1) // from now add 1 day
+t := timex.NowAddHour(1) // from now add 1 hour
+t := timex.NowAddMinutes(3) // from now add 3 minutes
+t := timex.NowAddSeconds(180) // from now add 180 seconds
 ```
 
-### Convert time to date by template
+## 按模板将时间转换为日期
 
 **Template Chars**:
 
@@ -101,25 +101,27 @@ t := NowAddSeconds(180) // from now add 180 seconds
 ... ...
 ```
 
-| Character | Description                      | Example Output              |
-|-----------|----------------------------------|-----------------------------|
-| `Y`       | 4-digit year                     | `2006`                      |
-| `y`       | 2-digit year                     | `06`                        |
-| `m`       | Month with leading zero          | `01-12`                     |
-| `n`       | Month without leading zero       | `1-12`                      |
-| `d`       | Day with leading zero            | 01-31                       |
-| `j`       | Day without leading zero         | 1-31                        |
-| `H`       | 24-hour format with leading zero | 00-23                       |
-| `h`       | 12-hour format with leading zero | `01-12`                     |
-| `I`       | Minute with leading zero         | 00-59                       |
-| `i`       | Minute without leading zero      | 0-59                        |
-| `S`       | Second with leading zero         | 00-59                       |
-| `s`       | Second without leading zero      | 0-59                        |
-| `v`       | Milliseconds                     | `000`                       |
-| `u`       | Microseconds                     | `000000`                    |
-| `c`       | ISO 8601 date                    | `2006-01-02T15:04:05Z07:00` |
+| 字符  | 描述                  | 示例输出                        |
+|-----|---------------------|-----------------------------|
+| `Y` | 4 位数年份              | 2006                        |
+| `y` | 2 位数年份              | 06                          |
+| `m` | 带前导零的月份 01-12       | 09                          |
+| `n` | 没有前导零的月份 1-12       | 9                           |
+| `d` | 带前导零的日期  01-31      | 02                          |
+| `j` | 没有前导零的日期 1-31       | 2                           |
+| `H` | 带前导零的 24 小时格式 00-23 | 15                          |
+| `h` | 带前导零的 12 小时格式 01-12 | 3                           |
+| `I` | 带前导零的分钟   00-59     | 04                          |
+| `i` | 没有前导零的分钟   0-59     | 4                           |
+| `S` | 带前导零的第二个   00-59    | 05                          |
+| `s` | 没有前导零的第二个  0-59     | 5                           |
+| `v` | 毫秒  000             | 530                         |
+| `u` | 微秒  000000          | 605080                      |
+| `c` | ISO 8601 日期         | `2006-01-02T15:04:05Z07:00` |
 
 > More, please see [charMap](./template.go)
+
+### 使用示例
 
 Examples, use timex format date:
 

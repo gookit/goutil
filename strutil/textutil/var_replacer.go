@@ -24,12 +24,19 @@ type VarReplacer struct {
 	lLen, rLen  int
 
 	varReg *regexp.Regexp
-	// flatten sub map in vars
+	// flatten sub map in vars. default: true
+	//
+	// eg: {name: {a: 1, b: 2}} => {name.a: 1, name.b: 2}
 	flatSubs bool
+	// do parse env value. default: false
 	parseEnv bool
-	// support parse default value. eg: {{ name | inhere }}
+	// do parse default value. default: false
+	//
+	// eg: {{ name | inhere }}
 	parseDef bool
-	// keepMissVars list. default False: will clear on each replace
+	// keepMissVars list.
+	//
+	// default: False - will clear on each replacement
 	keepMissVars bool
 	// missing vars list
 	missVars []string
@@ -87,7 +94,7 @@ func (r *VarReplacer) WithParseEnv() *VarReplacer {
 	return r
 }
 
-// OnNotFound var handle
+// OnNotFound var handle func
 func (r *VarReplacer) OnNotFound(fn FallbackFn) *VarReplacer {
 	r.NotFound = fn
 	return r
@@ -115,7 +122,7 @@ func (r *VarReplacer) Init() {
 	}
 }
 
-// ParseVars the text contents and collect vars
+// ParseVars parse the text contents and collect vars
 func (r *VarReplacer) ParseVars(s string) []string {
 	ss := arrutil.StringsMap(r.varReg.FindAllString(s, -1), func(val string) string {
 		return strings.TrimSpace(val[r.lLen : len(val)-r.rLen])
@@ -195,7 +202,7 @@ func (r *VarReplacer) ResetMissVars() {
 // Replace string-map vars in the text contents
 func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
 	if !r.keepMissVars {
-		r.missVars = make([]string, 0) // clear on each replace
+		r.missVars = make([]string, 0) // clear on each replacement
 	}
 
 	// use custom render func
@@ -215,6 +222,7 @@ func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
 			return val
 		}
 
+		// has custom not found handle func
 		if r.NotFound != nil {
 			if val, ok := r.NotFound(name); ok {
 				return val

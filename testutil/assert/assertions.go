@@ -1,6 +1,6 @@
 package assert
 
-// Assertions provides assertion methods around the TestingT interface.
+// Assertions provide assertion methods around the TestingT interface.
 type Assertions struct {
 	t  TestingT
 	ok bool // last assert result

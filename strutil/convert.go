@@ -100,7 +100,7 @@ func StringOrErr(val any) (string, error) { return ToStringWith(val) }
 // QuietString convert value to string, will ignore error. same as SafeString()
 func QuietString(val any) string { return SafeString(val) }
 
-// SafeString convert value to string, will ignore error
+// SafeString convert value to string. Will ignore error
 func SafeString(in any) string {
 	s, _ := AnyToString(in, false)
 	return s
@@ -109,7 +109,7 @@ func SafeString(in any) string {
 // StringOrPanic convert value to string, will panic on error
 func StringOrPanic(val any) string { return MustString(val) }
 
-// MustString convert value to string, will panic on error
+// MustString convert value to string. will panic on error
 func MustString(val any) string {
 	s, err := ToStringWith(val)
 	if err != nil {

@@ -21,7 +21,7 @@ func KeyToLower(src map[string]string) map[string]string {
 	return newMp
 }
 
-// ToStringMap convert map[string]any to map[string]string
+// ToStringMap simple convert map[string]any to map[string]string
 func ToStringMap(src map[string]any) map[string]string {
 	strMp := make(map[string]string, len(src))
 	for k, v := range src {
@@ -30,7 +30,7 @@ func ToStringMap(src map[string]any) map[string]string {
 	return strMp
 }
 
-// CombineToSMap combine two string-slice to SMap(map[string]string)
+// CombineToSMap combine two string-slices to SMap(map[string]string)
 func CombineToSMap(keys, values []string) SMap {
 	return arrutil.CombineToSMap(keys, values)
 }
