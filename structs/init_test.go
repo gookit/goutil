@@ -2,6 +2,7 @@ package structs_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
@@ -112,6 +113,30 @@ func TestInitDefaults_parseEnv(t *testing.T) {
 	assert.True(t, obj.Debug)
 	assert.Eq(t, "child1", obj.Child1.Name)
 	assert.Eq(t, "child2", obj.Child2.Name)
+}
+
+func TestInitDefaults_parseTime(t *testing.T) {
+	type User struct {
+		Name     string        `default:"inhere"`
+		Age      int           `default:"30"`
+		DurVal   time.Duration `default:"1h"`
+		Birthday time.Time     `default:"2022-01-01 13:34:45"`
+	}
+
+	u := &User{}
+	err := structs.InitDefaults(u, func(opt *structs.InitOptions) {
+		opt.ParseTime = true
+	})
+	dump.P(u)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 30, u.Age)
+	assert.Eq(t, time.Hour, u.DurVal)
+	assert.Eq(t, "2022-01-01 13:34:45", u.Birthday.Format("2006-01-02 15:04:05"))
+
+	// not enable ParseTime
+	u1 := &User{}
+	assert.Err(t, structs.InitDefaults(u1))
 }
 
 func TestInitDefaults_convTypeError(t *testing.T) {

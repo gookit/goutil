@@ -13,12 +13,14 @@ import (
 )
 
 // NewWriter create a struct writer
+//
+// TIP: must be pointer for set field value
 func NewWriter(ptr any) *Wrapper {
 	rv := reflect.ValueOf(ptr)
+
 	if rv.Kind() != reflect.Pointer {
 		panic("must be provider an pointer value")
 	}
-
 	return WrapValue(rv)
 }
 
@@ -35,6 +37,11 @@ type SetOptions struct {
 	FieldTagName string
 	// ValueHook before set value hook TODO
 	ValueHook func(val any) any
+
+	// ParseTime parse string to `time.Duration`, `time.Time`. default: false
+	//
+	// eg: default:"10s", default:"2025-04-23 15:04:05"
+	ParseTime bool
 
 	// ParseDefault init default value by DefaultValTag tag value.
 	// default: false
@@ -96,6 +103,11 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions, envPrefix
 	}
 
 	var es comdef.Errors
+	initOpt := &InitOptions{
+		EnvPrefix: envPrefix,
+		ParseEnv:  opt.ParseDefaultEnv,
+		ParseTime: opt.ParseTime,
+	}
 	rt := rv.Type()
 
 	for i := 0; i < rt.NumField(); i++ {
@@ -123,7 +135,7 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions, envPrefix
 		// set field value by default tag.
 		if !ok && opt.ParseDefault && fv.IsZero() {
 			defVal := ft.Tag.Get(opt.DefaultValTag)
-			if err := initDefaultValue(fv, defVal, opt.ParseDefaultEnv, envPrefix); err != nil {
+			if err := initDefaultValue(fv, defVal, initOpt); err != nil {
 				es = append(es, err)
 			}
 			continue

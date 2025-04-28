@@ -32,4 +32,19 @@ func TestNewWrapper(t *testing.T) {
 	assert.Panics(t, func() {
 		structs.NewWrapper(nil)
 	})
+
+	u1 := User{Age: 34, Name: "tom"}
+	w1 := structs.Wrap(u1)
+	// get value
+	assert.Nil(t, w1.Get("NotExists"))
+	assert.Eq(t, "tom", w1.Get("Name"))
+	assert.ErrSubMsg(t, w1.Set("NotExists", "val"), "field NotExists not found")
+	assert.ErrSubMsg(t, w1.Set("Name", "john"), "can not set value for field: Name")
+
+	assert.Panics(t, func() {
+		structs.NewWriter(u1)
+	})
+	assert.Panics(t, func() {
+		structs.NewWriter("invalid")
+	})
 }

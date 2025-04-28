@@ -87,17 +87,14 @@ func WithMapTagName(tagName string) MapOptFunc {
 }
 
 // MergeAnonymous merge anonymous struct fields to parent map
-func MergeAnonymous(opt *MapOptions) {
-	opt.MergeAnonymous = true
-}
+func MergeAnonymous(opt *MapOptions) { opt.MergeAnonymous = true }
 
 // ExportPrivate merge anonymous struct fields to parent map
-func ExportPrivate(opt *MapOptions) {
-	opt.ExportPrivate = true
-}
+func ExportPrivate(opt *MapOptions) { opt.ExportPrivate = true }
 
 // StructToMap quickly convert structs to map[string]any by reflect.
-// Can custom export field name by tag `json` or custom tag
+//
+// Can custom export field name by tag `json` or custom tag. see MapOptions
 func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) {
 	mp := make(map[string]any)
 	if st == nil {
@@ -106,7 +103,7 @@ func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error) {
 
 	obj := reflect.Indirect(reflect.ValueOf(st))
 	if obj.Kind() != reflect.Struct {
-		return mp, errors.New("must be an struct value")
+		return mp, errors.New("StructToMap: must be an struct value")
 	}
 
 	opt := &MapOptions{TagName: defaultFieldTag}
