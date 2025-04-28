@@ -3,6 +3,7 @@ package reflects_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/reflects"
@@ -172,6 +173,15 @@ func TestSetValue(t *testing.T) {
 	err = reflects.SetValue(rv, "345")
 	assert.NoErr(t, err)
 	assert.Eq(t, 345, iVal)
+
+	// duration
+	durVal := time.Duration(345)
+	rv = reflect.ValueOf(&durVal)
+	err = reflects.SetValue(rv, time.Duration(456))
+	assert.NoErr(t, err)
+	assert.Eq(t, time.Duration(456), durVal)
+	// err = reflects.SetValue(rv, "56s")
+	// assert.NoErr(t, err)
 
 	// panic: reflect: reflect.Value.Set using unaddressable value
 	assert.Panics(t, func() {

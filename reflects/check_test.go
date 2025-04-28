@@ -3,6 +3,7 @@ package reflects_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/reflects"
@@ -16,9 +17,29 @@ func TestIsNil(t *testing.T) {
 	assert.True(t, reflects.IsNil(reflect.ValueOf(v)))
 }
 
-func TestIsValidatePtr(t *testing.T) {
-	assert.False(t, reflects.IsValidPtr(reflect.ValueOf(nil)))
+func TestIsTimeType(t *testing.T) {
+	assert.True(t, reflects.IsTimeType(reflect.TypeOf(time.Now())))
+	type MyTime time.Time
+	assert.True(t, reflects.IsTimeType(reflect.TypeOf(MyTime(time.Now()))))
 
+	assert.False(t, reflects.IsTimeType(nil))
+	assert.False(t, reflects.IsTimeType(reflect.TypeOf(nil)))
+	assert.False(t, reflects.IsTimeType(reflect.TypeOf(3456)))
+}
+
+func TestIsDurationType(t *testing.T) {
+	assert.True(t, reflects.IsDurationType(reflect.TypeOf(time.Duration(0))))
+	assert.True(t, reflects.IsDurationType(reflect.TypeOf(time.Second)))
+	type MyDur time.Duration
+	assert.True(t, reflects.IsDurationType(reflect.TypeOf(MyDur(60))))
+
+	assert.False(t, reflects.IsDurationType(nil))
+	assert.False(t, reflects.IsDurationType(reflect.TypeOf(nil)))
+	assert.False(t, reflects.IsDurationType(reflect.TypeOf(3456)))
+}
+
+func TestIsValidPtr(t *testing.T) {
+	assert.False(t, reflects.IsValidPtr(reflect.ValueOf(nil)))
 	assert.False(t, reflects.IsValidPtr(reflect.ValueOf((*int)(nil))))
 
 	var s string

@@ -50,25 +50,24 @@ func ConvToType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 
 // ValueByType create reflect.Value by give reflect.Type
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
-	// handle kind: string, bool, intX, uintX, floatX
-	if typ.Kind() == reflect.String || typ.Kind() <= reflect.Float64 {
-		return ConvToKind(val, typ.Kind())
-	}
-
 	var ok bool
 	var newRv reflect.Value
 	if newRv, ok = val.(reflect.Value); !ok {
 		newRv = reflect.ValueOf(val)
 	}
-
-	// try auto convert slice type
-	if IsArrayOrSlice(newRv.Kind()) && IsArrayOrSlice(typ.Kind()) {
-		return ConvSlice(newRv, typ.Elem())
-	}
-
-	// check type. like map
+	// check the same type. like map
 	if newRv.Type() == typ {
 		return newRv, nil
+	}
+
+	// handle kind: string, bool, intX, uintX, floatX
+	if typ.Kind() == reflect.String || typ.Kind() <= reflect.Float64 {
+		return ConvToKind(val, typ.Kind())
+	}
+
+	// try the auto convert slice type
+	if IsArrayOrSlice(newRv.Kind()) && IsArrayOrSlice(typ.Kind()) {
+		return ConvSlice(newRv, typ.Elem())
 	}
 
 	err = comdef.ErrConvType
@@ -86,8 +85,8 @@ func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 //
 //	Only support kind: string, bool, intX, uintX, floatX
 func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
-	if rv, ok := val.(reflect.Value); ok {
-		val = rv.Interface()
+	if rv1, ok := val.(reflect.Value); ok {
+		val = rv1.Interface()
 	}
 
 	switch kind {
@@ -253,4 +252,27 @@ func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) {
 		}
 	}
 	return
+}
+
+// ToTimeOrDuration convert string to time.Time or time.Duration type
+//
+// If the target type is not match, return the input string.
+func ToTimeOrDuration(str string, typ reflect.Type) (any, error) {
+	var anyVal any = str
+
+	if len(str) > 5 && IsTimeType(typ) {
+		ttVal, err := strutil.ToTime(str)
+		if err != nil {
+			return nil, err
+		}
+		anyVal = ttVal
+	} else if IsDurationType(typ) {
+		dVal, err := strutil.ToDuration(str)
+		if err != nil {
+			return nil, err
+		}
+		anyVal = dVal
+	}
+
+	return anyVal, nil
 }
