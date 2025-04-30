@@ -67,3 +67,9 @@ type SimpleType interface {
 type ScalarType interface {
 	Int | Uint | Float | ~string | ~bool
 }
+
+// StrMap is alias of map[string]string
+type StrMap map[string]string
+
+// AnyMap is alias of map[string]any
+type AnyMap map[string]any
