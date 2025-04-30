@@ -5,8 +5,8 @@ import (
 
 	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/encodes/secutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/encodes/secutil"
 )
 
 func TestNewCrypt(t *testing.T) {
