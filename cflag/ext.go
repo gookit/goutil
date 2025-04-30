@@ -1,7 +1,6 @@
 package cflag
 
 import (
-	"flag"
 	"fmt"
 	"strconv"
 	"strings"
@@ -15,25 +14,30 @@ import (
 
 // RepeatableFlag interface.
 type RepeatableFlag interface {
-	flag.Value
 	// IsRepeatable mark option flag can be set multi times
 	IsRepeatable() bool
 }
 
-// LimitInt limit int value range
-func LimitInt(min, max int) comdef.IntCheckFunc {
-	return func(val int) error {
-		if val < min || val > max {
-			return fmt.Errorf("the value must be between %d and %d", min, max)
-		}
-		return nil
-	}
+// ExtendedFlagType interface.
+type ExtendedFlagType interface {
+	// FlagTypeDesc flag type description. use for enum and more custom types.
+	FlagTypeDesc() string
 }
 
 /*************************************************************************
  * options: some special flag vars
  * - implemented flag.Value interface
  *************************************************************************/
+
+// LimitInt limit int value range
+func LimitInt(min, max int) comdef.IntCheckFunc {
+	return func(val int) error {
+		if val < min || val > max {
+			return fmt.Errorf("option value must be between %d and %d", min, max)
+		}
+		return nil
+	}
+}
 
 // IntVar int value can with a check func
 //
@@ -77,27 +81,25 @@ func (o *IntVar) Set(value string) error {
 }
 
 // String value get
-func (o *IntVar) String() string {
-	return o.str
-}
+func (o *IntVar) String() string { return o.str }
 
 // String a special string
 //
 // Usage:
 //
 //	// case 1:
-//	var names gcli.String
+//	var names cflag.String
 //	c.VarOpt(&names, "names", "", "multi name by comma split")
 //
 //	--names "tom,john,joy"
-//	names.Split(",") -> []string{"tom","john","joy"}
+//	names.Split(",") // -> []string{"tom","john","joy"}
 //
 //	// case 2:
-//	var ids gcli.String
+//	var ids cflag.String
 //	c.VarOpt(&ids, "ids", "", "multi id by comma split")
 //
 //	--names "23,34,56"
-//	names.Ints(",") -> []int{23,34,56}
+//	names.Ints(",") // -> []int{23,34,56}
 type String string
 
 // Get value
@@ -365,6 +367,11 @@ func (s *EnumString) Set(value string) error {
 // Enum to string
 func (s *EnumString) Enum() []string {
 	return s.enum
+}
+
+// FlagTypeDesc message. will display on the flag description end.
+func (s *EnumString) FlagTypeDesc() string {
+	return "Allow: " + strings.Join(s.enum, ",")
 }
 
 // KVString The kv-string flag, allow input multi.

@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 func ExamplePrint() {
@@ -247,7 +247,7 @@ func ExampleStruct_interfaceField() {
 	}
 
 	Println(myS1)
-	color.Infoln("\nUse fmt.Println:")
+	ccolor.Infoln("\nUse fmt.Println:")
 	fmt.Println(myS1)
 }
 
@@ -262,7 +262,7 @@ func ExampleStruct_mapInterfacedValue() {
 	}
 
 	Println(myS2)
-	color.Infoln("\nUse fmt.Println:")
+	ccolor.Infoln("\nUse fmt.Println:")
 	fmt.Println(myS2)
 	fmt.Println("---------------------------------------------------------------")
 
@@ -286,7 +286,7 @@ func ExampleStruct_mapInterfacedValue() {
 	}
 
 	Println(s2)
-	color.Infoln("\nUse fmt.Println:")
+	ccolor.Infoln("\nUse fmt.Println:")
 	fmt.Println(s2)
 }
 
@@ -305,7 +305,7 @@ func TestStruct_ptrField(_ *testing.T) {
 	}
 
 	Println(opt)
-	color.Infoln("\nUse fmt.Println:")
+	ccolor.Infoln("\nUse fmt.Println:")
 	fmt.Println(opt)
 	fmt.Println("---------------------------------------------------------------")
 

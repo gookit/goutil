@@ -12,8 +12,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // printValue must keep track of already-printed pointer values to avoid
@@ -430,7 +430,7 @@ func (d *Dumper) print(v ...any) {
 	if d.NoColor {
 		_, _ = fmt.Fprint(d.Output, v...)
 	} else {
-		color.Fprint(d.Output, v...)
+		ccolor.Fprint(d.Output, v...)
 	}
 }
 
@@ -442,7 +442,7 @@ func (d *Dumper) printf(f string, v ...any) {
 	if d.NoColor {
 		_, _ = fmt.Fprintf(d.Output, f, v...)
 	} else {
-		color.Fprintf(d.Output, f, v...)
+		ccolor.Fprintf(d.Output, f, v...)
 	}
 }
 
@@ -454,7 +454,7 @@ func (d *Dumper) write(indent bool, v ...any) {
 	if d.NoColor {
 		_, _ = fmt.Fprint(d.Output, v...)
 	} else {
-		color.Fprint(d.Output, v...)
+		ccolor.Fprint(d.Output, v...)
 	}
 }
 

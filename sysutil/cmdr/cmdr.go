@@ -4,15 +4,15 @@ package cmdr
 import (
 	"strings"
 
-	"github.com/gookit/color"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // PrintCmdline on before exec
 func PrintCmdline(c *Cmd) {
 	if c.DryRun {
-		color.Yellowln("DRY-RUN>", c.Cmdline())
+		ccolor.Yellowln("DRY-RUN>", c.Cmdline())
 	} else {
-		color.Yellowln(">", c.Cmdline())
+		ccolor.Yellowln(">", c.Cmdline())
 	}
 }
 

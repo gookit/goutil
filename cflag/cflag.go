@@ -19,7 +19,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/cliutil"
@@ -29,6 +28,7 @@ import (
 	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // Debug mode
@@ -475,7 +475,7 @@ func (c *CFlags) showHelp(err error) {
 		buf.WriteStr1(strings.Trim(c.Example, "\n"))
 	}
 
-	color.Println(strutil.Replaces(buf.String(), helpVars))
+	ccolor.Println(strutil.Replaces(buf.String(), helpVars))
 }
 
 var optionIndentSpace = "\n" + strings.Repeat("    ", 7)

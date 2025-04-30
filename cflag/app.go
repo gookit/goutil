@@ -9,11 +9,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // App struct
@@ -240,7 +240,7 @@ func (a *App) showHelp() error {
 		a.HelpWriter = os.Stdout
 	}
 
-	color.Fprint(a.HelpWriter, buf.ResetAndGet())
+	ccolor.Fprint(a.HelpWriter, buf.ResetAndGet())
 	return nil
 }
 

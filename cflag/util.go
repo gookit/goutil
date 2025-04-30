@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gookit/color"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 const (
@@ -120,7 +120,7 @@ func WrapColorForCode(s string) string {
 
 	return codeReg.ReplaceAllStringFunc(s, func(code string) string {
 		code = strings.Trim(code, "`")
-		return color.WrapTag(code, "mga")
+		return ccolor.WrapTag(code, "mga")
 	})
 }
 

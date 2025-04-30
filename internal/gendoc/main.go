@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/cflag"
@@ -17,6 +16,7 @@ import (
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 var (
@@ -156,7 +156,7 @@ func handle(c *cflag.CFlags) error {
 	var tplBody []byte
 	if genOpts.tplDir != "" {
 		tplFile := genOpts.tplFilepath("")
-		color.Info.Println("- read template file contents from", tplFile)
+		ccolor.Info.Println("- read template file contents from", tplFile)
 		tplBody = fsutil.MustReadFile(tplFile)
 	}
 
@@ -174,11 +174,11 @@ func handle(c *cflag.CFlags) error {
 
 	goutil.PanicIfErr(err)
 
-	color.Cyanln("Collected packages:")
+	ccolor.Cyanln("Collected packages:")
 	dump.Clear(pkgNames)
 
 	if toFile {
-		color.Info.Println("OK. write result to the", genOpts.output)
+		ccolor.Info.Println("OK. write result to the", genOpts.output)
 	}
 	return nil
 }
@@ -191,7 +191,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	reg := regexp.MustCompile(`func [A-Z]\w+.*`)
 	buf := new(bytes.Buffer)
 
-	color.Info.Println("- find and collect exported functions...")
+	ccolor.Info.Println("- find and collect exported functions...")
 	for _, filename := range ms { // for each go file
 		// "jsonutil/jsonutil_test.go"
 		// "sysutil/sysutil_windows.go"
@@ -294,11 +294,11 @@ func bufWriteDoc(buf *bytes.Buffer, partNameTpl, pkgName string) {
 
 func doWriteDoc2buf(buf *bytes.Buffer, filename string) bool {
 	partFile := genOpts.tplDir + "/" + filename
-	// color.Infoln("- try read part readme from", partFile)
+	// ccolor.Infoln("- try read part readme from", partFile)
 	partBody := fsutil.ReadExistFile(partFile)
 
 	if len(partBody) > 0 {
-		color.Infoln("- find and inject sub-package doc:", filename)
+		ccolor.Infoln("- find and inject sub-package doc:", filename)
 		stdio.QuietFprintln(buf, string(partBody))
 		return true
 	}

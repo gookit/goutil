@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/dump"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // rum demo:
@@ -28,9 +28,9 @@ func main() {
 		"ab", 23,
 	}
 
-	color.Infoln("- Use fmt.Println:")
+	ccolor.Infoln("- Use fmt.Println:")
 	fmt.Println(s1, s2)
 
-	color.Infoln("\n- Use dump.Println:")
+	ccolor.Infoln("\n- Use dump.Println:")
 	dump.P(s1, s2)
 }

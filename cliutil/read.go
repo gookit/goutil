@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gookit/color"
+	"github.com/gookit/goutil/x/ccolor"
 	"golang.org/x/term"
 )
 
@@ -21,7 +21,7 @@ var (
 // ReadInput read user input form Stdin
 func ReadInput(question string) (string, error) {
 	if len(question) > 0 {
-		color.Fprint(Output, question)
+		ccolor.Info.Fprint(Output, question)
 	}
 
 	scanner := bufio.NewScanner(Input)
@@ -40,7 +40,7 @@ func ReadInput(question string) (string, error) {
 //	ans, _ := cliutil.ReadLine("your name?")
 func ReadLine(question string) (string, error) {
 	if len(question) > 0 {
-		color.Fprint(Output, question)
+		ccolor.Info.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)
@@ -65,7 +65,7 @@ func ReadFirst(question string) (string, error) {
 //	ans, _ := cliutil.ReadFirstByte("continue?[y/n] ")
 func ReadFirstByte(question string) (byte, error) {
 	if len(question) > 0 {
-		color.Fprint(Output, question)
+		ccolor.Info.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)
@@ -75,7 +75,7 @@ func ReadFirstByte(question string) (byte, error) {
 // ReadFirstRune read first rune char
 func ReadFirstRune(question string) (rune, error) {
 	if len(question) > 0 {
-		color.Fprint(Output, question)
+		ccolor.Info.Fprint(Output, question)
 	}
 
 	reader := bufio.NewReader(Input)

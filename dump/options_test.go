@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 func TestSkipPrivate(t *testing.T) {
@@ -53,10 +53,8 @@ func TestSkipNilField(t *testing.T) {
 }
 
 func TestWithoutColor(t *testing.T) {
-	ol := color.ForceColor()
-	defer func() {
-		color.ForceSetColorLevel(ol)
-	}()
+	ccolor.ForceEnableColor()
+	defer ccolor.RevertColorSupport()
 
 	buf := newBuffer()
 	dumper := newStd().WithOptions(WithoutOutput(buf), WithoutPosition(), WithCallerSkip(2))

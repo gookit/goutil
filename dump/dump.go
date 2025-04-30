@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/gookit/color"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // These flags define which print caller information
@@ -66,7 +66,7 @@ func (ct Theme) integer(s string) string { return ct.wrap("integer", s) }
 // wrap color tag.
 func (ct Theme) wrap(key string, s string) string {
 	if tag := ct[key]; tag != "" {
-		return color.WrapTag(s, tag)
+		return ccolor.WrapTag(s, tag)
 	}
 	return s
 }

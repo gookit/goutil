@@ -6,8 +6,8 @@ package assert
 import (
 	"strings"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/internal/comfunc"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // TestingT is an interface wrapper around *testing.T
@@ -44,7 +44,7 @@ func fail(t TestingT, failMsg string, fmtAndArgs []any) bool {
 
 	tName := t.Name()
 	if EnableColor {
-		tName = color.Red.Sprint(tName)
+		tName = ccolor.Red.Sprint(tName)
 	}
 
 	labeledTexts := []labeledText{

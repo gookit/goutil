@@ -10,8 +10,8 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/gookit/color"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 // func newBufDumper(buf *bytes.Buffer) *Dumper {
@@ -86,7 +86,7 @@ func TestDump_Basic(t *testing.T) {
 	)
 
 	str := buffer.String()
-	str = color.ClearCode(str) // clear color codes.
+	str = ccolor.ClearCode(str) // clear color codes.
 	assert.Contains(t, str, "github.com/gookit/goutil/dump.TestDump_Basic(dumper_test.go")
 	assert.Contains(t, str, "float64(3.1415926)")
 	assert.Contains(t, str, `string("abc1234")`)
@@ -139,7 +139,7 @@ func TestDump_Ptr(t *testing.T) {
 	// refer struct
 	dumper.Println(user)
 	str := buffer.String()
-	str = color.ClearCode(str)
+	str = ccolor.ClearCode(str)
 	assert.Contains(t, str, "&struct")
 	assert.Contains(t, str, "Age: int(22),")
 	assert.Contains(t, str, `id: string("ab12345"),`)
