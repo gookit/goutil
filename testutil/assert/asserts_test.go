@@ -290,6 +290,15 @@ func TestCommon_fail(t *testing.T) {
 	assert.StrContains(t, tc.ResetGet(), "custom message2")
 }
 
+func TestFileSystem(t *testing.T) {
+	assert.FileExists(t, "asserts.go")
+	assert.FileNotExists(t, "testdata/file1.txt")
+
+	// dir
+	assert.DirExists(t, "../_example")
+	assert.DirNotExists(t, "testdata/dir1")
+}
+
 func TestErr(t *testing.T) {
 	assert.NoErr(t, nil)
 	assert.NoError(t, nil)

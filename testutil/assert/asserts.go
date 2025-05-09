@@ -4,11 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"runtime"
 	"runtime/debug"
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/comdef"
+	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
@@ -99,7 +101,8 @@ func runPanicFunc(f PanicRunFunc) (didPanic bool, message any, stack string) {
 func Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 	if hasPanic, panicVal, _ := runPanicFunc(fn); !hasPanic {
 		t.Helper()
-		return fail(t, fmt.Sprintf("func '%#v' should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+		funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
+		return fail(t, fmt.Sprintf("func '%s' should panic\n\tPanic value:\t%#v", funcName, panicVal), fmtAndArgs)
 	}
 	return true
 }
@@ -108,10 +111,11 @@ func Panics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 func NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 	if hasPanic, panicVal, stackMsg := runPanicFunc(fn); hasPanic {
 		t.Helper()
+		funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 
 		return fail(t, fmt.Sprintf(
-			"func %#v should not panic\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
-			fn, panicVal, stackMsg,
+			"func %s should not panic\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			funcName, panicVal, stackMsg,
 		), fmtAndArgs)
 	}
 
@@ -120,17 +124,18 @@ func NotPanics(t TestingT, fn PanicRunFunc, fmtAndArgs ...any) bool {
 
 // PanicsMsg should panic and with a value
 func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal any, fmtAndArgs ...any) bool {
+	funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
 	if !hasPanic {
 		t.Helper()
-		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+		return fail(t, fmt.Sprintf("func %s should panic\n\tPanic value:\t%#v", funcName, panicVal), fmtAndArgs)
 	}
 
 	if panicVal != wantVal {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
-			"func %#v should panic.\n\tWant  value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
-			fn, wantVal, panicVal, stackMsg),
+			"func %s should panic.\n\tWant  value:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			funcName, wantVal, panicVal, stackMsg),
 			fmtAndArgs)
 	}
 
@@ -139,23 +144,24 @@ func PanicsMsg(t TestingT, fn PanicRunFunc, wantVal any, fmtAndArgs ...any) bool
 
 // PanicsErrMsg should panic and with error message
 func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any) bool {
+	funcName := runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 	hasPanic, panicVal, stackMsg := runPanicFunc(fn)
 	if !hasPanic {
 		t.Helper()
-		return fail(t, fmt.Sprintf("func %#v should panic\n\tPanic value:\t%#v", fn, panicVal), fmtAndArgs)
+		return fail(t, fmt.Sprintf("func %s should panic\n\tPanic value:\t%#v", funcName, panicVal), fmtAndArgs)
 	}
 
 	err, ok := panicVal.(error)
 	if !ok {
 		t.Helper()
-		return fail(t, fmt.Sprintf("func %#v should panic and is error type,\nbut type was: %T", fn, panicVal), fmtAndArgs)
+		return fail(t, fmt.Sprintf("func %s should panic and is error type,\nbut type was: %T", funcName, panicVal), fmtAndArgs)
 	}
 
 	if err.Error() != errMsg {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
-			"func %#v should panic.\n\tWant  error:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
-			fn, errMsg, panicVal, stackMsg),
+			"func %s should panic.\n\tWant  error:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
+			funcName, errMsg, panicVal, stackMsg),
 			fmtAndArgs,
 		)
 	}
@@ -163,12 +169,12 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	return true
 }
 
-// Contains asserts that the given data(string,slice,map) should contain element
+// Contains asserting that the given data(string,slice,map) should contain element
 //
 // TIP: only support types: string, map, array, slice
 //
 //	map         - check key exists
-//	string      - check sub-string exists
+//	string      - check substring exists
 //	array,slice - check sub-element exists
 func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 	valid, found := checkfn.Contains(src, elem)
@@ -192,7 +198,7 @@ func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 // TIP: only support types: string, map, array, slice
 //
 //	map         - check key exists
-//	string      - check sub-string exists
+//	string      - check substring exists
 //	array,slice - check sub-element exists
 func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 	valid, found := checkfn.Contains(src, elem)
@@ -288,7 +294,7 @@ func NotContainsKeys(t TestingT, mp any, keys any, fmtAndArgs ...any) bool {
 	return true
 }
 
-// ContainsElems asserts that the given list should contains sub elements.
+// ContainsElems asserts that the given list should contain sub elements.
 func ContainsElems[T comdef.ScalarType](t TestingT, list, sub []T, fmtAndArgs ...any) bool {
 	if arrutil.ContainsAll(list, sub) {
 		return true
@@ -300,7 +306,7 @@ func ContainsElems[T comdef.ScalarType](t TestingT, list, sub []T, fmtAndArgs ..
 	return fail(t, fmt.Sprintf("%#v\nShould contain: %#v", list, sub), fmtAndArgs)
 }
 
-// StrContains asserts that the given string should contain sub-string
+// StrContains asserts that the given string should contain substring
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if strings.Contains(s, sub) {
 		return true
@@ -313,7 +319,7 @@ func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	)
 }
 
-// StrNotContains asserts that the given string should not contain sub-string
+// StrNotContains asserts that the given string should not contain substring
 func StrNotContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if !strings.Contains(s, sub) {
 		return true
@@ -326,7 +332,7 @@ func StrNotContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	)
 }
 
-// StrCount asserts that the given string should contain sub-string and count
+// StrCount asserts that the given string should contain substring and count
 func StrCount(t TestingT, s, sub string, count int, fmtAndArgs ...any) bool {
 	if strings.Count(s, sub) == count {
 		return true
@@ -337,6 +343,46 @@ func StrCount(t TestingT, s, sub string, count int, fmtAndArgs ...any) bool {
 		fmt.Sprintf("String check fail:\nGiven string: %s\nNot contains %q count: %d", s, sub, count),
 		fmtAndArgs,
 	)
+}
+
+//
+// -------------------- filesystem --------------------
+//
+
+// FileExists asserts that the given file exists
+func FileExists(t TestingT, filePath string, fmtAndArgs ...any) bool {
+	t.Helper()
+	if !fsutil.IsFile(filePath) {
+		return fail(t, fmt.Sprintf("File should exists: %s", filePath), fmtAndArgs)
+	}
+	return true
+}
+
+// FileNotExists asserts that the given file not exists
+func FileNotExists(t TestingT, filePath string, fmtAndArgs ...any) bool {
+	t.Helper()
+	if fsutil.IsFile(filePath) {
+		return fail(t, fmt.Sprintf("File should not exists: %s", filePath), fmtAndArgs)
+	}
+	return true
+}
+
+// DirExists asserts that the given dir exists
+func DirExists(t TestingT, dirPath string, fmtAndArgs ...any) bool {
+	t.Helper()
+	if !fsutil.IsDir(dirPath) {
+		return fail(t, fmt.Sprintf("Directory should exists: %s", dirPath), fmtAndArgs)
+	}
+	return true
+}
+
+// DirNotExists asserts that the given dir not exists
+func DirNotExists(t TestingT, dirPath string, fmtAndArgs ...any) bool {
+	t.Helper()
+	if fsutil.IsDir(dirPath) {
+		return fail(t, fmt.Sprintf("Directory should not exists: %s", dirPath), fmtAndArgs)
+	}
+	return true
 }
 
 //
