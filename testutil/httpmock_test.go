@@ -1,7 +1,6 @@
 package testutil_test
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -19,7 +18,7 @@ func TestMain(m *testing.M) {
 	defer s.Close()
 
 	testSrvAddr = s.HTTPHost()
-	fmt.Println("server addr:", testSrvAddr)
+	s.PrintHttpHost()
 
 	m.Run()
 }

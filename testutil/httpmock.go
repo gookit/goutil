@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -10,27 +11,20 @@ import (
 
 // some data.
 type (
-	// M short name for map
+	// M short name for a string-map
 	M map[string]string
 	// MD simple request data
 	MD struct {
 		// Headers headers
 		Headers M
-		// Body body. eg: strings.NewReader("name=inhere")
+		// Body reader. eg: strings.NewReader("name=inhere")
 		Body io.Reader
-		// BodyString quick add body.
+		// BodyString quick adds string body.
 		BodyString string
 		// BeforeSend callback
 		BeforeSend func(req *http.Request)
 	}
 )
-
-// NewHttpRequest for http testing, alias of NewHTTPRequest()
-//
-// Deprecated: use NewHTTPRequest() instead.
-func NewHttpRequest(method, path string, data *MD) *http.Request {
-	return NewHTTPRequest(method, path, data)
-}
 
 // NewHTTPRequest quick create request for http testing
 // Usage:
@@ -145,6 +139,11 @@ func (s *EchoServer) HTTPHost() string {
 	return "http://" + s.HostAddr()
 }
 
+// PrintHttpHost print host address to console
+func (s *EchoServer) PrintHttpHost() {
+	fmt.Println("Test server listen on:", s.HTTPHost())
+}
+
 // NewEchoServer create an echo server for testing.
 //
 // Usage on testing:
@@ -156,13 +155,13 @@ func (s *EchoServer) HTTPHost() string {
 //		s := testutil.NewEchoServer()
 //		defer s.Close()
 //		testSrvAddr = s.HTTPHost()
-//		fmt.Println("Test server listen on:", testSrvAddr)
+//		s.PrintHttpHost()
 //
 //		m.Run()
 //	}
 //
 //	// in a test case ...
-//	res := http.Get(testSrvAddr)
+//	res := http.Get(testSrvAddr + "/get/some-one")
 //	rpl := testutil.ParseRespToReply(res)
 //	// assert ...
 func NewEchoServer() *EchoServer {

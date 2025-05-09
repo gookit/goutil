@@ -2,7 +2,9 @@ package testutil
 
 import (
 	"os"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Env mocking
@@ -86,6 +88,40 @@ func MockOsEnvByText(envText string, fn func()) {
 // MockOsEnv by env map data. alias of MockCleanOsEnv
 func MockOsEnv(mp map[string]string, fn func()) {
 	MockCleanOsEnv(mp, fn)
+}
+
+var envGroupSet = make(map[string]map[string]string)
+
+// SetOsEnvs by map data with a group key. should call RemoveTmpEnvs after tested.
+//
+// Usage:
+//
+//	tmpKey := testutil.SetOsEnvs(map[string]string{
+//		"APP_COMMAND": "login",
+//		"APP_ENV":     "dev",
+//		"APP_DEBUG":   "true",
+//	})
+//	defer testutil.RemoveTmpEnvs(tmpKey)
+func SetOsEnvs(mp map[string]string) string {
+	timeStr := strconv.FormatInt(time.Now().UnixMicro(), 32)
+	tmpKey := "g_" + timeStr
+	envGroupSet[tmpKey] = mp
+
+	for key, val := range mp {
+		_ = os.Setenv(key, val)
+	}
+	return tmpKey
+}
+
+// RemoveTmpEnvs remove test set envs by SetOsEnvs
+func RemoveTmpEnvs(tmpKey string) {
+	if mp, ok := envGroupSet[tmpKey]; ok {
+		for key := range mp {
+			_ = os.Unsetenv(key)
+		}
+		// delete group key
+		delete(envGroupSet, tmpKey)
+	}
 }
 
 // backup os ENV

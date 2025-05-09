@@ -77,3 +77,20 @@ APP_PWD=
 		assert.Eq(t, "", os.Getenv("APP_PWD"))
 	})
 }
+
+func TestSetOsEnvs(t *testing.T) {
+	assert.Empty(t, os.Getenv("MOCK_SetOsEnvs_01"))
+	assert.Empty(t, os.Getenv("MOCK_SetOsEnvs_02"))
+
+	groupKey := testutil.SetOsEnvs(map[string]string{
+		"MOCK_SetOsEnvs_01": "new val",
+		"MOCK_SetOsEnvs_02": "dev",
+	})
+
+	assert.Eq(t, "new val", os.Getenv("MOCK_SetOsEnvs_01"))
+	assert.Eq(t, "dev", os.Getenv("MOCK_SetOsEnvs_02"))
+
+	testutil.RemoveTmpEnvs(groupKey)
+	assert.Empty(t, os.Getenv("MOCK_SetOsEnvs_01"))
+	assert.Empty(t, os.Getenv("MOCK_SetOsEnvs_02"))
+}
