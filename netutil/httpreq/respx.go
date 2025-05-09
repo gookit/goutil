@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"io"
 	"net/http"
 
 	"github.com/gookit/goutil/netutil/httpctype"
@@ -18,6 +17,8 @@ type RespX struct {
 	*http.Response
 	// CostTime for a request-response
 	CostTime int64
+	// body data buffer
+	bodyBuf *bytes.Buffer
 }
 
 // WrapResp wrap http.Response to RespX
@@ -29,106 +30,95 @@ func WrapResp(hr *http.Response, err error) (*RespX, error) {
 }
 
 // NewResp instance
-func NewResp(hr *http.Response) *RespX {
-	return &RespX{Response: hr}
-}
+func NewResp(hr *http.Response) *RespX { return &RespX{Response: hr} }
 
-// IsFail check
-func (r *RespX) IsFail() bool {
-	return r.StatusCode != http.StatusOK
-}
+// IsFail check status code is not equals to 200
+func (r *RespX) IsFail() bool { return r.StatusCode != http.StatusOK }
 
-// IsOk check
-func (r *RespX) IsOk() bool {
-	return r.StatusCode == http.StatusOK
-}
+// IsOk check status code is equals to 200
+func (r *RespX) IsOk() bool { return r.StatusCode == http.StatusOK }
 
-// IsSuccessful check
-func (r *RespX) IsSuccessful() bool {
-	return IsSuccessful(r.StatusCode)
-}
+// IsSuccessful check status code is in 200-300
+func (r *RespX) IsSuccessful() bool { return IsSuccessful(r.StatusCode) }
 
 // IsEmptyBody check response body is empty
-func (r *RespX) IsEmptyBody() bool {
-	return r.ContentLength <= 0
-}
+func (r *RespX) IsEmptyBody() bool { return r.ContentLength <= 0 }
 
 // ContentType get response content type
-func (r *RespX) ContentType() string {
-	return r.Header.Get(httpctype.Key)
-}
+func (r *RespX) ContentType() string { return r.Header.Get(httpctype.Key) }
 
 // BodyString get body as string.
-func (r *RespX) String() string {
-	return ResponseToString(r.Response)
-}
+func (r *RespX) String() string { return ResponseToString(r.Response) }
 
-// BodyString get body as string.
-func (r *RespX) BodyString() string {
-	return r.BodyBuffer().String()
-}
-
-// BodyBuffer read body to buffer.
 //
-// NOTICE: must close resp body.
-func (r *RespX) BodyBuffer() *bytes.Buffer {
-	buf := &bytes.Buffer{}
+// ------------------------ read body ------------------------
+//
+
+// ReadBody read body to buffer. allow reading body multiple times.
+//
+// NOTE: will close the response.Body
+func (r *RespX) ReadBody() error {
+	if r.bodyBuf != nil {
+		return nil
+	}
+
 	// prof: assign memory before read
 	if r.ContentLength > bytes.MinRead {
-		buf.Grow(int(r.ContentLength) + 2)
+		r.bodyBuf = bytes.NewBuffer(make([]byte, 0, r.ContentLength))
+	} else {
+		r.bodyBuf = bytes.NewBuffer(make([]byte, 0, bytes.MinRead))
 	}
 
 	// NOTICE: must close resp body.
 	defer r.SafeCloseBody()
-	_, err := buf.ReadFrom(r.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	return buf
+	_, err := r.bodyBuf.ReadFrom(r.Body)
+	return err
 }
 
-// BindJSONOnOk body data on response status is 200.
-// if ptr is nil, will discard body data.
-//
-// NOTICE: must close resp body.
-func (r *RespX) BindJSONOnOk(ptr any) error {
-	// NOTICE: must close resp body.
-	defer r.SafeCloseBody()
+// BodyBuffer read body to buffer. NOTE: will close the response.Body
+func (r *RespX) BodyBuffer() *bytes.Buffer {
+	if err := r.ReadBody(); err != nil {
+		panic(err)
+	}
+	return r.bodyBuf
+}
 
-	if r.IsFail() {
-		_, _ = io.Copy(io.Discard, r.Body) // <-- add this line
+// BodyString get body as string.
+func (r *RespX) BodyString() string { return r.BodyBuffer().String() }
+
+// BindJSONOnOk body data on response status is in 200-300.
+// If ptr is nil, will do nothing.
+func (r *RespX) BindJSONOnOk(ptr any) error { return r.bindJSON(ptr, true) }
+
+// BindJSON body data to a ptr, will don't check status code.
+// If ptr is nil, will do nothing.
+func (r *RespX) BindJSON(ptr any) error { return r.bindJSON(ptr, false) }
+
+func (r *RespX) bindJSON(ptr any, checkStatus bool) error {
+	if checkStatus && !r.IsSuccessful() {
 		return errors.New("response status is not equals to 200")
 	}
 
+	if err := r.ReadBody(); err != nil {
+		return err
+	}
+
 	if ptr == nil {
-		_, _ = io.Copy(io.Discard, r.Body) // <-- add this line
 		return nil
 	}
-	return json.NewDecoder(r.Body).Decode(ptr)
+	return json.NewDecoder(r.bodyBuf).Decode(ptr)
 }
 
-// BindJSON body data to a ptr, will don't check status code.
-// if ptr is nil, will discard body data.
-//
-// NOTICE: must close resp body.
-func (r *RespX) BindJSON(ptr any) error {
-	// NOTICE: must close resp body.
-	defer r.SafeCloseBody()
-
-	if ptr == nil {
-		_, _ = io.Copy(io.Discard, r.Body) // <-- add this line
-		return nil
+// CloseBuffer close body buffer
+func (r *RespX) CloseBuffer() {
+	if r.bodyBuf != nil {
+		r.bodyBuf.Reset()
+		r.bodyBuf = nil
 	}
-	return json.NewDecoder(r.Body).Decode(ptr)
 }
 
 // CloseBody close resp body
-func (r *RespX) CloseBody() error {
-	return r.Body.Close()
-}
+func (r *RespX) CloseBody() error { return r.Body.Close() }
 
 // SafeCloseBody close resp body, ignore error
-func (r *RespX) SafeCloseBody() {
-	_ = r.Body.Close()
-}
+func (r *RespX) SafeCloseBody() { _ = r.Body.Close() }

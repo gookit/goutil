@@ -12,7 +12,7 @@ import (
 // AfterSendFn callback func
 type AfterSendFn func(resp *http.Response, err error)
 
-// Doer interface for http client.
+// Doer interface for an http client.
 type Doer interface {
 	Do(req *http.Request) (*http.Response, error)
 }

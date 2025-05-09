@@ -1,7 +1,6 @@
 package httpreq_test
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -17,8 +16,9 @@ var testSrvAddr string
 func TestMain(m *testing.M) {
 	s := testutil.NewEchoServer()
 	defer s.Close()
-	testSrvAddr = "http://" + s.Listener.Addr().String()
-	fmt.Println("Test server listen on:", testSrvAddr)
+
+	testSrvAddr = s.HTTPHost()
+	s.PrintHttpHost()
 
 	m.Run()
 }

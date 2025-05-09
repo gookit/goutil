@@ -55,9 +55,7 @@ func OptOrNew(opt *Option) *Option {
 }
 
 // NewOpt create a new Option and with option func
-func NewOpt(fns ...OptionFn) *Option {
-	return NewOption(fns)
-}
+func NewOpt(fns ...OptionFn) *Option { return NewOption(fns) }
 
 // NewOption create a new Option and set option func
 func NewOption(fns []OptionFn) *Option {
@@ -214,7 +212,7 @@ func (o *Option) Send(method, url string, fns ...OptionFn) (*http.Response, erro
 	return cli.SendWithOpt(url, o)
 }
 
-// MustSend request, will panic on error
+// MustSend request. will panic on error
 func (o *Option) MustSend(method, url string, fns ...OptionFn) *http.Response {
 	cli := basefn.OrValue(o.cli != nil, o.cli, std)
 	o.sent = true

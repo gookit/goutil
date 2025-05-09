@@ -29,6 +29,7 @@ func TestRespX_String(t *testing.T) {
 	s = rx.BodyString()
 	// fmt.Println(s)
 	assert.StrContains(t, s, `"hi"`)
+	rx.CloseBuffer()
 }
 
 func TestWrapResp(t *testing.T) {

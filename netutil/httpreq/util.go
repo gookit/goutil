@@ -21,26 +21,20 @@ type BasicAuthConf struct {
 }
 
 // IsValid value
-func (ba *BasicAuthConf) IsValid() bool {
-	return ba.Password != "" && ba.Username != ""
-}
+func (ba *BasicAuthConf) IsValid() bool { return ba.Password != "" && ba.Username != "" }
 
 // Value build to auth header "Authorization".
-func (ba *BasicAuthConf) Value() string {
-	return BuildBasicAuth(ba.Username, ba.Password)
-}
+func (ba *BasicAuthConf) Value() string { return BuildBasicAuth(ba.Username, ba.Password) }
 
 // String build to auth header "Authorization".
-func (ba *BasicAuthConf) String() string {
-	return ba.Username + ":" + ba.Password
-}
+func (ba *BasicAuthConf) String() string { return ba.Username + ":" + ba.Password }
 
 // IsOK check response status code is 200
 func IsOK(statusCode int) bool {
 	return statusCode == http.StatusOK
 }
 
-// IsSuccessful check response status code is in 200 - 300
+// IsSuccessful check response status code is in 200-300
 func IsSuccessful(statusCode int) bool {
 	return statusCode >= http.StatusOK && statusCode < 300
 }
@@ -63,12 +57,12 @@ func IsNotFound(statusCode int) bool {
 	return statusCode == http.StatusNotFound
 }
 
-// IsClientError check response is client error (400 - 500)
+// IsClientError check response is client error (400-500)
 func IsClientError(statusCode int) bool {
 	return statusCode >= http.StatusBadRequest && statusCode < http.StatusInternalServerError
 }
 
-// IsServerError check response is server error (500 - 600)
+// IsServerError check response is server error (500-600)
 func IsServerError(statusCode int) bool {
 	return statusCode >= http.StatusInternalServerError && statusCode <= 600
 }

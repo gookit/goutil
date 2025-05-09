@@ -21,7 +21,7 @@ type Client struct {
 	// custom set headers
 	headerMap map[string]string
 
-	// beforeSend callback
+	// before send callback
 	beforeSend func(req *http.Request)
 	afterSend  AfterSendFn
 }
@@ -40,7 +40,7 @@ func NewWithTimeout(ms int) *Client {
 	return NewWithDoer(&http.Client{Timeout: time.Duration(ms) * time.Millisecond})
 }
 
-// NewWithDoer instance with custom http client
+// NewWithDoer instance with a custom http client
 func NewWithDoer(d Doer) *Client {
 	return &Client{
 		client: d,
@@ -50,10 +50,8 @@ func NewWithDoer(d Doer) *Client {
 	}
 }
 
-// Doer get the http client
-func (h *Client) Doer() Doer {
-	return h.client
-}
+// Doer get the http client driver
+func (h *Client) Doer() Doer { return h.client }
 
 // SetClient custom set http client doer
 func (h *Client) SetClient(c Doer) *Client {
