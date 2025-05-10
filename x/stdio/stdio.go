@@ -77,12 +77,12 @@ func WritelnBytes(bs []byte) {
 	_, _ = os.Stdout.Write([]byte("\n"))
 }
 
-// WriteString to stdout, will ignore error
+// WriteString to stdout. will ignore error
 func WriteString(s string) {
 	_, _ = os.Stdout.WriteString(s)
 }
 
-// Writeln string to stdout, will ignore error
+// Writeln string to stdout. will ignore error
 func Writeln(s string) {
 	_, _ = os.Stdout.WriteString(s)
 	_, _ = os.Stdout.Write([]byte("\n"))

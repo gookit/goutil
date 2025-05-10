@@ -6,27 +6,27 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/stdio"
 )
 
-func TestQuietFprint(t *testing.T) {
+func TestFprintTo(t *testing.T) {
 	buf := testutil.NewBuffer()
 
-	stdio.QuietFprint(buf, "hi, inhere")
+	stdio.Fprint(buf, "hi, inhere")
 	assert.Eq(t, "hi, inhere", buf.ResetAndGet())
 
-	stdio.QuietFprintf(buf, "hi, %s", "inhere")
+	stdio.Fprintf(buf, "hi, %s", "inhere")
 	assert.Eq(t, "hi, inhere", buf.ResetAndGet())
 
-	stdio.QuietFprintln(buf, "hi, inhere")
+	stdio.Fprintln(buf, "hi, inhere")
 	assert.Eq(t, "hi, inhere\n", buf.ResetAndGet())
 }
 
-func TestQuietWriteString(t *testing.T) {
+func TestWriteStringTo(t *testing.T) {
 	buf := new(bytes.Buffer)
-	stdio.QuietWriteString(buf, "inhere")
+	stdio.WriteStringTo(buf, "inhere")
 
 	assert.Eq(t, "inhere", buf.String())
 }
