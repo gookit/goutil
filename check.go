@@ -26,7 +26,7 @@ func IsEmpty(v any) bool {
 	return reflects.IsEmpty(reflect.ValueOf(v))
 }
 
-// Alias of the IsEmptyReal()
+// IsZeroReal Alias of the IsEmptyReal()
 var IsZeroReal = IsEmptyReal
 
 // IsEmptyReal checks for empty given value and also real empty value if the passed value is a pointer
@@ -47,13 +47,13 @@ func IsFunc(val any) bool {
 
 // IsEqual determines if two objects are considered equal.
 //
-// TIP: cannot compare function type
+// TIP: cannot compare a function type
 func IsEqual(src, dst any) bool {
 	if src == nil || dst == nil {
 		return src == dst
 	}
 
-	// cannot compare function type
+	// cannot compare a function type
 	if IsFunc(src) || IsFunc(dst) {
 		return false
 	}

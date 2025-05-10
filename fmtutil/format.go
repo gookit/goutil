@@ -2,6 +2,7 @@ package fmtutil
 
 import (
 	"encoding/json"
+
 	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
@@ -21,9 +22,10 @@ const (
 //	file, err := os.Open(path)
 //	fl, err := file.Stat()
 //	fmtSize := DataSize(fl.Size())
-func DataSize(size uint64) string {
-	return mathutil.DataSize(size)
-}
+func DataSize(size uint64) string { return mathutil.DataSize(size) }
+
+// HumanSize alias of the DataSize
+func HumanSize(size uint64) string { return mathutil.DataSize(size) }
 
 // SizeToString alias of the DataSize
 func SizeToString(size uint64) string { return DataSize(size) }

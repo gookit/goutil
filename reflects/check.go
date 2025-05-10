@@ -96,7 +96,7 @@ func IsFunc(val any) bool {
 
 // IsEqual determines if two objects are considered equal.
 //
-// TIP: cannot compare function type
+// TIP: cannot compare a function type
 func IsEqual(src, dst any) bool {
 	if src == nil || dst == nil {
 		return src == dst

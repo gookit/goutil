@@ -24,6 +24,7 @@ func TestDataSize(t *testing.T) {
 	for _, tt := range tests {
 		assert.Eq(t, tt.want, fmtutil.DataSize(tt.args))
 	}
+	assert.Eq(t, "1.12G", fmtutil.HumanSize(1200346778))
 	assert.Eq(t, "1.12G", fmtutil.SizeToString(1200346778))
 }
 
