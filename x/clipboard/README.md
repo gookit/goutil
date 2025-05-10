@@ -5,7 +5,7 @@ Package `clipboard` provide a simple clipboard read and write operations.
 ### Install
 
 ```bash
-go get github.com/gookit/goutil/sysutil/clipboard
+go get github.com/gookit/goutil/x/clipboard
 ```
 
 ### Usage

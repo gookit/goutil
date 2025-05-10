@@ -3,8 +3,8 @@ package clipboard_test
 import (
 	"testing"
 
-	"github.com/gookit/goutil/sysutil/clipboard"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/clipboard"
 )
 
 func TestGetReaderBin(t *testing.T) {

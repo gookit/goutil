@@ -1,4 +1,4 @@
-// Package clipboard provide a simple clipboard read and write operations.
+// Package clipboard provides a simple clipboard read and write operations.
 package clipboard
 
 import (
