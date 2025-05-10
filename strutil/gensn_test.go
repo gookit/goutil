@@ -41,6 +41,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 		fmt.Println(id, "len:", len(id))
 		assert.NotEmpty(t, id)
 	}
+	assert.NotEmpty(t, strutil.MTimeBase36())
 }
 
 func TestDateSN(t *testing.T) {

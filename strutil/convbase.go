@@ -20,10 +20,8 @@ const (
 	Base64Chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+/"
 )
 
-// Base10Conv convert base 10 string to new base string.
-func Base10Conv(src string, to int) string {
-	return BaseConv(src, 10, to)
-}
+// Base10Conv convert base10 string to new base string.
+func Base10Conv(src string, to int) string { return BaseConv(src, 10, to) }
 
 // BaseConv convert base string by from and to base.
 //
