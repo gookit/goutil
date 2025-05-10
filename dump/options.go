@@ -33,6 +33,8 @@ type Options struct {
 	BytesAsString bool
 	// MoreLenNL array/slice elements length > MoreLenNL, will wrap new line
 	// MoreLenNL int
+	// MaxElementsNum for a long-long slice or array. The excess will be displayed `...`
+	MaxElementsNum int
 }
 
 // OptionFunc type
@@ -55,6 +57,8 @@ func NewDefaultOptions(out io.Writer, skip int) *Options {
 		IndentChar: ' ',
 		CallerSkip: skip,
 		ColorTheme: defaultTheme,
+		// ---
+		MaxElementsNum: 99,
 	}
 }
 

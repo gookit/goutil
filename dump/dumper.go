@@ -139,7 +139,7 @@ func (d *Dumper) printCaller(pc uintptr, file string, line int) {
 	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(dump_test.go:23)"
 	// "PRINT AT github.com/gookit/goutil/dump.ExamplePrint(:23)"
 	for _, flag := range callerFlags {
-		// has flag
+		// has a flag
 		if d.ShowFlag&flag == 0 {
 			continue
 		}
@@ -260,6 +260,11 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.msValue = false
 
 		for i := 0; i < eleNum; i++ {
+			if i > d.MaxElementsNum {
+				d.indentPrint("...(!OVER MAX SETTING!)...\n")
+				break
+			}
+
 			sv := v.Index(i)
 			d.advance(1)
 
@@ -282,7 +287,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			d.printf("time.Time(%s),\n", d.ColorTheme.string(d.fmtTimeValue(v)))
 			break
 		}
-		// up: if is type alias of time.Time, use datetime format
+		// up: if is type alias of time.Time, use a datetime format
 		if !isPtr && t.ConvertibleTo(timeType) {
 			tv := v.Convert(timeType)
 			d.printf("%s(%s),\n", t.String(), d.ColorTheme.string(d.fmtTimeValue(tv)))
