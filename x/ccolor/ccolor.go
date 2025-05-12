@@ -11,17 +11,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/gookit/goutil/internal/checkfn"
-)
-
-// Level is the color level supported by a terminal.
-type Level uint8
-
-const (
-	LevelNone Level = iota // not support color
-	Level16                // 16(4bit) color supported
-	Level256               // 256(8bit) color supported
-	LevelTrue              // support true(rgb) color
+	"github.com/gookit/goutil/x/termenv"
 )
 
 // color render templates
@@ -46,12 +36,6 @@ const (
 const CodeExpr = `\033\[[\d;?]+m`
 
 var (
-	// value of os color render and display
-	//
-	// NOTICE:
-	// if ENV: NO_COLOR is not empty, will disable color render.
-	noColor = os.Getenv("NO_COLOR") == ""
-
 	// last error
 	lastErr error
 	// output the default io.Writer message print
@@ -60,42 +44,8 @@ var (
 	codeRegex = regexp.MustCompile(CodeExpr)
 )
 
-// cache color check values
-var (
-	colorLevel   Level
-	supportColor bool
-)
-
-// CheckColorSupport on the system and terminal
-func CheckColorSupport() bool {
-	supportColor = false
-	colorLevel = LevelNone
-
-	// check is in the terminal
-	if !isTerminal() {
-		return false
-	}
-
-	if checkfn.IsSupportTrueColor() {
-		supportColor = true
-		colorLevel = LevelTrue
-	} else if checkfn.IsSupport256Color() {
-		supportColor = true
-		colorLevel = Level256
-	} else if checkfn.IsSupportColor() {
-		supportColor = true
-		colorLevel = Level16
-	}
-
-	// disable color by os ENV
-	if noColor {
-		supportColor = false
-	}
-	return supportColor
-}
-
-// ColorLevel value.
-func ColorLevel() Level { return colorLevel }
+// Level value.
+func Level() termenv.ColorLevel { return termenv.TermColorLevel() }
 
 // SetOutput set output writer
 func SetOutput(w io.Writer) { output = w }
@@ -112,8 +62,6 @@ func LastErr() error {
 // ---------------- for testing ----------------
 //
 
-var backOldVal bool
-
 // ForceEnableColor setting value. TIP: use for unit testing.
 //
 // Usage:
@@ -121,15 +69,10 @@ var backOldVal bool
 //	ccolor.ForceEnableColor()
 //	defer ccolor.RevertColorSupport()
 func ForceEnableColor() {
-	noColor = false
-	backOldVal = supportColor
-	// force enables color
-	supportColor = true
-	// return colorLevel
+	termenv.ForceEnableColor()
 }
 
 // RevertColorSupport value
 func RevertColorSupport() {
-	supportColor = backOldVal
-	noColor = os.Getenv("NO_COLOR") == ""
+	termenv.RevertColorSupport()
 }

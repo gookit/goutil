@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/gookit/goutil/x/termenv"
 	"golang.org/x/term"
 )
 
@@ -88,7 +89,7 @@ func RenderCode(code string, args ...any) string {
 	}
 
 	// disabled OR not support color
-	if !supportColor {
+	if !termenv.IsSupportColor() {
 		return ClearCode(message)
 	}
 
@@ -107,7 +108,7 @@ func RenderString(code string, str string) string {
 	}
 
 	// disabled OR not support color
-	if !supportColor {
+	if !termenv.IsSupportColor() {
 		return ClearCode(str)
 	}
 
@@ -124,7 +125,7 @@ func RenderWithSpaces(code string, args ...any) string {
 	}
 
 	// disabled OR not support color
-	if !supportColor {
+	if !termenv.IsSupportColor() {
 		return ClearCode(msg)
 	}
 	return StartSet + code + "m" + msg + ResetSet
