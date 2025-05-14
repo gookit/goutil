@@ -1,6 +1,6 @@
 # finder
 
-[![GoDoc](https://godoc.org/github.com/goutil/fsutil/finder?status.svg)](https://godoc.org/github.com/goutil/fsutil/finder)
+[![GoDoc](https://godoc.org/github.com/goutil/x/finder?status.svg)](https://godoc.org/github.com/goutil/x/finder)
 
 `finder` Provides a simple and convenient file/dir lookup function, 
 supports filtering, excluding, matching, ignoring, etc.
@@ -15,7 +15,7 @@ and with some commonly built-in matchers.
 ## Install
 
 ```shell
-go get github.com/gookit/goutil/fsutil/finder
+go get github.com/gookit/goutil/x/finder
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ package main
 
 import (
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/fsutil/finder"
+	"github.com/gookit/goutil/x/finder"
 )
 
 func main() {

@@ -9,7 +9,7 @@ import (
 // Elem of find file/dir path result
 type Elem interface {
 	fs.DirEntry
-	// Path get file/dir full path. eg: "/path/to/file.go"
+	// Path gets file/dir full path. eg: "/path/to/file.go"
 	Path() string
 	// Info get file info. like fs.DirEntry.Info(), but will cache result.
 	Info() (fs.FileInfo, error)
@@ -30,12 +30,12 @@ func NewElem(fPath string, ent fs.DirEntry) Elem {
 	}
 }
 
-// Path get full file/dir path. eg: "/path/to/file.go"
+// Path gets full file/dir path. eg: "/path/to/file.go"
 func (e *elem) Path() string {
 	return e.path
 }
 
-// Info get file info, will cache result
+// Info gets file info, will cache result
 func (e *elem) Info() (fs.FileInfo, error) {
 	if e.stat == nil {
 		e.stat, e.sErr = e.DirEntry.Info()

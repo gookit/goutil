@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/errorx"
-	"github.com/gookit/goutil/fsutil/finder"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/testutil/fakeobj"
+	"github.com/gookit/goutil/x/finder"
 )
 
 func newMockElem(fp string, isDir ...bool) finder.Elem {

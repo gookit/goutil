@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/fsutil/finder"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/finder"
 )
 
 func TestMain(m *testing.M) {
