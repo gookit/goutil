@@ -12,14 +12,14 @@ import (
 
 // ReplaceVars by regex replace given tpl vars.
 //
-// If format is empty, will use {const defaultVarFormat}
+// If a format is empty, will use {const defaultVarFormat}
 func ReplaceVars(text string, vars map[string]any, format string) string {
 	return NewVarReplacer(format).Replace(text, vars)
 }
 
 // RenderSMap by regex replacement given tpl vars.
 //
-// If format is empty, will use {const defaultVarFormat}
+// If a format is empty, will use {const defaultVarFormat}
 func RenderSMap(text string, vars map[string]string, format string) string {
 	return NewVarReplacer(format).RenderSimple(text, vars)
 }
@@ -61,4 +61,47 @@ func ParseInlineINI(tagVal string, keys ...string) (mp maputil.SMap, err error) 
 		mp[key] = val
 	}
 	return
+}
+
+// ParseSimpleINI parse simple multiline config string to a string-map.
+// Can use to parse simple INI or dotenv file contents.
+//
+// NOTE:
+//
+//   - it's like INI format contents.
+//   - support comments line with: "#", ";", "//"
+//   - support inline comments with: " #" eg: name=tom # a comments
+//   - don't support submap parse.
+func ParseSimpleINI(text string) (mp maputil.SMap, err error) {
+	lines := strutil.Split(text, "\n")
+	ln := len(lines)
+	if ln == 0 {
+		return
+	}
+
+	strMap := make(maputil.SMap, ln)
+	commentsPrefixes := []string{"#", ";", "//"}
+
+	for _, line := range lines {
+		// skip comments line
+		if strutil.HasOnePrefix(line, commentsPrefixes) {
+			continue
+		}
+
+		if !strings.ContainsRune(line, '=') {
+			strMap = nil
+			err = fmt.Errorf("invalid config line: must match `KEY=VAL`(text: %s)", line)
+			return
+		}
+
+		key, value := strutil.TrimCut(line, "=")
+
+		// check and remove inline comments
+		if pos := strings.Index(value, " #"); pos > 0 {
+			value = strings.TrimRight(value[0:pos], " ")
+		}
+
+		strMap[key] = value
+	}
+	return strMap, nil
 }

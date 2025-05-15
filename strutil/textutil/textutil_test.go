@@ -146,3 +146,63 @@ func TestParseInlineINI(t *testing.T) {
 	_, err = textutil.ParseInlineINI("name=n;default=inhere", "name")
 	assert.ErrSubMsg(t, err, "parse inline config error: invalid key name")
 }
+
+func TestParseSimpleINI(t *testing.T) {
+	t.Run("empty input", func(t *testing.T) {
+		mp, err := textutil.ParseSimpleINI("")
+		assert.Nil(t, err)
+		assert.Empty(t, mp)
+	})
+
+	t.Run("only newlines", func(t *testing.T) {
+		mp, err := textutil.ParseSimpleINI("\n\n\n")
+		assert.Nil(t, err)
+		assert.Empty(t, mp)
+	})
+
+	t.Run("comment lines only", func(t *testing.T) {
+		input := "# comment\n; another comment\n// inline comment"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Nil(t, err)
+		assert.Empty(t, mp)
+	})
+
+	t.Run("invalid line without equal sign", func(t *testing.T) {
+		input := "invalid line"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Err(t, err)
+		assert.Contains(t, err.Error(), "invalid config line")
+		assert.Nil(t, mp)
+	})
+
+	t.Run("valid key-value pair", func(t *testing.T) {
+		input := "key=value"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Nil(t, err)
+		assert.Eq(t, "value", mp["key"])
+	})
+
+	t.Run("key with inline comment", func(t *testing.T) {
+		input := "key=value # this is a comment"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Nil(t, err)
+		assert.Eq(t, "value", mp["key"])
+	})
+
+	t.Run("multiple valid lines", func(t *testing.T) {
+		input := "key1=value1\nkey2=value2\nkey3=value3"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Nil(t, err)
+		assert.Eq(t, "value1", mp["key1"])
+		assert.Eq(t, "value2", mp["key2"])
+		assert.Eq(t, "value3", mp["key3"])
+	})
+
+	t.Run("mixed lines", func(t *testing.T) {
+		input := "# comment\nkey1=value1\n\nkey2=value2 # inline comment\ninvalidline"
+		mp, err := textutil.ParseSimpleINI(input)
+		assert.Err(t, err)
+		assert.ErrMsgContains(t, err, "invalid config line")
+		assert.Empty(t, mp)
+	})
+}
