@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/gookit/goutil/goinfo"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/goinfo"
 )
 
 func TestGetCallStacks(t *testing.T) {
@@ -20,15 +20,15 @@ func TestGetCallStacks(t *testing.T) {
 func TestGetCallersInfo(t *testing.T) {
 	cs := someFunc1()
 	assert.Len(t, cs, 1)
-	assert.Contains(t, cs[0], "goutil/goinfo_test.someFunc1(),stack_test.go")
+	assert.Contains(t, cs[0], "goutil/x/goinfo_test.someFunc1(),stack_test.go")
 
 	cs = someFunc2()
 	assert.Len(t, cs, 1)
-	assert.Contains(t, cs[0], "goutil/goinfo_test.someFunc2(),stack_test.go")
+	assert.Contains(t, cs[0], "goutil/x/goinfo_test.someFunc2(),stack_test.go")
 
 	loc := someFunc3()
 	assert.NotEmpty(t, loc)
-	assert.Contains(t, loc, "goutil/goinfo_test.someFunc3(),stack_test.go")
+	assert.Contains(t, loc, "goutil/x/goinfo_test.someFunc3(),stack_test.go")
 	// dump.P(cs)
 }
 

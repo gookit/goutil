@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/goinfo"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/goinfo"
 )
 
 func TestFuncName(t *testing.T) {
 	name := goinfo.FuncName(goinfo.PkgName)
-	assert.Eq(t, "github.com/gookit/goutil/goinfo.PkgName", name)
+	assert.Eq(t, "github.com/gookit/goutil/x/goinfo.PkgName", name)
 
 	assert.True(t, goinfo.GoodFuncName("MyFunc"))
 	assert.False(t, goinfo.GoodFuncName(""))
@@ -20,7 +20,7 @@ func TestFuncName(t *testing.T) {
 
 func TestPkgName(t *testing.T) {
 	name := goinfo.PkgName(goinfo.FuncName(goinfo.GetCallerInfo))
-	assert.Eq(t, "github.com/gookit/goutil/goinfo", name)
+	assert.Eq(t, "github.com/gookit/goutil/x/goinfo", name)
 }
 
 func TestFullFcName_Parse(t *testing.T) {
@@ -31,7 +31,7 @@ func TestFullFcName_Parse(t *testing.T) {
 	assert.Eq(t, fullName, ffn.String())
 	assert.Eq(t, "goinfo", ffn.PkgName())
 	assert.Eq(t, "GetCallerInfo", ffn.FuncName())
-	assert.Eq(t, "github.com/gookit/goutil/goinfo", ffn.PkgPath())
+	assert.Eq(t, "github.com/gookit/goutil/x/goinfo", ffn.PkgPath())
 	dump.P(ffn)
 
 	st := goinfo.FullFcName{}
@@ -48,5 +48,5 @@ func TestCutFuncName(t *testing.T) {
 
 	pkgPath, funcName := goinfo.CutFuncName(fullName)
 	assert.Eq(t, "GetCallerInfo", funcName)
-	assert.Eq(t, "github.com/gookit/goutil/goinfo", pkgPath)
+	assert.Eq(t, "github.com/gookit/goutil/x/goinfo", pkgPath)
 }

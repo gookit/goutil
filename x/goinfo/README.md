@@ -1,13 +1,13 @@
 # GoInfo
 
- `goutil/goinfo` provide some useful info for golang.
+ `goutil/x/goinfo` provide some useful info for golang.
 
 > Github: https://github.com/gookit/goutil
 
 ## Install
 
 ```bash
-go get github.com/gookit/goutil/goinfo
+go get github.com/gookit/goutil/x/goinfo
 ```
 
 ## Go docs

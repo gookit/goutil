@@ -11,9 +11,9 @@ import (
 
 // FullFcName struct.
 type FullFcName struct {
-	// FullName eg: "github.com/gookit/goutil/goinfo.PanicIf"
+	// FullName eg: "github.com/gookit/goutil/x/goinfo.PanicIf"
 	FullName string
-	pkgPath  string // "github.com/gookit/goutil/goinfo"
+	pkgPath  string // "github.com/gookit/goutil/x/goinfo"
 	pkgName  string // "goinfo"
 	funcName string // "PanicIf"
 }
@@ -32,7 +32,7 @@ func (ffn *FullFcName) Parse() {
 	ffn.pkgPath += ffn.pkgName
 }
 
-// PkgPath string get. eg: github.com/gookit/goutil/goinfo
+// PkgPath string get. eg: github.com/gookit/goutil/x/goinfo
 func (ffn *FullFcName) PkgPath() string {
 	ffn.Parse()
 	return ffn.pkgPath
@@ -59,7 +59,7 @@ func (ffn *FullFcName) String() string {
 //
 // eg:
 //
-//	// OUTPUT: github.com/gookit/goutil/goinfo.PkgName
+//	// OUTPUT: github.com/gookit/goutil/x/goinfo.PkgName
 //	goinfo.FuncName(goinfo.PkgName)
 func FuncName(fn any) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
@@ -68,7 +68,7 @@ func FuncName(fn any) string {
 // CutFuncName get pkg path and short func name
 // eg:
 //
-//	"github.com/gookit/goutil/goinfo.FuncName" => [github.com/gookit/goutil/goinfo, FuncName]
+//	"github.com/gookit/goutil/x/goinfo.FuncName" => [github.com/gookit/goutil/x/goinfo, FuncName]
 func CutFuncName(fullFcName string) (pkgPath, shortFnName string) {
 	ffn := FullFcName{FullName: fullFcName}
 	return ffn.PkgPath(), ffn.FuncName()

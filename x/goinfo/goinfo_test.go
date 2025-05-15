@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/dump"
-	"github.com/gookit/goutil/goinfo"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/goinfo"
 )
 
 func TestGoVersion(t *testing.T) {
