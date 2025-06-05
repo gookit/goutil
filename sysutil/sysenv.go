@@ -61,8 +61,8 @@ func Hostname() string {
 //
 // eg "/bin/zsh" "/bin/bash".
 // if onlyName=true, will return "zsh", "bash"
-func CurrentShell(onlyName bool) (path string) {
-	return comfunc.CurrentShell(onlyName)
+func CurrentShell(onlyName bool, fallbackShell ...string) string {
+	return comfunc.CurrentShell(onlyName, fallbackShell...)
 }
 
 // HasShellEnv has shell env check.

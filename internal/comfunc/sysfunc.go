@@ -76,16 +76,21 @@ var curShell string
 
 // CurrentShell get current used shell env file.
 //
-// eg "/bin/zsh" "/bin/bash".
-// if onlyName=true, will return "zsh", "bash"
-func CurrentShell(onlyName bool) (binPath string) {
+// return like: "/bin/zsh" "/bin/bash". if onlyName=true, will return "zsh", "bash"
+func CurrentShell(onlyName bool, fallbackShell ...string) (binPath string) {
 	var err error
+
+	fbShell := ""
+	if len(fallbackShell) > 0 {
+		fbShell = fallbackShell[0]
+	}
+
 	if curShell == "" {
 		binPath = os.Getenv("SHELL")
 		if len(binPath) == 0 {
 			binPath, err = ShellExec("echo $SHELL")
 			if err != nil {
-				return ""
+				return fbShell
 			}
 		}
 
@@ -98,6 +103,8 @@ func CurrentShell(onlyName bool) (binPath string) {
 
 	if onlyName && len(binPath) > 0 {
 		binPath = filepath.Base(binPath)
+	} else if len(binPath) == 0 {
+		binPath = fbShell
 	}
 	return
 }
