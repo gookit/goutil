@@ -25,10 +25,10 @@ import (
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
-	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/ccolor"
+	"github.com/gookit/goutil/x/stdio"
 )
 
 // Debug mode
@@ -491,7 +491,7 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 		b.Grow(64)
 
 		mate := c.bindOpts[opt.Name]
-		stdio.QuietFprintf(&b, "  <info>%s</>", mate.HelpName(opt.Name))
+		stdio.Fprintf(&b, "  <info>%s</>", mate.HelpName(opt.Name))
 
 		typName, usage := flag.UnquoteUsage(opt)
 		if len(typName) > 0 {
@@ -515,9 +515,9 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 		// put quotes on the string value
 		if isZero, isStr := IsZeroValue(opt, opt.DefValue); !isZero {
 			if isStr {
-				stdio.QuietFprintf(&b, " (default <magentaB>%q</>)", opt.DefValue)
+				stdio.Fprintf(&b, " (default <magentaB>%q</>)", opt.DefValue)
 			} else {
-				stdio.QuietFprintf(&b, " (default <magentaB>%v</>)", opt.DefValue)
+				stdio.Fprintf(&b, " (default <magentaB>%v</>)", opt.DefValue)
 			}
 		}
 

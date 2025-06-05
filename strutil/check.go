@@ -107,10 +107,10 @@ func IsStartsOf(s string, prefixes []string) bool {
 	return HasOnePrefix(s, prefixes)
 }
 
-// HasOnePrefix the string start withs one of the subs
+// HasOnePrefix the string starts with one of the subs
 func HasOnePrefix(s string, prefixes []string) bool {
 	for _, prefix := range prefixes {
-		if strings.HasPrefix(s, prefix) {
+		if len(s) >= len(prefix) && s[0:len(prefix)] == prefix {
 			return true
 		}
 	}
@@ -132,7 +132,7 @@ func HasSuffix(s string, suffix string) bool { return strings.HasSuffix(s, suffi
 // IsEndOf alias of the strings.HasSuffix
 func IsEndOf(s, suffix string) bool { return strings.HasSuffix(s, suffix) }
 
-// HasOneSuffix the string end withs one of the subs
+// HasOneSuffix the string end with one of the subs
 func HasOneSuffix(s string, suffixes []string) bool {
 	for _, suffix := range suffixes {
 		if strings.HasSuffix(s, suffix) {
@@ -313,7 +313,7 @@ func LikeMatch(pattern, s string) bool {
 
 // MatchNodePath check for a string match the pattern.
 //
-// Use on pattern:
+// Use on a pattern:
 //   - `*` match any to sep
 //   - `**` match any to end. only allow at start or end on pattern.
 //

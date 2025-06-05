@@ -11,7 +11,7 @@ func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
 }
 
-// PanicIf if cond = true, panics with error message
+// PanicIf if cond = true, panics with an error message
 func PanicIf(cond bool, fmtAndArgs ...any) {
 	if cond {
 		panic(errors.New(formatWithArgs(fmtAndArgs)))

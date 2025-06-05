@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/gookit/goutil/basefn"
-	"github.com/gookit/goutil/goinfo"
 	"github.com/gookit/goutil/structs"
+	"github.com/gookit/goutil/x/goinfo"
 )
 
 // Value alias of structs.Value
