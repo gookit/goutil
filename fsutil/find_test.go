@@ -36,9 +36,9 @@ func TestMatchFirst(t *testing.T) {
 }
 
 func TestSearchNameUp(t *testing.T) {
-	p := fsutil.SearchNameUp("testdata", "finder")
+	p := fsutil.SearchNameUp("testdata", "dump")
 	assert.NotEmpty(t, p)
-	assert.True(t, strings.HasSuffix(p, "fsutil"))
+	assert.True(t, strings.HasSuffix(p, "goutil"))
 
 	p = fsutil.SearchNameUp("testdata", ".dotdir")
 	assert.NotEmpty(t, p)

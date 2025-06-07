@@ -41,10 +41,6 @@ func TestValueByType(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.True(t, val.Bool())
 
-	val, err = reflects.ValueByType("abc", reflect.TypeOf("s"))
-	assert.NoErr(t, err)
-	assert.Eq(t, "abc", val.Interface())
-
 	val, err = reflects.ValueByType(123, reflect.TypeOf("s"))
 	assert.NoErr(t, err)
 	assert.Eq(t, "123", val.Interface())
@@ -52,6 +48,15 @@ func TestValueByType(t *testing.T) {
 	val, err = reflects.ValueByType("123", reflect.TypeOf(1))
 	assert.NoErr(t, err)
 	assert.Eq(t, 123, val.Interface())
+
+	// same type
+	val, err = reflects.ValueByType("abc", reflect.TypeOf("s"))
+	assert.NoErr(t, err)
+	assert.Eq(t, "abc", val.Interface())
+
+	// invalid val
+	_, err = reflects.ConvToType(nil, reflect.TypeOf(1))
+	assert.Err(t, err)
 }
 
 func TestValueByType_slice(t *testing.T) {

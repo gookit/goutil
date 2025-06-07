@@ -143,12 +143,12 @@ func TestConfig_LoadRules(t *testing.T) {
 		err := c.LoadRules(true, []string{"file:*.go"})
 
 		assert.Nil(t, err)
-		assert.Len(t, c.FileMatchers, 1)
+		assert.Len(t, c.IncludeFiles, 1)
 
 		// exclude
 		err = c.LoadRules(false, []string{"file:*.log"})
 		assert.Nil(t, err)
-		assert.Len(t, c.FileExMatchers, 1)
+		assert.Len(t, c.ExcludeFiles, 1)
 	})
 
 	// tests the LoadRules method of Config with size rules

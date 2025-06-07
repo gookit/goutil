@@ -55,6 +55,12 @@ func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 	if newRv, ok = val.(reflect.Value); !ok {
 		newRv = reflect.ValueOf(val)
 	}
+
+	// fix: check newRv is valid
+	if !newRv.IsValid() {
+		return rv, comdef.ErrConvType
+	}
+
 	// check the same type. like map
 	if newRv.Type() == typ {
 		return newRv, nil

@@ -24,7 +24,7 @@ func TestSetValues(t *testing.T) {
 	}
 
 	u := &User{}
-	err := structs.SetValues(u, data)
+	err := structs.BindData(u, data)
 	assert.NoErr(t, err)
 	assert.Eq(t, "inhere", u.Name)
 	assert.Eq(t, 234, u.Age)

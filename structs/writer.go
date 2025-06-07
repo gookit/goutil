@@ -69,6 +69,11 @@ func WithParseDefault(opt *SetOptions) {
 	opt.ParseDefault = true
 }
 
+// BindData set values to struct ptr from map data.
+func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error {
+	return SetValues(ptr, data, optFns...)
+}
+
 // SetValues set values to struct ptr from map data.
 //
 // TIPS:
@@ -182,9 +187,10 @@ func setValues(rv reflect.Value, data map[string]any, opt *SetOptions, envPrefix
 		}
 
 		// set field value
-		if err := reflects.SetValue(fv, val); err != nil {
-			es = append(es, err)
-			continue
+		if ok && val != nil {
+			if err := reflects.SetValue(fv, val); err != nil {
+				es = append(es, err)
+			}
 		}
 	}
 
