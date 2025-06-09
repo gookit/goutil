@@ -1,12 +1,11 @@
 package termenv
 
 import (
+	"errors"
 	"os"
 	"runtime"
 	"strconv"
 	"strings"
-
-	"github.com/xo/terminfo"
 )
 
 // ColorLevel is the color level supported by a terminal.
@@ -122,7 +121,7 @@ func detectTermColorLevel() (level ColorLevel, needVTP bool) {
 // detectColorFromEnv returns the color level COLORTERM, FORCE_COLOR,
 // TERM_PROGRAM, or determined from the TERM environment variable.
 //
-// refer the terminfo.ColorLevelFromEnv()
+// refer the github.com/xo/terminfo.ColorLevelFromEnv()
 // https://en.wikipedia.org/wiki/Terminfo
 func detectColorLevelFromEnv(termVal string, isWin bool) ColorLevel {
 	if termVal == noTrueColorTerm { // on TERM=screen: not support true-color
@@ -146,7 +145,7 @@ func detectColorLevelFromEnv(termVal string, isWin bool) ColorLevel {
 		if termVer != "" {
 			i, err := strconv.Atoi(strings.Split(termVer, ".")[0])
 			if err != nil {
-				setLastErr(terminfo.ErrInvalidTermProgramVersion)
+				setLastErr(errors.New("invalid TERM_PROGRAM_VERSION"))
 				return TermColor256 // return TermColorNone
 			}
 			if i == 3 {
