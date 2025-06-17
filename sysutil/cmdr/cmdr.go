@@ -16,6 +16,18 @@ func PrintCmdline(c *Cmd) {
 	}
 }
 
+// PrintCmdline2 on before exec
+func PrintCmdline2(c *Cmd) {
+	if c.Dir != "" {
+		ccolor.Greenln("> Workdir:", c.Dir)
+	}
+	if c.DryRun {
+		ccolor.Yellowln("DRY-RUN>", c.Cmdline())
+	} else {
+		ccolor.Yellowln(">", c.Cmdline())
+	}
+}
+
 // OutputLines split output to lines
 func OutputLines(output string) []string {
 	output = strings.TrimSuffix(output, "\n")
