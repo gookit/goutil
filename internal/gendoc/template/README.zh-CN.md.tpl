@@ -7,19 +7,19 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-`goutil` Go 常用功能的扩展工具库(**700+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
+`goutil` Go 常用功能的扩展工具库(**800+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
-**基础工具包**
+## 工具包说明
+
+### 基础工具包
 
 - [`arrutil`](arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
 - [`cliutil`](cliutil) CLI 的一些工具函数包. eg: read input, exec command
   - [cmdline](cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
 - [`envutil`](envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
-- [`fmtutil`](fmtutil) 格式化数据工具函数 eg：数据size
 - [`fsutil`](fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
-- [`goinfo`](goinfo) 提供一些与Go info, runtime 相关的工具函数。
 - [`jsonutil`](jsonutil) 一些用于快速读取、写入、编码、解码 JSON 数据的实用函数。
 - [`maputil`](maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
@@ -29,13 +29,13 @@
 - [`strutil`](strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](sysutil) system 相关操作的函数工具包. eg: sysenv, exec, user, process
 
-**扩展工具包**
+### 扩展工具包
 
 - [`cflag`](./cflag): 包装和扩展 go `flag.FlagSet` 以方便快速的构建简单的命令行应用程序
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
-- [`finder`](./fsutil/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
+- [`finder`](./x/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
 - netutil 子包:
   - `netutil/httpreq` 包装 http.Client 实现的更加易于使用的HTTP客户端, 和一些 http 工具函数
 - strutil 子包:
@@ -52,6 +52,8 @@
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 常用时间方法。例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
+- [`fmtutil`](x/fmtutil) 格式化数据工具函数 eg：数据size
+- [`goinfo`](x/goinfo) 提供一些与Go info, runtime 相关的工具函数。
 
 ## GoDoc
 
@@ -95,7 +97,7 @@ dump.Print(somevar, somevar2, ...)
 
 ![preview-nested-struct](dump/_examples/preview-nested-struct.png)
 
-## Packages
+## Packages Details
 {{pgkFuncs}}
 ## Code Check & Testing
 
@@ -108,13 +110,6 @@ go test -v ./...
 go test -v -run ^TestErr$
 go test -v -run ^TestErr$ ./testutil/assert/...
 ```
-
-## Related
-
-- https://github.com/duke-git/lancet
-- https://github.com/samber/lo
-- https://github.com/zyedidia/generic
-- https://github.com/thoas/go-funk
 
 ## Gookit packages
 
@@ -130,6 +125,13 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
 - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
 - More, please see https://github.com/gookit
+
+## Related
+
+- https://github.com/duke-git/lancet
+- https://github.com/samber/lo
+- https://github.com/zyedidia/generic
+- https://github.com/thoas/go-funk
 
 ## License
 

@@ -7,7 +7,7 @@ import (
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
-	"github.com/gookit/goutil/testutil/fakeobj"
+	"github.com/gookit/goutil/x/fakeobj"
 	"github.com/gookit/goutil/x/finder"
 )
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/testutil/assert"
-	"github.com/gookit/goutil/testutil/fakeobj"
+	"github.com/gookit/goutil/x/fakeobj"
 )
 
 func TestNewDirEntry(t *testing.T) {

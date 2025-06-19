@@ -7,18 +7,18 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-💪 Useful utils(**700+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
+💪 Useful utils(**800+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 
-**Basic packages:**
+## Packages
+
+### Basic packages
 
 - [`arrutil`](arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
 - [`cliutil`](cliutil) Command-line util functions. eg: colored print, read input, exec command
 - [`envutil`](envutil) ENV util for current runtime env information. eg: get one, get info, parse var
-- [`fmtutil`](fmtutil) Format data util functions. eg: data, size, time
 - [`fsutil`](fsutil) Filesystem util functions, quick create, read and write file. eg: file and dir check, operate
-- [`goinfo`](goinfo) provide some standard util functions for go.
 - [`jsonutil`](jsonutil) Provide some util functions for quick read, write, encode, decode JSON data.
 - [`maputil`](maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) Math(int, number) util functions. eg: convert, math calc, random
@@ -28,7 +28,7 @@
 - [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
 - [`sysutil`](sysutil) System util functions. eg: sysenv, exec, user, process
 
-**Extra packages:**
+### Extra packages
 
 - [`cflag`](cflag):  Wraps and extends go `flag.FlagSet` to build simple command line applications
 - cli util:
@@ -37,7 +37,7 @@
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`errorx`](errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
 - file util:
-  - [`finder`](fsutil/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
+  - [`finder`](x/finder) Provides a simple and convenient filedir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - net util:
   - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client, and with some http utils.
 - string util:
@@ -53,6 +53,8 @@
   - [fakeobj](testutil/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
 - [`timex`](timex) Provides an enhanced time.Time implementation. Add more commonly used functional methods
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
+- [`fmtutil`](x/fmtutil) Format data util functions. eg: data, size, time
+- [`goinfo`](x/goinfo) provide some standard util functions for go.
 
 ## Go Doc
 
@@ -118,13 +120,6 @@ docker run -ti -v $(pwd):/go/work golang:1.18
 root@xx:/go/work# go test ./...
 ```
 
-## Related
-
-- https://github.com/duke-git/lancet
-- https://github.com/samber/lo
-- https://github.com/zyedidia/generic
-- https://github.com/thoas/go-funk
-
 ## Gookit packages
 
 - [gookit/ini](https://github.com/gookit/ini) Go config management, use INI files
@@ -139,6 +134,13 @@ root@xx:/go/work# go test ./...
 - [gookit/validate](https://github.com/gookit/validate) Use for data validation and filtering. support Map, Struct, Form data
 - [gookit/goutil](https://github.com/gookit/goutil) Some utils for the Go: string, array/slice, map, format, cli, env, filesystem, test and more
 - More, please see https://github.com/gookit
+
+## Related
+
+- https://github.com/duke-git/lancet
+- https://github.com/samber/lo
+- https://github.com/zyedidia/generic
+- https://github.com/thoas/go-funk
 
 ## License
 

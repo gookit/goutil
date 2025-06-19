@@ -1,5 +1,18 @@
 # Dev
 
+## 生成README
+
+```bash
+make readme
+```
+
+或者：
+
+```bash
+go run ./internal/gendoc -o README.md
+go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
+```
+
 ## AI 生成单元测试
 
 - 先选中要测试的方法体

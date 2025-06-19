@@ -5,8 +5,8 @@ package goutil
 import (
 	"fmt"
 
-	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/structs"
+	"github.com/gookit/goutil/x/basefn"
 	"github.com/gookit/goutil/x/goinfo"
 )
 

@@ -14,9 +14,9 @@ import (
 	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/stdio"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/ccolor"
+	"github.com/gookit/goutil/x/stdio"
 )
 
 var (
@@ -299,7 +299,7 @@ func doWriteDoc2buf(buf *bytes.Buffer, filename string) bool {
 
 	if len(partBody) > 0 {
 		ccolor.Infoln("- find and inject sub-package doc:", filename)
-		stdio.QuietFprintln(buf, string(partBody))
+		stdio.Fprintln(buf, string(partBody))
 		return true
 	}
 
