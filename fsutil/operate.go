@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // Mkdir alias of os.MkdirAll()

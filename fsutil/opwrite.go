@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // ************************************************************

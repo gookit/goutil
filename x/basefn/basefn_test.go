@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/x/basefn"
 	"github.com/gookit/goutil/testutil/assert"
 )
 

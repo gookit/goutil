@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // some commonly consts

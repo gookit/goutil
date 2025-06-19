@@ -4,9 +4,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // Getenv get ENV value by key name, can with default value

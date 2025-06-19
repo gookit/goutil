@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gookit/goutil/basefn"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // DirEntry implements the fs.DirEntry

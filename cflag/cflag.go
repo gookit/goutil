@@ -20,13 +20,13 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil"
-	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/basefn"
 	"github.com/gookit/goutil/x/ccolor"
 	"github.com/gookit/goutil/x/stdio"
 )

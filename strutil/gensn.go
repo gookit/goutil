@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gookit/goutil/basefn"
 	"github.com/gookit/goutil/mathutil"
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // global id:
