@@ -104,6 +104,7 @@ var (
 // go run ./internal/gendoc -h
 // go run ./internal/gendoc
 func main() {
+	cflag.SetDebug(true)
 	cmd := cflag.New(func(c *cflag.CFlags) {
 		c.Version = "0.1.2"
 		c.Desc = "Collect and dump all exported functions for goutil"
@@ -114,12 +115,12 @@ func main() {
 	cmd.StringVar(&genOpts.output,
 		"output",
 		"./metadata.log",
-		"the result output file. if is 'stdout', will direct print it;;o",
+		"the result output target.、n if is 'stdout', will direct print it;;o",
 	)
 	cmd.StringVar(&genOpts.tplDir,
 		"tpl",
-		"./internal/template",
-		"template file dir, use for generate, will inject metadata to the template.\nsee ./internal/template/*.tpl;;t",
+		"./internal/gendoc/template",
+		"template file dir, use for generate, will inject metadata to the template.\nsee ./internal/gendoc/template/*.tpl;;t",
 	)
 	cmd.StringVar(&genOpts.template, "template", "", "the template file")
 
@@ -147,7 +148,7 @@ func handle(c *cflag.CFlags) error {
 		out, err = os.OpenFile(genOpts.output, fsutil.FsCWTFlags, fsutil.DefaultFilePerm)
 		goutil.PanicIfErr(err)
 
-		// close after handle
+		// close after a handle
 		defer out.(*os.File).Close()
 	}
 
@@ -173,12 +174,11 @@ func handle(c *cflag.CFlags) error {
 	}
 
 	goutil.PanicIfErr(err)
-
 	ccolor.Cyanln("Collected packages:")
 	dump.Clear(pkgNames)
 
 	if toFile {
-		ccolor.Info.Println("OK. write result to the", genOpts.output)
+		ccolor.Infoln("OK. write result to the", genOpts.output)
 	}
 	return nil
 }
@@ -191,7 +191,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	reg := regexp.MustCompile(`func [A-Z]\w+.*`)
 	buf := new(bytes.Buffer)
 
-	ccolor.Info.Println("- find and collect exported functions...")
+	ccolor.Infoln("- find and collect exported functions...")
 	for _, filename := range ms { // for each go file
 		// "jsonutil/jsonutil_test.go"
 		// "sysutil/sysutil_windows.go"
@@ -202,6 +202,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			continue
 		}
 
+		filename = fsutil.UnixPath(filename)
 		idx := strings.IndexRune(filename, '/')
 		dir := filename[:idx] // sub pkg name.
 
