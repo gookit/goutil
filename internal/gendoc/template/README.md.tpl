@@ -16,12 +16,12 @@
 ### Basic packages
 
 - [`arrutil`](arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
+- [`byteutil`](byteutil): Provide some common bytes util functions. eg: convert, check and more
 - [`maputil`](maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - [`reflects`](reflects) Provide extends reflect util functions.
 - [`structs`](structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
-
 - [`sysutil`](sysutil) System util functions. eg: sysenv, exec, user, process
 - [`cliutil`](cliutil) Command-line util functions. eg: colored print, read input, exec command
 - [`envutil`](envutil) ENV util for current runtime env information. eg: get one, get info, parse var
@@ -32,9 +32,9 @@
 
 - [`dump`](dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
 - [`errorx`](errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
-- [assert](testutil/assert) Provides commonly asserts functions for help testing
+- [`assert`](testutil/assert) Provides commonly asserts functions for help testing
 - [`testutil`](testutil) Test help util functions. eg: http test, mock ENV value
-- [fakeobj](x/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
+- [`fakeobj`](x/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
 
 ### Extra Tools packages
 
@@ -46,15 +46,17 @@
 - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client, and with some http utils.
 - [syncs](syncs) Provides synchronization primitives util functions.
 
-- [cmdline](cliutil/cmdline) Provide cmdline parse, args build to cmdline
+**More ...**
+
+- [`cmdline`](cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`finder`](x/finder) Provides a simple and convenient file/dir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
 - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
-- [cmdr](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
-- [clipboard](x/clipboard) Provide a simple clipboard read and write operations.
-- [process](sysutil/process) Provide some process handle util functions.
+- [`cmdr`](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
+- [`clipboard`](x/clipboard) Provide a simple clipboard read and write operations.
+- [`process`](sysutil/process) Provide some process handle util functions.
 - [`fmtutil`](x/fmtutil) Format data util functions. eg: data, size, time
 - [`goinfo`](x/goinfo) provide some standard util functions for go.
 

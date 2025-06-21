@@ -16,12 +16,12 @@
 ### Basic packages
 
 - [`arrutil`](arrutil): Array/Slice util functions. eg: check, convert, formatting, enum, collections
+- [`byteutil`](byteutil): Provide some common bytes util functions. eg: convert, check and more
 - [`maputil`](maputil) Map data util functions. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) Math(int, number) util functions. eg: convert, math calc, random
 - [`reflects`](reflects) Provide extends reflect util functions.
 - [`structs`](structs) Provide some extends util functions for struct. eg: tag parse, struct data init
 - [`strutil`](strutil) String util functions. eg: bytes, check, convert, encode, format and more
-
 - [`sysutil`](sysutil) System util functions. eg: sysenv, exec, user, process
 - [`cliutil`](cliutil) Command-line util functions. eg: colored print, read input, exec command
 - [`envutil`](envutil) ENV util for current runtime env information. eg: get one, get info, parse var
@@ -45,6 +45,8 @@
   - such as: DayStart(), DayAfter(), DayAgo(), DateFormat() and more.
 - [httpreq](netutil/httpreq) An easier-to-use HTTP client that wraps http.Client, and with some http utils.
 - [syncs](syncs) Provides synchronization primitives util functions.
+
+**More ...**
 
 - [cmdline](cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
@@ -171,8 +173,8 @@ func Remove[T comdef.Compared](ls []T, val T) []T
 func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T
 func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V
 func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
-func Unique[T ~string | comdef.XintOrFloat](list []T) []T
-func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int
+func Unique[T comdef.NumberOrString](list []T) []T
+func IndexOf[T comdef.NumberOrString](val T, list []T) int
 func FirstOr[T any](list []T, defVal ...T) T
 // source at arrutil/strings.go
 func StringsToAnys(ss []string) []any
@@ -228,6 +230,7 @@ func SafeCut(bs []byte, sep byte) (before, after []byte)
 func SafeCuts(bs []byte, sep []byte) (before, after []byte)
 // source at byteutil/check.go
 func IsNumChar(c byte) bool
+func IsAlphaChar(c byte) bool
 // source at byteutil/conv.go
 func StrOrErr(bs []byte, err error) (string, error)
 func SafeString(bs []byte, err error) string
@@ -282,7 +285,7 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 `cflag` usage please see [cflag/README.md](cflag/README.md)
 
 
-### CLI/Console
+### CLI Utils
 
 > Package `github.com/gookit/goutil/cliutil`
 
@@ -378,7 +381,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > More, please see [./cliutil/README](cliutil/README.md)
 
-### Dumper
+### Var Dumper
 
 > Package `github.com/gookit/goutil/dump`
 
@@ -895,15 +898,15 @@ func Compare(first, second any, op string) bool
 func CompInt[T comdef.Xint](first, second T, op string) (ok bool)
 func CompInt64(first, second int64, op string) bool
 func CompFloat[T comdef.Float](first, second T, op string) (ok bool)
-func CompValue[T comdef.XintOrFloat](first, second T, op string) (ok bool)
-func InRange[T comdef.IntOrFloat](val, min, max T) bool
-func OutRange[T comdef.IntOrFloat](val, min, max T) bool
+func CompValue[T comdef.Number](first, second T, op string) (ok bool)
+func InRange[T comdef.Number](val, min, max T) bool
+func OutRange[T comdef.Number](val, min, max T) bool
 func InUintRange[T comdef.Uint](val, min, max T) bool
 // source at mathutil/compare.go
-func Min[T comdef.XintOrFloat](x, y T) T
-func Max[T comdef.XintOrFloat](x, y T) T
-func SwapMin[T comdef.XintOrFloat](x, y T) (T, T)
-func SwapMax[T comdef.XintOrFloat](x, y T) (T, T)
+func Min[T comdef.Number](x, y T) T
+func Max[T comdef.Number](x, y T) T
+func SwapMin[T comdef.Number](x, y T) (T, T)
+func SwapMax[T comdef.Number](x, y T) (T, T)
 func MaxInt(x, y int) int
 func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64
@@ -978,15 +981,15 @@ func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error)
 func DataSize(size uint64) string
 func HowLongAgo(sec int64) string
 // source at mathutil/mathutil.go
-func OrElse[T comdef.XintOrFloat](val, defVal T) T
-func ZeroOr[T comdef.XintOrFloat](val, defVal T) T
-func LessOr[T comdef.XintOrFloat](val, max, devVal T) T
-func LteOr[T comdef.XintOrFloat](val, max, devVal T) T
-func GreaterOr[T comdef.XintOrFloat](val, min, defVal T) T
-func GteOr[T comdef.XintOrFloat](val, min, defVal T) T
-func Mul[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func OrElse[T comdef.Number](val, defVal T) T
+func ZeroOr[T comdef.Number](val, defVal T) T
+func LessOr[T comdef.Number](val, max, devVal T) T
+func LteOr[T comdef.Number](val, max, devVal T) T
+func GreaterOr[T comdef.Number](val, min, defVal T) T
+func GteOr[T comdef.Number](val, min, defVal T) T
+func Mul[T1, T2 comdef.Number](a T1, b T2) float64
 func MulF2i(a, b float64) int
-func Div[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func Div[T1, T2 comdef.Number](a T1, b T2) float64
 func DivInt[T comdef.Integer](a, b T) int
 func DivF2i(a, b float64) int
 func Percent(val, total int) float64
@@ -1705,8 +1708,12 @@ Testing in docker:
 
 ```shell
 cd goutil
-docker run -ti -v $(pwd):/go/work golang:1.18
-root@xx:/go/work# go test ./...
+
+docker run -ti -v $(pwd):/go/goutil -e GOPROXY=https://goproxy.cn,direct golang:1.23
+# on Windows
+docker run -ti -v "${PWD}:/go/goutil" -e GOPROXY=https://goproxy.cn,direct golang:1.23
+
+root@xx:/go/goutil# go test ./...
 ```
 
 ## Gookit packages

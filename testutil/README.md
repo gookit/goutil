@@ -99,6 +99,8 @@ func TestNewTestWriter(t *testing.T) {
 
 ## Functions API
 
+> generate by: `go doc ./testutil`
+
 ```go
 func ClearOSEnv()
 func DiscardStdout() error

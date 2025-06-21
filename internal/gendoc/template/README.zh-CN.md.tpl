@@ -16,12 +16,12 @@
 ### 基础工具包
 
 - [`arrutil`](arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
+- [`byteutil`](byteutil): 提供一些常用的 byte 操作函数工具包. eg: convert, check and more
 - [`maputil`](maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
 - [`reflects`](reflects) 提供一些扩展性的反射使用工具函数.
 - [`structs`](structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
-
 - [`cliutil`](cliutil) CLI 的一些工具函数包. eg: read input, exec command
 - [`envutil`](envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
 - [`fsutil`](fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
@@ -33,8 +33,8 @@
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
-- [assert](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
-- [fakeobj](x/fakeobj) 提供一些接口的MOCK的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
+- [`assert`](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
+- [`fakeobj`](x/fakeobj) 提供一些接口的MOCK的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
 
 ### 扩展工具包
 
@@ -46,6 +46,8 @@
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 常用时间方法。例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
+
+**更多 ...**
 
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [`cmdline`](cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline

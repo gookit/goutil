@@ -5,7 +5,7 @@ Package assert provides some tool functions for use with the Go testing.
 ## Install
 
 ```bash
-go get github.com/gookit/goutil/sysutil
+go get github.com/gookit/goutil/assert
 ```
 
 ## GoDocs
@@ -13,6 +13,8 @@ go get github.com/gookit/goutil/sysutil
 Please see [Go docs](https://pkg.go.dev/github.com/gookit/goutil/testutil/assert)
 
 ## Function API
+
+> generate by: `go doc ./testutil/assert`
 
 ```go
 func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool

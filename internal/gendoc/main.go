@@ -36,12 +36,11 @@ var (
 		"fs":      "file System",
 		"fmt":     "format Utils",
 		"test":    "testing Utils",
-		"dump":    "dumper",
+		"dump": "var Dumper",
 		"structs": "structs",
 		"json":    "JSON Utils",
-		"cli":     "CLI/Console",
+		"cli":  "CLI Utils",
 		"env":     "ENV/Environment",
-		"goinfo":  "Go Info",
 	}
 
 	// allowLang = map[string]int{

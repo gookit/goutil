@@ -16,12 +16,12 @@
 ### 基础工具包
 
 - [`arrutil`](arrutil) array/slice 相关操作的函数工具包 如：类型转换，元素检查等等
+- [`byteutil`](byteutil): 提供一些常用的 byte 操作函数工具包. eg: convert, check and more
 - [`maputil`](maputil) map 相关操作的函数工具包. eg: convert, sub-value get, simple merge
 - [`mathutil`](mathutil) int/number 相关操作的函数工具包. eg: convert, math calc, random
 - [`reflects`](reflects) 提供一些扩展性的反射使用工具函数.
 - [`structs`](structs) 为 struct 提供一些扩展 util 函数。 eg: tag parse, struct data
 - [`strutil`](strutil) string 相关操作的函数工具包. eg: bytes, check, convert, encode, format and more
-
 - [`cliutil`](cliutil) CLI 的一些工具函数包. eg: read input, exec command
 - [`envutil`](envutil) ENV 信息获取判断工具包. eg: get one, get info, parse var
 - [`fsutil`](fsutil) 文件系统操作相关的工具函数包. eg: file and dir check, operate
@@ -46,6 +46,8 @@
 - [`timex`](timex) 提供增强的 time.Time 实现。添加更多常用的功能方法
   - 提供类似 `Y-m-d H:i:s` 的日期时间格式解析处理
   - 常用时间方法。例如: DayStart(), DayAfter(), DayAgo(), DateFormat() 等等
+
+**更多 ...**
 
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [`cmdline`](cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
@@ -171,8 +173,8 @@ func Remove[T comdef.Compared](ls []T, val T) []T
 func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T
 func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V
 func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
-func Unique[T ~string | comdef.XintOrFloat](list []T) []T
-func IndexOf[T ~string | comdef.XintOrFloat](val T, list []T) int
+func Unique[T comdef.NumberOrString](list []T) []T
+func IndexOf[T comdef.NumberOrString](val T, list []T) int
 func FirstOr[T any](list []T, defVal ...T) T
 // source at arrutil/strings.go
 func StringsToAnys(ss []string) []any
@@ -228,6 +230,7 @@ func SafeCut(bs []byte, sep byte) (before, after []byte)
 func SafeCuts(bs []byte, sep []byte) (before, after []byte)
 // source at byteutil/check.go
 func IsNumChar(c byte) bool
+func IsAlphaChar(c byte) bool
 // source at byteutil/conv.go
 func StrOrErr(bs []byte, err error) (string, error)
 func SafeString(bs []byte, err error) string
@@ -282,7 +285,7 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 `cflag` 使用说明请看 [cflag/README.zh-CN.md](cflag/README.zh-CN.md)
 
 
-### CLI/Console
+### CLI Utils
 
 > Package `github.com/gookit/goutil/cliutil`
 
@@ -378,7 +381,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > More, please see [./cliutil/README](cliutil/README.md)
 
-### Dumper
+### Var Dumper
 
 > Package `github.com/gookit/goutil/dump`
 
@@ -897,15 +900,15 @@ func Compare(first, second any, op string) bool
 func CompInt[T comdef.Xint](first, second T, op string) (ok bool)
 func CompInt64(first, second int64, op string) bool
 func CompFloat[T comdef.Float](first, second T, op string) (ok bool)
-func CompValue[T comdef.XintOrFloat](first, second T, op string) (ok bool)
-func InRange[T comdef.IntOrFloat](val, min, max T) bool
-func OutRange[T comdef.IntOrFloat](val, min, max T) bool
+func CompValue[T comdef.Number](first, second T, op string) (ok bool)
+func InRange[T comdef.Number](val, min, max T) bool
+func OutRange[T comdef.Number](val, min, max T) bool
 func InUintRange[T comdef.Uint](val, min, max T) bool
 // source at mathutil/compare.go
-func Min[T comdef.XintOrFloat](x, y T) T
-func Max[T comdef.XintOrFloat](x, y T) T
-func SwapMin[T comdef.XintOrFloat](x, y T) (T, T)
-func SwapMax[T comdef.XintOrFloat](x, y T) (T, T)
+func Min[T comdef.Number](x, y T) T
+func Max[T comdef.Number](x, y T) T
+func SwapMin[T comdef.Number](x, y T) (T, T)
+func SwapMax[T comdef.Number](x, y T) (T, T)
 func MaxInt(x, y int) int
 func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64
@@ -980,15 +983,15 @@ func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error)
 func DataSize(size uint64) string
 func HowLongAgo(sec int64) string
 // source at mathutil/mathutil.go
-func OrElse[T comdef.XintOrFloat](val, defVal T) T
-func ZeroOr[T comdef.XintOrFloat](val, defVal T) T
-func LessOr[T comdef.XintOrFloat](val, max, devVal T) T
-func LteOr[T comdef.XintOrFloat](val, max, devVal T) T
-func GreaterOr[T comdef.XintOrFloat](val, min, defVal T) T
-func GteOr[T comdef.XintOrFloat](val, min, defVal T) T
-func Mul[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func OrElse[T comdef.Number](val, defVal T) T
+func ZeroOr[T comdef.Number](val, defVal T) T
+func LessOr[T comdef.Number](val, max, devVal T) T
+func LteOr[T comdef.Number](val, max, devVal T) T
+func GreaterOr[T comdef.Number](val, min, defVal T) T
+func GteOr[T comdef.Number](val, min, defVal T) T
+func Mul[T1, T2 comdef.Number](a T1, b T2) float64
 func MulF2i(a, b float64) int
-func Div[T1, T2 comdef.XintOrFloat](a T1, b T2) float64
+func Div[T1, T2 comdef.Number](a T1, b T2) float64
 func DivInt[T comdef.Integer](a, b T) int
 func DivF2i(a, b float64) int
 func Percent(val, total int) float64
