@@ -44,7 +44,7 @@ var (
 	codeRegex = regexp.MustCompile(CodeExpr)
 )
 
-// Level value.
+// Level value of current terminal.
 func Level() termenv.ColorLevel { return termenv.TermColorLevel() }
 
 // SetOutput set output writer
