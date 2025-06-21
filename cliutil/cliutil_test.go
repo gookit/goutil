@@ -55,7 +55,7 @@ func TestShellExec(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.Eq(t, "OK\n", ret)
 
-	ret, err = cliutil.ShellExec("echo OK", "bash")
+	ret, err = cliutil.ShellExec("echo OK", "sh")
 	assert.NoErr(t, err)
 	assert.Eq(t, "OK\n", ret)
 }

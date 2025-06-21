@@ -39,7 +39,7 @@ func TestShellExec(t *testing.T) {
 	// *nix: "OK\n" win: "OK\r\n"
 	assert.Eq(t, "OK", strings.TrimSpace(ret))
 
-	ret, err = sysutil.ShellExec("echo OK", "bash")
+	ret, err = sysutil.ShellExec("echo OK", "sh")
 	assert.NoErr(t, err)
 	assert.Eq(t, "OK", strings.TrimSpace(ret))
 

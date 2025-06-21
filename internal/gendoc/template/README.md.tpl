@@ -119,8 +119,12 @@ Testing in docker:
 
 ```shell
 cd goutil
-docker run -ti -v $(pwd):/go/work golang:1.18
-root@xx:/go/work# go test ./...
+
+docker run -ti -v $(pwd):/go/goutil -e GOPROXY=https://goproxy.cn,direct golang:1.23
+# on Windows
+docker run -ti -v "${PWD}:/go/goutil" -e GOPROXY=https://goproxy.cn,direct golang:1.23
+
+root@xx:/go/goutil# go test ./...
 ```
 
 ## Gookit packages

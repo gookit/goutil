@@ -36,7 +36,7 @@ func (l ColorLevel) String() string {
 func NoColor() bool { return noColor }
 
 // IsSupportColor returns true if the terminal supports color.
-func IsSupportColor() bool { return colorLevel != TermColorNone }
+func IsSupportColor() bool { return colorLevel > TermColorNone }
 
 // IsSupport256Color returns true if the terminal supports 256 colors.
 func IsSupport256Color() bool { return colorLevel >= TermColor256 }
@@ -49,23 +49,30 @@ func IsSupportTrueColor() bool { return colorLevel == TermColorTrue }
 //
 
 var backOldVal bool
+var backLevel ColorLevel
 
-// ForceEnableColor setting value. TIP: use for unit testing.
+// ForceEnableColor flags value. TIP: use for unit testing.
 //
 // Usage:
 //
 //	ccolor.ForceEnableColor()
 //	defer ccolor.RevertColorSupport()
 func ForceEnableColor() {
-	noColor = false
+	// backup old value
 	backOldVal = supportColor
+	backLevel = colorLevel
+
 	// force enables color
+	noColor = false
 	supportColor = true
+	colorLevel = TermColor256
 	// return colorLevel
 }
 
 // RevertColorSupport value
 func RevertColorSupport() {
+	// revert color flags var
+	colorLevel = backLevel
 	supportColor = backOldVal
 	noColor = os.Getenv("NO_COLOR") == ""
 }

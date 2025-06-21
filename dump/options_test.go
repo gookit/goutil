@@ -1,6 +1,7 @@
 package dump
 
 import (
+	"bytes"
 	"fmt"
 	"testing"
 
@@ -56,13 +57,15 @@ func TestWithoutColor(t *testing.T) {
 	ccolor.ForceEnableColor()
 	defer ccolor.RevertColorSupport()
 
-	buf := newBuffer()
-	dumper := newStd().WithOptions(WithoutOutput(buf), WithoutPosition(), WithCallerSkip(2))
+	buf := new(bytes.Buffer)
 
+	dumper := newStd().WithOptions(WithoutOutput(buf), WithoutPosition(), WithCallerSkip(2))
 	dumper.Println("a string")
 	assert.Equal(t, "string(\"\x1b[0;32ma string\x1b[0m\"), \x1b[0;90m#len=8\x1b[0m\n", buf.String())
 
 	buf.Reset()
+
+	// without color
 	dumper.WithOptions(SkipNilField(), WithoutColor())
 	dumper.Println("a string")
 	assert.Equal(t, "string(\"a string\"), #len=8\n", buf.String())

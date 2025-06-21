@@ -160,13 +160,12 @@ var colorTags = map[string]string{
  *************************************************************/
 
 // ReplaceTag parse string, replace color tag and return rendered string
-func ReplaceTag(str string) string {
-	return ParseTagByEnv(str)
-}
+func ReplaceTag(str string) string { return ParseTagByEnv(str) }
 
 // ParseTagByEnv parse given string. will check package setting.
 func ParseTagByEnv(str string) string {
-	if !termenv.IsSupportColor() {
+	// disable OR not support color
+	if termenv.NoColor() || !termenv.IsSupportColor() {
 		return ClearTag(str)
 	}
 	return ParseTag(str)
