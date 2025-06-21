@@ -161,13 +161,13 @@ func ToBool(s string) (bool, error) {
 // QuietBool convert to bool, will ignore error
 func QuietBool(s string) bool { return SafeBool(s) }
 
-// SafeBool convert to bool, will ignore error
+// SafeBool convert to bool and will ignore error
 func SafeBool(s string) bool {
 	val, _ := comfunc.StrToBool(strings.TrimSpace(s))
 	return val
 }
 
-// MustBool convert to bool, will panic on error
+// MustBool convert to bool and will panic on error
 func MustBool(s string) bool {
 	val, err := ToBool(s)
 	if err != nil {

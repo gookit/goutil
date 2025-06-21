@@ -59,10 +59,10 @@ func (s *Style) Fprint(w io.Writer, v ...any) {
 // String convert style setting to color code string.
 func (s *Style) String() string {
 	var codes []string
-	if s.Fg.IsValid() {
+	if s.Fg.IsFg() {
 		codes = append(codes, s.Fg.String())
 	}
-	if s.Bg.IsValid() {
+	if s.Bg.IsBg() {
 		codes = append(codes, s.Bg.String())
 	}
 

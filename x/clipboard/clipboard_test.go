@@ -23,6 +23,8 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 	assert.True(t, cb.Readable())
 
 	srcFile := "testdata/testcb.txt"
+	fsutil.MustSave(srcFile, "hello world")
+
 	srcStr := string(fsutil.MustReadFile(srcFile))
 	assert.NotEmpty(t, srcStr)
 
@@ -50,5 +52,5 @@ func TestClipboard_WriteFromFile(t *testing.T) {
 	assert.NoErr(t, err)
 	assert.NoErr(t, cb.Flush())
 	assert.Eq(t, "hello", cb.SafeString())
-	fmt.Println("...end...")
+	fmt.Println("...test end...")
 }

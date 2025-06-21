@@ -22,7 +22,7 @@ type Clipboard struct {
 
 	// print exec command line on run
 	verbose bool
-	// available - bin file exist on the OS.
+	// available - a bin file exists on the OS.
 	writeable, readable bool
 
 	readerBin string

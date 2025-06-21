@@ -30,6 +30,8 @@ func TestColorPrint(t *testing.T) {
 	ccolor.Magentaf("f:%s color message, ", "magenta")
 	ccolor.Magentaln("ln:magenta color message print in cli.")
 
+	ccolor.Println("----------- COLOR STYLE ------------")
+
 	ccolor.Infop("p:info color message, ")
 	ccolor.Infof("f:%s color message, ", "info")
 	ccolor.Infoln("ln:info color message print in cli.")
