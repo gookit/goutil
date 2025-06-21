@@ -12,5 +12,5 @@ func TestCommon(t *testing.T) {
 
 	ccolor.ForceEnableColor()
 	defer ccolor.RevertColorSupport()
-	assert.Gt(t, ccolor.Level(), 0)
+	assert.Gt(t, int(ccolor.Level()), 0)
 }

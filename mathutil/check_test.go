@@ -68,6 +68,7 @@ func TestInRange(t *testing.T) {
 	assert.True(t, mathutil.InRange(1, 1, 1))
 	assert.False(t, mathutil.InRange(1, 2, 1))
 	assert.False(t, mathutil.InRange(1, 2, 2))
+	assert.False(t, mathutil.InRange[uint](1, 2, 2))
 
 	assert.True(t, mathutil.InRange(1.1, 1.1, 2.2))
 	assert.True(t, mathutil.InRange(1.1, 1.1, 1.1))

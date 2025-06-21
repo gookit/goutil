@@ -10,6 +10,7 @@ import (
 func TestOrElse(t *testing.T) {
 	assert.Eq(t, 23, mathutil.OrElse(23, 21))
 	assert.Eq(t, 21.3, mathutil.OrElse[float64](0, 21.3))
+	assert.Eq(t, 21.3, mathutil.OrElse[float64](0.0, 21.3))
 }
 
 func TestLessOr(t *testing.T) {
