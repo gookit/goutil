@@ -2,8 +2,13 @@
 
 package termenv
 
-// detect special term color support
-func detectSpecialTermColor(termVal string) (Level, bool) {
+import (
+	"os"
+	"strings"
+)
+
+// detect special term color support on macOS, linux, unix
+func detectSpecialTermColor(termVal string) (ColorLevel, bool) {
 	if termVal == "" {
 		// on Windows WSL:
 		// - runtime.GOOS == "Linux"
