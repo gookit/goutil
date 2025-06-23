@@ -6,6 +6,13 @@ import (
 	"strings"
 )
 
+// String color style string. TODO
+// eg:
+// 		s := String("red,bold")
+//		s.Println("some text message")
+type String string
+
+// Style for color render.
 type Style struct {
 	Fg   Color
 	Bg   Color

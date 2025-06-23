@@ -159,6 +159,19 @@ var colorTags = map[string]string{
  * parse color tags
  *************************************************************/
 
+// Render parse color tags, return rendered string.
+//
+// Usage:
+//
+//	text := Render("<info>hello</> <cyan>world</>!")
+//	fmt.Println(text)
+func Render(a ...any) string {
+	if len(a) == 0 {
+		return ""
+	}
+	return ReplaceTag(fmt.Sprint(a...))
+}
+
 // ReplaceTag parse string, replace color tag and return rendered string
 func ReplaceTag(str string) string { return ParseTagByEnv(str) }
 

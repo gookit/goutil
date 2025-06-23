@@ -7,7 +7,9 @@
 package ccolor
 
 import (
+	"fmt"
 	"io"
+	"log"
 	"os"
 	"regexp"
 
@@ -44,9 +46,6 @@ var (
 	codeRegex = regexp.MustCompile(CodeExpr)
 )
 
-// Level value of current terminal.
-func Level() termenv.ColorLevel { return termenv.TermColorLevel() }
-
 // SetOutput set output writer
 func SetOutput(w io.Writer) { output = w }
 
@@ -57,6 +56,25 @@ func LastErr() error {
 	}()
 	return lastErr
 }
+
+//
+// ---------------- support detect from termenv ----------------
+//
+
+// Disable color of current terminal.
+func Disable() { termenv.DisableColor() }
+
+// Level value of current terminal.
+func Level() termenv.ColorLevel { return termenv.TermColorLevel() }
+
+// IsSupportColor returns true if the terminal supports color.
+func IsSupportColor() bool { return termenv.IsSupportColor() }
+
+// IsSupport256Color returns true if the terminal supports 256 colors.
+func IsSupport256Color() bool { return termenv.IsSupport256Color() }
+
+// IsSupportTrueColor returns true if the terminal supports true color.
+func IsSupportTrueColor() bool { return termenv.IsSupportTrueColor() }
 
 //
 // ---------------- for testing ----------------
@@ -75,4 +93,47 @@ func ForceEnableColor() {
 // RevertColorSupport value
 func RevertColorSupport() {
 	termenv.RevertColorSupport()
+}
+
+//
+// ---------------- print with color tag style ----------------
+//
+
+// Print parse color tag and print messages
+func Print(v ...any) { Fprint(output, v...) }
+
+// Printf format and print messages
+func Printf(format string, v ...any) { Fprintf(output, format, v...) }
+
+// Println messages with new line
+func Println(v ...any) { Fprintln(output, v...) }
+
+// Sprint parse color tags, return rendered string
+func Sprint(v ...any) string {
+	return ReplaceTag(fmt.Sprint(v...))
+}
+
+// Sprintf format and return rendered string
+func Sprintf(format string, a ...any) string {
+	return ReplaceTag(fmt.Sprintf(format, a...))
+}
+
+// Fprint auto parse color-tag, print rendered messages to the writer
+func Fprint(w io.Writer, v ...any) {
+	_, lastErr = fmt.Fprint(w, ReplaceTag(fmt.Sprint(v...)))
+}
+
+// Fprintf auto parse color-tag, print rendered messages to the writer.
+func Fprintf(w io.Writer, format string, v ...any) {
+	_, lastErr = fmt.Fprint(w, ReplaceTag(fmt.Sprintf(format, v...)))
+}
+
+// Fprintln auto parse color-tag, print rendered messages to the writer
+func Fprintln(w io.Writer, v ...any) {
+	_, lastErr = fmt.Fprintln(w, ReplaceTag(formatLikePrintln(v)))
+}
+
+// Lprint passes colored messages to a log.Logger for printing.
+func Lprint(l *log.Logger, v ...any) {
+	l.Print(ReplaceTag(fmt.Sprint(v...)))
 }

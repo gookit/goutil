@@ -45,11 +45,23 @@ func IsSupport256Color() bool { return colorLevel >= TermColor256 }
 func IsSupportTrueColor() bool { return colorLevel == TermColorTrue }
 
 //
-// ---------------- for testing ----------------
+// ---------------- Force set color support ----------------
 //
 
 var backOldVal bool
 var backLevel ColorLevel
+
+// DisableColor in the current terminal
+func DisableColor() {
+	// backup old value
+	backOldVal = supportColor
+	backLevel = colorLevel
+
+	// force disable color
+	noColor = true
+	supportColor = false
+	colorLevel = TermColorNone
+}
 
 // ForceEnableColor flags value. TIP: use for unit testing.
 //
@@ -116,7 +128,7 @@ func detectTermColorLevel() (level ColorLevel, needVTP bool) {
 	level = detectColorLevelFromEnv(termVal, isWin)
 	debugf("color level by detectColorLevelFromEnv: %s", level.String())
 
-	// fallback: simply detect by TERM value string.
+	// fallback: simple detect by TERM value string.
 	if level == TermColorNone {
 		debugf("level none - fallback check special term color support")
 		// on Windows: enable VTP as it has True Color support
@@ -184,7 +196,7 @@ func detectWSL() bool {
 
 		b := make([]byte, 1024)
 		// `cat /proc/version`
-		// on mac:
+		// on Mac:
 		// 	!not the file!
 		// on linux(debian,ubuntu,alpine):
 		//	Linux version 4.19.121-linuxkit (root@18b3f92ade35) (gcc version 9.2.0 (Alpine 9.2.0)) #1 SMP Thu Jan 21 15:36:34 UTC 2021

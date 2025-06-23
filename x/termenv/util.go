@@ -1,18 +1,26 @@
 package termenv
 
 import (
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
 
 	"github.com/gookit/goutil/internal/checkfn"
 	"github.com/gookit/goutil/internal/comfunc"
+	"golang.org/x/term"
 )
 
 var (
 	cmdList  = []string{"cmd", "cmd.exe"}
 	pwshList = []string{"powershell", "powershell.exe", "pwsh", "pwsh.exe"}
 )
+
+// IsTerminal 检查是否为终端设备中
+func IsTerminal() bool {
+	fd := int(os.Stdout.Fd())
+	return term.IsTerminal(fd)
+}
 
 // CurrentShell get current used shell env file.
 //

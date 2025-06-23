@@ -18,6 +18,9 @@ func TestCurrentShell(t *testing.T) {
 		assert.NotEmpty(t, path)
 	}
 
+	assert.True(t, termenv.HasShellEnv("not-valid"))
+
+	// IsShellSpecialVar
 	assert.True(t, termenv.IsShellSpecialVar('$'))
 	assert.True(t, termenv.IsShellSpecialVar('@'))
 	assert.False(t, termenv.IsShellSpecialVar('a'))

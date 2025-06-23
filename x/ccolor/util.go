@@ -3,12 +3,9 @@ package ccolor
 import (
 	"fmt"
 	"io"
-	"log"
-	"os"
 	"strings"
 
 	"github.com/gookit/goutil/x/termenv"
-	"golang.org/x/term"
 )
 
 // ColorsToCode convert colors to code. return like "32;45;3"
@@ -23,49 +20,6 @@ func ColorsToCode(colors ...Color) string {
 	}
 
 	return strings.Join(codes, ";")
-}
-
-/*************************************************************
- * print methods(will auto parse color tags)
- *************************************************************/
-
-// Print parse color tag and print messages
-func Print(v ...any) { Fprint(output, v...) }
-
-// Printf format and print messages
-func Printf(format string, v ...any) { Fprintf(output, format, v...) }
-
-// Println messages with new line
-func Println(v ...any) { Fprintln(output, v...) }
-
-// Sprint parse color tags, return rendered string
-func Sprint(v ...any) string {
-	return ReplaceTag(fmt.Sprint(v...))
-}
-
-// Sprintf format and return rendered string
-func Sprintf(format string, a ...any) string {
-	return ReplaceTag(fmt.Sprintf(format, a...))
-}
-
-// Fprint auto parse color-tag, print rendered messages to the writer
-func Fprint(w io.Writer, v ...any) {
-	_, lastErr = fmt.Fprint(w, ReplaceTag(fmt.Sprint(v...)))
-}
-
-// Fprintf auto parse color-tag, print rendered messages to the writer.
-func Fprintf(w io.Writer, format string, v ...any) {
-	_, lastErr = fmt.Fprint(w, ReplaceTag(fmt.Sprintf(format, v...)))
-}
-
-// Fprintln auto parse color-tag, print rendered messages to the writer
-func Fprintln(w io.Writer, v ...any) {
-	_, lastErr = fmt.Fprintln(w, ReplaceTag(formatLikePrintln(v)))
-}
-
-// Lprint passes colored messages to a log.Logger for printing.
-func Lprint(l *log.Logger, v ...any) {
-	l.Print(ReplaceTag(fmt.Sprint(v...)))
 }
 
 /*************************************************************
@@ -175,8 +129,3 @@ func formatLikePrintln(args []any) (message string) {
 	return
 }
 
-// 检查是否为终端设备中
-func isTerminal() bool {
-	fd := int(os.Stdout.Fd())
-	return term.IsTerminal(fd)
-}
