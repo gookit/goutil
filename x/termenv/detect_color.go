@@ -174,7 +174,7 @@ func detectColorLevelFromEnv(termVal string, isWin bool) ColorLevel {
 		if termVer != "" {
 			i, err := strconv.Atoi(strings.Split(termVer, ".")[0])
 			if err != nil {
-				setLastErr(errors.New("invalid TERM_PROGRAM_VERSION"))
+				setLastErr(errors.New("invalid TERM_PROGRAM_VERSION=" + termVer))
 				return TermColor256 // return TermColorNone
 			}
 			if i == 3 {
@@ -185,10 +185,10 @@ func detectColorLevelFromEnv(termVal string, isWin bool) ColorLevel {
 	}
 
 	// otherwise determine from TERM's max_colors capability
-	if !isWin && termVal != "" {
-		debugf("TERM=%s - TODO check color level by load terminfo file", termVal)
-		return TermColor16
-	}
+	// if !isWin && termVal != "" {
+	// 	debugf("TERM=%s - TODO check color level by load terminfo file", termVal)
+	// 	return TermColor16
+	// }
 
 	// no TERM env value. default return none level
 	return TermColorNone
