@@ -19,6 +19,9 @@ func IsMSys() bool {
 	return len(os.Getenv("MSYSTEM")) > 0
 }
 
+// IsWSL system env
+func IsWSL() bool { return checkfn.IsWSL() }
+
 // IsConsole check out is in stderr/stdout/stdin
 //
 // Usage:
