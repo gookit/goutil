@@ -101,7 +101,7 @@ func IndexOf[T comdef.NumberOrString](val T, list []T) int {
 	return -1
 }
 
-// FirstOr get first value of slice, if slice is empty, return default value.
+// FirstOr get first value of slice, if slice is empty, return the default value.
 func FirstOr[T any](list []T, defVal ...T) T {
 	if len(list) > 0 {
 		return list[0]

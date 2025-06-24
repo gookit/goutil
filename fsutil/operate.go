@@ -17,7 +17,7 @@ func Mkdir(dirPath string, perm os.FileMode) error {
 	return os.MkdirAll(dirPath, perm)
 }
 
-// MkDirs batch make multi dirs at once
+// MkDirs batch makes multi dirs at once
 func MkDirs(perm os.FileMode, dirPaths ...string) error {
 	for _, dirPath := range dirPaths {
 		if err := os.MkdirAll(dirPath, perm); err != nil {
@@ -27,7 +27,7 @@ func MkDirs(perm os.FileMode, dirPaths ...string) error {
 	return nil
 }
 
-// MkSubDirs batch make multi sub-dirs at once
+// MkSubDirs batch makes multi sub-dirs at once
 func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error {
 	for _, dirName := range subDirs {
 		dirPath := parentDir + "/" + dirName
@@ -38,7 +38,7 @@ func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error {
 	return nil
 }
 
-// MkParentDir quick create parent dir for given path.
+// MkParentDir quickly create parent dir for a given path.
 func MkParentDir(fpath string) error {
 	dirPath := filepath.Dir(fpath)
 	if !IsDir(dirPath) {

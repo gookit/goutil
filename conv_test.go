@@ -21,6 +21,8 @@ func TestToBool(t *testing.T) {
 
 	is.False(goutil.Bool(false))
 	is.False(goutil.Bool(1))
+
+	is.Eq("true", goutil.BoolString(true))
 }
 
 func TestToString(t *testing.T) {

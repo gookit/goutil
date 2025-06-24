@@ -3,6 +3,7 @@ package reflects_test
 import (
 	"math"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -169,6 +170,10 @@ func TestValueByKind(t *testing.T) {
 	val, err = reflects.ValueByKind("true", reflect.Bool)
 	assert.NoErr(t, err)
 	assert.True(t, val.Bool())
+
+	val, err = reflects.ValueByKind(reflect.ValueOf("true"), reflect.Bool)
+	assert.NoErr(t, err)
+	assert.True(t, val.Bool())
 }
 
 func TestToString(t *testing.T) {
@@ -214,6 +219,7 @@ func TestToTimeOrDuration(t *testing.T) {
 		hasErr   bool
 		expected any
 	}{
+		{"3s", reflect.TypeOf(time.Duration(0)), false, 3 * time.Second},
 		{"2023-01-01T00:00:00Z", reflect.TypeOf(time.Time{}), false, time.Date(2023, 1, 1, 0, 0, 0, 0, time.Local)},
 		{"1h2m3s", reflect.TypeOf(time.Duration(0)), false, 3723 * time.Second},
 		{"a message", reflect.TypeOf(34), false, "a message"},
@@ -231,4 +237,9 @@ func TestToTimeOrDuration(t *testing.T) {
 		}
 		assert.Eq(t, test.expected, result, "case: "+test.str)
 	}
+
+	longStr := strings.Repeat("a long message", 10)
+	result, err := reflects.ToTimeOrDuration(longStr, reflect.TypeOf(""))
+	assert.NoErr(t, err)
+	assert.Eq(t, longStr, result)
 }

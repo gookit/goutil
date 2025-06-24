@@ -2,6 +2,7 @@ package syncs_test
 
 import (
 	"fmt"
+	"sync/atomic"
 	"testing"
 
 	"github.com/gookit/goutil/syncs"
@@ -22,13 +23,13 @@ func TestMain(m *testing.M) {
 
 func TestWaitGroupGo(t *testing.T) {
 	var wg syncs.WaitGroup
-	counter := 0
-	expected := 5
+	var counter int32
+	expected := int32(5)
 
 	// 启动多个 goroutines
-	for i := 0; i < expected; i++ {
+	for i := int32(0); i < expected; i++ {
 		wg.Go(func() {
-			counter++
+			atomic.AddInt32(&counter, 1)
 		})
 	}
 

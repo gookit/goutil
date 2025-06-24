@@ -11,7 +11,7 @@ import (
 )
 
 func TestMkdir(t *testing.T) {
-	// TODO windows will error
+	// Chmod windows will error
 	if envutil.IsWin() {
 		t.Skip("skip mkdir test on Windows")
 		return
@@ -36,11 +36,6 @@ func TestMkdir(t *testing.T) {
 }
 
 func TestCreateFile(t *testing.T) {
-	// TODO windows will error
-	// if envutil.IsWin() {
-	// 	return
-	// }
-
 	file, err := fsutil.CreateFile("testdata/test.txt", 0664, 0666)
 	if assert.NoErr(t, err) {
 		assert.Eq(t, "testdata/test.txt", file.Name())

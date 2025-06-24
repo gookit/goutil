@@ -38,4 +38,5 @@ func TestFirstOr(t *testing.T) {
 	is.Eq("a", arrutil.FirstOr([]string{"a", "b"}, "c"))
 	is.Eq("c", arrutil.FirstOr([]string{}, "c"))
 	is.Eq("c", arrutil.FirstOr(nil, "c"))
+	is.Eq("", arrutil.FirstOr([]string{}))
 }

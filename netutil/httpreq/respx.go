@@ -121,4 +121,8 @@ func (r *RespX) CloseBuffer() {
 func (r *RespX) CloseBody() error { return r.Body.Close() }
 
 // SafeCloseBody close resp body, ignore error
-func (r *RespX) SafeCloseBody() { _ = r.Body.Close() }
+func (r *RespX) SafeCloseBody() {
+	if r.Body != nil {
+		_ = r.Body.Close()
+	}
+}

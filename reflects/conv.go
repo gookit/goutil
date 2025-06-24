@@ -81,16 +81,14 @@ func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error) {
 }
 
 // ValueByKind convert and create reflect.Value by give reflect.Kind
-func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
-	return ConvToKind(val, kind)
-}
+func ValueByKind(val any, kind reflect.Kind) (reflect.Value, error) { return ConvToKind(val, kind) }
 
 // ConvToKind convert and create reflect.Value by give reflect.Kind
 //
 // TIPs:
 //
 //	Only support kind: string, bool, intX, uintX, floatX
-func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
+func ConvToKind(val any, kind reflect.Kind, fallback ...ConvFunc) (rv reflect.Value, err error) {
 	if rv1, ok := val.(reflect.Value); ok {
 		val = rv1.Interface()
 	}
@@ -190,6 +188,12 @@ func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error) {
 			err = err1
 		}
 	default:
+		// call fallback func
+		if len(fallback) > 0 && fallback[0] != nil {
+			rv, err = fallback[0](val, kind)
+		} else {
+			err = comdef.ErrConvType
+		}
 		err = comdef.ErrConvType
 	}
 	return
@@ -264,8 +268,13 @@ func ValToString(rv reflect.Value, defaultAsErr bool) (str string, err error) {
 //
 // If the target type is not match, return the input string.
 func ToTimeOrDuration(str string, typ reflect.Type) (any, error) {
+	// datetime, time, duration string should not greater than 64
+	if len(str) > 64 {
+		return str, nil
+	}
 	var anyVal any = str
 
+	// time.Time date string
 	if len(str) > 5 && IsTimeType(typ) {
 		ttVal, err := strutil.ToTime(str)
 		if err != nil {

@@ -20,3 +20,6 @@ var (
 	// fmtStringerType  = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
 	reflectValueType = reflect.TypeOf((*reflect.Value)(nil)).Elem()
 )
+
+// ConvFunc custom func convert input value to kind reflect.Value
+type ConvFunc func(val any, kind reflect.Kind) (reflect.Value, error)

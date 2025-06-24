@@ -110,7 +110,7 @@ func FirstOr[T any](sl []T, elseVal T) T {
 	return elseVal
 }
 
-// OrValue get
+// OrValue get. like: if cond { okVal } else { elVal }
 func OrValue[T any](cond bool, okVal, elVal T) T {
 	if cond {
 		return okVal
@@ -119,6 +119,8 @@ func OrValue[T any](cond bool, okVal, elVal T) T {
 }
 
 // OrReturn call okFunc() on condition is true, else call elseFn()
+//
+// like expr: if cond { okFunc() } else { elseFn() }
 func OrReturn[T any](cond bool, okFn, elseFn func() T) T {
 	if cond {
 		return okFn()

@@ -21,11 +21,6 @@ func TestMain(m *testing.M) {
 	m.Run()
 }
 
-func TestPkgName(t *testing.T) {
-	name := goutil.PkgName(goutil.FuncName(goutil.PanicIfErr))
-	assert.Eq(t, "github.com/gookit/goutil", name)
-}
-
 func TestPanicIfErr(t *testing.T) {
 	goutil.PanicIf(false, "")
 	assert.Panics(t, func() {

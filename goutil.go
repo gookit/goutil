@@ -1,4 +1,4 @@
-// Package goutil 💪 Useful utils for Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem,
+// Package goutil 💪 Useful utils for Go: byte, int, string, array/slice, map, struct, reflect, error, time, format, CLI, ENV, filesystem,
 // system, testing, debug and more.
 package goutil
 
@@ -7,7 +7,6 @@ import (
 
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/x/basefn"
-	"github.com/gookit/goutil/x/goinfo"
 )
 
 // Value alias of structs.Value
@@ -18,7 +17,7 @@ func Panicf(format string, v ...any) {
 	panic(fmt.Sprintf(format, v...))
 }
 
-// PanicIf if cond = true, panics with error message
+// PanicIf if cond = true, panics with an error message
 func PanicIf(cond bool, fmtAndArgs ...any) {
 	basefn.PanicIf(cond, fmtAndArgs...)
 }
@@ -74,21 +73,6 @@ func Must[T any](v T, err error) T {
 	return v
 }
 
-// FuncName get func name
-func FuncName(f any) string {
-	return goinfo.FuncName(f)
-}
-
-// PkgName get current package name. alias of goinfo.PkgName()
-//
-// Usage:
-//
-//	funcName := goutil.FuncName(fn)
-//	pgkName := goutil.PkgName(funcName)
-func PkgName(funcName string) string {
-	return goinfo.PkgName(funcName)
-}
-
 // ErrOnFail return input error on cond is false, otherwise return nil
 func ErrOnFail(cond bool, err error) error {
 	return OrError(cond, err)
@@ -102,7 +86,7 @@ func OrError(cond bool, err error) error {
 	return nil
 }
 
-// OrValue get
+// OrValue get. like: if cond { okVal } else { elVal }
 func OrValue[T any](cond bool, okVal, elVal T) T {
 	if cond {
 		return okVal

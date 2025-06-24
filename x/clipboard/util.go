@@ -31,7 +31,7 @@ const (
 	// ReaderOnWin driver on Windows
 	//
 	// read clipboard should use: powershell get-clipboard
-	ReaderOnWin = "powershell get-clipboard"
+	ReaderOnWin = "powershell -NoProfile get-clipboard"
 
 	// ReaderOnLin driver name
 	//
