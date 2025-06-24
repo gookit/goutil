@@ -33,8 +33,8 @@
 - [`dump`](./dump)  GO变量打印工具，打印 slice, map 会自动换行显示每个元素，同时会显示打印调用位置
 - [`errorx`](./errorx)  为 go 提供增强的错误实现，允许带有堆栈跟踪信息和包装另一个错误。
 - [`testutil`](testutil) test help 相关操作的函数工具包. eg: http test, mock ENV value
-- [assert](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
-- [fakeobj](x/fakeobj) 提供一些接口的MOCK的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
+- [`assert`](testutil/assert) 用于帮助测试的断言函数工具包，方便编写单元测试。
+- [`fakeobj`](x/fakeobj) 提供一些接口的MOCK的实现，用于模拟测试. 例如 fs.File, fs.FileInfo, fs.DirEntry 等等.
 
 ### 扩展工具包
 
@@ -467,9 +467,8 @@ func ParseOrErr(val string) (string, error)
 func ParseValue(val string) string
 func VarParse(val string) string
 func ParseEnvValue(val string) string
-func SetEnvMap(mp map[string]string)
-func SetEnvs(kvPairs ...string)
-func UnsetEnvs(keys ...string)
+func SplitText2map(text string) map[string]string
+func SplitLineToKv(line string) (string, string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
 func MustGet(name string) string
@@ -489,7 +488,6 @@ func IsWindows() bool
 func IsMac() bool
 func IsLinux() bool
 func IsMSys() bool
-func IsWSL() bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
 func IsConsole(out io.Writer) bool
@@ -498,6 +496,12 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 func IsGithubActions() bool
+// source at envutil/set.go
+func SetEnvMap(mp map[string]string)
+func SetEnvs(kvPairs ...string)
+func UnsetEnvs(keys ...string)
+func LoadText(text string)
+func LoadString(line string) bool
 ```
 #### ENV Util Usage
 
@@ -1029,8 +1033,8 @@ func BaseTypeVal(v reflect.Value) (value any, err error)
 func ToBaseVal(v reflect.Value) (value any, err error)
 func ConvToType(val any, typ reflect.Type) (rv reflect.Value, err error)
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error)
-func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error)
-func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error)
+func ValueByKind(val any, kind reflect.Kind) (reflect.Value, error)
+func ConvToKind(val any, kind reflect.Kind, fallback ...ConvFunc) (rv reflect.Value, err error)
 func ConvSlice(oldSlRv reflect.Value, newElemTyp reflect.Type) (rv reflect.Value, err error)
 func String(rv reflect.Value) string
 func ToString(rv reflect.Value) (str string, err error)
@@ -1413,6 +1417,7 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
 // source at sysutil/sysenv.go
 func IsMSys() bool
+func IsWSL() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
@@ -1485,10 +1490,12 @@ func SetOsEnvs(mp map[string]string) string
 func RemoveTmpEnvs(tmpKey string)
 func ClearOSEnv()
 func RevertOSEnv()
+func RunOnCleanEnv(runFn func())
 func MockCleanOsEnv(mp map[string]string, fn func())
 // source at testutil/httpmock.go
 func NewHTTPRequest(method, path string, data *MD) *http.Request
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
+func MockHttpServer() *EchoServer
 func TestMain(m *testing.M)
 func NewEchoServer() *EchoServer
 func BuildEchoReply(r *http.Request) *EchoReply

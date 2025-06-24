@@ -128,7 +128,7 @@ func main() {
   go run ./internal/gendoc -o stdout
   go run ./internal/gendoc -o stdout -l zh-CN
   go run ./internal/gendoc -o README.md
-  go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
+  go run ./internal/gendoc -o README.zh-CN.md
 `
 	cmd.MustParse(nil)
 }
@@ -144,6 +144,11 @@ func handle(c *cflag.CFlags) error {
 		out = os.Stdout
 	} else {
 		toFile = true
+		// auto detect language
+		if strings.Contains(genOpts.output, "zh-CN") {
+			genOpts.lang = "zh-CN"
+		}
+
 		out, err = os.OpenFile(genOpts.output, fsutil.FsCWTFlags, fsutil.DefaultFilePerm)
 		goutil.PanicIfErr(err)
 

@@ -32,9 +32,9 @@
 
 - [`dump`](dump): GO value printing tool. print slice, map will auto wrap each element and display the call location
 - [`errorx`](errorx) Provide an enhanced error implements for go, allow with stacktrace and wrap another error.
-- [assert](testutil/assert) Provides commonly asserts functions for help testing
+- [`assert`](testutil/assert) Provides commonly asserts functions for help testing
 - [`testutil`](testutil) Test help util functions. eg: http test, mock ENV value
-- [fakeobj](x/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
+- [`fakeobj`](x/fakeobj) provides a fake object for testing. such as fake fs.File, fs.FileInfo, fs.DirEntry etc.
 
 ### Extra Tools packages
 
@@ -48,15 +48,15 @@
 
 **More ...**
 
-- [cmdline](cliutil/cmdline) Provide cmdline parse, args build to cmdline
+- [`cmdline`](cliutil/cmdline) Provide cmdline parse, args build to cmdline
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`finder`](x/finder) Provides a simple and convenient file/dir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
 - [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
 - [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
-- [cmdr](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
-- [clipboard](x/clipboard) Provide a simple clipboard read and write operations.
-- [process](sysutil/process) Provide some process handle util functions.
+- [`cmdr`](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
+- [`clipboard`](x/clipboard) Provide a simple clipboard read and write operations.
+- [`process`](sysutil/process) Provide some process handle util functions.
 - [`fmtutil`](x/fmtutil) Format data util functions. eg: data, size, time
 - [`goinfo`](x/goinfo) provide some standard util functions for go.
 
@@ -467,9 +467,8 @@ func ParseOrErr(val string) (string, error)
 func ParseValue(val string) string
 func VarParse(val string) string
 func ParseEnvValue(val string) string
-func SetEnvMap(mp map[string]string)
-func SetEnvs(kvPairs ...string)
-func UnsetEnvs(keys ...string)
+func SplitText2map(text string) map[string]string
+func SplitLineToKv(line string) (string, string)
 // source at envutil/get.go
 func Getenv(name string, def ...string) string
 func MustGet(name string) string
@@ -489,7 +488,6 @@ func IsWindows() bool
 func IsMac() bool
 func IsLinux() bool
 func IsMSys() bool
-func IsWSL() bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
 func IsConsole(out io.Writer) bool
@@ -498,6 +496,12 @@ func IsSupportColor() bool
 func IsSupport256Color() bool
 func IsSupportTrueColor() bool
 func IsGithubActions() bool
+// source at envutil/set.go
+func SetEnvMap(mp map[string]string)
+func SetEnvs(kvPairs ...string)
+func UnsetEnvs(keys ...string)
+func LoadText(text string)
+func LoadString(line string) bool
 ```
 #### ENV Util Usage
 
@@ -1027,8 +1031,8 @@ func BaseTypeVal(v reflect.Value) (value any, err error)
 func ToBaseVal(v reflect.Value) (value any, err error)
 func ConvToType(val any, typ reflect.Type) (rv reflect.Value, err error)
 func ValueByType(val any, typ reflect.Type) (rv reflect.Value, err error)
-func ValueByKind(val any, kind reflect.Kind) (rv reflect.Value, err error)
-func ConvToKind(val any, kind reflect.Kind) (rv reflect.Value, err error)
+func ValueByKind(val any, kind reflect.Kind) (reflect.Value, error)
+func ConvToKind(val any, kind reflect.Kind, fallback ...ConvFunc) (rv reflect.Value, err error)
 func ConvSlice(oldSlRv reflect.Value, newElemTyp reflect.Type) (rv reflect.Value, err error)
 func String(rv reflect.Value) string
 func ToString(rv reflect.Value) (str string, err error)
@@ -1411,6 +1415,7 @@ func ShellExec(cmdLine string, shells ...string) (string, error)
 func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
 // source at sysutil/sysenv.go
 func IsMSys() bool
+func IsWSL() bool
 func IsConsole(out io.Writer) bool
 func IsTerminal(fd uintptr) bool
 func StdIsTerminal() bool
@@ -1483,10 +1488,12 @@ func SetOsEnvs(mp map[string]string) string
 func RemoveTmpEnvs(tmpKey string)
 func ClearOSEnv()
 func RevertOSEnv()
+func RunOnCleanEnv(runFn func())
 func MockCleanOsEnv(mp map[string]string, fn func())
 // source at testutil/httpmock.go
 func NewHTTPRequest(method, path string, data *MD) *http.Request
 func MockRequest(h http.Handler, method, path string, data *MD) *httptest.ResponseRecorder
+func MockHttpServer() *EchoServer
 func TestMain(m *testing.M)
 func NewEchoServer() *EchoServer
 func BuildEchoReply(r *http.Request) *EchoReply
