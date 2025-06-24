@@ -14,7 +14,7 @@ import (
 var testSrvAddr string
 
 func TestMain(m *testing.M) {
-	s := testutil.NewEchoServer()
+	s := testutil.MockHttpServer()
 	defer s.Close()
 
 	testSrvAddr = s.HTTPHost()

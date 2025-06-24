@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+
+	"github.com/gookit/goutil/x/basefn"
 )
 
 // some data.
@@ -144,6 +146,11 @@ func (s *EchoServer) PrintHttpHost() {
 	fmt.Println("Test server listen on:", s.HTTPHost())
 }
 
+// MockHttpServer create an echo server for testing. alias of NewEchoServer
+func MockHttpServer() *EchoServer {
+	return NewEchoServer()
+}
+
 // NewEchoServer create an echo server for testing.
 //
 // Usage on testing:
@@ -173,10 +180,7 @@ func NewEchoServer() *EchoServer {
 
 		enc := json.NewEncoder(w)
 		enc.SetIndent("", "  ")
-		err := enc.Encode(BuildEchoReply(r))
-		if err != nil {
-			_, _ = w.Write([]byte(`{"error": "encode error"}`))
-		}
+		basefn.MustOK(enc.Encode(BuildEchoReply(r)))
 	}))
 
 	return &EchoServer{

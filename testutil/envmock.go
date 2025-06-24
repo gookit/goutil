@@ -51,8 +51,8 @@ func MockEnvValues(kvMap map[string]string, fn func()) {
 }
 
 // MockOsEnvByText by env multi line text string.
-// will clear all old ENV data, use given data map,
-// and will recover old ENV after fn run.
+// Will **CLEAR** all old ENV data, use given data map,
+// and will recover old ENV after fn run. see MockCleanOsEnv
 //
 // Usage:
 //
@@ -127,7 +127,7 @@ func RemoveTmpEnvs(tmpKey string) {
 // backup os ENV
 var envBak = os.Environ()
 
-// ClearOSEnv info.
+// ClearOSEnv info for some testing cases.
 //
 // Usage:
 //
@@ -145,10 +145,18 @@ func RevertOSEnv() {
 	}
 }
 
+// RunOnCleanEnv will CLEAR all old ENV, then run given func.
+// will RECOVER old ENV after fn run.
+func RunOnCleanEnv(runFn func()) {
+	os.Clearenv()
+	runFn()
+	RevertOSEnv()
+}
+
 // MockCleanOsEnv by env map data.
 //
-// will clear all old ENV data, use given data map.
-// will recover old ENV after fn run.
+// will CLEAR all old ENV data, use given a data map.
+// will RECOVER old ENV after fn run.
 func MockCleanOsEnv(mp map[string]string, fn func()) {
 	os.Clearenv()
 	for key, val := range mp {

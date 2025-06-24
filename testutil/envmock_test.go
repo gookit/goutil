@@ -60,6 +60,10 @@ func TestClearOSEnv(t *testing.T) {
 
 	testutil.RevertOSEnv()
 	assert.NotEmpty(t, os.Environ())
+
+	testutil.RunOnCleanEnv(func() {
+		assert.Empty(t, os.Environ())
+	})
 }
 
 func TestMockOsEnvByText(t *testing.T) {
