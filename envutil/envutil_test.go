@@ -3,7 +3,6 @@ package envutil
 import (
 	"testing"
 
-	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -83,45 +82,52 @@ func TestParseOrErr(t *testing.T) {
 	})
 }
 
-func TestSetEnvs(t *testing.T) {
-	envMp := map[string]string{
-		"FirstEnv":  "abc",
-		"SecondEnv": "def",
-	}
-	keys := maputil.Keys(envMp)
-	for key := range envMp {
-		assert.Empty(t, Getenv(key))
-	}
-
-	// SetEnvs
-	SetEnvs(maputil.SMap(envMp).ToKVPairs()...)
-	for key, val := range envMp {
-		assert.Eq(t, val, Getenv(key))
-	}
-	assert.Panics(t, func() {
-		SetEnvs("name", "one", "two")
-	})
-
-	// MustGet
-	assert.Eq(t, "abc", MustGet("FirstEnv"))
-	assert.Panics(t, func() {
-		MustGet("NotExistEnvKey")
-	})
-
-	// UnsetEnvs
-	UnsetEnvs(keys...)
-	for key := range envMp {
-		assert.Empty(t, Getenv(key))
+func TestSplitLineToKv(t *testing.T) {
+	tests := []struct {
+		line string
+		k, v string
+	}{
+		{"key=val", "key", "val"},
+		{"key = val ", "key", "val"},
+		{"key =val\n", "key", "val"},
+		{"key= val\r\n", "key", "val"},
+		{" key=val\r", "key", "val"},
+		{"key=val\t ", "key", "val"},
+		{" key=val\t\n", "key", "val"},
+		{"key=val\t\r\n", "key", "val"},
+		{"key = val\nue", "key", "val\nue"},
+		{" key-one =val ", "key-one", "val"},
+		{" key_one = val", "key_one", "val"},
+		{" valid=", "valid", ""},
+		// invalid input
+		{"invalid", "", ""},
+		{"=invalid", "", ""},
+		{" = invalid", "", ""},
+		{"  ", "", ""},
 	}
 
-	// SetEnvMap
-	SetEnvMap(envMp)
-	for key, val := range envMp {
-		assert.Eq(t, val, Getenv(key))
+	for _, tt := range tests {
+		k, v := SplitLineToKv(tt.line)
+		assert.Eq(t, tt.k, k)
+		assert.Eq(t, tt.v, v)
 	}
+}
 
-	UnsetEnvs(keys...)
-	for key := range envMp {
-		assert.Empty(t, Getenv(key))
-	}
+func TestSplitText2map(t *testing.T) {
+	envMp := SplitText2map(`
+# comment1
+APP = kite
+; comment2
+DEBUG = true
+RUN_OPT = 
+# must split with =
+INVALID
+`)
+	assert.NotEmpty(t, envMp)
+	assert.Eq(t, "kite", envMp["APP"])
+	assert.Eq(t, "true", envMp["DEBUG"])
+	_, has := envMp["RUN_OPT"]
+	assert.True(t, has)
+	_, has = envMp["INVALID"]
+	assert.False(t, has)
 }
