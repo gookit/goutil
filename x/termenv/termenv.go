@@ -25,9 +25,6 @@ var (
 	colorLevel, needVTP = detectTermColorLevel()
 )
 
-// TermColorLevel returns the color support level for the current terminal.
-func TermColorLevel() ColorLevel { return colorLevel }
-
 // SetDebugMode sets debug mode.
 func SetDebugMode(enable bool) { debugMode = enable }
 
@@ -41,13 +38,13 @@ func LastErr() error {
 
 func debugf(tpl string, v ...any) {
 	if debugMode {
-		fmt.Printf("TERM_ENV: "+tpl+"\n", v...)
+		fmt.Printf("TERMENV: "+tpl+"\n", v...)
 	}
 }
 
 func setLastErr(err error) {
 	if err != nil {
-		debugf("last error: %v", err)
+		debugf("TERMENV: last error: %v", err)
 		lastErr = err
 	}
 }

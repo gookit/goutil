@@ -35,6 +35,9 @@ func (l ColorLevel) String() string {
 // NoColor returns true if the NO_COLOR environment variable is set.
 func NoColor() bool { return noColor }
 
+// TermColorLevel returns the color support level for the current terminal.
+func TermColorLevel() ColorLevel { return colorLevel }
+
 // IsSupportColor returns true if the terminal supports color.
 func IsSupportColor() bool { return colorLevel > TermColorNone }
 
@@ -48,13 +51,22 @@ func IsSupportTrueColor() bool { return colorLevel == TermColorTrue }
 // ---------------- Force set color support ----------------
 //
 
-var backOldVal bool
 var backLevel ColorLevel
+
+// SetColorLevel value force.
+func SetColorLevel(level ColorLevel) {
+	// backup old value
+	backLevel = colorLevel
+
+	// force set color level
+	colorLevel = level
+	supportColor = level > TermColorNone
+	noColor = supportColor == false
+}
 
 // DisableColor in the current terminal
 func DisableColor() {
 	// backup old value
-	backOldVal = supportColor
 	backLevel = colorLevel
 
 	// force disable color
@@ -71,7 +83,6 @@ func DisableColor() {
 //	defer ccolor.RevertColorSupport()
 func ForceEnableColor() {
 	// backup old value
-	backOldVal = supportColor
 	backLevel = colorLevel
 
 	// force enables color
@@ -81,11 +92,11 @@ func ForceEnableColor() {
 	// return colorLevel
 }
 
-// RevertColorSupport value
+// RevertColorSupport flags to init value.
 func RevertColorSupport() {
 	// revert color flags var
 	colorLevel = backLevel
-	supportColor = backOldVal
+	supportColor = backLevel > TermColorNone
 	noColor = os.Getenv("NO_COLOR") == ""
 }
 
@@ -130,8 +141,7 @@ func detectTermColorLevel() (level ColorLevel, needVTP bool) {
 
 	// fallback: simple detect by TERM value string.
 	if level == TermColorNone {
-		debugf("level none - fallback check special term color support")
-		// on Windows: enable VTP as it has True Color support
+		debugf("level=none - fallback check special term color support")
 		level, needVTP = detectSpecialTermColor(termVal)
 	}
 	return
@@ -182,38 +192,4 @@ func detectColorLevelFromEnv(termVal string, isWin bool) ColorLevel {
 
 	// no TERM env value. default return none level
 	return TermColorNone
-}
-
-var (
-	detectedWSL bool
-	wslContents string
-)
-
-// https://github.com/Microsoft/WSL/issues/423#issuecomment-221627364
-func detectWSL() bool {
-	if !detectedWSL {
-		detectedWSL = true
-
-		b := make([]byte, 1024)
-		// `cat /proc/version`
-		// on Mac:
-		// 	!not the file!
-		// on linux(debian,ubuntu,alpine):
-		//	Linux version 4.19.121-linuxkit (root@18b3f92ade35) (gcc version 9.2.0 (Alpine 9.2.0)) #1 SMP Thu Jan 21 15:36:34 UTC 2021
-		// on win git bash, conEmu:
-		// 	MINGW64_NT-10.0-19042 version 3.1.7-340.x86_64 (@WIN-N0G619FD3UK) (gcc version 9.3.0 (GCC) ) 2020-10-23 13:08 UTC
-		// on WSL:
-		//  Linux version 4.4.0-19041-Microsoft (Microsoft@Microsoft.com) (gcc version 5.4.0 (GCC) ) #488-Microsoft Mon Sep 01 13:43:00 PST 2020
-		f, err := os.Open("/proc/version")
-		if err == nil {
-			_, _ = f.Read(b) // ignore error
-			if err = f.Close(); err != nil {
-				setLastErr(err)
-			}
-
-			wslContents = string(b)
-			return strings.Contains(wslContents, "Microsoft")
-		}
-	}
-	return false
 }

@@ -18,7 +18,7 @@ func TestCurrentShell(t *testing.T) {
 		assert.NotEmpty(t, path)
 	}
 
-	assert.True(t, termenv.HasShellEnv("not-valid"))
+	assert.False(t, termenv.HasShellEnv("not-valid"))
 
 	// IsShellSpecialVar
 	assert.True(t, termenv.IsShellSpecialVar('$'))

@@ -13,6 +13,7 @@ func TestCommon(t *testing.T) {
 	termenv.ForceEnableColor()
 	defer termenv.RevertColorSupport()
 
+	assert.NotEmpty(t, termenv.TermColorLevel())
 	assert.True(t, termenv.IsSupportColor())
 	assert.True(t, termenv.IsSupport256Color())
 	assert.False(t, termenv.NoColor())
@@ -25,19 +26,24 @@ func TestCommon(t *testing.T) {
 
 func TestDetectColorLevel(t *testing.T) {
 	is := assert.New(t)
+	defer termenv.RevertColorSupport()
 
 	// "COLORTERM=truecolor"
 	testutil.MockOsEnvByText("COLORTERM=truecolor", func() {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorTrue, level)
 		is.True(termenv.IsSupportColor())
-		is.Equal(termenv.TermColorTrue, termenv.DetectColorLevel())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportTrueColor())
 	})
 
 	// "FORCE_COLOR=on"
 	testutil.MockOsEnvByText("FORCE_COLOR=on", func() {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor16, level)
 		is.True(termenv.IsSupportColor())
-		is.Equal(termenv.TermColor16, termenv.DetectColorLevel())
 		is.False(termenv.IsSupport256Color())
 		is.False(termenv.IsSupportTrueColor())
 	})
@@ -48,7 +54,9 @@ TERM=xterm-256color
 TERMINAL_EMULATOR=JetBrains-JediTerm
 ZSH_TMUX_TERM=screen-256color
 `, func() {
-		is.Equal(termenv.TermColorTrue, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorTrue, level)
 		is.True(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -61,45 +69,58 @@ func TestDetectColorLevel_unix(t *testing.T) {
 		return
 	}
 	is := assert.New(t)
+	defer termenv.RevertColorSupport()
 
 	// no TERM env
 	testutil.MockOsEnvByText("NO=none", func() {
-		is.Equal(termenv.TermColorNone, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorNone, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.False(termenv.IsSupport256Color())
 		is.False(termenv.IsSupportColor())
 	})
 
 	testutil.MockOsEnvByText("TERM=not-exist-value", func() {
-		is.Equal(termenv.TermColor16, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor16, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.False(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
 	})
 
 	testutil.MockOsEnvByText("TERM=xterm", func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
 	})
 
 	testutil.MockOsEnvByText("TERM=screen-256color", func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
 	})
 
 	testutil.MockOsEnvByText("TERM=not-exist-256color", func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
 	})
 
 	testutil.MockOsEnvByText("WSL_DISTRO_NAME=Debian", func() {
-		is.Equal(termenv.TermColorNone, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorNone, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.False(termenv.IsSupport256Color())
 		is.False(termenv.IsSupportColor())
@@ -112,7 +133,9 @@ TERM=xterm-256color
 TERM_PROGRAM=Terminus
 ZSH_TMUX_TERM=screen-256color
 `, func() {
-		is.Equal(termenv.TermColorTrue, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorTrue, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -128,8 +151,10 @@ TERM_PROGRAM_VERSION=433
 TERM_SESSION_ID=F17907FE-DCA5-488D-829B-7AFA8B323753
 ZSH_TMUX_TERM=screen-256color
 `, func() {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
 		// fmt.Println(os.Environ())
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -144,7 +169,9 @@ LC_TERMINAL=iTerm2
 TERM=xterm-256color
 ZSH_TMUX_TERM=screen-256color
 `, func() {
-		is.Equal(termenv.TermColorTrue, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorTrue, level)
 		is.True(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -159,7 +186,9 @@ LC_TERMINAL=iTerm2
 TERM=xterm-256color
 ZSH_TMUX_TERM=screen-256color
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -173,7 +202,9 @@ LC_TERMINAL=iTerm2
 TERM=xterm-256color
 ZSH_TMUX_TERM=screen-256color
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -188,13 +219,16 @@ func TestDetectColorLevel_screen(t *testing.T) {
 		return
 	}
 	is := assert.New(t)
+	defer termenv.RevertColorSupport()
 
 	// COLORTERM=truecolor
 	testutil.MockOsEnvByText(`
 TERM=screen
 COLORTERM=truecolor
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
@@ -209,8 +243,10 @@ TERM_PROGRAM_VERSION=433
 TERM_SESSION_ID=F17907FE-DCA5-488D-829B-7AFA8B323753
 ZSH_TMUX_TERM=screen-256color
 `, func() {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
 		// fmt.Println(os.Environ())
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -227,7 +263,9 @@ TERM_PROGRAM=iTerm.app
 LC_TERMINAL=iTerm2
 ZSH_TMUX_TERM=screen
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -241,7 +279,9 @@ TERMINUS_PLUGINS=
 TERM_PROGRAM=Terminus
 ZSH_TMUX_TERM=screen
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -254,7 +294,10 @@ TERMCAP=SC|screen|VT 100/ANSI X3.64 virtual terminal:\
 TERMINAL_EMULATOR=JetBrains-JediTerm
 ZSH_TMUX_TERM=screen
 `, func() {
-		is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+
+		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportColor())
@@ -266,11 +309,16 @@ func TestDetectColorLevel_windows(t *testing.T) {
 		t.Skip("skip on NOT windows")
 		return
 	}
+
 	is := assert.New(t)
+	defer termenv.RevertColorSupport()
 
 	// ConEmuANSI
 	testutil.MockEnvValue("ConEmuANSI", "ON", func(_ string) {
-		is.Equal(termenv.TermColorTrue, termenv.DetectColorLevel())
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+		is.Equal(termenv.TermColorTrue, level)
+
 		is.True(termenv.IsSupportColor())
 		is.True(termenv.IsSupport256Color())
 		is.True(termenv.IsSupportTrueColor())
@@ -278,13 +326,19 @@ func TestDetectColorLevel_windows(t *testing.T) {
 
 	// WSL_DISTRO_NAME=Debian
 	testutil.MockEnvValue("WSL_DISTRO_NAME", "Debian", func(_ string) {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+
 		is.True(termenv.IsSupportColor())
 	})
 
 	// ANSICON
 	testutil.MockEnvValue("ANSICON", "189x2000 (189x43)", func(_ string) {
+		level := termenv.DetectColorLevel()
+		termenv.SetColorLevel(level)
+
 		is.True(termenv.IsSupportColor())
-		// is.Equal(termenv.TermColor256, termenv.DetectColorLevel())
+		// is.Equal(termenv.TermColor256, level)
 		// is.Equal("TERM=xterm-256color", SupColorMark())
 	})
 }

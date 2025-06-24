@@ -3,24 +3,21 @@
 package termenv
 
 import (
-	"os"
 	"strings"
+
+	"github.com/gookit/goutil/internal/checkfn"
 )
 
 // detect special term color support on macOS, linux, unix
 func detectSpecialTermColor(termVal string) (ColorLevel, bool) {
 	if termVal == "" {
+		// detect WSL as it has True Color support
 		// on Windows WSL:
 		// - runtime.GOOS == "Linux"
 		// - support true-color
-		// ENV:
-		// 	WSL_DISTRO_NAME=Debian
-		if val := os.Getenv("WSL_DISTRO_NAME"); val != "" {
-			// detect WSL as it has True Color support
-			if detectWSL() {
-				debugf("True Color support on WSL environment")
-				return TermColorTrue, false
-			}
+		if checkfn.IsWSL() {
+			debugf("True Color support on WSL environment")
+			return TermColorTrue, false
 		}
 		return TermColorNone, false
 	}
