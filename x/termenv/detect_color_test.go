@@ -122,7 +122,7 @@ func TestDetectColorLevel_unix(t *testing.T) {
 		level := termenv.DetectColorLevel()
 		termenv.SetDebugMode(false)
 		termenv.SetColorLevel(level)
-		is.Equal(termenv.TermColorNone, level)
+		is.Equal(termenv.TermColorTrue, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.False(termenv.IsSupport256Color())
 		is.False(termenv.IsSupportColor())
@@ -190,6 +190,8 @@ ZSH_TMUX_TERM=screen-256color
 `, func() {
 		level := termenv.DetectColorLevel()
 		termenv.SetColorLevel(level)
+		assert.Err(t, termenv.LastErr()) // invalid TERM_PROGRAM_VERSION
+
 		is.Equal(termenv.TermColor256, level)
 		is.False(termenv.IsSupportTrueColor())
 		is.True(termenv.IsSupport256Color())

@@ -22,11 +22,11 @@ const (
 func (l ColorLevel) String() string {
 	switch l {
 	case TermColor16:
-		return "ansi"
+		return "ansiColor"
 	case TermColor256:
-		return "256"
+		return "256color"
 	case TermColorTrue:
-		return "true"
+		return "trueColor"
 	default:
 		return "none"
 	}
