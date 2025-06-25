@@ -137,12 +137,14 @@ func detectTermColorLevel() (level ColorLevel, needVTP bool) {
 	}
 
 	level = detectColorLevelFromEnv(termVal, isWin)
-	debugf("color level by detectColorLevelFromEnv: %s", level.String())
 
 	// fallback: simple detect by TERM value string.
 	if level == TermColorNone {
 		debugf("level=none - fallback check special term color support")
 		level, needVTP = detectSpecialTermColor(termVal)
+		debugf("color level by detectSpecialTermColor: %s", level.String())
+	} else {
+		debugf("color level by detectColorLevelFromEnv: %s", level.String())
 	}
 	return
 }

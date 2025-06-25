@@ -118,7 +118,9 @@ func TestDetectColorLevel_unix(t *testing.T) {
 	})
 
 	testutil.MockOsEnvByText("WSL_DISTRO_NAME=Debian", func() {
+		termenv.SetDebugMode(true)
 		level := termenv.DetectColorLevel()
+		termenv.SetDebugMode(false)
 		termenv.SetColorLevel(level)
 		is.Equal(termenv.TermColorNone, level)
 		is.False(termenv.IsSupportTrueColor())
