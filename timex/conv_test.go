@@ -56,6 +56,7 @@ func TestHowLongAgo(t *testing.T) {
 
 func TestTryToTime(t *testing.T) {
 	tn := timex.Now()
+	nowDt := tn.Datetime()
 
 	// duration string
 	durTests := []struct {
@@ -63,8 +64,8 @@ func TestTryToTime(t *testing.T) {
 		out string
 		ok  bool
 	}{
-		{"now", tn.Datetime(), true},
-		{"0", tn.Datetime(), true},
+		{"now", nowDt, true},
+		{"0", nowDt, true},
 		{"3s", tn.AddSeconds(3).Datetime(), true},
 		{"3m", tn.AddMinutes(3).Datetime(), true},
 	}
@@ -76,7 +77,7 @@ func TestTryToTime(t *testing.T) {
 		} else {
 			assert.Err(t, err)
 		}
-		assert.Eq(t, item.out, timex.Format(tt))
+		assert.Eq(t, item.out, timex.Format(tt), "in=%s", item.in)
 	}
 
 	bt := timex.ZeroTime

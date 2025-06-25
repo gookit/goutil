@@ -11,7 +11,7 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// provide some commonly time constants
+// provide some common time constants
 const (
 	OneSecond   = 1
 	OneMinSec   = 60
@@ -118,7 +118,7 @@ func LocalByName(tzName string) *Time {
  *************************************************************/
 
 // T returns the t.Time
-func (t Time) T() time.Time {
+func (t *Time) T() time.Time {
 	return t.Time
 }
 
@@ -254,22 +254,22 @@ func (t *Time) SubSeconds(seconds int) *Time {
 }
 
 // Diff calc diff duration for t - u. alias of time.Time.Sub()
-func (t Time) Diff(u time.Time) time.Duration {
+func (t *Time) Diff(u time.Time) time.Duration {
 	return t.Sub(u)
 }
 
 // DiffSec calc diff seconds for t - u
-func (t Time) DiffSec(u time.Time) int {
+func (t *Time) DiffSec(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
 // DiffUnix calc diff seconds for t.Unix() - u
-func (t Time) DiffUnix(u int64) int {
+func (t *Time) DiffUnix(u int64) int {
 	return int(t.Unix() - u)
 }
 
 // SubUnix calc diff seconds for t - u
-func (t Time) SubUnix(u time.Time) int {
+func (t *Time) SubUnix(u time.Time) int {
 	return int(t.Sub(u) / time.Second)
 }
 
@@ -334,12 +334,12 @@ func (t *Time) IsAfterUnix(ux int64) bool {
 }
 
 // Timestamp value. alias of t.Unix()
-func (t Time) Timestamp() int64 {
+func (t *Time) Timestamp() int64 {
 	return t.Unix()
 }
 
 // HowLongAgo format diff time to string.
-func (t Time) HowLongAgo(before time.Time) string {
+func (t *Time) HowLongAgo(before time.Time) string {
 	return mathutil.HowLongAgo(t.Unix() - before.Unix())
 }
 
