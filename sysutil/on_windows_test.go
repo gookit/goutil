@@ -71,3 +71,10 @@ func TestOsVersionByVerCmd(t *testing.T) {
 
 	dump.P(ov.Name(), ov)
 }
+
+func TestUser_func(t *testing.T) {
+	assert.NoErr(t, sysutil.ChangeUserByName("admin"))
+	assert.NoErr(t, sysutil.ChangeUserUidGid(1, 1))
+
+	assert.False(t, sysutil.IsAdmin())
+}

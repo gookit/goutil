@@ -1,6 +1,7 @@
 package termenv_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/gookit/goutil/testutil/assert"
@@ -18,4 +19,9 @@ func TestBasicFunc(t *testing.T) {
 
 	termenv.SetDebugMode(true)
 	termenv.SetDebugMode(false)
+
+	fmt.Println(termenv.GetTermSize())
+	// repeat call
+	w, h := termenv.GetTermSize()
+	fmt.Println(w, h)
 }

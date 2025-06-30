@@ -32,6 +32,14 @@ func TestGetCallersInfo(t *testing.T) {
 	// dump.P(cs)
 }
 
+func TestCallersInfo(t *testing.T) {
+	cs := goinfo.CallersInfos(0, 2)
+	// dump.P(cs)
+	assert.NotEmpty(t, cs)
+	assert.Len(t, cs, 2)
+	assert.StrContains(t, cs[0].String(), "goutil/x/goinfo/stack.go")
+}
+
 func someFunc1() []string {
 	return goinfo.GetCallersInfo(1, 2)
 }

@@ -4,9 +4,13 @@ package goutil
 
 import (
 	"fmt"
+	"reflect"
 
+	"github.com/gookit/goutil/internal/checkfn"
+	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/x/basefn"
+	"github.com/gookit/goutil/x/goinfo"
 )
 
 // Value alias of structs.Value
@@ -101,3 +105,105 @@ func OrReturn[T any](cond bool, okFn, elseFn func() T) T {
 	}
 	return elseFn()
 }
+
+//
+// ------------------------- check functions -------------------------
+//
+
+// IsNil value check
+func IsNil(v any) bool {
+	if v == nil {
+		return true
+	}
+	return reflects.IsNil(reflect.ValueOf(v))
+}
+
+// IsZero value check, alias of the IsEmpty()
+var IsZero = IsEmpty
+
+// IsEmpty value check
+func IsEmpty(v any) bool {
+	if v == nil {
+		return true
+	}
+	return reflects.IsEmpty(reflect.ValueOf(v))
+}
+
+// IsZeroReal Alias of the IsEmptyReal()
+var IsZeroReal = IsEmptyReal
+
+// IsEmptyReal checks for empty given value and also real empty value if the passed value is a pointer
+func IsEmptyReal(v any) bool {
+	if v == nil {
+		return true
+	}
+	return reflects.IsEmptyReal(reflect.ValueOf(v))
+}
+
+// IsFunc value
+func IsFunc(val any) bool {
+	if val == nil {
+		return false
+	}
+	return reflect.TypeOf(val).Kind() == reflect.Func
+}
+
+// IsEqual determines if two objects are considered equal.
+//
+// TIP: cannot compare a function type
+func IsEqual(src, dst any) bool {
+	if src == nil || dst == nil {
+		return src == dst
+	}
+
+	// cannot compare a function type
+	if IsFunc(src) || IsFunc(dst) {
+		return false
+	}
+	return reflects.IsEqual(src, dst)
+}
+
+// Contains try loop over the data check if the data includes the element.
+// alias of the IsContains
+//
+// TIP: only support types: string, map, array, slice
+//
+//	map         - check key exists
+//	string 	    - check sub-string exists
+//	array,slice - check sub-element exists
+func Contains(data, elem any) bool {
+	_, found := checkfn.Contains(data, elem)
+	return found
+}
+
+// IsContains try loop over the data check if the data includes the element.
+//
+// TIP: only support types: string, map, array, slice
+//
+//	map         - check key exists
+//	string 	    - check sub-string exists
+//	array,slice - check sub-element exists
+func IsContains(data, elem any) bool {
+	_, found := checkfn.Contains(data, elem)
+	return found
+}
+
+//
+// ------------------------- goinfo functions -------------------------
+//
+
+// FuncName get func name
+func FuncName(f any) string {
+	return goinfo.FuncName(f)
+}
+
+// PkgName get the current package name. alias of goinfo.PkgName()
+//
+// Usage:
+//
+//	funcName := goutil.FuncName(fn)
+//	pgkName := goutil.PkgName(funcName)
+func PkgName(funcName string) string {
+	return goinfo.PkgName(funcName)
+}
+

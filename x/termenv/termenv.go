@@ -5,6 +5,8 @@ package termenv
 import (
 	"fmt"
 	"os"
+
+	"golang.org/x/term"
 )
 
 var (
@@ -47,4 +49,47 @@ func setLastErr(err error) {
 		debugf("TERMENV: last error: %v", err)
 		lastErr = err
 	}
+}
+
+// exec: `stty -a 2>&1`
+// const (
+// mac: speed 9600 baud; 97 rows; 362 columns;
+// macSttyMsgPattern = `(\d+)\s+rows;\s*(\d+)\s+columns;`
+// linux: speed 38400 baud; rows 97; columns 362; line = 0;
+// linuxSttyMsgPattern = `rows\s+(\d+);\s*columns\s+(\d+);`
+// )
+var terminalWidth, terminalHeight int
+
+// GetTermSize for current console terminal.
+func GetTermSize(refresh ...bool) (w int, h int) {
+	if terminalWidth > 0 && len(refresh) > 0 && !refresh[0] {
+		return terminalWidth, terminalHeight
+	}
+
+	var err error
+	w, h, err = term.GetSize(syscallStdinFd())
+	if err != nil {
+		return
+	}
+
+	// cache result
+	terminalWidth, terminalHeight = w, h
+	return
+}
+
+// ReadPassword from console terminal
+func ReadPassword(question ...string) string {
+	if len(question) > 0 {
+		print(question[0])
+	} else {
+		print("Enter Password: ")
+	}
+
+	bs, err := term.ReadPassword(syscallStdinFd())
+	if err != nil {
+		return ""
+	}
+
+	println() // new line
+	return string(bs)
 }

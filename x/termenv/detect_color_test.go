@@ -40,7 +40,9 @@ func TestDetectColorLevel(t *testing.T) {
 
 	// "FORCE_COLOR=on"
 	testutil.MockOsEnvByText("FORCE_COLOR=on", func() {
+		termenv.SetDebugMode(true)
 		level := termenv.DetectColorLevel()
+		termenv.SetDebugMode(false)
 		termenv.SetColorLevel(level)
 		is.Equal(termenv.TermColor16, level)
 		is.True(termenv.IsSupportColor())

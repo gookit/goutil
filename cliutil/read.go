@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/x/ccolor"
-	"golang.org/x/term"
+	"github.com/gookit/goutil/x/termenv"
 )
 
 // the global input output stream
@@ -121,17 +121,5 @@ func ByteIsYes(ans byte) bool {
 
 // ReadPassword from console terminal
 func ReadPassword(question ...string) string {
-	if len(question) > 0 {
-		print(question[0])
-	} else {
-		print("Enter Password: ")
-	}
-
-	bs, err := term.ReadPassword(syscallStdinFd())
-	if err != nil {
-		return ""
-	}
-
-	println() // new line
-	return string(bs)
+	return termenv.ReadPassword(question...)
 }

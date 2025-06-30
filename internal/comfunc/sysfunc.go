@@ -1,7 +1,6 @@
 package comfunc
 
 import (
-	"bytes"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -51,6 +50,11 @@ func ExecCmd(binName string, args []string, workDir ...string) (string, error) {
 	return string(bs), err
 }
 
+var (
+	cmdList  = []string{"cmd", "cmd.exe"}
+	pwshList = []string{"powershell", "powershell.exe", "pwsh", "pwsh.exe"}
+)
+
 // ShellExec exec command by shell
 // cmdLine e.g. "ls -al"
 func ShellExec(cmdLine string, shells ...string) (string, error) {
@@ -60,19 +64,13 @@ func ShellExec(cmdLine string, shells ...string) (string, error) {
 		shell = shells[0]
 	}
 
-	var out bytes.Buffer
-
 	cmd := exec.Command(shell, "-c", cmdLine)
-	cmd.Stdout = &out
-
-	if err := cmd.Run(); err != nil {
-		return "", err
-	}
-	return out.String(), nil
+	bs, err := cmd.Output()
+	return string(bs), err
 }
 
-// curShell cache
-var curShell string
+// curShellCache value
+var curShellCache string
 
 // CurrentShell get current used shell env file.
 //
@@ -85,9 +83,16 @@ func CurrentShell(onlyName bool, fallbackShell ...string) (binPath string) {
 		fbShell = fallbackShell[0]
 	}
 
-	if curShell == "" {
-		binPath = os.Getenv("SHELL")
+	if curShellCache == "" {
+		// 检查父进程名称
+		parentProcess := os.Getenv("GOPROCESS")
+		if parentProcess != "" {
+			return parentProcess
+		}
+
+		binPath = os.Getenv("SHELL") // 适用于 Unix-like 系统
 		if len(binPath) == 0 {
+			// TODO check on Windows
 			binPath, err = ShellExec("echo $SHELL")
 			if err != nil {
 				return fbShell
@@ -96,9 +101,9 @@ func CurrentShell(onlyName bool, fallbackShell ...string) (binPath string) {
 
 		binPath = strings.TrimSpace(binPath)
 		// cache result
-		curShell = binPath
+		curShellCache = binPath
 	} else {
-		binPath = curShell
+		binPath = curShellCache
 	}
 
 	if onlyName && len(binPath) > 0 {
@@ -107,6 +112,13 @@ func CurrentShell(onlyName bool, fallbackShell ...string) (binPath string) {
 		binPath = fbShell
 	}
 	return
+}
+
+func checkWinCurrentShell() string {
+	// 在 Windows 上，可以检查 COMSPEC 环境变量
+	comSpec := os.Getenv("COMSPEC")
+	// 没法检查 pwsh, 返回的还是 cmd
+	return comSpec
 }
 
 // HasShellEnv has shell env check.

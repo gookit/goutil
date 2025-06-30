@@ -23,3 +23,11 @@ func TestGoVersion(t *testing.T) {
 	assert.NotEmpty(t, info)
 	dump.P(info)
 }
+
+func TestCallersInfo(t *testing.T) {
+	cs := sysutil.CallersInfos(0, 2)
+	// dump.P(cs)
+	assert.NotEmpty(t, cs)
+	assert.Len(t, cs, 2)
+	assert.StrContains(t, cs[0].String(), "goutil/sysutil/sysgo.go")
+}

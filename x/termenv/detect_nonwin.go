@@ -4,6 +4,7 @@ package termenv
 
 import (
 	"strings"
+	"syscall"
 
 	"github.com/gookit/goutil/internal/checkfn"
 )
@@ -38,4 +39,8 @@ func detectSpecialTermColor(termVal string) (ColorLevel, bool) {
 		return TermColor256, false
 	}
 	return TermColor16, false
+}
+
+func syscallStdinFd() int {
+	return syscall.Stdin
 }

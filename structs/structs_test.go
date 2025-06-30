@@ -3,6 +3,7 @@ package structs_test
 import (
 	"testing"
 
+	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -22,4 +23,24 @@ func TestIsExported(t *testing.T) {
 	assert.True(t, structs.IsUnexported("_name"))
 	assert.True(t, structs.IsUnexported("abc12"))
 	assert.False(t, structs.IsUnexported("123abcd"))
+}
+
+func TestIssues_173(t *testing.T) {
+	type Nested struct {
+		Age int `default:"1"`
+	}
+
+	// TIP: must add `default:""` for nested struct
+	type Config struct {
+		Age    int      `default:"1"`
+		Slice  []Nested `default:""`
+		Nested `default:""`
+	}
+
+	c := Config{
+		Slice: []Nested{{}, {}},
+	}
+
+	assert.NoError(t, structs.InitDefaults(&c))
+	dump.P(c)
 }

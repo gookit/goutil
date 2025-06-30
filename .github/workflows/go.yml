@@ -48,7 +48,7 @@ jobs:
         # Report all results. [added,diff_context,file,nofilter].
         filter_mode: added
         # Exit with 1 when it finds at least one finding.
-        fail_on_error: false
+        fail_level: 'none'
 
     - name: Tidy go mod
       run: go mod tidy
