@@ -94,11 +94,12 @@ func TestParseLine(t *testing.T) {
 	assert.Eq(t, "msg \"text", args[6])
 }
 
-func TestWorkdir(t *testing.T) {
+func TestBasic_func(t *testing.T) {
 	assert.NotEmpty(t, cliutil.Workdir())
 	assert.NotEmpty(t, cliutil.BinDir())
 	assert.NotEmpty(t, cliutil.BinFile())
 	assert.NotEmpty(t, cliutil.BinName())
+
 	fmt.Println(cliutil.GetTermSize())
 	// repeat call
 	w, h := cliutil.GetTermSize()
@@ -149,13 +150,16 @@ func TestBuildOptionHelpName(t *testing.T) {
 }
 
 func TestShellQuote(t *testing.T) {
-	assert.Eq(t, `"'"`, cliutil.ShellQuote("'"))
+	assert.Eq(t, `'`, cliutil.ShellQuote("'"))
 	assert.Eq(t, `""`, cliutil.ShellQuote(""))
 	assert.Eq(t, `" "`, cliutil.ShellQuote(" "))
 	assert.Eq(t, `"ab s"`, cliutil.ShellQuote("ab s"))
 	assert.Eq(t, `"ab's"`, cliutil.ShellQuote("ab's"))
 	assert.Eq(t, `'ab"s'`, cliutil.ShellQuote(`ab"s`))
 	assert.Eq(t, "abs", cliutil.ShellQuote("abs"))
+	// 复杂case
+	assert.Eq(t, `'one "two three"'`, cliutil.ShellQuote(`one "two three"`))
+	assert.Eq(t, `"one two three"`, cliutil.ShellQuote(`"one two three"`))
 }
 
 func TestOutputLines(t *testing.T) {

@@ -111,28 +111,7 @@ func BuildOptionHelpName(names []string) string {
 }
 
 // ShellQuote quote a string on contains ', ", SPACE
-func ShellQuote(s string) string {
-	var quote byte
-	if strings.ContainsRune(s, '"') {
-		quote = '\''
-	} else if s == "" || strings.ContainsRune(s, '\'') || strings.ContainsRune(s, ' ') {
-		quote = '"'
-	}
-
-	if quote > 0 {
-		ln := len(s) + 2
-		bs := make([]byte, ln)
-
-		bs[0] = quote
-		bs[ln-1] = quote
-		if ln > 2 {
-			copy(bs[1:ln-1], s)
-		}
-
-		s = string(bs)
-	}
-	return s
-}
+func ShellQuote(s string) string { return comfunc.ShellQuote(s) }
 
 // OutputLines split output to lines
 func OutputLines(output string) []string {
