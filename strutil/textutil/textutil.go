@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -73,35 +74,5 @@ func ParseInlineINI(tagVal string, keys ...string) (mp maputil.SMap, err error) 
 //   - support inline comments with: " #" eg: name=tom # a comments
 //   - don't support submap parse.
 func ParseSimpleINI(text string) (mp maputil.SMap, err error) {
-	lines := strutil.Split(text, "\n")
-	ln := len(lines)
-	if ln == 0 {
-		return
-	}
-
-	strMap := make(maputil.SMap, ln)
-	commentsPrefixes := []string{"#", ";", "//"}
-
-	for _, line := range lines {
-		// skip comments line
-		if strutil.HasOnePrefix(line, commentsPrefixes) {
-			continue
-		}
-
-		if !strings.ContainsRune(line, '=') {
-			strMap = nil
-			err = fmt.Errorf("invalid config line: must match `KEY=VAL`(text: %s)", line)
-			return
-		}
-
-		key, value := strutil.TrimCut(line, "=")
-
-		// check and remove inline comments
-		if pos := strings.Index(value, " #"); pos > 0 {
-			value = strings.TrimRight(value[0:pos], " ")
-		}
-
-		strMap[key] = value
-	}
-	return strMap, nil
+	return comfunc.ParseEnvLines(text, true)
 }

@@ -2,6 +2,8 @@ package envutil
 
 import (
 	"os"
+
+	"github.com/gookit/goutil/internal/comfunc"
 )
 
 // SetEnvMap set multi ENV(string-map) to os
@@ -42,7 +44,7 @@ func LoadText(text string) {
 
 // LoadString set line to ENV. e.g.: KEY=VALUE
 func LoadString(line string) bool {
-	k, v := splitLineToKv(line)
+	k, v := comfunc.SplitLineToKv(line, "=")
 	if len(k) > 0 {
 		return os.Setenv(k, v) == nil
 	}
