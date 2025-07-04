@@ -51,7 +51,9 @@ func ParseEnvValue(val string) string { return varexpr.SafeParse(val) }
 
 // SplitText2map parse ENV text to map. Can use to parse .env file contents.
 func SplitText2map(text string) map[string]string {
-	envMp, _ := comfunc.ParseEnvLines(text, true)
+	envMp, _ := comfunc.ParseEnvLines(text, comfunc.ParseEnvLineOption{
+		SkipOnErrorLine: true,
+	})
 	return envMp
 }
 
@@ -60,5 +62,5 @@ func SplitLineToKv(line string) (string, string) {
 	if line = strings.TrimSpace(line); line == "" {
 		return "", ""
 	}
-	return comfunc.SplitLineToKv(line, "")
+	return comfunc.SplitLineToKv(line, "=")
 }

@@ -72,7 +72,7 @@ func ParseInlineINI(tagVal string, keys ...string) (mp maputil.SMap, err error) 
 //   - it's like INI format contents.
 //   - support comments line with: "#", ";", "//"
 //   - support inline comments with: " #" eg: name=tom # a comments
-//   - don't support submap parse.
+//   - DON'T support submap parse.
 func ParseSimpleINI(text string) (mp maputil.SMap, err error) {
-	return comfunc.ParseEnvLines(text, true)
+	return comfunc.ParseEnvLines(text, comfunc.ParseEnvLineOption{})
 }

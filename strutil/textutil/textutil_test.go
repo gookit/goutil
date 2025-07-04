@@ -171,7 +171,7 @@ func TestParseSimpleINI(t *testing.T) {
 		input := "invalid line"
 		mp, err := textutil.ParseSimpleINI(input)
 		assert.Err(t, err)
-		assert.Contains(t, err.Error(), "invalid config line")
+		assert.Contains(t, err.Error(), "invalid line contents")
 		assert.Nil(t, mp)
 	})
 
@@ -202,7 +202,7 @@ func TestParseSimpleINI(t *testing.T) {
 		input := "# comment\nkey1=value1\n\nkey2=value2 # inline comment\ninvalidline"
 		mp, err := textutil.ParseSimpleINI(input)
 		assert.Err(t, err)
-		assert.ErrMsgContains(t, err, "invalid config line")
+		assert.ErrMsgContains(t, err, "invalid line contents")
 		assert.Empty(t, mp)
 	})
 }
