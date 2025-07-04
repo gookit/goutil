@@ -120,7 +120,7 @@ func ToDur(s string) (time.Duration, error) { return ToDuration(s) }
 // ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 //
-// it like time.ParseDuration, but support more unit string. eg: "1d", "2w"
+// it like time.ParseDuration, but supports more unit string. eg: "1d", "2w"
 func ToDuration(s string) (time.Duration, error) {
 	return comfunc.ToDuration(s)
 }

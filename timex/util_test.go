@@ -83,7 +83,7 @@ func TestToLayout(t *testing.T) {
 	assert.Eq(t, time.RFC3339, timex.ToLayout("Y-m-dTH:I:SP"))
 }
 
-func TestToDur(t *testing.T) {
+func TestToDuration(t *testing.T) {
 	tests := []struct {
 		in  string
 		out time.Duration
@@ -99,6 +99,8 @@ func TestToDur(t *testing.T) {
 		{"3min", 3 * timex.Minute, true},
 		{"3h", 3 * timex.Hour, true},
 		{"3hours", 3 * timex.Hour, true},
+		{"3h5m", 3*timex.Hour + 5*timex.Minute, true},
+		{"3hours5m", 3*timex.Hour + 5*timex.Minute, true},
 		{"3d", 3 * timex.Day, true},
 		{"3day", 3 * timex.Day, true},
 		{"1w", 1 * timex.Week, true},

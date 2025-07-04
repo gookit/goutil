@@ -147,6 +147,36 @@ date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
 date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```
 
+## ParseRange 时间范围解析
+
+`timex.ParseRange()` 可以简单快速的将相对的时间大小范围、或关键字解析为 `time.Time`
+
+**使用示例**:
+
+```go
+start, end, err := ParseRange("-1h~1h", nil)
+goutil.PanicErr(err)
+
+fmt.Println(start, end)
+```
+
+**支持的表达式格式示例**：
+
+```text
+"-5h~-1h"           => 5 hours ago to 1 hour ago
+"1h~5h"             => 1 hour after to 5 hours after
+"-1h~1h"            => 1 hour ago to 1 hour after
+"-1h"               => 1 hour ago to feature. eq "-1h~"
+"-1h~0"             => 1 hour ago to now.
+"< -1h" OR "~-1h"   => 1 hour ago.
+"> 1h" OR "1h"      => 1 hour after to feature
+
+// keyword: now, today, yesterday, tomorrow
+"today"          => today start to today end
+"yesterday"      => yesterday start to yesterday end
+"tomorrow"       => tomorrow start to tomorrow end
+```
+
 ## Functions
 
 ```go
