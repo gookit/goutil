@@ -142,8 +142,10 @@ func (s *EchoServer) HTTPHost() string {
 }
 
 // PrintHttpHost print host address to console
-func (s *EchoServer) PrintHttpHost() {
-	fmt.Println("Test server listen on:", s.HTTPHost())
+func (s *EchoServer) PrintHttpHost() string {
+	baseUrl := s.HTTPHost()
+	fmt.Println("Test server listen on:", baseUrl)
+	return baseUrl
 }
 
 // MockHttpServer create an echo server for testing. alias of NewEchoServer
@@ -161,8 +163,7 @@ func MockHttpServer() *EchoServer {
 //		// create server
 //		s := testutil.NewEchoServer()
 //		defer s.Close()
-//		testSrvAddr = s.HTTPHost()
-//		s.PrintHttpHost()
+//		testSrvAddr = s.PrintHttpHost()
 //
 //		m.Run()
 //	}

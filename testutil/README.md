@@ -45,7 +45,35 @@ go test -v -run ^TestErr$ ./testutil/assert/...
 
 ## Mock for tests
 
-## More test utils
+### Mock http server
+
+Use `testutil. NewEchoServer()` can quickly create an HTTP echo server. Convenient for testing HTTP requests, responses, etc.
+
+```go
+var testSrvAddr string
+
+func TestMain(m *testing.M) {
+    s := testutil.NewEchoServer()
+    defer s.Close()
+
+    testSrvAddr = s.PrintHttpHost()
+    m.Run()
+}
+
+func TestNewEchoServer(t *testing.T) {
+    // 可直接请求测试server
+    r, err := http.Post(testSrvAddr, "text/plain", strings.NewReader("hello!"))
+    assert.NoErr(t, err)
+
+    // 将响应信息绑定到 testutil.EchoReply
+    rr := testutil.ParseRespToReply(r)
+    dump.P(rr)
+    assert.Eq(t, "POST", rr.Method)
+    assert.Eq(t, "text/plain", rr.ContentType())
+    assert.Eq(t, "hello!", rr.Body)
+}
+
+```
 
 ### Wraps buffer
 

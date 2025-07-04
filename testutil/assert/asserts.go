@@ -160,8 +160,8 @@ func PanicsErrMsg(t TestingT, fn PanicRunFunc, errMsg string, fmtAndArgs ...any)
 	if err.Error() != errMsg {
 		t.Helper()
 		return fail(t, fmt.Sprintf(
-			"func %s should panic.\n\tWant  error:\t%#v\n\tPanic value:\t%#v\n\tPanic stack:\t%s",
-			funcName, errMsg, panicVal, stackMsg),
+			"func %s should panic.\n\tWant  error:\t%#v\n\tPanic error:\t%#v\n\tPanic stack:\t%s",
+			funcName, errMsg, err.Error(), stackMsg),
 			fmtAndArgs,
 		)
 	}
