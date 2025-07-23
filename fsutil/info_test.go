@@ -35,3 +35,21 @@ func TestPathNoExt(t *testing.T) {
 		assert.Eq(t, test.expected, result, "input: %s", test.input)
 	}
 }
+
+func TestNameNoExt(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"path/to/file.txt", "file"},
+		{"path/to/file", "file"},
+		{"path/to/.hiddenfile", ".hiddenfile"},
+		{"path/to/file.tar.gz", "file.tar"},
+		{"", ""},
+	}
+
+	for _, test := range tests {
+		result := fsutil.NameNoExt(test.input)
+		assert.Eq(t, test.expected, result, "input: %s", test.input)
+	}
+}

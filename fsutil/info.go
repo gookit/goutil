@@ -25,12 +25,27 @@ func PathNoExt(fPath string) string {
 
 // Name get file/dir name from full path.
 //
-// eg: path/to/main.go => main.go
-func Name(fpath string) string {
-	if fpath == "" {
+// eg: path/to/main.go => "main.go"
+func Name(fPath string) string {
+	if fPath == "" {
 		return ""
 	}
-	return filepath.Base(fpath)
+	return filepath.Base(fPath)
+}
+
+// NameNoExt get file name from a full path, without an ext.
+//
+// eg: path/to/main.go => "main"
+func NameNoExt(fPath string) string {
+	if fPath == "" {
+		return ""
+	}
+
+	fName := filepath.Base(fPath)
+	if pos := strings.LastIndexByte(fName, '.'); pos > 0 {
+		return fName[:pos]
+	}
+	return fName
 }
 
 // FileExt get filename ext. alias of filepath.Ext()
