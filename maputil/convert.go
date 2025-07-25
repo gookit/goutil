@@ -11,6 +11,14 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
+// alias functions
+var (
+	// ToStrMap convert map[string]any to map[string]string
+	ToStrMap = ToStringMap
+	// ToL2StrMap convert map[string]any to map[string]map[string]string
+	ToL2StrMap = ToL2StringMap
+)
+
 // KeyToLower convert keys to lower case.
 func KeyToLower(src map[string]string) map[string]string {
 	newMp := make(map[string]string, len(src))
@@ -28,6 +36,20 @@ func ToStringMap(src map[string]any) map[string]string {
 		strMp[k] = strutil.SafeString(v)
 	}
 	return strMp
+}
+
+// ToL2StringMap convert map[string]any to map[string]map[string]string
+func ToL2StringMap(groupsMap map[string]any) map[string]map[string]string {
+	l2sMap := make(map[string]map[string]string, len(groupsMap))
+
+	for k, v := range groupsMap {
+		if mp, ok := v.(map[string]any); ok {
+			l2sMap[k] = ToStringMap(mp)
+		} else if smp, ok := v.(map[string]string); ok {
+			l2sMap[k] = smp
+		}
+	}
+	return l2sMap
 }
 
 // CombineToSMap combine two string-slices to SMap(map[string]string)

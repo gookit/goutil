@@ -27,10 +27,24 @@ func TestToStringMap(t *testing.T) {
 	assert.Eq(t, ret["b"], "23")
 
 	keys := []string{"key0", "key1"}
-
 	mp := maputil.CombineToSMap(keys, []string{"val0", "val1"})
 	assert.Len(t, mp, 2)
 	assert.Eq(t, "val0", mp.Str("key0"))
+}
+
+func TestToL2StrMap(t *testing.T) {
+	l2smp := maputil.ToL2StrMap(map[string]any{
+		"g1": map[string]any{
+			"a": "v0", "b": 23,
+		},
+		"g2": map[string]string{
+			"key0": "val0",
+			"key1": "val1",
+		},
+	})
+
+	assert.Eq(t, "v0", l2smp["g1"]["a"])
+	assert.Eq(t, "val0", l2smp["g2"]["key0"])
 }
 
 func TestToAnyMap(t *testing.T) {
@@ -129,4 +143,13 @@ func TestStringsMapToAnyMap(t *testing.T) {
 	dm := maputil.Data(mp)
 	assert.Eq(t, "val0", dm.Str("key0.0"))
 	assert.Eq(t, "val2", dm.Str("key1"))
+}
+
+func TestCombineToMap(t *testing.T) {
+	keys := []string{"key0", "key1"}
+
+	mp := maputil.CombineToMap(keys, []int{1, 2})
+	assert.Len(t, mp, 2)
+	assert.Eq(t, 1, mp["key0"])
+	assert.Eq(t, 2, mp["key1"])
 }
