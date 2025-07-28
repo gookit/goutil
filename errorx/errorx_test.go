@@ -237,6 +237,7 @@ func TestCause(t *testing.T) {
 }
 
 func TestWrapf(t *testing.T) {
+	assert.Err(t, errorx.Rf("test error %s", "message"))
 	err := errorx.Rawf("first error %s", "message")
 	assert.Panics(t, func() {
 		_ = errorx.MustEX(err)
@@ -255,12 +256,14 @@ func TestWrapf(t *testing.T) {
 	fmt.Println(err.Error())
 
 	err = errorx.Wrapf(nil, "first error %s", "message")
+	assert.NotNil(t, err)
 	assert.Eq(t, "first error message", err.Error())
 }
 
 func TestWithOptions(t *testing.T) {
 	err := errorx.WithOptions("err msg", errorx.SkipDepth(3), errorx.TraceDepth(10))
 	// fmt.Println(err.Error())
+	assert.NotNil(t, err)
 	assert.Eq(t, "err msg", err.Error())
 	assert.True(t, errorx.IsErrorX(err))
 
