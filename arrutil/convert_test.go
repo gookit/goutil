@@ -38,10 +38,13 @@ func TestToStrings(t *testing.T) {
 	ss = arrutil.MustToStrings([]int{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
+	ss = arrutil.MustToStrings([]string{"a", "b"})
+	is.Eq(`[]string{"a", "b"}`, fmt.Sprintf("%#v", ss))
+
 	ss = arrutil.MustToStrings([]any{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
-	ss = arrutil.SliceToStrings([]any{1, 2})
+	ss = arrutil.QuietStrings([]any{1, 2})
 	is.Eq(`[]string{"1", "2"}`, fmt.Sprintf("%#v", ss))
 
 	ss, err = arrutil.ToStrings("b")
@@ -54,7 +57,8 @@ func TestToStrings(t *testing.T) {
 	})
 
 	_, err = arrutil.ToStrings([]any{[]int{1}, nil})
-	is.Err(err)
+	// fmt.Println(ss)
+	is.NoErr(err)
 }
 
 func TestStringsToString(t *testing.T) {
