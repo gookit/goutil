@@ -71,6 +71,9 @@ func Join(sep string, ss ...string) string { return strings.Join(ss, sep) }
 // JoinList alias of strings.Join
 func JoinList(sep string, ss []string) string { return strings.Join(ss, sep) }
 
+// JoinComma quick join strings by comma
+func JoinComma(ss []string) string { return strings.Join(ss, ",") }
+
 // JoinAny type to string
 func JoinAny(sep string, parts ...any) string {
 	ss := make([]string, 0, len(parts))
