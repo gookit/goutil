@@ -19,6 +19,7 @@ func TestData_usage(t *testing.T) {
 		"anyMp": map[string]any{"b": 23},
 		"k6":    "23,45",
 		"k7":    []string{"ab", "cd"},
+		"k8": []string{"a1", "b2"},
 	}
 
 	assert.True(t, mp.Has("k1"))
@@ -28,6 +29,10 @@ func TestData_usage(t *testing.T) {
 	assert.Eq(t, 23, mp.Get("k1"))
 	assert.Eq(t, "b", mp.Get("k5.a"))
 	assert.Eq(t, 23, mp.Get("anyMp.b"))
+	// One
+	assert.Eq(t, 23, mp.One("k1", "k2"))
+	assert.Eq(t, "ab", mp.One("k2", "k1"))
+	assert.Nil(t, mp.One("not-exists"))
 
 	// int
 	assert.Eq(t, 23, mp.Int("k1"))
@@ -39,10 +44,19 @@ func TestData_usage(t *testing.T) {
 	assert.Eq(t, "23", mp.Str("k1"))
 	assert.Eq(t, "ab", mp.Str("k2"))
 
+	// strOne
+	assert.Eq(t, "ab", mp.StrOne("k2", "k1"))
+	assert.Eq(t, "", mp.StrOne("not-exists"))
+
 	// Strings
 	assert.Eq(t, []string{"ab", "cd"}, mp.Strings("k7"))
 	assert.Nil(t, mp.Strings("k1"))
 	assert.Nil(t, mp.Strings("notExists"))
+
+	// StringsOne
+	assert.Eq(t, []string{"ab", "cd"}, mp.StringsOne("k7", "k8"))
+	assert.Eq(t, []string{"a1", "b2"}, mp.StringsOne("k8", "k7"))
+	assert.Nil(t, mp.StringsOne("notExists"))
 
 	// StringsByStr
 	assert.Eq(t, []string{"23", "45"}, mp.StringsByStr("k6"))

@@ -25,37 +25,10 @@ func (d Data) IsEmpty() bool {
 	return len(d) == 0
 }
 
-// Value get from the data map
-func (d Data) Value(key string) (any, bool) {
-	val, ok := d.GetByPath(key)
-	return val, ok
-}
-
-// Get value from the data map.
-// Supports dot syntax to get deep values. eg: top.sub
-func (d Data) Get(key string) any {
-	if val, ok := d.GetByPath(key); ok {
-		return val
-	}
-	return nil
-}
-
-// GetByPath get value from the data map by path. eg: top.sub
-// Supports dot syntax to get deep values.
-func (d Data) GetByPath(path string) (any, bool) {
-	if val, ok := d[path]; ok {
-		return val, true
-	}
-
-	// is key path.
-	if strings.ContainsRune(path, '.') {
-		val, ok := GetByPath(path, d)
-		if ok {
-			return val, true
-		}
-	}
-	return nil, false
-}
+//
+// endregion
+// region T: set value(s)
+//
 
 // Set value to the data map
 func (d Data) Set(key string, val any) {
@@ -65,7 +38,7 @@ func (d Data) Set(key string, val any) {
 // SetByPath sets a value in the map.
 // Supports dot syntax to set deep values.
 //
-// For example:
+// Example:
 //
 //	d.SetByPath("name.first", "Mat")
 func (d Data) SetByPath(path string, value any) error {
@@ -78,7 +51,7 @@ func (d Data) SetByPath(path string, value any) error {
 // SetByKeys sets a value in the map by path keys.
 // Supports dot syntax to set deep values.
 //
-// For example:
+// Example:
 //
 //	d.SetByKeys([]string{"name", "first"}, "Mat")
 func (d Data) SetByKeys(keys []string, value any) error {
@@ -100,6 +73,61 @@ func (d Data) SetByKeys(keys []string, value any) error {
 	return SetByKeys((*map[string]any)(&d), keys, value)
 	// It's ok, but use `func (d *Data)`
 	// return SetByKeys((*map[string]any)(d), keys, value)
+}
+
+//
+// endregion
+// region T: read value(s)
+//
+
+// Value get from the data map
+func (d Data) Value(key string) (any, bool) {
+	val, ok := d.GetByPath(key)
+	return val, ok
+}
+
+// Get value from the data map.
+// Supports dot syntax to get deep values. eg: top.sub
+func (d Data) Get(key string) any {
+	if val, ok := d.GetByPath(key); ok {
+		return val
+	}
+	return nil
+}
+
+// One get value from the data by multi paths. will return first founded value
+func (d Data) One(keys ...string) any {
+	if val, ok := d.TryOne(keys...); ok {
+		return val
+	}
+	return nil
+}
+
+// TryOne get value from the data by multi paths. will return first founded value
+func (d Data) TryOne(keys ...string) (any, bool) {
+	for _, path := range keys {
+		if val, ok := d.GetByPath(path); ok {
+			return val, true
+		}
+	}
+	return nil, false
+}
+
+// GetByPath get value from the data map by path. eg: top.sub
+// Supports dot syntax to get deep values.
+func (d Data) GetByPath(path string) (any, bool) {
+	if val, ok := d[path]; ok {
+		return val, true
+	}
+
+	// is a key path.
+	if strings.ContainsRune(path, '.') {
+		val, ok := GetByPath(path, d)
+		if ok {
+			return val, true
+		}
+	}
+	return nil, false
 }
 
 // Default get value from the data map with default value
@@ -142,10 +170,20 @@ func (d Data) Uint64(key string) uint64 {
 	return 0
 }
 
-// Str value get by key
+// Str value gets by key
 func (d Data) Str(key string) string {
 	if val, ok := d.GetByPath(key); ok {
-		return strutil.QuietString(val)
+		return strutil.SafeString(val)
+	}
+	return ""
+}
+
+// StrOne value gets by multi keys, will return first value
+func (d Data) StrOne(keys ...string) string {
+	for _, key := range keys {
+		if val, ok := d.GetByPath(key); ok {
+			return strutil.SafeString(val)
+		}
 	}
 	return ""
 }
@@ -167,34 +205,33 @@ func (d Data) Bool(key string) bool {
 	}
 }
 
-// Strings get []string value
-func (d Data) Strings(key string) []string {
-	val, ok := d.GetByPath(key)
-	if !ok {
-		return nil
-	}
-
-	switch typVal := val.(type) {
-	case string:
-		return []string{typVal}
-	case []string:
-		return typVal
-	case []any:
-		return arrutil.SliceToStrings(typVal)
-	default:
-		return nil
-	}
-}
-
-// StrSplit get strings by split key value
-func (d Data) StrSplit(key, sep string) []string {
-	if val, ok := d.GetByPath(key); ok {
-		return strings.Split(strutil.QuietString(val), sep)
+// StringsOne get []string value by multi keys, return first founded value
+func (d Data) StringsOne(keys ...string) []string {
+	for _, key := range keys {
+		if val, ok := d.GetByPath(key); ok {
+			return arrutil.AnyToStrings(val)
+		}
 	}
 	return nil
 }
 
-// StringsByStr value get by key
+// Strings get []string value by key
+func (d Data) Strings(key string) []string {
+	if val, ok := d.GetByPath(key); ok {
+		return arrutil.AnyToStrings(val)
+	}
+	return nil
+}
+
+// StrSplit get strings by split string value
+func (d Data) StrSplit(key, sep string) []string {
+	if val, ok := d.GetByPath(key); ok {
+		return strings.Split(strutil.SafeString(val), sep)
+	}
+	return nil
+}
+
+// StringsByStr value gets by key, will split string value by ","
 func (d Data) StringsByStr(key string) []string {
 	return d.StrSplit(key, ",")
 }
