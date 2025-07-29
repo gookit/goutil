@@ -232,6 +232,13 @@ func TestKeys(t *testing.T) {
 		assert.Len(t, ret, ln)
 		assert.Contains(t, ret, "key0")
 	})
+
+	t.Run("first key", func(t *testing.T) {
+		key := maputil.FirstKey(map[string]string{"key0": "v0"})
+		assert.Eq(t, key, "key0")
+		key = maputil.FirstKey(map[string]any{})
+		assert.Empty(t, key)
+	})
 }
 
 func TestValues(t *testing.T) {
