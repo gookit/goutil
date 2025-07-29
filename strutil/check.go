@@ -54,7 +54,7 @@ func StrPos(s, sub string) int { return strings.Index(s, sub) }
 // BytePos alias of the strings.IndexByte
 func BytePos(s string, bt byte) int { return strings.IndexByte(s, bt) }
 
-// IEqual ignore case check given two string is equals.
+// IEqual ignore case check given two strings are equals.
 func IEqual(s1, s2 string) bool { return strings.EqualFold(s1, s2) }
 
 // NoCaseEq check two strings is equals and case-insensitivity
@@ -66,9 +66,7 @@ func IContains(s, sub string) bool {
 }
 
 // ContainsByte in given string.
-func ContainsByte(s string, c byte) bool {
-	return strings.IndexByte(s, c) >= 0
-}
+func ContainsByte(s string, c byte) bool { return strings.IndexByte(s, c) >= 0 }
 
 // InArray alias of HasOneSub()
 var InArray = HasOneSub
@@ -86,6 +84,17 @@ func HasOneSub(s string, subs []string) bool {
 	return false
 }
 
+// IContainsOne ignore case check has one substr(s) in the given string.
+func IContainsOne(s string, subs []string) bool {
+	s = strings.ToLower(s)
+	for _, sub := range subs {
+		if strings.Contains(s, strings.ToLower(sub)) {
+			return true
+		}
+	}
+	return false
+}
+
 // ContainsAll substr(s) in the given string. alias of HasAllSubs()
 func ContainsAll(s string, subs []string) bool { return HasAllSubs(s, subs) }
 
@@ -93,6 +102,17 @@ func ContainsAll(s string, subs []string) bool { return HasAllSubs(s, subs) }
 func HasAllSubs(s string, subs []string) bool {
 	for _, sub := range subs {
 		if !strings.Contains(s, sub) {
+			return false
+		}
+	}
+	return true
+}
+
+// IContainsAll like ContainsAll(), but ignore case
+func IContainsAll(s string, subs []string) bool {
+	s = strings.ToLower(s)
+	for _, sub := range subs {
+		if !strings.Contains(s, strings.ToLower(sub)) {
 			return false
 		}
 	}
@@ -148,7 +168,14 @@ func IsValidUtf8(s string) bool { return utf8.ValidString(s) }
 // ----- refer from github.com/yuin/goldmark/util
 
 // refer from github.com/yuin/goldmark/util
-var spaceTable = [256]int8{0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
+var spaceTable = [256]int8{
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+}
 
 // IsSpace returns true if the given character is a space, otherwise false.
 func IsSpace(c byte) bool { return spaceTable[c] == 1 }
@@ -200,10 +227,10 @@ var verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)
 // IsVersion number. eg: 1.2.0
 func IsVersion(s string) bool { return verRegex.MatchString(s) }
 
-// Compare for two string.
+// Compare for two strings.
 func Compare(s1, s2, op string) bool { return VersionCompare(s1, s2, op) }
 
-// VersionCompare for two version string.
+// VersionCompare for two version strings.
 func VersionCompare(v1, v2, op string) bool {
 	switch op {
 	case ">", "gt":
@@ -221,12 +248,12 @@ func VersionCompare(v1, v2, op string) bool {
 	}
 }
 
-// SimpleMatch all sub-string in the give text string.
+// SimpleMatch all substring in the give text string.
 //
 // Difference the ContainsAll:
 //
 //   - start with ^ for exclude contains check.
-//   - end with $ for check end with keyword.
+//   - end with $ for the check end with keyword.
 func SimpleMatch(s string, keywords []string) bool {
 	for _, keyword := range keywords {
 		kln := len(keyword)
@@ -255,7 +282,7 @@ func SimpleMatch(s string, keywords []string) bool {
 	return true
 }
 
-// QuickMatch check for a string. pattern can be a sub string.
+// QuickMatch check for a string. pattern can be a substring.
 func QuickMatch(pattern, s string) bool {
 	if strings.ContainsRune(pattern, '*') {
 		return GlobMatch(pattern, s)
