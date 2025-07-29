@@ -21,12 +21,31 @@ var (
 
 // KeyToLower convert keys to lower case.
 func KeyToLower(src map[string]string) map[string]string {
+	if len(src) == 0 {
+		return src
+	}
+
 	newMp := make(map[string]string, len(src))
 	for k, v := range src {
 		k = strings.ToLower(k)
 		newMp[k] = v
 	}
 	return newMp
+}
+
+// AnyToStrMap try convert any(map[string]any, map[string]string) to map[string]string
+func AnyToStrMap(src any) map[string]string {
+	if src == nil {
+		return nil
+	}
+
+	if m, ok := src.(map[string]string); ok {
+		return m
+	}
+	if m, ok := src.(map[string]any); ok {
+		return ToStringMap(m)
+	}
+	return nil
 }
 
 // ToStringMap simple convert map[string]any to map[string]string
@@ -40,6 +59,10 @@ func ToStringMap(src map[string]any) map[string]string {
 
 // ToL2StringMap convert map[string]any to map[string]map[string]string
 func ToL2StringMap(groupsMap map[string]any) map[string]map[string]string {
+	if len(groupsMap) == 0 {
+		return nil
+	}
+
 	l2sMap := make(map[string]map[string]string, len(groupsMap))
 
 	for k, v := range groupsMap {
@@ -73,10 +96,17 @@ func TryAnyMap(mp any) (map[string]any, error) {
 	if aMp, ok := mp.(map[string]any); ok {
 		return aMp, nil
 	}
+	if sMp, ok := mp.(map[string]string); ok {
+		anyMp := make(map[string]any, len(sMp))
+		for k, v := range sMp {
+			anyMp[k] = v
+		}
+		return anyMp, nil
+	}
 
 	rv := reflect.Indirect(reflect.ValueOf(mp))
 	if rv.Kind() != reflect.Map {
-		return nil, errors.New("input is not a map value")
+		return nil, errors.New("input is not a map value type")
 	}
 
 	anyMp := make(map[string]any, rv.Len())
