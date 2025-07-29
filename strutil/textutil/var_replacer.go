@@ -50,7 +50,9 @@ type VarReplacer struct {
 //
 // Usage:
 //
-//	rpl := NewVarReplacer("{{,}}")
+//	rpl := NewVarReplacer("{{,}}") // access var: {{ var }}, {{ top.sub }}
+//	// or
+//	rpl := NewVarReplacer("$") // access var: $var, $top.sub
 func NewVarReplacer(format string, opFns ...func(vp *VarReplacer)) *VarReplacer {
 	vp := &VarReplacer{flatSubs: true}
 	for _, fn := range opFns {
@@ -82,7 +84,7 @@ func (r *VarReplacer) KeepMissingVars() *VarReplacer {
 	return r
 }
 
-// WithParseDefault value on the input template contents
+// WithParseDefault value on the input template contents. eg: {{ name | inhere }}
 func (r *VarReplacer) WithParseDefault() *VarReplacer {
 	r.parseDef = true
 	return r

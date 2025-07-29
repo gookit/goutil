@@ -41,7 +41,7 @@ func AfterLast(s, sep string) string {
  * String split operation
  *************************************************************/
 
-// Cut same of the strings.Cut
+// Cut alias of the strings.Cut
 func Cut(s, sep string) (before string, after string, found bool) {
 	if i := strings.Index(s, sep); i >= 0 {
 		return s[:i], s[i+len(sep):], true

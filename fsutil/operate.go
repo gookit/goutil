@@ -232,10 +232,10 @@ func SafeRemoveAll(path string) {
 	_ = os.RemoveAll(path)
 }
 
-// RmIfExist removes the named file or (empty) directory on exists.
+// RmIfExist removes the named file or (empty) directory on existing.
 func RmIfExist(fPath string) error { return DeleteIfExist(fPath) }
 
-// DeleteIfExist removes the named file or (empty) directory on exists.
+// DeleteIfExist removes the named file or (empty) directory on existing.
 func DeleteIfExist(fPath string) error {
 	if PathExists(fPath) {
 		return os.Remove(fPath)
@@ -243,10 +243,10 @@ func DeleteIfExist(fPath string) error {
 	return nil
 }
 
-// RmFileIfExist removes the named file on exists.
+// RmFileIfExist removes the named file on existing.
 func RmFileIfExist(fPath string) error { return DeleteIfFileExist(fPath) }
 
-// DeleteIfFileExist removes the named file on exists.
+// DeleteIfFileExist removes the named file on existing.
 func DeleteIfFileExist(fPath string) error {
 	if IsFile(fPath) {
 		return os.Remove(fPath)
