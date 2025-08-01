@@ -121,10 +121,15 @@ func TestWriteReadFile(t *testing.T) {
 	err = jsonutil.ReadFile("testdata/test.json", &usr)
 	assert.NoErr(t, err)
 
+	err = jsonutil.DecodeFile("testdata/test.json", &usr)
+	assert.NoErr(t, err)
+
 	assert.Eq(t, "inhere", usr.Name)
 	assert.Eq(t, 200, usr.Age)
 
 	err = jsonutil.ReadFile("testdata/not-exist.json", &usr)
+	assert.Err(t, err)
+	err = jsonutil.DecodeFile("testdata/not-exist.json", &usr)
 	assert.Err(t, err)
 }
 
