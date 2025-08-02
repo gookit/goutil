@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/arrutil"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -194,15 +195,17 @@ func (d Data) Bool(key string) bool {
 	if !ok {
 		return false
 	}
+	return comfunc.Bool(val)
+}
 
-	switch tv := val.(type) {
-	case string:
-		return strutil.QuietBool(tv)
-	case bool:
-		return tv
-	default:
-		return false
+// BoolOne value gets from multi keys, return first value
+func (d Data) BoolOne(keys ...string) bool {
+	for _, key := range keys {
+		if val, ok := d.GetByPath(key); ok {
+			return comfunc.Bool(val)
+		}
 	}
+	return false
 }
 
 // StringsOne get []string value by multi keys, return first founded value
@@ -258,14 +261,32 @@ func (d Data) StringMap(key string) map[string]string {
 	}
 }
 
-// Sub get sub value as new Data
+// Sub get sub value(map[string]any) as new Data
 func (d Data) Sub(key string) Data {
 	if val, ok := d.GetByPath(key); ok {
-		if sub, ok := val.(map[string]any); ok {
-			return sub
-		}
+		return d.toAnyMap(val)
 	}
 	return nil
+}
+
+// AnyMap get sub value as map[string]any
+func (d Data) AnyMap(key string) map[string]any {
+	if val, ok := d.GetByPath(key); ok {
+		return d.toAnyMap(val)
+	}
+	return nil
+}
+
+// AnyMap get sub value as map[string]any
+func (d Data) toAnyMap(val any) map[string]any {
+	switch tv := val.(type) {
+	case map[string]string:
+		return ToAnyMap(tv)
+	case map[string]any:
+		return tv
+	default:
+		return nil
+	}
 }
 
 // Slice get []any value from data map

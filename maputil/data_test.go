@@ -22,10 +22,14 @@ func TestData_usage(t *testing.T) {
 		"k8": []string{"a1", "b2"},
 	}
 
+	assert.False(t, mp.IsEmpty())
 	assert.True(t, mp.Has("k1"))
 	assert.True(t, mp.Bool("k3"))
 	assert.False(t, mp.Bool("k4"))
-	assert.False(t, mp.IsEmpty())
+
+	assert.True(t, mp.BoolOne("k3", "k4"))
+	assert.False(t, mp.BoolOne("k4", "k3"))
+
 	assert.Eq(t, 23, mp.Get("k1"))
 	assert.Eq(t, "b", mp.Get("k5.a"))
 	assert.Eq(t, 23, mp.Get("anyMp.b"))
@@ -71,6 +75,7 @@ func TestData_usage(t *testing.T) {
 
 	// not exists
 	assert.False(t, mp.Bool("notExists"))
+	assert.False(t, mp.BoolOne("notExists"))
 	assert.Eq(t, 0, mp.Int("notExists"))
 	assert.Eq(t, int64(0), mp.Int64("notExists"))
 	assert.Eq(t, "", mp.Str("notExists"))
@@ -111,6 +116,12 @@ func TestData_SetByPath(t *testing.T) {
 	sub := mp.Sub("k5")
 	assert.Eq(t, "v0", sub.Get("a"))
 	assert.Eq(t, "v2", sub.Get("b"))
+
+	// any map
+	assert.Nil(t, mp.AnyMap("not-exists"))
+	sub1 := mp.AnyMap("k5")
+	assert.Eq(t, "v0", sub1["a"])
+	assert.Eq(t, "v2", sub1["b"])
 
 	// LoadSMap
 	mp.LoadSMap(map[string]string{"uk2": "val2", "uk3": "val3"})
