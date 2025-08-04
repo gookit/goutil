@@ -56,7 +56,7 @@ func TestMergeStringMap(t *testing.T) {
 	ret = maputil.MergeSMap(map[string]string{"A": "v0"}, map[string]string{"a": "v1"}, true)
 	assert.Eq(t, map[string]string{"a": "v0"}, ret)
 
-	ret = maputil.MergeSMap(map[string]string{"A": "v0"}, nil, false)
+	ret = maputil.MergeStrMap(map[string]string{"A": "v0"}, nil)
 	assert.Eq(t, map[string]string{"A": "v0"}, ret)
 
 	ret = maputil.MergeSMap(nil, map[string]string{"a": "v1"}, true)
@@ -66,6 +66,38 @@ func TestMergeStringMap(t *testing.T) {
 	assert.ContainsKeys(t, ret, []string{"a", "b"})
 
 	assert.Eq(t, map[string]string{"a": "v1"}, maputil.FilterSMap(map[string]string{"a": "v1", "b": ""}))
+}
+
+func TestMergeL2StrMap(t *testing.T) {
+	ret := maputil.MergeL2StrMap(map[string]map[string]string{
+		"a": {"a1": "v1", "a2": "v1"},
+		"c": {"c1": "c1"},
+		"d": {"d2": "v2"},
+	}, maputil.L2StrMap{
+		"a": {"a2": "v2"},
+		"b": {"b1": "v2"},
+		"d": {"d2": "v3", "d3": "v4"},
+	})
+
+	assert.NotEmpty(t, ret)
+	assert.Len(t, ret, 4)
+	assert.Equal(t, "v1", ret["a"]["a1"])
+	assert.Equal(t, "v2", ret["a"]["a2"])
+
+	// as maputil.L2StrMap test
+	r2 := maputil.L2StrMap(ret)
+	assert.True(t, r2.Exists("a.a1"))
+	assert.False(t, r2.Exists("a.not-exist"))
+	assert.Eq(t, "v1", r2.Get("a.a1"))
+	assert.NotEmpty(t, r2.StrMap("a"))
+	assert.Eq(t, "v2", r2.StrMap("a").Get("a2"))
+
+	r2.Load(map[string]map[string]string{
+		"a": {"a1": "v3"},
+		"e": {"e1": "v1"},
+	})
+	assert.Eq(t, "v3", r2.Get("a.a1"))
+	assert.Eq(t, "v1", r2.Get("e.e1"))
 }
 
 func TestMakeByPath(t *testing.T) {
