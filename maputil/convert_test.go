@@ -28,7 +28,7 @@ func TestKeyToLower(t *testing.T) {
 	assert.Eq(t, "20", ret2["age"])
 	assert.Eq(t, "test@example.com", ret2["email"])
 
-	// Test with an empty map
+	// Test with empty map
 	src3 := map[string]string{}
 	ret3 := maputil.KeyToLower(src3)
 	assert.Len(t, ret3, 0)
@@ -61,7 +61,7 @@ func TestToStringMap(t *testing.T) {
 	assert.Eq(t, "95.5", ret2["score"])
 	assert.Eq(t, "", ret2["nilValue"])
 
-	// Test with an empty map
+	// Test with empty map
 	src3 := map[string]any{}
 	ret3 := maputil.ToStringMap(src3)
 	assert.Len(t, ret3, 0)
@@ -100,9 +100,9 @@ func TestToL2StrMap(t *testing.T) {
 	assert.Eq(t, "8080", l2smp2["config"]["port"])
 	assert.Len(t, l2smp2["empty"], 0)
 
-	// Test with an empty map
+	// Test with empty map
 	l2smp3 := maputil.ToL2StringMap(map[string]any{})
-	assert.Empty(t, l2smp3)
+	assert.Len(t, l2smp3, 0)
 }
 
 func TestToAnyMap(t *testing.T) {
@@ -154,10 +154,10 @@ func TestHTTPQueryString(t *testing.T) {
 
 	// Test with different data types
 	src2 := map[string]any{
-		"name":   "John Doe",
-		"age":    30,
+		"name":  "John Doe",
+		"age":   30,
 		"active": true,
-		"score":  95.5,
+		"score": 95.5,
 	}
 	str2 := maputil.HTTPQueryString(src2)
 	assert.Contains(t, str2, "name=John Doe")
@@ -291,7 +291,7 @@ func TestFlatten(t *testing.T) {
 
 	// Test with array values
 	data3 := map[string]any{
-		"tags":    []string{"web", "api"},
+		"tags": []string{"web", "api"},
 		"numbers": []int{1, 2, 3},
 	}
 	mp3 := maputil.Flatten(data3)
@@ -335,7 +335,7 @@ func TestStringsMapToAnyMap(t *testing.T) {
 
 	// Test with mixed single and multiple values
 	mixedValues := map[string][]string{
-		"single":   {"value"},
+		"single": {"value"},
 		"multiple": {"value1", "value2", "value3"},
 	}
 	result3 := maputil.StringsMapToAnyMap(mixedValues)
@@ -438,4 +438,95 @@ func TestAnyToStrMap(t *testing.T) {
 	var src3 interface{} = "not a map"
 	result3 := maputil.AnyToStrMap(src3)
 	assert.Nil(t, result3)
+}
+
+func TestSliceToSMap(t *testing.T) {
+	// Test with valid key-value pairs
+	result := maputil.SliceToSMap("k1", "v1", "k2", "v2")
+	assert.NotNil(t, result)
+	assert.Len(t, result, 2)
+	assert.Eq(t, "v1", result["k1"])
+	assert.Eq(t, "v2", result["k2"])
+
+	// Test with empty input
+	assert.Nil(t, maputil.SliceToSMap())
+
+	// Test with odd number of arguments (should return nil)
+	nilResult := maputil.SliceToSMap("k1", "v1", "k2")
+	assert.Nil(t, nilResult)
+
+	// Test with a single pair
+	singleResult := maputil.SliceToSMap("key", "value")
+	assert.NotNil(t, singleResult)
+	assert.Len(t, singleResult, 1)
+	assert.Eq(t, "value", singleResult["key"])
+}
+
+func TestSliceToMap(t *testing.T) {
+	// Test with valid key-value pairs of different types
+	result := maputil.SliceToMap("name", "John", "age", 30, "active", true)
+	assert.NotNil(t, result)
+	assert.Len(t, result, 3)
+	assert.Eq(t, "John", result["name"])
+	assert.Eq(t, 30, result["age"])
+	assert.Eq(t, true, result["active"])
+
+	// Test with empty input
+	assert.Nil(t, maputil.SliceToMap())
+
+	// Test with odd number of arguments (should return nil)
+	nilResult := maputil.SliceToMap("k1", "v1", "k2")
+	assert.Nil(t, nilResult)
+
+	// Test with mixed types including slice and map
+	mixedResult := maputil.SliceToMap("string", "value", "int", 42, "slice", []int{1, 2, 3}, "map", map[string]string{"k": "v"})
+	assert.NotNil(t, mixedResult)
+	assert.Len(t, mixedResult, 4)
+	assert.Eq(t, "value", mixedResult["string"])
+	assert.Eq(t, 42, mixedResult["int"])
+	assert.Eq(t, []int{1, 2, 3}, mixedResult["slice"])
+	assert.Eq(t, map[string]string{"k": "v"}, mixedResult["map"])
+}
+
+func TestSliceToTypeMap(t *testing.T) {
+	// Test with valid key-value pairs and a conversion function
+	result := maputil.SliceToTypeMap(
+		func(val any) string {
+			return fmt.Sprintf("%v", val)
+		},
+		"name", "John", "age", 30, "active", true)
+
+	assert.NotNil(t, result)
+	assert.Len(t, result, 3)
+	assert.Eq(t, "John", result["name"])
+	assert.Eq(t, "30", result["age"])
+	assert.Eq(t, "true", result["active"])
+
+	// Test with empty input
+	nilResult1 := maputil.SliceToTypeMap(func(val any) string {
+		return fmt.Sprintf("%v", val)
+	})
+	assert.Nil(t, nilResult1)
+
+	// Test with odd number of arguments (should return nil)
+	nilResult := maputil.SliceToTypeMap(func(val any) string {
+		return fmt.Sprintf("%v", val)
+	}, "k1", "v1", "k2")
+	assert.Nil(t, nilResult)
+
+	// Test with int conversion function
+	intResult := maputil.SliceToTypeMap(
+		func(val any) int {
+			if v, ok := val.(int); ok {
+				return v
+			}
+			return 0
+		},
+		"first", 10, "second", 20, "third", 30)
+
+	assert.NotNil(t, intResult)
+	assert.Len(t, intResult, 3)
+	assert.Eq(t, 10, intResult["first"])
+	assert.Eq(t, 20, intResult["second"])
+	assert.Eq(t, 30, intResult["third"])
 }

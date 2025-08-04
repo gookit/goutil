@@ -85,6 +85,54 @@ func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V {
 	return arrutil.CombineToMap(keys, values)
 }
 
+// SliceToSMap convert string k-v pairs slice to map[string]string
+//  - eg: []string{k1,v1,k2,v2} -> map[string]string{k1:v1, k2:v2}
+func SliceToSMap(kvPairs ...string) map[string]string {
+	ln := len(kvPairs)
+	// check kvPairs length must be even
+	if ln == 0 || ln%2 != 0 {
+		return nil
+	}
+
+	sMap := make(map[string]string, ln/2)
+	for i := 0; i < ln; i += 2 {
+		sMap[kvPairs[i]] = kvPairs[i+1]
+	}
+	return sMap
+}
+
+// SliceToMap convert any k-v pairs slice to map[string]any
+func SliceToMap(kvPairs ...any) map[string]any {
+	ln := len(kvPairs)
+	// check kvPairs length must be even
+	if ln == 0 || ln%2 != 0 {
+		return nil
+	}
+
+	mp := make(map[string]any, ln/2)
+	for i := 0; i < ln; i += 2 {
+		kStr := strutil.SafeString(kvPairs[i])
+		mp[kStr] = kvPairs[i+1]
+	}
+	return mp
+}
+
+// SliceToTypeMap convert k-v pairs slice to map[string]T
+func SliceToTypeMap[T any](valFunc func(any) T, kvPairs ...any) map[string]T {
+	ln := len(kvPairs)
+	// check kvPairs length must be even
+	if ln == 0 || ln%2 != 0 {
+		return nil
+	}
+
+	mp := make(map[string]T, ln/2)
+	for i := 0; i < ln; i += 2 {
+		kStr := strutil.SafeString(kvPairs[i])
+		mp[kStr] = valFunc(kvPairs[i+1])
+	}
+	return mp
+}
+
 // ToAnyMap convert map[TYPE1]TYPE2 to map[string]any
 func ToAnyMap(mp any) map[string]any {
 	amp, _ := TryAnyMap(mp)
