@@ -28,7 +28,7 @@ func Kill(pid int, signal syscall.Signal) error {
 	return err
 }
 
-// Exists check process running by given pid
+// Exists check a process running by given pid
 func Exists(pid int) bool {
 	h, err := windows.OpenProcess(processQueryLimitedInformation, false, uint32(pid))
 	if err != nil {

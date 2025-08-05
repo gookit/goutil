@@ -85,3 +85,6 @@ type StrMap map[string]string
 
 // AnyMap is alias of map[string]any
 type AnyMap map[string]any
+
+// L2StrMap is alias of map[string]map[string]string
+type L2StrMap map[string]map[string]string

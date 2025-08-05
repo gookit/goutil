@@ -7,6 +7,7 @@ package timex
 import (
 	"time"
 
+	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 )
@@ -57,34 +58,22 @@ type Time struct {
  *************************************************************/
 
 // Now time instance
-func Now() *Time {
-	return &Time{Time: time.Now(), Layout: DefaultLayout}
-}
+func Now() *Time { return &Time{Time: time.Now(), Layout: DefaultLayout} }
 
 // New instance form given time
-func New(t time.Time) *Time {
-	return &Time{Time: t, Layout: DefaultLayout}
-}
+func New(t time.Time) *Time { return &Time{Time: t, Layout: DefaultLayout} }
 
 // Wrap the go time instance. alias of the New()
-func Wrap(t time.Time) *Time {
-	return &Time{Time: t, Layout: DefaultLayout}
-}
+func Wrap(t time.Time) *Time { return &Time{Time: t, Layout: DefaultLayout} }
 
 // FromTime new instance form given time.Time. alias of the New()
-func FromTime(t time.Time) *Time {
-	return &Time{Time: t, Layout: DefaultLayout}
-}
+func FromTime(t time.Time) *Time { return &Time{Time: t, Layout: DefaultLayout} }
 
 // Local time for now
-func Local() *Time {
-	return New(time.Now().In(time.Local))
-}
+func Local() *Time { return New(time.Now().In(time.Local)) }
 
 // FromUnix create from unix time
-func FromUnix(sec int64) *Time {
-	return New(time.Unix(sec, 0))
-}
+func FromUnix(sec int64) *Time { return New(time.Unix(sec, 0)) }
 
 // FromDate create from datetime string.
 func FromDate(s string, template ...string) (*Time, error) {
@@ -118,9 +107,7 @@ func LocalByName(tzName string) *Time {
  *************************************************************/
 
 // T returns the t.Time
-func (t *Time) T() time.Time {
-	return t.Time
-}
+func (t *Time) T() time.Time { return t.Time }
 
 // Format returns a textual representation of the time value formatted according to the layout defined by the argument.
 //
@@ -132,17 +119,15 @@ func (t *Time) Format(layout string) string {
 	return t.Time.Format(layout)
 }
 
-// Datetime use DefaultLayout format time to date. see Format()
-func (t *Time) Datetime() string {
-	return t.Format(t.Layout)
+// Datetime use layout or DefaultLayout format time to date. see Format()
+func (t *Time) Datetime(layout ...string) string {
+	return t.Format(arrutil.FirstOr(layout, t.Layout))
 }
 
 // TplFormat use input template format time to date.
 //
 // alias of DateFormat()
-func (t *Time) TplFormat(template string) string {
-	return t.DateFormat(template)
-}
+func (t *Time) TplFormat(template string) string { return t.DateFormat(template) }
 
 // DateFormat use input template format time to date.
 //
@@ -161,36 +146,24 @@ func (t *Time) DateFormat(template string) string {
 	return t.Format(ToLayout(template))
 }
 
-// Yesterday get day ago time for the time
-func (t *Time) Yesterday() *Time {
-	return t.AddSeconds(-OneDaySec)
-}
+// Yesterday got day ago time for the time
+func (t *Time) Yesterday() *Time { return t.AddSeconds(-OneDaySec) }
 
 // DayAgo get some day ago time for the time
-func (t *Time) DayAgo(day int) *Time {
-	return t.AddSeconds(-day * OneDaySec)
-}
+func (t *Time) DayAgo(day int) *Time { return t.AddSeconds(-day * OneDaySec) }
 
-// AddDay add some day time for the time
-func (t *Time) AddDay(day int) *Time {
-	return t.AddSeconds(day * OneDaySec)
-}
+// AddDay add some daytime for the time
+func (t *Time) AddDay(day int) *Time { return t.AddSeconds(day * OneDaySec) }
 
 // SubDay add some day time for the time
-func (t *Time) SubDay(day int) *Time {
-	return t.AddSeconds(-day * OneDaySec)
-}
+func (t *Time) SubDay(day int) *Time { return t.AddSeconds(-day * OneDaySec) }
 
 // Tomorrow time. get tomorrow time for the time
-func (t *Time) Tomorrow() *Time {
-	return t.AddSeconds(OneDaySec)
-}
+func (t *Time) Tomorrow() *Time { return t.AddSeconds(OneDaySec) }
 
 // DayAfter get some day after time for the time.
 // alias of Time.AddDay()
-func (t *Time) DayAfter(day int) *Time {
-	return t.AddDay(day)
-}
+func (t *Time) DayAfter(day int) *Time { return t.AddDay(day) }
 
 // AddDur some duration time
 func (t *Time) AddDur(dur time.Duration) *Time {
@@ -216,24 +189,16 @@ func (t *Time) AddString(dur string) *Time {
 }
 
 // AddHour add some hour time
-func (t *Time) AddHour(hours int) *Time {
-	return t.AddSeconds(hours * OneHourSec)
-}
+func (t *Time) AddHour(hours int) *Time { return t.AddSeconds(hours * OneHourSec) }
 
 // SubHour minus some hour time
-func (t *Time) SubHour(hours int) *Time {
-	return t.SubSeconds(hours * OneHourSec)
-}
+func (t *Time) SubHour(hours int) *Time { return t.SubSeconds(hours * OneHourSec) }
 
 // AddMinutes add some minutes time for the time
-func (t *Time) AddMinutes(minutes int) *Time {
-	return t.AddSeconds(minutes * OneMinSec)
-}
+func (t *Time) AddMinutes(minutes int) *Time { return t.AddSeconds(minutes * OneMinSec) }
 
 // SubMinutes minus some minutes time for the time
-func (t *Time) SubMinutes(minutes int) *Time {
-	return t.AddSeconds(-minutes * OneMinSec)
-}
+func (t *Time) SubMinutes(minutes int) *Time { return t.AddSeconds(-minutes * OneMinSec) }
 
 // AddSeconds add some seconds time the time
 func (t *Time) AddSeconds(seconds int) *Time {
@@ -254,14 +219,10 @@ func (t *Time) SubSeconds(seconds int) *Time {
 }
 
 // Diff calc diff duration for t - u. alias of time.Time.Sub()
-func (t *Time) Diff(u time.Time) time.Duration {
-	return t.Sub(u)
-}
+func (t *Time) Diff(u time.Time) time.Duration { return t.Sub(u) }
 
 // DiffSec calc diff seconds for t - u
-func (t *Time) DiffSec(u time.Time) int {
-	return int(t.Sub(u) / time.Second)
-}
+func (t *Time) DiffSec(u time.Time) int { return int(t.Sub(u) / time.Second) }
 
 // DiffUnix calc diff seconds for t.Unix() - u
 func (t *Time) DiffUnix(u int64) int {
@@ -314,9 +275,7 @@ func (t *Time) CustomHMS(hour, min, sec int) *Time {
 }
 
 // IsBefore the given time
-func (t *Time) IsBefore(u time.Time) bool {
-	return t.Before(u)
-}
+func (t *Time) IsBefore(u time.Time) bool { return t.Before(u) }
 
 // IsBeforeUnix the given unix timestamp
 func (t *Time) IsBeforeUnix(ux int64) bool {
@@ -324,9 +283,7 @@ func (t *Time) IsBeforeUnix(ux int64) bool {
 }
 
 // IsAfter the given time
-func (t *Time) IsAfter(u time.Time) bool {
-	return t.After(u)
-}
+func (t *Time) IsAfter(u time.Time) bool { return t.After(u) }
 
 // IsAfterUnix the given unix timestamp
 func (t *Time) IsAfterUnix(ux int64) bool {
@@ -334,9 +291,7 @@ func (t *Time) IsAfterUnix(ux int64) bool {
 }
 
 // Timestamp value. alias of t.Unix()
-func (t *Time) Timestamp() int64 {
-	return t.Unix()
-}
+func (t *Time) Timestamp() int64 { return t.Unix() }
 
 // HowLongAgo format diff time to string.
 func (t *Time) HowLongAgo(before time.Time) string {

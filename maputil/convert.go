@@ -225,9 +225,7 @@ func ToString(mp map[string]any) string {
 }
 
 // ToString2 simple and quickly convert a map to string.
-func ToString2(mp any) string {
-	return NewFormatter(mp).Format()
-}
+func ToString2(mp any) string { return NewFormatter(mp).Format() }
 
 // FormatIndent format map data to string with newline and indent.
 func FormatIndent(mp any, indent string) string {
