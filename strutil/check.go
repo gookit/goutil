@@ -222,10 +222,20 @@ func IsAllEmpty(ss ...string) bool {
 	return true
 }
 
-var verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)
+var (
+	// regex for check version number
+	verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)
+	// regex for check variable name
+	varRegex = regexp.MustCompile(`^[a-zA-Z][\w-]*$`)
+	// IsVariableName alias for IsVarName
+	IsVariableName = IsVarName
+)
 
 // IsVersion number. eg: 1.2.0
 func IsVersion(s string) bool { return verRegex.MatchString(s) }
+
+// IsVarName is valid variable name.
+func IsVarName(s string) bool { return varRegex.MatchString(s) }
 
 // Compare for two strings.
 func Compare(s1, s2, op string) bool { return VersionCompare(s1, s2, op) }

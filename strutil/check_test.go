@@ -162,6 +162,17 @@ func TestIsVersion(t *testing.T) {
 	assert.True(t, strutil.IsVersion("1.2.0-alpha1"))
 }
 
+func TestIsVarName(t *testing.T) {
+	assert.True(t, strutil.IsVarName("a"))
+	assert.True(t, strutil.IsVarName("a12"))
+	assert.True(t, strutil.IsVarName("abc"))
+	assert.True(t, strutil.IsVarName("Abc"))
+	assert.True(t, strutil.IsVarName("ab_c"))
+
+	assert.False(t, strutil.IsVarName(" abc"))
+	assert.False(t, strutil.IsVarName("+"))
+}
+
 func TestIEqual(t *testing.T) {
 	assert.False(t, strutil.IEqual("h3ab2c", "d"))
 	assert.False(t, strutil.IEqual("ab", "ac"))
