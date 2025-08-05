@@ -148,6 +148,11 @@ func EnvPaths() []string {
 	return filepath.SplitList(os.Getenv("PATH"))
 }
 
+// ToEnvPATH convert []string to $PATH string.
+func ToEnvPATH(paths []string) string {
+	return strings.Join(paths, string(filepath.ListSeparator))
+}
+
 // SearchPathOption settings for SearchPath
 type SearchPathOption struct {
 	// 限制查找的扩展名(Windows) such as ".exe", ".bat", ".cmd"

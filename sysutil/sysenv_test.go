@@ -12,10 +12,13 @@ import (
 
 func TestSysenv_common(t *testing.T) {
 	ss := sysutil.EnvPaths()
+	// dump.P(ss)
 	assert.NotEmpty(t, ss)
 	assert.NotEmpty(t, sysutil.Environ())
 	assert.NotEmpty(t, sysutil.EnvMapWith(nil))
 	assert.NotEmpty(t, sysutil.EnvMapWith(map[string]string{"NEW_KEY": "value"}))
+
+	assert.NotEmpty(t, sysutil.ToEnvPATH([]string{"a/b", "c/d"}))
 
 	ss = sysutil.SearchPath("go", 3)
 	assert.NotEmpty(t, ss)
