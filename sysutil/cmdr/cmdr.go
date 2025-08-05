@@ -10,21 +10,21 @@ import (
 // PrintCmdline on before exec
 func PrintCmdline(c *Cmd) {
 	if c.DryRun {
-		ccolor.Yellowln("DRY-RUN>", c.Cmdline())
+		ccolor.Yellowln("DRY-RUN>", c.RawLine())
 	} else {
-		ccolor.Yellowln(">", c.Cmdline())
+		ccolor.Yellowln(">", c.RawLine())
 	}
 }
 
 // PrintCmdline2 on before exec
 func PrintCmdline2(c *Cmd) {
 	if c.Dir != "" {
-		ccolor.Greenln("> Workdir:", c.Dir)
+		ccolor.Magentaln("> Workdir:", c.Dir)
 	}
 	if c.DryRun {
-		ccolor.Yellowln("DRY-RUN>", c.Cmdline())
+		ccolor.Yellowln("DRY-RUN>", c.RawLine())
 	} else {
-		ccolor.Yellowln(">", c.Cmdline())
+		ccolor.Yellowln(">", c.RawLine())
 	}
 }
 
