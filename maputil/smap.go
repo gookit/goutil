@@ -82,6 +82,16 @@ func (m StrMap) Str(key string) string {
 	return m[key]
 }
 
+// StrOne get first founded value by keys
+func (m SMap) StrOne(keys ...string) string {
+	for _, key := range keys {
+		if val, ok := m[key]; ok {
+			return val
+		}
+	}
+	return ""
+}
+
 // Bool value get
 func (m StrMap) Bool(key string) bool {
 	if val, ok := m[key]; ok {

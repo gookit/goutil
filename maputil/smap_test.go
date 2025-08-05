@@ -36,6 +36,11 @@ func TestSMap_usage(t *testing.T) {
 	assert.Eq(t, "23", mp.Str("k1"))
 	assert.Eq(t, "ab", mp.Get("k2"))
 
+	// StrOne
+	assert.Eq(t, "ab", mp.StrOne("k2", "not-exist"))
+	assert.Eq(t, "ab", mp.StrOne("not-exist", "k2"))
+	assert.Empty(t, mp.StrOne("not-exist"))
+
 	// slice
 	assert.Eq(t, []int{1, 2}, mp.Ints("k4"))
 	assert.Eq(t, []string{"1", "2"}, mp.Strings("k4"))
