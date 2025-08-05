@@ -10,6 +10,9 @@ import (
 	"golang.org/x/sys/windows"
 )
 
+// OsName system name. like runtime.GOOS. only allow: linux, windows, darwin
+const OsName = Windows
+
 // IsWin system. linux windows darwin
 func IsWin() bool { return true }
 

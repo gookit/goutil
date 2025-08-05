@@ -13,6 +13,14 @@ import (
 	"golang.org/x/term"
 )
 
+// os names
+const (
+	Windows = "windows"
+	Linux   = "linux"
+	Darwin  = "darwin"
+	FreeBSD = "freebsd"
+)
+
 // IsMSys msys(MINGW64) env，不一定支持颜色
 func IsMSys() bool {
 	// "MSYSTEM=MINGW64"

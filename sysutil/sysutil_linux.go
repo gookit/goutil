@@ -5,6 +5,9 @@ import (
 	"strings"
 )
 
+// OsName system name. like runtime.GOOS. allow: linux, windows, darwin
+const OsName = Linux
+
 // IsWin system. linux windows darwin
 func IsWin() bool { return false }
 

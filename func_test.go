@@ -38,7 +38,7 @@ func TestCallOn(t *testing.T) {
 	})
 	assert.ErrMsg(t, err, "a error 001")
 
-	err = goutil.CallOrElse(false, func() error {
+	err = goutil.IfElseFn(false, func() error {
 		return errors.New("a error 001")
 	}, func() error {
 		return errors.New("a error 002")
