@@ -159,7 +159,8 @@ func TryAnyMap(mp any) (map[string]any, error) {
 
 	anyMp := make(map[string]any, rv.Len())
 	for _, key := range rv.MapKeys() {
-		anyMp[key.String()] = rv.MapIndex(key).Interface()
+		keyStr := strutil.SafeString(key.Interface())
+		anyMp[keyStr] = rv.MapIndex(key).Interface()
 	}
 	return anyMp, nil
 }

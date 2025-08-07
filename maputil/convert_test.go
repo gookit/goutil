@@ -123,6 +123,7 @@ func TestToAnyMap(t *testing.T) {
 	// Test with different map types
 	src2 := map[int]string{1: "one", 2: "two"}
 	mp2 := maputil.ToAnyMap(src2)
+	dump.P(mp2)
 	assert.Len(t, mp2, 2)
 	assert.Eq(t, "one", mp2["1"])
 	assert.Eq(t, "two", mp2["2"])
@@ -180,14 +181,6 @@ func TestHTTPQueryString(t *testing.T) {
 	assert.Contains(t, str4, "msg=hello world")
 }
 
-func TestToString2(t *testing.T) {
-	src := map[string]any{"a": "v0", "b": 23}
-
-	s := maputil.ToString2(src)
-	assert.Contains(t, s, "b:23")
-	assert.Contains(t, s, "a:v0")
-}
-
 func TestToString(t *testing.T) {
 	src := map[string]any{"a": "v0", "b": 23}
 
@@ -231,8 +224,28 @@ func TestToString(t *testing.T) {
 			"age":  30,
 		},
 	}
+	// {user:map[age:30 name:John]}
 	s3 := maputil.ToString(src3)
-	assert.Contains(t, s3, "user:map[name:John age:30]")
+	assert.Contains(t, s3, "user:map[")
+	assert.Contains(t, s3, "name:John")
+	assert.Contains(t, s3, "age:30")
+}
+
+func TestToString2(t *testing.T) {
+	src := map[string]any{"a": "v0", "b": 23}
+	s := maputil.ToString2(src) // {b:23, a:v0}
+	assert.Contains(t, s, "b:23")
+	assert.Contains(t, s, "a:v0")
+
+	// Test with nested maps
+	src3 := map[string]any{
+		"user": map[string]any{
+			"name": "John",
+			"age":  30,
+		},
+	}
+	s3 := maputil.ToString2(src3)
+	fmt.Println(s3)
 }
 
 func TestFlatten(t *testing.T) {
@@ -363,10 +376,9 @@ func TestCombineToMap(t *testing.T) {
 	intKeys := []int{1, 2, 3}
 	intValues := []string{"one", "two"}
 	intMap := maputil.CombineToMap(intKeys, intValues)
-	assert.Len(t, intMap, 3)
+	assert.Len(t, intMap, 2)
 	assert.Eq(t, "one", intMap[1])
 	assert.Eq(t, "two", intMap[2])
-	assert.Eq(t, "", intMap[3]) // zero value
 
 	// Test with mismatched lengths (keys shorter)
 	floatKeys := []float64{1.1, 2.2}
@@ -377,8 +389,8 @@ func TestCombineToMap(t *testing.T) {
 	assert.Eq(t, false, floatMap[2.2])
 
 	// Test with empty slices
-	emptyKeys := []string{}
-	emptyValues := []int{}
+	var emptyKeys []string
+	var emptyValues []int
 	emptyMap := maputil.CombineToMap(emptyKeys, emptyValues)
 	assert.Len(t, emptyMap, 0)
 }

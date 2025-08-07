@@ -121,7 +121,7 @@ func IsEqual(src, dst any) bool {
 // IsZero reflect value check, alias of the IsEmpty()
 var IsZero = IsEmpty
 
-// IsEmpty reflect value check
+// IsEmpty reflect value check. if is ptr, check if is nil
 func IsEmpty(v reflect.Value) bool {
 	switch v.Kind() {
 	case reflect.Invalid:
@@ -152,7 +152,7 @@ var IsEmptyValue = IsEmptyReal
 //
 // Note:
 //
-//	Difference the IsEmpty(), if value is ptr or interface, will check real elem.
+// Difference the IsEmpty(), if value is ptr or interface, will check real elem.
 //
 // From src/pkg/encoding/json/encode.go.
 func IsEmptyReal(v reflect.Value) bool {
