@@ -1,7 +1,10 @@
 package structs_test
 
 import (
+	"reflect"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
@@ -196,6 +199,73 @@ func TestToMap_anonymousStruct(t *testing.T) {
 
 	assert.ContainsKeys(t, mp, []string{"name", "age", "city", "github", "e_sub_key"})
 	assert.NotContainsKey(t, mp, "extra")
+}
+
+func TestTryToMap_ignoreEmpty(t *testing.T) {
+	u := &User{
+		Name: "inhere",
+		Age:  30,
+	}
+	mp, err := structs.TryToMap(u)
+	assert.Nil(t, err)
+	// dump.P(mp)
+	assert.ContainsKeys(t, mp, []string{"name", "age", "extra"})
+
+	mp, err = structs.TryToMap(u, structs.WithIgnoreEmpty)
+	assert.Nil(t, err)
+	// dump.P(mp)
+	assert.ContainsKeys(t, mp, []string{"name", "age"})
+	assert.NotContainsKeys(t, mp, []string{"extra"})
+}
+
+func TestTryToMap_timeField(t *testing.T) {
+	type User struct {
+		Name string
+		Age  int
+		Date time.Time
+	}
+	u := &User{
+		Name: "inhere",
+		Age:  30,
+		Date: time.Now(),
+	}
+	mp, err := structs.TryToMap(u)
+	assert.Nil(t, err)
+	dump.P(u, mp)
+	assert.IsKind(t, reflect.String, mp["Date"])
+}
+
+func TestTryToMap_userFunc(t *testing.T) {
+	type User struct {
+		Name string
+		Age  int
+	}
+	u := &User{
+		Name: "inhere",
+		Age:  30,
+	}
+
+	mp, err := structs.TryToMap(u, structs.WithUserFunc(func(fName string, fv reflect.Value) (bool, any) {
+		if fName == "Name" {
+			return true, strings.ToUpper(fv.String()) // convert to upper
+		}
+		return true, nil
+	}))
+	assert.Nil(t, err)
+	dump.P(u, mp)
+	assert.Eq(t, "INHERE", mp["Name"])
+	assert.ContainsKeys(t, mp, []string{"Name", "Age"})
+
+	mp, err = structs.TryToMap(u, structs.WithUserFunc(func(fName string, fv reflect.Value) (bool, any) {
+		if fName == "Age" {
+			return false, nil // exclude this field
+		}
+		return true, nil
+	}))
+	assert.Nil(t, err)
+	dump.P(mp)
+	assert.Eq(t, "inhere", mp["Name"])
+	assert.NotContainsKeys(t, mp, []string{"Age"})
 }
 
 func TestTryToMap_customTag(t *testing.T) {
