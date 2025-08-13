@@ -565,7 +565,8 @@ func Err(msg string) error
 func Raw(msg string) error
 func Ef(tpl string, vars ...any) error
 func Errf(tpl string, vars ...any) error
-func Rawf(tpl string, vars ...any) error
+func Rf(tpl string, vs ...any) error
+func Rawf(tpl string, vs ...any) error
 func Cause(err error) error
 func Unwrap(err error) error
 func Previous(err error) error
@@ -692,6 +693,7 @@ func ExcludeDotFile(_ string, ent fs.DirEntry) bool
 func ExcludeSuffix(ss ...string) FilterFunc
 func ApplyFilters(fPath string, ent fs.DirEntry, filters []FilterFunc) bool
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error)
+func FileInDirs(paths []string, names ...string) string
 // source at fsutil/fsutil.go
 func JoinPaths(elem ...string) string
 func JoinPaths3(basePath, secPath string, elems ...string) string
@@ -701,14 +703,15 @@ func UnixPath(path string) string
 func ToAbsPath(p string) string
 func Must2(_ any, err error)
 // source at fsutil/info.go
-func DirPath(fpath string) string
-func Dir(fpath string) string
-func PathName(fpath string) string
+func DirPath(fPath string) string
+func Dir(fPath string) string
+func PathName(fPath string) string
 func PathNoExt(fPath string) string
-func Name(fpath string) string
-func FileExt(fpath string) string
-func Extname(fpath string) string
-func Suffix(fpath string) string
+func Name(fPath string) string
+func NameNoExt(fPath string) string
+func FileExt(fPath string) string
+func Extname(fPath string) string
+func Suffix(fPath string) string
 func Expand(pathStr string) string
 func ExpandPath(pathStr string) string
 func ResolvePath(pathStr string) string
@@ -823,6 +826,7 @@ func EncodeUnescapeHTML(v any) ([]byte, error)
 func Decode(bts []byte, ptr any) error
 func DecodeString(str string, ptr any) error
 func DecodeReader(r io.Reader, ptr any) error
+func DecodeFile(file string, ptr any) error
 // source at jsonutil/jsonutil.go
 func WriteFile(filePath string, data any) error
 func WritePretty(filePath string, data any) error
@@ -848,9 +852,14 @@ func HasOneKey(mp any, keys ...any) (ok bool, key any)
 func HasAllKeys(mp any, keys ...any) (ok bool, noKey any)
 // source at maputil/convert.go
 func KeyToLower(src map[string]string) map[string]string
+func AnyToStrMap(src any) map[string]string
 func ToStringMap(src map[string]any) map[string]string
+func ToL2StringMap(groupsMap map[string]any) map[string]map[string]string
 func CombineToSMap(keys, values []string) SMap
 func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V
+func SliceToSMap(kvPairs ...string) map[string]string
+func SliceToMap(kvPairs ...any) map[string]any
+func SliceToTypeMap[T any](valFunc func(any) T, kvPairs ...any) map[string]T
 func ToAnyMap(mp any) map[string]any
 func TryAnyMap(mp any) (map[string]any, error)
 func HTTPQueryString(data map[string]any) string
@@ -870,6 +879,7 @@ func GetByPath(path string, mp map[string]any) (val any, ok bool)
 func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool)
 func Keys(mp any) (keys []string)
 func TypedKeys[K comdef.SimpleType, V any](mp map[K]V) (keys []K)
+func FirstKey[T any](mp map[string]T) string
 func Values(mp any) (values []any)
 func TypedValues[K comdef.SimpleType, V any](mp map[K]V) (values []V)
 func EachAnyMap(mp any, fn func(key string, val any))
@@ -879,8 +889,10 @@ func SimpleMerge(src, dst map[string]any) map[string]any
 func Merge1level(mps ...map[string]any) map[string]any
 func DeepMerge(src, dst map[string]any, deep int) map[string]any
 func MergeSMap(src, dst map[string]string, ignoreCase bool) map[string]string
+func MergeStrMap(src, dst map[string]string) map[string]string
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func MergeMultiSMap(mps ...map[string]string) map[string]string
+func MergeL2StrMap(mps ...map[string]map[string]string) map[string]map[string]string
 func FilterSMap(sm map[string]string) map[string]string
 func MakeByPath(path string, val any) (mp map[string]any)
 func MakeByKeys(keys []string, val any) (mp map[string]any)
@@ -1045,8 +1057,9 @@ func Call(fn reflect.Value, args []reflect.Value, opt *CallOpt) ([]reflect.Value
 func SafeCall2(fun reflect.Value, args []reflect.Value) (val reflect.Value, err error)
 func SafeCall(fun reflect.Value, args []reflect.Value) (ret []reflect.Value, err error)
 // source at reflects/map.go
-func EachMap(mp reflect.Value, fn func(key, val reflect.Value))
-func EachStrAnyMap(mp reflect.Value, fn func(key string, val any))
+func TryAnyMap(mp reflect.Value) (map[string]any, error)
+func EachMap(mp reflect.Value, fn func(key, val reflect.Value)) (err error)
+func EachStrAnyMap(mp reflect.Value, fn func(key string, val any)) error
 func FlatMap(rv reflect.Value, fn FlatFunc)
 // source at reflects/slice.go
 func MakeSliceByElem(elTyp reflect.Type, len, cap int) reflect.Value
@@ -1089,8 +1102,10 @@ func TryToSMap(st any, optFns ...MapOptFunc) (map[string]string, error)
 func MustToSMap(st any, optFns ...MapOptFunc) map[string]string
 func ToString(st any, optFns ...MapOptFunc) string
 func WithMapTagName(tagName string) MapOptFunc
+func WithUserFunc(fn CustomUserFunc) MapOptFunc
 func MergeAnonymous(opt *MapOptions)
 func ExportPrivate(opt *MapOptions)
+func WithIgnoreEmpty(opt *MapOptions)
 func StructToMap(st any, optFns ...MapOptFunc) (map[string]any, error)
 // source at structs/copy.go
 func MapStruct(srcSt, dstSt any)
@@ -1121,6 +1136,7 @@ func WrapValue(rv reflect.Value) *Wrapper
 // source at structs/writer.go
 func NewWriter(ptr any) *Wrapper
 func WithParseDefault(opt *SetOptions)
+func WithBeforeSetFn(fn BeforeSetFunc) SetOptFunc
 func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
 ```
@@ -1148,8 +1164,10 @@ func IContains(s, sub string) bool
 func ContainsByte(s string, c byte) bool
 func ContainsOne(s string, subs []string) bool
 func HasOneSub(s string, subs []string) bool
+func IContainsOne(s string, subs []string) bool
 func ContainsAll(s string, subs []string) bool
 func HasAllSubs(s string, subs []string) bool
+func IContainsAll(s string, subs []string) bool
 func IsStartsOf(s string, prefixes []string) bool
 func HasOnePrefix(s string, prefixes []string) bool
 func HasPrefix(s string, prefix string) bool
@@ -1167,6 +1185,7 @@ func IsSymbol(r rune) bool
 func HasEmpty(ss ...string) bool
 func IsAllEmpty(ss ...string) bool
 func IsVersion(s string) bool
+func IsVarName(s string) bool
 func Compare(s1, s2, op string) bool
 func VersionCompare(v1, v2, op string) bool
 func SimpleMatch(s string, keywords []string) bool
@@ -1184,6 +1203,7 @@ func Quote(s string) string
 func Unquote(s string) string
 func Join(sep string, ss ...string) string
 func JoinList(sep string, ss []string) string
+func JoinComma(ss []string) string
 func JoinAny(sep string, parts ...any) string
 func Implode(sep string, ss ...string) string
 func String(val any) (string, error)
@@ -1411,8 +1431,6 @@ func QuickExec(cmdLine string, workDir ...string) (string, error)
 func ExecLine(cmdLine string, workDir ...string) (string, error)
 func ExecCmd(binName string, args []string, workDir ...string) (string, error)
 func ShellExec(cmdLine string, shells ...string) (string, error)
-// source at sysutil/stack.go
-func CallersInfos(skip, num int, filters ...func(file string, fc *runtime.Func) bool) []*CallerInfo
 // source at sysutil/sysenv.go
 func IsMSys() bool
 func IsWSL() bool
@@ -1430,11 +1448,13 @@ func Getenv(name string, def ...string) string
 func Environ() map[string]string
 func EnvMapWith(newEnv map[string]string) map[string]string
 func EnvPaths() []string
+func ToEnvPATH(paths []string) string
 func SearchPath(keywords string, limit int, opts ...SearchPathOption) []string
 // source at sysutil/sysgo.go
 func GoVersion() string
 func ParseGoVersion(line string) (*GoInfo, error)
 func OsGoInfo() (*GoInfo, error)
+func CallersInfos(skip, num int, filters ...goinfo.CallerFilterFunc) []*CallerInfo
 // source at sysutil/sysutil.go
 func Workdir() string
 func BinDir() string
@@ -1443,16 +1463,16 @@ func BinFile() string
 func Open(fileOrURL string) error
 func OpenBrowser(fileOrURL string) error
 func OpenFile(path string) error
-// source at sysutil/sysutil_nonwin.go
-func Kill(pid int, signal syscall.Signal) error
-func ProcessExists(pid int) bool
-// source at sysutil/sysutil_unix.go
+// source at sysutil/sysutil_linux.go
 func IsWin() bool
 func IsWindows() bool
 func IsMac() bool
 func IsDarwin() bool
 func IsLinux() bool
 func OpenURL(URL string) error
+// source at sysutil/sysutil_nonwin.go
+func Kill(pid int, signal syscall.Signal) error
+func ProcessExists(pid int) bool
 // source at sysutil/user.go
 func MustFindUser(uname string) *user.User
 func LoginUser() *user.User
