@@ -1,7 +1,9 @@
 package structs_test
 
 import (
+	"reflect"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
@@ -125,6 +127,56 @@ func TestSetValues_structField(t *testing.T) {
 		assert.NoErr(t, err)
 		assert.Eq(t, "inhere", u2.Name)
 	})
+}
+
+func TestSetValues_beforeSetFn(t *testing.T) {
+	u := &User{}
+	data := map[string]any{
+		"name": "inhere",
+	}
+
+	err := structs.BindData(u, data, structs.WithBeforeSetFn(func(fName string, val any, fv reflect.Value) any {
+		if fName == "Age" && val == nil {
+			return 234
+		}
+		return val
+	}))
+
+	assert.NoErr(t, err)
+	assert.Eq(t, 234, u.Age)
+	assert.Eq(t, "inhere", u.Name)
+}
+
+func TestSetValues_timeField(t *testing.T) {
+	type User1 struct {
+		Name     string    `json:"name"`
+		Age      int       `json:"age" default:"345"`
+		Birthday time.Time `json:"birthday"`
+	}
+
+	// test date string
+	u := &User1{}
+	d := map[string]any{"name": "inhere", "birthday": "2025-08-12 13:45:21"}
+	err := structs.SetValues(u, d, structs.WithParseDefault)
+	assert.NoErr(t, err)
+	assert.Eq(t, "inhere", u.Name)
+	assert.Eq(t, 345, u.Age)
+	assert.Eq(t, "2025-08-12 13:45:21", u.Birthday.Format("2006-01-02 15:04:05"))
+
+	// test time.Time value
+	u = &User1{}
+	d = map[string]any{"name": "inhere", "birthday": time.Now()}
+	err = structs.SetValues(u, d)
+	assert.NoErr(t, err)
+	assert.Eq(t, 0, u.Age)
+	assert.Eq(t, "inhere", u.Name)
+	assert.False(t, u.Birthday.IsZero())
+
+	// empty birthday value
+	u = &User1{}
+	d = map[string]any{"name": "inhere", "birthday": ""}
+	err = structs.SetValues(u, d)
+	assert.Err(t, err)
 }
 
 func TestSetValues_useDefaultTag(t *testing.T) {
