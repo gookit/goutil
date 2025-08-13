@@ -92,7 +92,7 @@ func FromString(s string, layouts ...string) (*Time, error) {
 	return New(t), nil
 }
 
-// LocalByName time for now
+// LocalByName time for now. eg: "Local", "UTC", "Asia/Shanghai"
 func LocalByName(tzName string) *Time {
 	loc, err := time.LoadLocation(tzName)
 	if err != nil {
@@ -274,21 +274,20 @@ func (t *Time) CustomHMS(hour, min, sec int) *Time {
 	return FromTime(newTime)
 }
 
+// IsEmpty check if time is empty. alias for t.IsZero
+func (t *Time) IsEmpty() bool { return t.IsZero() }
+
 // IsBefore the given time
 func (t *Time) IsBefore(u time.Time) bool { return t.Before(u) }
 
 // IsBeforeUnix the given unix timestamp
-func (t *Time) IsBeforeUnix(ux int64) bool {
-	return t.Before(time.Unix(ux, 0))
-}
+func (t *Time) IsBeforeUnix(ux int64) bool { return t.Before(time.Unix(ux, 0)) }
 
 // IsAfter the given time
 func (t *Time) IsAfter(u time.Time) bool { return t.After(u) }
 
 // IsAfterUnix the given unix timestamp
-func (t *Time) IsAfterUnix(ux int64) bool {
-	return t.After(time.Unix(ux, 0))
-}
+func (t *Time) IsAfterUnix(ux int64) bool { return t.After(time.Unix(ux, 0)) }
 
 // Timestamp value. alias of t.Unix()
 func (t *Time) Timestamp() int64 { return t.Unix() }

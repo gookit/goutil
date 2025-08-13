@@ -14,15 +14,28 @@ func TestWrap(t *testing.T) {
 	tx := timex.Wrap(time.Now())
 	assert.False(t, tx.IsZero())
 
+	// Wrap empty
+	tx = timex.Wrap(time.Time{})
+	assert.True(t, tx.IsZero())
+	assert.True(t, tx.IsEmpty())
+
+	// FromTime
 	tx = timex.FromTime(time.Now())
 	assert.False(t, tx.IsZero())
 
+	// Local
 	tx = timex.Local()
 	assert.False(t, tx.IsZero())
 	assert.False(t, tx.T().IsZero())
 
+	// FromUnix
 	tx = timex.FromUnix(time.Now().Unix())
 	assert.False(t, tx.IsZero())
+
+	// LocalByName
+	tx = timex.LocalByName("Asia/Shanghai")
+	assert.False(t, tx.IsEmpty())
+	assert.Equal(t, "Asia/Shanghai", tx.T().Location().String())
 }
 
 func TestFromDate(t *testing.T) {
