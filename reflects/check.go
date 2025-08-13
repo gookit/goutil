@@ -7,13 +7,20 @@ import (
 
 // IsTimeType check is or alias of time.Time type
 func IsTimeType(t reflect.Type) bool {
-	return t != nil && t.Kind() == reflect.Struct && t.ConvertibleTo(timeType)
+	if t == nil || t.Kind() != reflect.Struct {
+		return false
+	}
+	// t == timeType - 无法判断自定义类型
+	return t == timeType || t.ConvertibleTo(timeType)
 }
 
 // IsDurationType check is or alias of time.Duration type
 func IsDurationType(t reflect.Type) bool {
+	if t == nil || t.Kind() != reflect.Int64 {
+		return false
+	}
 	// t == durationType - 无法判断自定义类型
-	return t != nil && t.Kind() == reflect.Int64 && t.ConvertibleTo(durationType)
+	return t == durationType || t.ConvertibleTo(durationType)
 }
 
 // HasChild type check. eg: array, slice, map, struct
@@ -26,7 +33,7 @@ func HasChild(v reflect.Value) bool {
 	}
 }
 
-// IsArrayOrSlice check. eg: array, slice
+// IsArrayOrSlice type check. eg: array, slice
 func IsArrayOrSlice(k reflect.Kind) bool {
 	return k == reflect.Slice || k == reflect.Array
 }

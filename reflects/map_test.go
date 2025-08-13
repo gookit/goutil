@@ -39,6 +39,18 @@ func TestFlatMap(t *testing.T) {
 	assert.Eq(t, "val1-0", flatMp["top.sub1[0]"])
 }
 
+func TestTryAnyMap(t *testing.T) {
+	smp := map[int]string{
+		1: "val1",
+		2: "val2",
+	}
+
+	mp, err := reflects.TryAnyMap(reflect.ValueOf(smp))
+	assert.Nil(t, err)
+	assert.Eq(t, "val1", mp["1"])
+	assert.Eq(t, "val2", mp["2"])
+}
+
 func TestEachStrAnyMap(t *testing.T) {
 	smp := map[int]string{
 		1: "val1",
@@ -46,19 +58,16 @@ func TestEachStrAnyMap(t *testing.T) {
 	}
 
 	mp := make(map[string]any)
-	reflects.EachStrAnyMap(reflect.ValueOf(smp), func(key string, val any) {
+	err := reflects.EachStrAnyMap(reflect.ValueOf(smp), func(key string, val any) {
 		mp[key] = val
 	})
 
+	assert.NoErr(t, err)
 	assert.Eq(t, "val1", mp["1"])
 	assert.Eq(t, "val2", mp["2"])
 
-	assert.NotPanics(t, func() {
-		reflects.EachMap(reflect.ValueOf("abc"), nil)
-	})
-	assert.Panics(t, func() {
-		reflects.EachMap(reflect.ValueOf("abc"), func(key, val reflect.Value) {
-			// do nothing
-		})
-	})
+	assert.NoErr(t, reflects.EachMap(reflect.ValueOf("abc"), nil))
+	assert.Err(t, reflects.EachMap(reflect.ValueOf("abc"), func(key, val reflect.Value) {
+		// do nothing
+	}))
 }
