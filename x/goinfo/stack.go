@@ -124,12 +124,12 @@ type CallerFilterFunc func(file string, fc *runtime.Func) bool
 //
 // Usage:
 //
-//		cs := sysutil.CallersInfos(3, 2)
-//		for _, ci := range cs {
-//			fc := runtime.FuncForPC(pc)
-//			// maybe need check fc = nil
-//			fnName = fc.Name()
-//		}
+//	cs := sysutil.CallersInfos(3, 2)
+//	for _, ci := range cs {
+//		fc := runtime.FuncForPC(pc)
+//		// maybe need check fc = nil
+//		fnName = fc.Name()
+//	}
 func CallersInfos(skip, num int, filters ...CallerFilterFunc) []*CallerInfo {
 	filterLn := len(filters)
 	callers := make([]*CallerInfo, 0, num)

@@ -16,7 +16,7 @@ func TestApplyTag(t *testing.T) {
 	ccolor.ForceEnableColor()
 	defer ccolor.RevertColorSupport()
 
-	assert.Equal(t,"\x1b[0;32mMSG\x1b[0m", ccolor.ApplyTag("info", "MSG"))
+	assert.Equal(t, "\x1b[0;32mMSG\x1b[0m", ccolor.ApplyTag("info", "MSG"))
 }
 
 func TestColorTag(t *testing.T) {

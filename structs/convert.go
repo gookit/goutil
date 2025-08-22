@@ -66,11 +66,11 @@ func ToString(st any, optFns ...MapOptFunc) string {
 const defaultFieldTag = "json"
 
 // CustomUserFunc for map convert
-//  - fName: raw field name in struct
+//   - fName: raw field name in struct
 //
 // Returns:
-//  - ok: return true to collect field, otherwise excluded.
-//  - newVal: `newVal != nil` return new value to collect, otherwise collect original value.
+//   - ok: return true to collect field, otherwise excluded.
+//   - newVal: `newVal != nil` return new value to collect, otherwise collect original value.
 type CustomUserFunc func(fName string, fv reflect.Value) (ok bool, newVal any)
 
 // MapOptions for convert struct to map

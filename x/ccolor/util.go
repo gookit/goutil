@@ -128,4 +128,3 @@ func formatLikePrintln(args []any) (message string) {
 	}
 	return
 }
-

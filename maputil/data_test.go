@@ -19,7 +19,7 @@ func TestData_usage(t *testing.T) {
 		"anyMp": map[string]any{"b": 23},
 		"k6":    "23,45",
 		"k7":    []string{"ab", "cd"},
-		"k8": []string{"a1", "b2"},
+		"k8":    []string{"a1", "b2"},
 	}
 
 	assert.False(t, mp.IsEmpty())

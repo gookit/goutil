@@ -36,10 +36,10 @@ var (
 		"fs":      "file System",
 		"fmt":     "format Utils",
 		"test":    "testing Utils",
-		"dump": "var Dumper",
+		"dump":    "var Dumper",
 		"structs": "structs",
 		"json":    "JSON Utils",
-		"cli":  "CLI Utils",
+		"cli":     "CLI Utils",
 		"env":     "ENV/Environment",
 	}
 

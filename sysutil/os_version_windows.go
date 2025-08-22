@@ -43,7 +43,7 @@ func VersionInfoBySys() *OSVersionInfo {
 
 // OsVersionByParse Get Windows system version information by parse string
 //
-//  cmdOut eg: "Microsoft Windows [Version 10.0.22631.4391]"
+//	cmdOut eg: "Microsoft Windows [Version 10.0.22631.4391]"
 func OsVersionByParse(cmdOut string) (*OSVersionInfo, error) {
 	return parseOsVersionString(cmdOut)
 }
@@ -153,4 +153,3 @@ func parseOsVersionString(out string) (*OSVersionInfo, error) {
 	}
 	return &ovi, nil
 }
-

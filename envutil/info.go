@@ -36,7 +36,6 @@ func IsMSys() bool {
 	return sysutil.IsMSys()
 }
 
-
 // IsTerminal isatty check
 //
 // Usage:

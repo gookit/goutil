@@ -86,7 +86,7 @@ func CombineToMap[K comdef.SortedType, V any](keys []K, values []V) map[K]V {
 }
 
 // SliceToSMap convert string k-v pairs slice to map[string]string
-//  - eg: []string{k1,v1,k2,v2} -> map[string]string{k1:v1, k2:v2}
+//   - eg: []string{k1,v1,k2,v2} -> map[string]string{k1:v1, k2:v2}
 func SliceToSMap(kvPairs ...string) map[string]string {
 	ln := len(kvPairs)
 	// check kvPairs length must be even

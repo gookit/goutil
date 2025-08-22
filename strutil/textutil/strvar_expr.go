@@ -15,8 +15,8 @@ import (
 // StrVarRenderer implements like shell vars renderer
 // 简单的实现类似 php, kotlin, shell 插值变量渲染，表达式解析处理。
 //
-//  - var format: $var_name, ${some_var}, ${top.sub_var}
-//  - func call: ${func($var_name, 'const string')}
+//   - var format: $var_name, ${some_var}, ${top.sub_var}
+//   - func call: ${func($var_name, 'const string')}
 type StrVarRenderer struct {
 	// global variables
 	vars map[string]any

@@ -8,8 +8,9 @@ import (
 
 // String color style string. TODO
 // eg:
-// 		s := String("red,bold")
-//		s.Println("some text message")
+//
+//	s := String("red,bold")
+//	s.Println("some text message")
 type String string
 
 // Style for color render.

@@ -7,4 +7,3 @@ func IsNumChar(c byte) bool { return c >= '0' && c <= '9' }
 func IsAlphaChar(c byte) bool {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 }
-
