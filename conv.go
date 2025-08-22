@@ -122,7 +122,7 @@ func ConvOrDefault(val any, kind reflect.Kind, defVal any) any {
 //
 // Examples:
 //
-//		val, err := ToKind("123", reflect.Int) // 123
+//	val, err := ToKind("123", reflect.Int) // 123
 func ToKind(val any, kind reflect.Kind, fbFunc func(val any) (any, error)) (newVal any, err error) {
 	switch kind {
 	case reflect.Int:

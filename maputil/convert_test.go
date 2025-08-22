@@ -155,10 +155,10 @@ func TestHTTPQueryString(t *testing.T) {
 
 	// Test with different data types
 	src2 := map[string]any{
-		"name":  "John Doe",
-		"age":   30,
+		"name":   "John Doe",
+		"age":    30,
 		"active": true,
-		"score": 95.5,
+		"score":  95.5,
 	}
 	str2 := maputil.HTTPQueryString(src2)
 	assert.Contains(t, str2, "name=John Doe")
@@ -304,7 +304,7 @@ func TestFlatten(t *testing.T) {
 
 	// Test with array values
 	data3 := map[string]any{
-		"tags": []string{"web", "api"},
+		"tags":    []string{"web", "api"},
 		"numbers": []int{1, 2, 3},
 	}
 	mp3 := maputil.Flatten(data3)
@@ -348,7 +348,7 @@ func TestStringsMapToAnyMap(t *testing.T) {
 
 	// Test with mixed single and multiple values
 	mixedValues := map[string][]string{
-		"single": {"value"},
+		"single":   {"value"},
 		"multiple": {"value1", "value2", "value3"},
 	}
 	result3 := maputil.StringsMapToAnyMap(mixedValues)

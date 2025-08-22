@@ -25,8 +25,8 @@ func TestStrVarRenderer(t *testing.T) {
 	sv.SetVar("g2", "global value2")
 
 	vars := map[string]any{
-		"name": "inhere",
-		"int_var": 345,
+		"name":     "inhere",
+		"int_var":  345,
 		"some_var": "value1",
 		"mapdata": map[string]string{
 			"key1": "value1",

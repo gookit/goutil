@@ -1,4 +1,5 @@
 //go:build darwin
+
 package sysutil
 
 import "os/exec"

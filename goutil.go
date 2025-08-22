@@ -206,4 +206,3 @@ func FuncName(f any) string {
 func PkgName(funcName string) string {
 	return goinfo.PkgName(funcName)
 }
-

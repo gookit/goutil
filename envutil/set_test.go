@@ -75,9 +75,9 @@ INVALID
 
 func TestLoadString(t *testing.T) {
 	tests := []struct {
-		line string
+		line      string
 		key, want string
-		suc bool
+		suc       bool
 	}{
 		{
 			"name= abc",
