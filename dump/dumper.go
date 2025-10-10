@@ -186,8 +186,12 @@ func (d *Dumper) printOne(v any) {
 
 	if bts, ok := v.([]byte); ok && d.BytesAsString {
 		strVal := d.ColorTheme.string(string(bts))
-		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(len(bts)) + ",cap=" + strconv.Itoa(cap(bts)))
-		d.printf("[]byte(\"%s\"), %s\n", strVal, lenTip)
+		if d.ShowLen {
+			lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(len(bts)) + ",cap=" + strconv.Itoa(cap(bts)))
+			d.printf("[]byte(\"%s\"), %s\n", strVal, lenTip)
+		} else {
+			d.printf("[]byte(\"%s\"),\n", strVal)
+		}
 		return
 	}
 
@@ -244,8 +248,12 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		d.printf("%s(%s),%s\n", t.String(), intStr, d.rvStringer(t, v))
 	case reflect.String:
 		strVal := d.ColorTheme.string(v.String())
-		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
-		d.printf("%s(\"%s\"), %s\n", t.String(), strVal, lenTip)
+		if d.ShowLen {
+			lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
+			d.printf("%s(\"%s\"), %s\n", t.String(), strVal, lenTip)
+		} else {
+			d.printf("%s(\"%s\"),\n", t.String(), strVal)
+		}
 	case reflect.Complex64, reflect.Complex128:
 		d.printf("%#v\n", v.Complex())
 	case reflect.Slice, reflect.Array:
@@ -254,9 +262,12 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 		}
 
 		eleNum := v.Len()
-		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
-
-		d.write(!isPtr, t.String(), " [ ", lenTip, "\n")
+		if d.ShowLen {
+			lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(eleNum) + ",cap=" + strconv.Itoa(v.Cap()))
+			d.write(!isPtr, t.String(), " [ ", lenTip, "\n")
+		} else {
+			d.write(!isPtr, t.String(), " [\n")
+		}
 		d.msValue = false
 
 		for i := 0; i < eleNum; i++ {
@@ -323,9 +334,12 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 
 		d.indentPrint("},\n")
 	case reflect.Map:
-		lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
-
-		d.write(!isPtr, d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
+		if d.ShowLen {
+			lenTip := d.ColorTheme.valTip("#len=" + strconv.Itoa(v.Len()))
+			d.write(!isPtr, d.ColorTheme.msType(t.String()), " { ", lenTip, "\n")
+		} else {
+			d.write(!isPtr, d.ColorTheme.msType(t.String()), " {\n")
+		}
 		d.msValue = false
 
 		for _, key := range v.MapKeys() {
