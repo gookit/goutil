@@ -12,6 +12,60 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
+func TestStrictInt(t *testing.T) {
+	is := assert.New(t)
+
+	tests1 := []any{
+		2, uintptr(2),
+		int8(2), int16(2), int32(2), int64(2),
+		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
+	}
+	for _, val := range tests1 {
+		i64, ok := mathutil.StrictInt(val)
+		is.True(ok)
+		is.Eq(int64(2), i64)
+	}
+
+	tests2 := []any{
+		"2",
+		float32(2.2), 2.3,
+		time.Duration(2),
+		json.Number("2"),
+	}
+	for _, val := range tests2 {
+		i64, ok := mathutil.StrictInt(val)
+		is.False(ok)
+		is.Eq(int64(0), i64)
+	}
+}
+
+func TestStrictUint(t *testing.T) {
+	is := assert.New(t)
+
+	tests1 := []any{
+		2, uintptr(2),
+		int8(2), int16(2), int32(2), int64(2),
+		uint(2), uint8(2), uint16(2), uint32(2), uint64(2),
+	}
+	for _, val := range tests1 {
+		i64, ok := mathutil.StrictUint(val)
+		is.True(ok)
+		is.Eq(uint64(2), i64)
+	}
+
+	tests2 := []any{
+		"2",
+		float32(2.2), 2.3,
+		time.Duration(2),
+		json.Number("2"),
+	}
+	for _, val := range tests2 {
+		i64, ok := mathutil.StrictUint(val)
+		is.False(ok)
+		is.Eq(uint64(0), i64)
+	}
+}
+
 func TestWithUserConvFn(t *testing.T) {
 	is := assert.New(t)
 	in := []int{1}

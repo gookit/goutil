@@ -85,7 +85,71 @@ func WithUserConvFn[T any](fn ToTypeFunc[T]) ConvOptionFn[T] {
 }
 
 /*************************************************************
- * convert value to int
+ * Strict cast value to int
+ *************************************************************/
+
+// StrictInt check the given value is an integer(intX,uintX), return the int64 value and true if success
+func StrictInt(val any) (int64, bool) {
+	switch tVal := val.(type) {
+	case int:
+		return int64(tVal), true
+	case int8:
+		return int64(tVal), true
+	case int16:
+		return int64(tVal), true
+	case int32:
+		return int64(tVal), true
+	case int64:
+		return tVal, true
+	case uint:
+		return int64(tVal), true
+	case uint8:
+		return int64(tVal), true
+	case uint16:
+		return int64(tVal), true
+	case uint32:
+		return int64(tVal), true
+	case uint64:
+		return int64(tVal), true
+	case uintptr:
+		return int64(tVal), true
+	default:
+		return 0, false
+	}
+}
+
+// StrictUint strict check value is integer(intX,uintX) and convert to uint64.
+func StrictUint(val any) (uint64, bool) {
+	switch tVal := val.(type) {
+	case int:
+		return uint64(tVal), true
+	case int8:
+		return uint64(tVal), true
+	case int16:
+		return uint64(tVal), true
+	case int32:
+		return uint64(tVal), true
+	case int64:
+		return uint64(tVal), true
+	case uint:
+		return uint64(tVal), true
+	case uint8:
+		return uint64(tVal), true
+	case uint16:
+		return uint64(tVal), true
+	case uint32:
+		return uint64(tVal), true
+	case uint64:
+		return tVal, true
+	case uintptr:
+		return uint64(tVal), true
+	default:
+		return 0, false
+	}
+}
+
+/*************************************************************
+ * region convert to int
  *************************************************************/
 
 // Int convert value to int
