@@ -43,6 +43,10 @@ func StrToBool(s string) (bool, error) {
 }
 
 // FormatWithArgs format message with args
+//
+//  - only one element, format to string
+//  - first is format: fmt.Sprintf(firstElem, fmtAndArgs[1:]...)
+//  - all is args: return fmt.Sprint(fmtAndArgs...)
 func FormatWithArgs(fmtAndArgs []any) string {
 	ln := len(fmtAndArgs)
 	if ln == 0 {
@@ -50,16 +54,15 @@ func FormatWithArgs(fmtAndArgs []any) string {
 	}
 
 	first := fmtAndArgs[0]
-
 	if ln == 1 {
-		if msgAsStr, ok := first.(string); ok {
-			return msgAsStr
+		if str, ok := first.(string); ok {
+			return str
 		}
 		return fmt.Sprintf("%+v", first)
 	}
 
 	// is template string.
-	if tplStr, ok := first.(string); ok {
+	if tplStr, ok := first.(string); ok && strings.IndexByte(tplStr, '%') >= 0 {
 		return fmt.Sprintf(tplStr, fmtAndArgs[1:]...)
 	}
 	return fmt.Sprint(fmtAndArgs...)
@@ -84,11 +87,6 @@ type ConvOptionFn func(opt *ConvOption)
 // StrBySprintFn convert any value to string by fmt.Sprint
 var StrBySprintFn = func(v any) (string, error) {
 	return fmt.Sprint(v), nil
-}
-
-// WithHandlePtr set ConvOption.HandlePtr option
-func WithHandlePtr(opt *ConvOption) {
-	opt.HandlePtr = true
 }
 
 // WithUserConvFn set ConvOption.UserConvFn option
@@ -116,11 +114,6 @@ func (opt *ConvOption) WithOption(optFns ...ConvOptionFn) {
 
 // ToStringWith try to convert value to string. can with some option func, more see ConvOption.
 func ToStringWith(in any, optFns ...ConvOptionFn) (str string, err error) {
-	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
-		return "", nil
-	}
-
 	switch value := in.(type) {
 	case int:
 		str = strconv.Itoa(value)
@@ -161,6 +154,18 @@ func ToStringWith(in any, optFns ...ConvOptionFn) (str string, err error) {
 	case error:
 		str = value.Error()
 	default:
+		if len(optFns) == 0 && in == nil {
+			return "", nil
+		}
+
+		opt := NewConvOption(optFns...)
+		if in == nil {
+			if opt.NilAsFail {
+				err = comdef.ErrConvType
+			}
+			return
+		}
+
 		if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
