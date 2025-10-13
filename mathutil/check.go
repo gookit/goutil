@@ -3,8 +3,16 @@ package mathutil
 import "github.com/gookit/goutil/comdef"
 
 // IsNumeric returns true if the given character is a numeric, otherwise false.
-func IsNumeric(c byte) bool {
-	return c >= '0' && c <= '9'
+func IsNumeric(c byte) bool { return c >= '0' && c <= '9' }
+
+// IsInteger strict check the given value is an integer(intX,uintX), otherwise false.
+func IsInteger(val any) bool {
+	switch val.(type) {
+	case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, uintptr:
+		return true
+	default:
+		return false
+	}
 }
 
 // Compare any intX,floatX value by given op. returns `first op(=,!=,<,<=,>,>=) second`
