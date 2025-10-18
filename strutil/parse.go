@@ -2,6 +2,7 @@ package strutil
 
 import (
 	"errors"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +10,13 @@ import (
 
 	"github.com/gookit/goutil/byteutil"
 )
+
+var regNumVersion = regexp.MustCompile(`[0-9][\d.]+([_-]\d+)?`)
+
+// NumVersion parse input string, get valid number version. eg: go-1.22.3 -> 1.22.3
+func NumVersion(s string) string {
+	return regNumVersion.FindString(s)
+}
 
 // MustToTime convert date string to time.Time
 func MustToTime(s string, layouts ...string) time.Time {

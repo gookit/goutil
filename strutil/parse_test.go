@@ -9,6 +9,16 @@ import (
 	"github.com/gookit/goutil/timex"
 )
 
+func TestGetVersion(t *testing.T) {
+	is := assert.New(t)
+	is.Eq("1.2.0", strutil.NumVersion("v1.2.0"))
+	is.Eq("3.19.6", strutil.NumVersion("flutter-3.19.6"))
+	is.Eq("3.19.6.3", strutil.NumVersion("flutter-3.19.6.3"))
+	is.Eq("1.8.0_442", strutil.NumVersion("corretto-1.8.0_442"))
+	is.Eq("1.8.0-442", strutil.NumVersion("corretto-1.8.0-442"))
+	is.Eq("20.16.0", strutil.NumVersion("node-v20.16.0-win-x64"))
+}
+
 func TestToTime(t *testing.T) {
 	is := assert.New(t)
 
