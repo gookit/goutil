@@ -142,9 +142,7 @@ func SetTimeLocal(tl *time.Location) {
 }
 
 // SetTimeLocalUTC custom time.Local=UTC for testing.
-func SetTimeLocalUTC() {
-	SetTimeLocal(time.UTC)
-}
+func SetTimeLocalUTC() { SetTimeLocal(time.UTC) }
 
 // RestoreTimeLocal restore time.Local
 func RestoreTimeLocal() {

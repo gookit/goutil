@@ -72,6 +72,10 @@ func MockOsEnvByText(envText string, fn func()) {
 		if line = strings.TrimSpace(line); line == "" {
 			continue
 		}
+		if line[0] == '#' || strings.HasPrefix(line, "//") {
+			continue
+		}
+
 		nodes := strings.SplitN(line, "=", 2)
 		envKey := strings.TrimSpace(nodes[0])
 
@@ -82,11 +86,6 @@ func MockOsEnvByText(envText string, fn func()) {
 		}
 	}
 
-	MockCleanOsEnv(mp, fn)
-}
-
-// MockOsEnv by env map data. alias of MockCleanOsEnv
-func MockOsEnv(mp map[string]string, fn func()) {
 	MockCleanOsEnv(mp, fn)
 }
 
@@ -153,7 +152,10 @@ func RunOnCleanEnv(runFn func()) {
 	RevertOSEnv()
 }
 
-// MockCleanOsEnv by env map data.
+// MockOsEnv by input map data. alias of MockCleanOsEnv
+func MockOsEnv(mp map[string]string, fn func()) { MockCleanOsEnv(mp, fn) }
+
+// MockCleanOsEnv by input env map data.
 //
 // will CLEAR all old ENV data, use given a data map.
 // will RECOVER old ENV after fn run.

@@ -95,10 +95,10 @@ func IContainsOne(s string, subs []string) bool {
 	return false
 }
 
-// ContainsAll substr(s) in the given string. alias of HasAllSubs()
+// ContainsAll given string should contain all substrings. alias of HasAllSubs()
 func ContainsAll(s string, subs []string) bool { return HasAllSubs(s, subs) }
 
-// HasAllSubs all substr in the given string.
+// HasAllSubs given string should contain all substrings
 func HasAllSubs(s string, subs []string) bool {
 	for _, sub := range subs {
 		if !strings.Contains(s, sub) {

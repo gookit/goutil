@@ -16,9 +16,7 @@ type Buffer struct {
 }
 
 // NewBuffer instance
-func NewBuffer() *Buffer {
-	return &Buffer{}
-}
+func NewBuffer() *Buffer { return &Buffer{} }
 
 // PrintByte to buffer, ignore error. alias of WriteByte()
 func (b *Buffer) PrintByte(c byte) {
@@ -112,16 +110,10 @@ func (b *Buffer) ResetAndGet() string {
 }
 
 // Close buffer
-func (b *Buffer) Close() error {
-	return b.CloseErr
-}
+func (b *Buffer) Close() error { return b.CloseErr }
 
 // Flush buffer
-func (b *Buffer) Flush() error {
-	return b.FlushErr
-}
+func (b *Buffer) Flush() error { return b.FlushErr }
 
 // Sync anf flush buffer
-func (b *Buffer) Sync() error {
-	return b.SyncErr
-}
+func (b *Buffer) Sync() error { return b.SyncErr }

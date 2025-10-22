@@ -40,6 +40,11 @@ type ConvOption[T any] struct {
 	// 	- if true: will use real type try convert. default is false
 	//	- NOTE: current T type's ptr is default support.
 	HandlePtr bool
+	// StrictMode for convert value. default is false
+	//
+	// TRUE:
+	//  - to int: string, float will return error
+	StrictMode bool
 	// set custom fallback convert func for not supported type.
 	UserConvFn ToTypeFunc[T]
 }
@@ -309,7 +314,7 @@ func StrIntOr(s string, defVal int) int {
 }
 
 /*************************************************************
- * convert value to int64
+ * region convert to int64
  *************************************************************/
 
 // Int64 convert value to int64, return error on failed
