@@ -132,3 +132,18 @@ func TestIndent(t *testing.T) {
 	is.Eq("\n", strutil.Indent("\n", ".."))
 	is.Eq("..abc\n..def", strutil.Indent("abc\ndef", ".."))
 }
+
+func TestReplaces(t *testing.T) {
+	str := "{name} age is {age}"
+	assert.Eq(t, "tom age is 20", strutil.Replaces(str, map[string]string{
+		"{name}": "tom",
+		"{age}":  "20",
+	}))
+
+	// ReplaceVars
+	assert.Eq(t, "no var string", strutil.ReplaceVars("no var string", nil))
+	assert.Eq(t, "tom age is 20", strutil.ReplaceVars(str, map[string]string{
+		"name": "tom",
+		"age":  "20",
+	}))
+}

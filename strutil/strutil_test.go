@@ -47,15 +47,6 @@ func TestValid(t *testing.T) {
 	is.Empty(strutil.OrHandle("", strings.TrimSpace))
 }
 
-func TestReplaces(t *testing.T) {
-	assert.Eq(t, "tom age is 20", strutil.Replaces(
-		"{name} age is {age}",
-		map[string]string{
-			"{name}": "tom",
-			"{age}":  "20",
-		}))
-}
-
 func TestWrapTag(t *testing.T) {
 	assert.Eq(t, "", strutil.WrapTag("", "info"))
 	assert.Eq(t, "<info>abc</info>", strutil.WrapTag("abc", "info"))
