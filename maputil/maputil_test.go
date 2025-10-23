@@ -59,6 +59,9 @@ func TestMergeStringMap(t *testing.T) {
 	ret = maputil.MergeStrMap(map[string]string{"A": "v0"}, nil)
 	assert.Eq(t, map[string]string{"A": "v0"}, ret)
 
+	ret = maputil.AppendSMap(maputil.SM{"A": "v0"}, maputil.SM{"B": "v2"})
+	assert.ContainsKeys(t, ret, []string{"A", "B"})
+
 	ret = maputil.MergeSMap(nil, map[string]string{"a": "v1"}, true)
 	assert.Eq(t, map[string]string{"a": "v1"}, ret)
 

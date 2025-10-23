@@ -63,6 +63,11 @@ func MergeStrMap(src, dst map[string]string) map[string]string {
 	return MergeStringMap(src, dst, false)
 }
 
+// AppendSMap append string map data to dst map.
+func AppendSMap(dst, src map[string]string) map[string]string {
+	return MergeStringMap(src, dst, false)
+}
+
 // MergeStringMap simple merge two string map. merge src to dst map
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string {
 	if len(src) == 0 {

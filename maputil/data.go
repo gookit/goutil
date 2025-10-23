@@ -9,11 +9,11 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-// Data an map data type
-type Data map[string]any
-
 // Map alias of Data
 type Map = Data
+
+// Data alias of map[string]any
+type Data map[string]any
 
 // Has value on the data map
 func (d Data) Has(key string) bool {

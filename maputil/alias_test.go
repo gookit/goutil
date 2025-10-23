@@ -23,6 +23,8 @@ func TestAliases_AddAlias(t *testing.T) {
 	assert.Eq(t, "real1", as.ResolveAlias("a1"))
 	assert.Eq(t, "notExist", as.ResolveAlias("notExist"))
 
+	assert.NotEmpty(t, as.AliasesNames())
+
 	assert.PanicsMsg(t, func() {
 		as.AddAlias("a", "real3")
 	}, "The alias 'a' is already used by 'real'")
