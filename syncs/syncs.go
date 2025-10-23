@@ -1,7 +1,10 @@
 // Package syncs provides synchronization primitives util functions.
 package syncs
 
-import "sync"
+import (
+	"context"
+	"sync"
+)
 
 // WaitGroup is a wrapper of sync.WaitGroup.
 type WaitGroup struct {
@@ -15,4 +18,9 @@ func (wg *WaitGroup) Go(fn func()) {
 		defer wg.Done()
 		fn()
 	}()
+}
+
+// ContextValue create a new context with given value
+func ContextValue(key, value any) context.Context {
+	return context.WithValue(context.Background(), key, value)
 }

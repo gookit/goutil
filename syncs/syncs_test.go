@@ -37,3 +37,7 @@ func TestWaitGroupGo(t *testing.T) {
 	wg.Wait()
 	assert.Eq(t, expected, counter)
 }
+
+func TestContextValue(t *testing.T) {
+	assert.NotEmpty(t, syncs.ContextValue("key", "value"))
+}

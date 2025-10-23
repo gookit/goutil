@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        go_version: [1.19, '1.20', 1.21, 1.22, 1.23, 1.24]
+        go_version: [1.19, 1.21, 1.22, 1.23, 1.24, stable]
 
     steps:
     - name: Check out code
@@ -63,6 +63,7 @@ jobs:
       with:
         path-to-profile: profile.cov
         flag-name: Go-${{ matrix.go_version }}
+        shallow: true
         parallel: true
 
   # notifies that all test jobs are finished.
@@ -73,4 +74,5 @@ jobs:
     steps:
       - uses: shogo82148/actions-goveralls@v1
         with:
+          shallow: true
           parallel-finished: true
