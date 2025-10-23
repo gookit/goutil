@@ -19,3 +19,19 @@ func TestNewBuffer(t *testing.T) {
 	buf.Writeln("abc")
 	assert.Eq(t, "abc\n", buf.ResetAndGet())
 }
+
+func TestNewSafeBuffer(t *testing.T) {
+	sb := testutil.NewSafeBuffer()
+	_, err := sb.Write([]byte("hello,"))
+	assert.NoErr(t, err)
+	err = sb.WriteByte('a')
+	assert.NoErr(t, err)
+	_, err = sb.WriteRune('b')
+	assert.NoErr(t, err)
+
+	s := sb.ResetGet()
+	assert.Eq(t, "hello,ab", s)
+
+	_, err = sb.WriteString("hello")
+	assert.NoErr(t, err)
+}
