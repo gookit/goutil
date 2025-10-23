@@ -7,15 +7,19 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 )
 
-func TestExpandPath(t *testing.T) {
+func TestSimple_func(t *testing.T) {
 	path := "~/.kite"
 
 	assert.NotEq(t, path, fsutil.Expand(path))
 	assert.NotEq(t, path, fsutil.ExpandPath(path))
+	assert.NotEq(t, path, fsutil.ExpandHome(path))
 	assert.NotEq(t, path, fsutil.ResolvePath(path))
 
 	assert.Eq(t, "", fsutil.Expand(""))
 	assert.Eq(t, "/path/to", fsutil.Expand("/path/to"))
+
+	assert.NotEmpty(t, fsutil.UserHomeDir())
+	assert.NotEmpty(t, fsutil.HomeDir())
 }
 
 func TestPathNoExt(t *testing.T) {

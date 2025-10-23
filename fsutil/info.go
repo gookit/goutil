@@ -74,16 +74,15 @@ func Extname(fPath string) string {
 func Suffix(fPath string) string { return filepath.Ext(fPath) }
 
 // Expand will parse first `~` to user home dir path.
-func Expand(pathStr string) string {
-	return comfunc.ExpandHome(pathStr)
-}
+func Expand(pathStr string) string { return comfunc.ExpandHome(pathStr) }
+
+// ExpandHome will parse first `~` to user home dir path.
+func ExpandHome(pathStr string) string { return comfunc.ExpandHome(pathStr) }
 
 // ExpandPath will parse `~` to user home dir path.
-func ExpandPath(pathStr string) string {
-	return comfunc.ExpandHome(pathStr)
-}
+func ExpandPath(pathStr string) string { return comfunc.ExpandHome(pathStr) }
 
-// ResolvePath will parse `~` and env var in path
+// ResolvePath will parse `~` and ENV var in path
 func ResolvePath(pathStr string) string {
 	pathStr = comfunc.ExpandHome(pathStr)
 	// return comfunc.ParseEnvVar()
@@ -91,6 +90,18 @@ func ResolvePath(pathStr string) string {
 }
 
 // SplitPath splits path immediately following the final Separator, separating it into a directory and file name component
-func SplitPath(pathStr string) (dir, name string) {
-	return filepath.Split(pathStr)
+func SplitPath(pathStr string) (dir, name string) { return filepath.Split(pathStr) }
+
+// homeDir cache
+var _homeDir string
+
+// UserHomeDir is alias of os.UserHomeDir, but ignore error.(by os.UserHomeDir)
+func UserHomeDir() string {
+	if _homeDir == "" {
+		_homeDir, _ = os.UserHomeDir()
+	}
+	return _homeDir
 }
+
+// HomeDir get user home dir path.
+func HomeDir() string { return UserHomeDir() }

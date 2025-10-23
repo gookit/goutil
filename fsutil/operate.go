@@ -13,12 +13,21 @@ import (
 )
 
 // Mkdir alias of os.MkdirAll()
-func Mkdir(dirPath string, perm os.FileMode) error {
-	return os.MkdirAll(dirPath, perm)
+func Mkdir(dirPath string, perm fs.FileMode) error { return os.MkdirAll(dirPath, perm) }
+
+// MkdirQuick with default permission 0755.
+func MkdirQuick(dirPath string) error { return EnsureDir(dirPath) }
+
+// EnsureDir creates a directory if it doesn't exist
+func EnsureDir(path string) error {
+	if !DirExist(path) {
+		return os.MkdirAll(path, 0755)
+	}
+	return nil
 }
 
 // MkDirs batch makes multi dirs at once
-func MkDirs(perm os.FileMode, dirPaths ...string) error {
+func MkDirs(perm fs.FileMode, dirPaths ...string) error {
 	for _, dirPath := range dirPaths {
 		if err := os.MkdirAll(dirPath, perm); err != nil {
 			return err
@@ -28,7 +37,7 @@ func MkDirs(perm os.FileMode, dirPaths ...string) error {
 }
 
 // MkSubDirs batch makes multi sub-dirs at once
-func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error {
+func MkSubDirs(perm fs.FileMode, parentDir string, subDirs ...string) error {
 	for _, dirName := range subDirs {
 		dirPath := parentDir + "/" + dirName
 		if err := os.MkdirAll(dirPath, perm); err != nil {
