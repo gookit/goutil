@@ -15,6 +15,7 @@ import (
 	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
+	"github.com/gookit/goutil/strutil"
 )
 
 // Nil asserts that the given is a nil value
@@ -217,7 +218,7 @@ func NotContains(t TestingT, src, elem any, fmtAndArgs ...any) bool {
 	return fail(t, fmt.Sprintf("%#v\nShould not contain: %#v", src, elem), fmtAndArgs)
 }
 
-// ContainsKey asserts that the given map is contains key
+// ContainsKey asserts that the given map is containing key
 func ContainsKey(t TestingT, mp, key any, fmtAndArgs ...any) bool {
 	if !maputil.HasKey(mp, key) {
 		t.Helper()
@@ -328,6 +329,19 @@ func StrNotContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	t.Helper()
 	return fail(t,
 		fmt.Sprintf("String check fail:\nGiven string: %#v\nShould not contains: %#v", s, sub),
+		fmtAndArgs,
+	)
+}
+
+// StrContainsAll asserts that the given string should contain all substrings
+func StrContainsAll(t TestingT, s string, subs []string, fmtAndArgs ...any) bool {
+	if strutil.ContainsAll(s, subs) {
+		return true
+	}
+
+	t.Helper()
+	return fail(t,
+		fmt.Sprintf("String check fail:\nGiven string: %#v\nShould contains all: %#v", s, subs),
 		fmtAndArgs,
 	)
 }

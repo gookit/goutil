@@ -108,6 +108,7 @@ func TestCommon_fail(t *testing.T) {
 	assert.StrContains(t, str, "goutil/testutil/assert/asserts_test.go:")
 	assert.StrContains(t, str, "Expected nil, but got:")
 	assert.StrNotContains(t, str, "NOT EXIST")
+	assert.StrContainsAll(t, str, []string{"goutil", "testutil"})
 	tc.Reset()
 
 	assert.NotNil(tc, nil)
