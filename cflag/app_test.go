@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/gookit/goutil/cflag"
@@ -157,4 +158,34 @@ func TestApp_Run_error(t *testing.T) {
 	}))
 
 	assert.ErrMsg(t, app.RunWithArgs([]string{"demo"}), "command run error")
+}
+
+func TestCmd_Run(t *testing.T) {
+	var c1Opts = struct {
+		age  int
+		name string
+	}{}
+
+	var buf bytes.Buffer
+
+	cmd := cflag.NewCmd("demo", "this is a demo command", func(c *cflag.Cmd) error {
+		buf.WriteString("name=" + c1Opts.name)
+		buf.WriteString("age=" + strconv.Itoa(c1Opts.age))
+		buf.WriteString("arg1=")
+		buf.WriteString(c.Arg("arg1").String())
+		return nil
+	})
+
+	cmd.IntVar(&c1Opts.age, "age", 0, "this is a int option;;a")
+	cmd.StringVar(&c1Opts.name, "name", "", "this is a string option and required;true")
+	cmd.AddArg("arg1", "this is arg1", true, nil)
+	// show help
+	cmd.MustParse([]string{"--help"})
+
+	// run
+	cmd.MustRun([]string{"--name", "inhere", "arg1-value"})
+	ret := buf.String()
+	assert.StrContains(t, ret, "name=inhere")
+	assert.StrContains(t, ret, "age=0")
+	assert.StrContains(t, ret, "arg1=arg1-value")
 }

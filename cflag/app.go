@@ -102,19 +102,7 @@ func (a *App) addCmd(c *Cmd) {
 	a.NameWidth = mathutil.MaxInt(a.NameWidth, ln)
 
 	// attach handle func
-	if c.Func != nil {
-		// fix: init c.CFlags on not exist
-		if c.CFlags == nil {
-			c.CFlags = NewEmpty(func(cf *CFlags) {
-				cf.Desc = c.Desc
-				cf.FlagSet = flag.NewFlagSet(c.Name, flag.ContinueOnError)
-			})
-		}
-
-		c.CFlags.Func = func(_ *CFlags) error {
-			return c.Func(c)
-		}
-	}
+	c.init()
 
 	if c.OnAdd != nil {
 		c.OnAdd(c)
@@ -244,14 +232,19 @@ func (a *App) showHelp() error {
 	return nil
 }
 
-// Cmd struct
+//
+// region Command in app
+// -----------------------------------
+
+// Cmd struct. see CFlags
 type Cmd struct {
 	*CFlags
 	Name string
 	Desc string // desc for command, will sync set to CFlags.Desc
-	// OnAdd hook func. you can add some cli options or arguments.
+	// OnAdd hook func. fire on add to App
+	//  - you can add some cli options or arguments.
 	OnAdd func(c *Cmd)
-	// Func for run command, will call after options parsed.
+	// Func for run command, will call after options parsed. will sync set to CFlags.Func
 	Func func(c *Cmd) error
 }
 
@@ -279,6 +272,45 @@ func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
 		fn(c)
 	}
 	return c
+}
+
+// QuickRun parse OS flags and run command, will auto handle error
+func (c *Cmd) QuickRun() { c.MustParse(nil) }
+
+// MustRun parse flags and run command. alias of MustParse()
+func (c *Cmd) MustRun(args []string) { c.MustParse(args) }
+
+// MustParse parse flags and run command, will auto handle error
+func (c *Cmd) MustParse(args []string) {
+	if err := c.Parse(args); err != nil {
+		ccolor.Redln("ERROR:", err)
+	}
+}
+
+// Parse flags and run command func
+//
+// If args is nil, will parse os.Args
+func (c *Cmd) Parse(args []string) error {
+	// fix: cmd.xxRun not exec Cmd.Func
+	c.init()
+	return c.CFlags.Parse(args)
+}
+
+func (c *Cmd) init() {
+	// attach handle func
+	if c.Func != nil {
+		// fix: init c.CFlags on not exist
+		if c.CFlags == nil {
+			c.CFlags = NewEmpty(func(cf *CFlags) {
+				cf.Desc = c.Desc
+				cf.FlagSet = flag.NewFlagSet(c.Name, flag.ContinueOnError)
+			})
+		}
+
+		c.CFlags.Func = func(_ *CFlags) error {
+			return c.Func(c)
+		}
+	}
 }
 
 func (c *Cmd) getDesc() string {

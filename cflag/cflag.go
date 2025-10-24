@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil"
-	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
@@ -213,20 +212,16 @@ func (c *CFlags) BindArg(arg *FlagArg) {
  *************************************************************/
 
 // QuickRun parse OS flags and run command, will auto handle error
-func (c *CFlags) QuickRun() {
-	c.MustParse(nil)
-}
+func (c *CFlags) QuickRun() { c.MustParse(nil) }
 
 // MustRun parse flags and run command. alias of MustParse()
-func (c *CFlags) MustRun(args []string) {
-	c.MustParse(args)
-}
+func (c *CFlags) MustRun(args []string) { c.MustParse(args) }
 
 // MustParse parse flags and run command, will auto handle error
 func (c *CFlags) MustParse(args []string) {
 	err := c.Parse(args)
 	if err != nil {
-		cliutil.Redln("ERROR:", err)
+		ccolor.Redln("ERROR:", err)
 	}
 }
 
@@ -240,7 +235,7 @@ func (c *CFlags) Parse(args []string) error {
 
 	defer func() {
 		if err := recover(); err != nil {
-			cliutil.Errorln("ERROR:", err)
+			ccolor.Errorln("ERROR:", err)
 			if Debug {
 				fmt.Println(errorx.Newf("(debug mode)RECOVERD PARSE ERROR: %v", err))
 			}
@@ -448,14 +443,15 @@ func (c *CFlags) showHelp(err error) {
 		buf.Printf("<cyan>%s</>\n\n", c.helpDesc())
 	}
 
-	buf.Printf("<comment>Usage:</> %s [--Options...] [...CliArgs]\n", binName)
+	buf.Printf("<comment>Usage:</> %s [--Options...] [...Arguments]\n", binName)
 	buf.WriteStr("<comment>Options:</>\n")
 
 	// render options help
 	c.renderOptionsHelp(buf)
+	buf.WriteStr1Nl("  <green>-h, --help</>" + strings.Repeat("    ", 4) + "Display command help")
 
 	if len(c.bindArgs) > 0 {
-		buf.WriteStr1("\n<comment>CliArgs:</>\n")
+		buf.WriteStr1("\n<comment>Arguments:</>\n")
 		for _, arg := range c.bindArgs {
 			buf.Printf(
 				"  <green>%s</>   %s\n",
