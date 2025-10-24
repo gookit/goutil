@@ -19,7 +19,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
@@ -77,6 +76,8 @@ type CFlags struct {
 	Example string
 	// LongHelp custom help
 	LongHelp string
+	// HelpOnEmptyArgs show help when not input args
+	HelpOnEmptyArgs bool
 	// Func handler for the command
 	Func func(c *CFlags) error
 }
@@ -117,16 +118,12 @@ func NewEmpty(fns ...func(c *CFlags)) *CFlags {
 
 // WithDesc for command
 func WithDesc(desc string) func(c *CFlags) {
-	return func(c *CFlags) {
-		c.Desc = desc
-	}
+	return func(c *CFlags) { c.Desc = desc }
 }
 
 // WithVersion for command
 func WithVersion(version string) func(c *CFlags) {
-	return func(c *CFlags) {
-		c.Version = version
-	}
+	return func(c *CFlags) { c.Version = version }
 }
 
 // WithConfigFn for command
@@ -147,7 +144,7 @@ func (c *CFlags) AddValidator(name string, fn OptCheckFn) {
 // ConfigOpt for a flag option
 func (c *CFlags) ConfigOpt(name string, fn func(opt *FlagOpt)) {
 	if c.Lookup(name) == nil {
-		goutil.Panicf("cflag: option '%s' is not registered", name)
+		basefn.Panicf("cflag: option '%s' is not registered", name)
 	}
 
 	// init on not exist
@@ -170,7 +167,7 @@ func (c *CFlags) AddShortcuts(name string, shorts ...string) {
 func (c *CFlags) addShortcuts(name string, shorts []string) {
 	for _, short := range shorts {
 		if regName, ok := c.shortcuts[short]; ok {
-			goutil.Panicf("cflag: shortcut '%s' has been used by option '%s'", short, regName)
+			basefn.Panicf("cflag: shortcut '%s' has been used by option '%s'", short, regName)
 		}
 
 		c.shortcuts[short] = name
@@ -219,8 +216,7 @@ func (c *CFlags) MustRun(args []string) { c.MustParse(args) }
 
 // MustParse parse flags and run command, will auto handle error
 func (c *CFlags) MustParse(args []string) {
-	err := c.Parse(args)
-	if err != nil {
+	if err := c.Parse(args); err != nil {
 		ccolor.Redln("ERROR:", err)
 	}
 }
@@ -247,6 +243,12 @@ func (c *CFlags) Parse(args []string) error {
 		return err
 	}
 
+	// show help when no args
+	if c.HelpOnEmptyArgs && len(args) == 0 {
+		c.showHelp(nil)
+		return nil
+	}
+
 	// do parsing
 	if err := c.doParse(args); err != nil {
 		if err == flag.ErrHelp {
@@ -269,7 +271,7 @@ func (c *CFlags) prepare() error {
 	// parse flag usage string
 	c.VisitAll(func(f *flag.Flag) {
 		if regName, ok := c.shortcuts[f.Name]; ok {
-			goutil.Panicf("cflag: name '%s' has been as shortcut by '%s'", f.Name, regName)
+			basefn.Panicf("cflag: name '%s' has been as shortcut by '%s'", f.Name, regName)
 		}
 
 		f.Usage = c.parseFlagUsage(f.Name, f.Usage)
@@ -391,7 +393,7 @@ func (c *CFlags) bindParsedArgs() error {
 func (c *CFlags) Arg(name string) *FlagArg {
 	idx, ok := c.argNames[name]
 	if !ok {
-		goutil.Panicf("cflag: get not binding arg '%s'", name)
+		basefn.Panicf("cflag: get not binding arg '%s'", name)
 	}
 	return c.bindArgs[idx]
 }
@@ -400,9 +402,7 @@ func (c *CFlags) Arg(name string) *FlagArg {
 func (c *CFlags) RemainArgs() []string { return c.remainArgs }
 
 // Name for command
-func (c *CFlags) Name() string {
-	return filepath.Base(c.FlagSet.Name())
-}
+func (c *CFlags) Name() string { return filepath.Base(c.FlagSet.Name()) }
 
 // BinFile path for command
 func (c *CFlags) BinFile() string { return c.FlagSet.Name() }
@@ -422,9 +422,7 @@ func (c *CFlags) helpDesc() string {
 }
 
 // ShowHelp for command
-func (c *CFlags) ShowHelp() {
-	c.showHelp(nil)
-}
+func (c *CFlags) ShowHelp() { c.showHelp(nil) }
 
 // show help for command
 func (c *CFlags) showHelp(err error) {
@@ -515,6 +513,11 @@ func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
 			} else {
 				stdio.Fprintf(&b, " (default <magentaB>%v</>)", opt.DefValue)
 			}
+		}
+
+		// arrayed, repeatable
+		if _, ok := opt.Value.(RepeatableFlag); ok {
+			b.WriteString(" <cyan>(repeatable)</>")
 		}
 
 		b.WriteByte('\n')

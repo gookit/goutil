@@ -9,10 +9,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
+	"github.com/gookit/goutil/x/basefn"
 	"github.com/gookit/goutil/x/ccolor"
 )
 
@@ -94,7 +94,7 @@ func (a *App) addCmd(c *Cmd) {
 	}
 
 	if _, ok := a.cmds[c.Name]; ok {
-		goutil.Panicf("command name %s has been exists", c.Name)
+		basefn.Panicf("command name %s has been exists", c.Name)
 	}
 
 	a.names = append(a.names, c.Name)

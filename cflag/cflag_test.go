@@ -55,7 +55,7 @@ func TestSetDebug(t *testing.T) {
 	cflag.SetDebug(false)
 }
 
-var opts = struct {
+var glOpts = struct {
 	int  int
 	str  string
 	str1 string
@@ -67,9 +67,9 @@ func TestNew(t *testing.T) {
 		cflag.WithDesc("desc for the console command"),
 		cflag.WithVersion("1.0.2"),
 	)
-	c.IntVar(&opts.int, "int", 0, "this is a int option;true;i")
-	c.StringVar(&opts.str, "str", "", "this is a string option;;s")
-	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default;;s1")
+	c.IntVar(&glOpts.int, "int", 0, "this is a int option;true;i")
+	c.StringVar(&glOpts.str, "str", "", "this is a string option;;s")
+	c.StringVar(&glOpts.str1, "str1", "def-val", "this is a string option with default;;s1")
 	c.AddValidator("int", func(val any) error {
 		iv := val.(int)
 		if iv < 10 {
@@ -83,6 +83,7 @@ func TestNew(t *testing.T) {
 	c.AddArg("ag1", "this is a int option", false, nil)
 	c.AddArg("arg3", "this is arg2 with default", false, "def-val")
 
+	// show help
 	inArgs := []string{"--help"}
 	err := c.Parse(inArgs)
 	assert.NoErr(t, err)
@@ -90,17 +91,23 @@ func TestNew(t *testing.T) {
 	inArgs = []string{"--int", "23"}
 	err = c.Parse(inArgs)
 	assert.NoErr(t, err)
-	assert.Eq(t, 23, opts.int)
+	assert.Eq(t, 23, glOpts.int)
 
 	// use validate
 	inArgs = []string{"--int", "3"}
 	err = c.Parse(inArgs)
 	assert.Err(t, err)
-	assert.Eq(t, "flag option 'int': value should >= 10", err.Error())
+	assert.ErrMsg(t, err, "flag option 'int': value should >= 10")
+
+	t.Run("help no args", func(t *testing.T) {
+		c.HelpOnEmptyArgs = true
+		c.MustParse([]string{})
+	})
+
 }
 
 func TestCFlags_Parse(t *testing.T) {
-	var opts = struct {
+	var cmdOpts = struct {
 		int  int
 		str  string
 		str1 string
@@ -111,7 +118,7 @@ func TestCFlags_Parse(t *testing.T) {
 		c.Desc = "this is a demo command"
 		c.Version = "0.5.1"
 	})
-	c.IntVar(&opts.int, "int", 0, "this is a int option;false;i")
+	c.IntVar(&cmdOpts.int, "int", 0, "this is a int option;false;i")
 
 	assert.PanicsMsg(t, func() {
 		c.AddShortcuts("notExist", "d,e")
@@ -121,11 +128,10 @@ func TestCFlags_Parse(t *testing.T) {
 	// 	c.AddShortcuts("int", "i,n")
 	// }, "cflag: option 'notExist' is not registered")
 
+	// QuickRun
 	osArgs := os.Args
 	os.Args = []string{"./myapp", "ag1", "ag2"}
-
 	c.QuickRun()
 	assert.Eq(t, "[ag1 ag2]", fmt.Sprint(c.RemainArgs()))
-
 	os.Args = osArgs
 }
