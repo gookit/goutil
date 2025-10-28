@@ -18,7 +18,7 @@ type Client struct {
 	method  string
 	baseURL string
 	timeout int // unit: ms
-	// custom set headers
+	// custom set default headers
 	headerMap map[string]string
 
 	// before send callback
@@ -217,12 +217,11 @@ func (h *Client) MustSend(method, url string, optFns ...OptionFn) *http.Response
 
 // SendWithOpt request and return http response
 func (h *Client) SendWithOpt(url string, opt *Option) (*http.Response, error) {
-	cli := h
-	if len(cli.baseURL) > 0 {
+	if len(h.baseURL) > 0 {
 		if !strings.HasPrefix(url, "http") {
-			url = cli.baseURL + url
+			url = h.baseURL + url
 		} else if len(url) == 0 {
-			url = cli.baseURL
+			url = h.baseURL
 		}
 	}
 
@@ -233,7 +232,7 @@ func (h *Client) SendWithOpt(url string, opt *Option) (*http.Response, error) {
 	}
 
 	// create request
-	method := strings.ToUpper(strutil.OrElse(opt.Method, cli.method))
+	method := strings.ToUpper(strutil.OrElse(opt.Method, h.method))
 
 	if opt.Data != nil {
 		if IsNoBodyMethod(method) {

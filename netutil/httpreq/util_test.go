@@ -36,8 +36,18 @@ func TestAddHeaders(t *testing.T) {
 	httpreq.AddHeaders(req, http.Header{
 		"key0": []string{"val0"},
 	})
-
 	assert.Eq(t, "val0", req.Header.Get("key0"))
+
+	httpreq.AddHeaderMap(req, map[string]string{
+		"key1": "val1",
+	})
+	assert.Eq(t, "val1", req.Header.Get("key1"))
+
+	// IsValidMethod
+	assert.NotEmpty(t, httpreq.ValidMethods)
+	assert.True(t, httpreq.IsValidMethod("get"))
+	assert.True(t, httpreq.IsValidMethod("GET"))
+	assert.False(t, httpreq.IsValidMethod("get1"))
 }
 
 func TestHeaderToStringMap(t *testing.T) {
@@ -67,6 +77,12 @@ func TestToQueryValues(t *testing.T) {
 		"field2": {"value2"},
 	})
 	assert.StrContains(t, vs.Encode(), "field1=234")
+
+	reqURL, err := url.Parse("abc.dev")
+	assert.NoErr(t, err)
+	err = httpreq.AppendQueryToURL(reqURL, vs)
+	assert.NoErr(t, err)
+	assert.Eq(t, "field1=234&field2=value2", reqURL.RawQuery)
 }
 
 func TestRequestToString(t *testing.T) {

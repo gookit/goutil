@@ -72,6 +72,20 @@ func IsNoBodyMethod(method string) bool {
 	return method != "POST" && method != "PUT" && method != "PATCH"
 }
 
+// IsValidMethod check method is valid
+func IsValidMethod(method string) bool {
+	method = strings.ToUpper(method)
+	return http.MethodGet == method ||
+		http.MethodPost == method ||
+		http.MethodPut == method ||
+		http.MethodPatch == method ||
+		http.MethodDelete == method ||
+		http.MethodConnect == method ||
+		http.MethodHead == method ||
+		http.MethodOptions == method ||
+		http.MethodTrace == method
+}
+
 // BuildBasicAuth returns the base64 encoded username:password for basic auth.
 // Then set to header "Authorization".
 //
@@ -101,14 +115,14 @@ func SetHeaders(req *http.Request, headers ...http.Header) {
 	}
 }
 
-// AddHeaderMap to reqeust instance.
+// AddHeaderMap to request instance.
 func AddHeaderMap(req *http.Request, headerMap map[string]string) {
 	for k, v := range headerMap {
 		req.Header.Add(k, v)
 	}
 }
 
-// SetHeaderMap to reqeust instance.
+// SetHeaderMap to request instance.
 func SetHeaderMap(req *http.Request, headerMap map[string]string) {
 	for k, v := range headerMap {
 		req.Header.Set(k, v)
