@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/gookit/goutil/x/termenv"
 )
 
 // output colored text like uses custom tag.
@@ -178,7 +176,7 @@ func ReplaceTag(str string) string { return ParseTagByEnv(str) }
 // ParseTagByEnv parse given string. will check package setting.
 func ParseTagByEnv(str string) string {
 	// disable OR not support color
-	if termenv.NoColor() || !termenv.IsSupportColor() {
+	if shouldCleanColor() {
 		return ClearTag(str)
 	}
 	return ParseTag(str)

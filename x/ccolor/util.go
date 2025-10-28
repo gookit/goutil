@@ -22,6 +22,10 @@ func ColorsToCode(colors ...Color) string {
 	return strings.Join(codes, ";")
 }
 
+func shouldCleanColor() bool {
+	return termenv.NoColor() || !termenv.IsSupportColor()
+}
+
 /*************************************************************
  * render color code
  *************************************************************/
@@ -43,7 +47,7 @@ func RenderCode(code string, args ...any) string {
 	}
 
 	// disabled OR not support color
-	if !termenv.IsSupportColor() {
+	if shouldCleanColor() {
 		return ClearCode(message)
 	}
 
@@ -62,7 +66,7 @@ func RenderString(code string, str string) string {
 	}
 
 	// disabled OR not support color
-	if !termenv.IsSupportColor() {
+	if shouldCleanColor() {
 		return ClearCode(str)
 	}
 
@@ -79,7 +83,7 @@ func RenderWithSpaces(code string, args ...any) string {
 	}
 
 	// disabled OR not support color
-	if !termenv.IsSupportColor() {
+	if shouldCleanColor() {
 		return ClearCode(msg)
 	}
 	return StartSet + code + "m" + msg + ResetSet
