@@ -66,6 +66,14 @@ func TestNoCaseEq(t *testing.T) {
 	assert.False(t, strutil.Equal("a", "b"))
 }
 
+func TestIsUpper(t *testing.T) {
+	assert.True(t, strutil.IsUpper("ABC"))
+	assert.False(t, strutil.IsUpper("aBC"))
+
+	assert.False(t, strutil.IsLower("aBC"))
+	assert.True(t, strutil.IsLower("abc"))
+}
+
 func TestStrPos(t *testing.T) {
 	// StrPos
 	assert.Eq(t, -1, strutil.StrPos("xyz", "a"))
@@ -171,6 +179,14 @@ func TestIsVarName(t *testing.T) {
 
 	assert.False(t, strutil.IsVarName(" abc"))
 	assert.False(t, strutil.IsVarName("+"))
+}
+
+func TestIsEnvName(t *testing.T) {
+	assert.False(t, strutil.IsEnvName("a"))
+	assert.False(t, strutil.IsEnvName("APP_aa"))
+
+	assert.True(t, strutil.IsEnvName("SHELL"))
+	assert.True(t, strutil.IsEnvName("APP_EN"))
 }
 
 func TestIEqual(t *testing.T) {

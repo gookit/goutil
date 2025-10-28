@@ -48,6 +48,28 @@ func IsAlphaNum(c uint8) bool {
 	return c == '_' || '0' <= c && c <= '9' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z'
 }
 
+// IsUpper returns true if the given string is an uppercase, otherwise false.
+func IsUpper(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] >= 'A' && s[i] <= 'Z' {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
+// IsLower returns true if the given string is a lowercase, otherwise false.
+func IsLower(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] >= 'a' && s[i] <= 'z' {
+			continue
+		}
+		return false
+	}
+	return true
+}
+
 // StrPos alias of the strings.Index
 func StrPos(s, sub string) int { return strings.Index(s, sub) }
 
@@ -227,6 +249,8 @@ var (
 	verRegex = regexp.MustCompile(`^[0-9][\d.]+(-\w+)?$`)
 	// regex for check variable name
 	varRegex = regexp.MustCompile(`^[a-zA-Z][\w-]*$`)
+	// regex for check env var name
+	envRegex = regexp.MustCompile(`^[A-Z][A-Z0-9_]*$`)
 	// IsVariableName alias for IsVarName
 	IsVariableName = IsVarName
 )
@@ -236,6 +260,9 @@ func IsVersion(s string) bool { return verRegex.MatchString(s) }
 
 // IsVarName is valid variable name.
 func IsVarName(s string) bool { return varRegex.MatchString(s) }
+
+// IsEnvName is valid ENV var name. eg: APP_NAME
+func IsEnvName(s string) bool { return envRegex.MatchString(s) }
 
 // Compare for two strings.
 func Compare(s1, s2, op string) bool { return VersionCompare(s1, s2, op) }
