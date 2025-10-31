@@ -118,7 +118,7 @@ func TestToDuration(t *testing.T) {
 		assert.Eq(t, item.out, dur)
 	}
 
-	dur, err := timex.ToDur("invalid")
+	dur, err := timex.ParseDuration("invalid")
 	assert.Err(t, err)
 	assert.Eq(t, time.Duration(0), dur)
 

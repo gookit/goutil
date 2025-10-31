@@ -32,6 +32,24 @@ func ElapsedNow(start time.Time) string {
 	return Elapsed(start, time.Now())
 }
 
+// FormatDuration Formatting time consumption is clock format. 格式化时间消耗为时钟格式
+//
+// eg: 90 * time.Second => "01:30"
+func FormatDuration(d time.Duration) string {
+	seconds := int(d.Seconds())
+	if seconds < 0 {
+		seconds = 0
+	}
+	hours := seconds / 3600
+	minutes := (seconds % 3600) / 60
+	secs := seconds % 60
+
+	if hours > 0 {
+		return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, secs)
+	}
+	return fmt.Sprintf("%02d:%02d", minutes, secs)
+}
+
 //
 // -------- parse time diff to string --------
 //
@@ -110,20 +128,19 @@ func HowLongAgo2(diffSec int64, tms []TimeMessage) string {
 //
 
 // ToTime parse a datetime string. alias of strutil.ToTime()
-func ToTime(s string, layouts ...string) (time.Time, error) {
-	return strutil.ToTime(s, layouts...)
-}
+func ToTime(s string, layouts ...string) (time.Time, error) { return strutil.ToTime(s, layouts...) }
 
 // ToDur parse a duration string. alias of ToDuration()
 func ToDur(s string) (time.Duration, error) { return ToDuration(s) }
+
+// ParseDuration parse a duration string. alias of ToDuration()
+func ParseDuration(s string) (time.Duration, error) { return comfunc.ToDuration(s) }
 
 // ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
 //
 // it like time.ParseDuration, but supports more unit string. eg: "1d", "2w"
-func ToDuration(s string) (time.Duration, error) {
-	return comfunc.ToDuration(s)
-}
+func ToDuration(s string) (time.Duration, error) { return comfunc.ToDuration(s) }
 
 // TryToTime parse a date string or duration string to time.Time.
 //

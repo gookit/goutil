@@ -33,6 +33,24 @@ func TestElapsedNow(t *testing.T) {
 	assert.StrContains(t, timex.ElapsedNow(st), "2.")
 }
 
+func TestFormatDuration(t *testing.T) {
+	tests := []struct {
+		input    time.Duration
+		expected string
+	}{
+		{30 * time.Second, "00:30"},
+		{90 * time.Second, "01:30"},
+		{3661 * time.Second, "01:01:01"},
+		{7200 * time.Second, "02:00:00"},
+		{-1 * time.Second, "00:00"},
+	}
+
+	for _, tt := range tests {
+		result := timex.FormatDuration(tt.input)
+		assert.Eq(t, tt.expected, result)
+	}
+}
+
 func TestFromNow(t *testing.T) {
 	lastIdx := len(timex.TimeMessages) - 1
 	for i, tm := range timex.TimeMessages {
