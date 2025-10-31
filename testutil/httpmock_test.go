@@ -64,6 +64,24 @@ func TestMockRequest(t *testing.T) {
 	assert.Eq(t, "hello!BODY", w.Body.String())
 }
 
+func TestEchoReply(t *testing.T) {
+	er := testutil.EchoReply{}
+
+	// JSONMap
+	assert.Nil(t, er.JSONMap())
+	er.JSON = []any{"name", "inhere"}
+	assert.Nil(t, er.JSONMap())
+
+	// HeaderString
+	assert.Empty(t, er.HeaderString("X-Test"))
+	er.Headers = map[string]any{
+		"X-Test":  "val",
+		"X-Test2": []string{"val2", "ext1"},
+	}
+	assert.Eq(t, "val", er.HeaderString("X-Test"))
+	assert.Eq(t, "[val2 ext1]", er.HeaderString("X-Test2"))
+}
+
 func TestNewEchoServer(t *testing.T) {
 	r, err := http.Post(testSrvAddr, "text/plain", strings.NewReader("hello!"))
 	assert.NoErr(t, err)
@@ -81,7 +99,12 @@ func TestNewEchoServer(t *testing.T) {
 	// dump.P(rr)
 	assert.Eq(t, "POST", rr.Method)
 	assert.Eq(t, "application/json", rr.ContentType())
+	assert.Eq(t, "application/json", rr.HeaderString("Content-Type"))
 	assert.Eq(t, `{"name": "inhere", "age": 18}`, rr.Body)
+	dataMap := rr.JSONMap()
+	assert.NotNil(t, dataMap)
+	assert.Eq(t, "inhere", dataMap["name"])
+	assert.Eq(t, float64(18), dataMap["age"])
 
 	r, err = http.Head(testSrvAddr + "/head")
 	assert.NoErr(t, err)
@@ -97,5 +120,31 @@ func TestNewEchoServer(t *testing.T) {
 	assert.Panics(t, func() {
 		tr := fakeobj.NewStrReader("invalid-json")
 		testutil.ParseBodyToReply(tr)
+	})
+
+	t.Run("404", func(t *testing.T) {
+		r, err = http.Get(testSrvAddr + "/404")
+		assert.NoErr(t, err)
+		assert.Eq(t, http.StatusNotFound, r.StatusCode)
+	})
+	t.Run("500", func(t *testing.T) {
+		r, err = http.Get(testSrvAddr + "/500")
+		assert.NoErr(t, err)
+		assert.Eq(t, http.StatusInternalServerError, r.StatusCode)
+	})
+	t.Run("405", func(t *testing.T) {
+		r, err = http.Get(testSrvAddr + "/post")
+		assert.NoErr(t, err)
+		assert.Eq(t, http.StatusMethodNotAllowed, r.StatusCode)
+
+		// post /get
+		r, err = http.Post(testSrvAddr+"/get", "text/plain", strings.NewReader("hello!"))
+		assert.NoErr(t, err)
+		assert.Eq(t, http.StatusMethodNotAllowed, r.StatusCode)
+	})
+	t.Run("custom-code", func(t *testing.T) {
+		r, err = http.Get(testSrvAddr + "/status-302")
+		assert.NoErr(t, err)
+		assert.Eq(t, http.StatusFound, r.StatusCode)
 	})
 }
