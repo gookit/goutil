@@ -101,6 +101,21 @@ func TestAnyToSlice(t *testing.T) {
 	is.Err(err)
 }
 
+func TestToMap(t *testing.T) {
+	type User struct {
+		Name string
+		Age  int
+	}
+	users := []User{{"Tom", 18}, {"Jack", 20}}
+	mp := arrutil.ToMap(users, func(u User) (string, int) {
+		return u.Name, u.Age
+	})
+
+	assert.Eq(t, 2, len(mp))
+	assert.ContainsKeys(t, mp, []string{"Tom", "Jack"})
+	assert.Eq(t, 18, mp["Tom"])
+}
+
 func TestConvType(t *testing.T) {
 	is := assert.New(t)
 
