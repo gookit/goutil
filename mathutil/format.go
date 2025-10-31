@@ -22,6 +22,21 @@ func DataSize(size uint64) string {
 	}
 }
 
+// FormatBytes Format the byte size to be a readable string. eg: 1024 => 1 KB
+func FormatBytes(bytes int) string {
+	const unit = 1024
+	if bytes < unit {
+		return fmt.Sprintf("%d B", bytes)
+	}
+
+	div, exp := int64(unit), 0
+	for n := bytes / unit; n >= unit; n /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%.2f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
+}
+
 var timeFormats = [][]int{
 	{0},
 	{1},

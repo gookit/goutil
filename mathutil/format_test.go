@@ -24,6 +24,25 @@ func TestDataSize(t *testing.T) {
 	}
 }
 
+func TestFormatBytes(t *testing.T) {
+	tests := []struct {
+		input    int
+		expected string
+	}{
+		{0, "0 B"},
+		{1024, "1.00 KB"},
+		{1536, "1.50 KB"},
+		{1048576, "1.00 MB"},
+		{1073741824, "1.00 GB"},
+		{1200346778, "1.12 GB"},
+	}
+
+	for _, tt := range tests {
+		result := mathutil.FormatBytes(tt.input)
+		assert.Eq(t, tt.expected, result)
+	}
+}
+
 func TestHowLongAgo(t *testing.T) {
 	tests := []struct {
 		args int64
