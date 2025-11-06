@@ -264,9 +264,7 @@ func (s *Strings) IsRepeatable() bool { return true }
 type Booleans []bool
 
 // String input value to string
-func (s *Booleans) String() string {
-	return arrutil.ToString(*s)
-}
+func (s *Booleans) String() string { return arrutil.ToString(*s) }
 
 // Bools value
 func (s *Booleans) Bools() []bool { return *s }
@@ -335,9 +333,7 @@ func (s *EnumString) Set(value string) error {
 }
 
 // Enum to string
-func (s *EnumString) Enum() []string {
-	return s.enum
-}
+func (s *EnumString) Enum() []string { return s.enum }
 
 // FlagTypeDesc message. will display on the flag description end.
 func (s *EnumString) FlagTypeDesc() string {
@@ -361,8 +357,11 @@ func (s *EnumString) FlagTypeDesc() string {
 //	--var name=inhere --var age=234 => string map {name:inhere, age:234}
 type KVString struct {
 	maputil.SMap
-	Sep string
+	Sep string // Default: "="
 }
+
+// KVStrMap alias for KVString
+type KVStrMap = KVString
 
 // NewKVString instance
 func NewKVString() KVString {
@@ -415,9 +414,7 @@ type ConfString struct {
 }
 
 // String to string
-func (s *ConfString) String() string {
-	return s.val
-}
+func (s *ConfString) String() string { return s.val }
 
 // SetData value
 func (s *ConfString) SetData(mp map[string]string) {
@@ -430,9 +427,7 @@ func (s *ConfString) Data() maputil.SMap {
 }
 
 // Get value
-func (s *ConfString) Get() any {
-	return s.SMap
-}
+func (s *ConfString) Get() any { return s.SMap }
 
 // Set new value, will check value is right
 func (s *ConfString) Set(value string) error {

@@ -1,6 +1,11 @@
-package cflag
+// Package capp provides a simple command line application build.
+//
+//  - Support add multiple commands
+//  - Support add aliases for command
+package capp
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -9,7 +14,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gookit/goutil/cliutil"
+	"github.com/gookit/goutil/cflag"
+	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/basefn"
@@ -18,10 +24,11 @@ import (
 
 // App struct
 type App struct {
-	*CFlags // save global flags
+	*cflag.CFlags // save global flags
 	// added commands
 	names []string
 	cmds  map[string]*Cmd
+	cmdAs maputil.Aliases
 
 	Name string
 	Desc string
@@ -44,15 +51,24 @@ type App struct {
 	AfterRun func(c *Cmd, err error)
 }
 
-// NewApp instance
-func NewApp(fns ...func(app *App)) *App {
-	gfs := NewEmpty(func(cf *CFlags) {
+// New App instance
+//
+// Usage:
+//
+//	 app := capp.New(func(app *cflag.App) {})
+//	 app.Name = "mycli"
+//	 app.Version = "0.0.1"
+//	 app.Desc = "mycli is a command line tool"
+func New(fns ...func(app *App)) *App {
+	// global flags for app
+	gfs := cflag.NewEmpty(func(cf *cflag.CFlags) {
 		cf.FlagSet = flag.NewFlagSet("app-flags", flag.ContinueOnError)
 	})
 
 	app := &App{
 		CFlags: gfs,
 		cmds:   make(map[string]*Cmd),
+		cmdAs: make(maputil.Aliases),
 		// with default version
 		Version: "0.0.1",
 		// NameWidth default value
@@ -60,13 +76,30 @@ func NewApp(fns ...func(app *App)) *App {
 		HelpWriter: os.Stdout,
 	}
 
-	for _, fn := range fns {
-		fn(app)
-	}
+	return app.WithConfigFn(fns...)
+}
+
+// NewApp instance. alias of New()
+func NewApp(fns ...func(app *App)) *App { return New(fns...) }
+
+// NewWith name and desc and option functions
+func NewWith(name, version, desc string, fns ...func(app *App)) *App {
+	app := NewApp(fns...)
+	app.Name = name
+	app.Desc = desc
+	app.Version = version
 	return app
 }
 
-// Add command(s) to app.
+// WithConfigFn config app
+func (a *App) WithConfigFn(fns ...func(app *App)) *App {
+	for _, fn := range fns {
+		fn(a)
+	}
+	return a
+}
+
+// Add command(s) to app. panic if error.
 //
 // NOTE: command object should create use NewCmd()
 //
@@ -82,39 +115,58 @@ func NewApp(fns ...func(app *App)) *App {
 //	app.Add(cflag.NewCmd("cmd1", "desc1"))
 //	app.Add(cflag.NewCmd("cmd2", "desc2"))
 func (a *App) Add(cmds ...*Cmd) {
-	for _, cmd := range cmds {
-		a.addCmd(cmd)
-	}
+	basefn.PanicErr(a.AddOrErr(cmds...))
 }
 
-func (a *App) addCmd(c *Cmd) {
+// AddOrErr add command(s) to app.
+func (a *App) AddOrErr(cmds ...*Cmd) error {
+	for _, cmd := range cmds {
+		if err := a.addCmd(cmd); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (a *App) addCmd(c *Cmd) error {
 	ln := len(c.Name)
 	if ln == 0 {
-		panic("command name cannot be empty")
+		return errors.New("command name cannot be empty")
 	}
 
 	if _, ok := a.cmds[c.Name]; ok {
-		basefn.Panicf("command name %s has been exists", c.Name)
+		return fmt.Errorf("command name %s has been exists", c.Name)
 	}
 
 	a.names = append(a.names, c.Name)
 	a.cmds[c.Name] = c
+
+	// add aliases
+	if len(c.Aliases) > 0 {
+		ln += len(strings.Join(c.Aliases, ", ")) + 4
+		a.cmdAs.AddAliases(c.Name, c.Aliases)
+	}
 	a.NameWidth = mathutil.MaxInt(a.NameWidth, ln)
 
 	// attach handle func
-	c.init()
+	c.initCmd()
 
 	if c.OnAdd != nil {
 		c.OnAdd(c)
 	}
+	return nil
 }
+
+//
+// region Run with args
+// -----------------------------------
 
 // Run app by os.Args
 func (a *App) Run() {
 	err := a.RunWithArgs(os.Args[1:])
 	if err != nil {
-		debugMsg("app run error: %v", err)
-		cliutil.Errorln("ERROR:", err)
+		cflag.DebugMsg("app run error: %v", err)
+		ccolor.Errorln("ERROR:", err)
 		os.Exit(1)
 	}
 }
@@ -124,15 +176,15 @@ func (a *App) RunWithArgs(args []string) error {
 	// init for run
 	a.init()
 
-	if ok, err := a.preRun(args); ok {
-		return a.showHelp()
+	if showHelp, err := a.preRun(args); showHelp {
+		return a.showHelp() // stop run.
 	} else if err != nil {
 		return err
 	}
 
 	// fire onAppFlagParsed hook
 	if a.OnAppFlagParsed != nil && !a.OnAppFlagParsed(a) {
-		debugMsg("app onAppFlagParsed return false, stop continue run.")
+		cflag.DebugMsg("app onAppFlagParsed return false, stop continue run.")
 		return nil
 	}
 
@@ -159,21 +211,25 @@ func (a *App) RunWithArgs(args []string) error {
 }
 
 func (a *App) preRun(args []string) (showHelp bool, err error) {
-	// parse global flags
-	err = a.Parse(args)
-	if err != nil {
-		if IsFlagHelpErr(err) {
-			return true, nil
-		}
+	// prepare
+	if err = a.Prepare(); err != nil {
+		return false, err
 	}
 
+	// empty args
 	if len(args) == 0 || args[0] == "" {
 		return true, nil
 	}
-
 	first := args[0]
 	if first == "help" || first == "--help" || first == "-h" {
 		return true, nil
+	}
+
+	// parse global flags
+	if err = a.DoParse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			return true, nil // ignore help error
+		}
 	}
 	return
 }
@@ -186,9 +242,14 @@ func (a *App) init() {
 }
 
 func (a *App) findCmd(name string) (*Cmd, bool) {
+	name = a.cmdAs.ResolveAlias(name)
 	cmd, ok := a.cmds[name]
 	return cmd, ok
 }
+
+//
+// region Show help
+// -----------------------------------
 
 func (a *App) showHelp() error {
 	bin := a.Name
@@ -202,17 +263,22 @@ func (a *App) showHelp() error {
 	buf.Printf("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)
 
 	buf.WriteStr1Nl("<comment>Options:</>")
-	buf.WriteStr1Nl("  <green>-h, --help</>" + strings.Repeat("    ", 4) + "Display application help")
+	buf.WriteStr1Nl("  <green>--help, -h</>" + strings.Repeat("    ", 4) + "Display application help")
 	if a.CFlags != nil {
-		a.renderOptionsHelp(buf)
+		a.RenderOptionsHelp(buf)
 	}
 
 	buf.WriteStr1Nl("\n<comment>Commands:</>")
 	sort.Strings(a.names)
 
+	gaMap := a.cmdAs.GroupAliases()
 	for _, name := range a.names {
 		c := a.cmds[name]
-		name := strutil.PadRight(name, " ", a.NameWidth)
+		if len(gaMap[name]) > 0 {
+			name = name + ", " + strings.Join(gaMap[name], ", ")
+		}
+
+		name = strutil.PadRight(name, " ", a.NameWidth)
 		buf.Printf("  <green>%s</>    %s\n", name, strutil.UpperFirst(c.getDesc()))
 	}
 
@@ -230,92 +296,4 @@ func (a *App) showHelp() error {
 
 	ccolor.Fprint(a.HelpWriter, buf.ResetAndGet())
 	return nil
-}
-
-//
-// region Command in app
-// -----------------------------------
-
-// Cmd struct. see CFlags
-type Cmd struct {
-	*CFlags
-	Name string
-	Desc string // desc for command, will sync set to CFlags.Desc
-	// OnAdd hook func. fire on add to App
-	//  - you can add some cli options or arguments.
-	OnAdd func(c *Cmd)
-	// Func for run command, will call after options parsed. will sync set to CFlags.Func
-	Func func(c *Cmd) error
-}
-
-// NewCmd instance
-func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
-	fs := NewEmpty(func(c *CFlags) {
-		c.Desc = desc
-		c.FlagSet = flag.NewFlagSet(name, flag.ContinueOnError)
-	})
-
-	cmd := &Cmd{
-		Name:   name,
-		CFlags: fs,
-	}
-
-	if len(runFunc) > 0 {
-		cmd.Func = runFunc[0]
-	}
-	return cmd
-}
-
-// Config the cmd. eg: bing flags
-func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
-	if fn != nil {
-		fn(c)
-	}
-	return c
-}
-
-// QuickRun parse OS flags and run command, will auto handle error
-func (c *Cmd) QuickRun() { c.MustParse(nil) }
-
-// MustRun parse flags and run command. alias of MustParse()
-func (c *Cmd) MustRun(args []string) { c.MustParse(args) }
-
-// MustParse parse flags and run command, will auto handle error
-func (c *Cmd) MustParse(args []string) {
-	if err := c.Parse(args); err != nil {
-		ccolor.Redln("ERROR:", err)
-	}
-}
-
-// Parse flags and run command func
-//
-// If args is nil, will parse os.Args
-func (c *Cmd) Parse(args []string) error {
-	// fix: cmd.xxRun not exec Cmd.Func
-	c.init()
-	return c.CFlags.Parse(args)
-}
-
-func (c *Cmd) init() {
-	// attach handle func
-	if c.Func != nil {
-		// fix: init c.CFlags on not exist
-		if c.CFlags == nil {
-			c.CFlags = NewEmpty(func(cf *CFlags) {
-				cf.Desc = c.Desc
-				cf.FlagSet = flag.NewFlagSet(c.Name, flag.ContinueOnError)
-			})
-		}
-
-		c.CFlags.Func = func(_ *CFlags) error {
-			return c.Func(c)
-		}
-	}
-}
-
-func (c *Cmd) getDesc() string {
-	if c.CFlags.Desc != "" {
-		return c.CFlags.Desc
-	}
-	return c.Desc
 }

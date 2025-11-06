@@ -1,17 +1,14 @@
 // Package cflag Wraps and extends go `flag.FlagSet` to build simple command line applications
 //
-// - Support auto render a pretty help panel
-//
-// - Allow to add shortcuts for flag option
-//
-// - Allow binding named arguments
-//
-// - Allow set required for argument or option
-//
-// - Allow set validator for argument or option
+//   - Support auto render a pretty help panel
+//   - Allow to add shortcuts for flag option
+//   - Allow binding named arguments
+//   - Allow set required for argument or option
+//   - Allow set validator for argument or option
 package cflag
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -19,7 +16,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/structs"
@@ -28,20 +24,6 @@ import (
 	"github.com/gookit/goutil/x/ccolor"
 	"github.com/gookit/goutil/x/stdio"
 )
-
-// Debug mode
-var Debug = envutil.GetBool("CFLAG_DEBUG")
-
-// SetDebug mode
-func SetDebug(open bool) {
-	Debug = open
-}
-
-func debugMsg(format string, args ...any) {
-	if Debug {
-		fmt.Printf("CFLAG DEBUG: "+format, args...)
-	}
-}
 
 // CFlags wrap and extends the go flag.FlagSet
 //
@@ -54,6 +36,7 @@ func debugMsg(format string, args ...any) {
 //	cmd.IntVar(&age, "age", 0, "your age;true;a")
 type CFlags struct {
 	*flag.FlagSet
+	prepared bool
 	// bound options.
 	bindOpts map[string]*FlagOpt
 	// shortcuts map for options. eg: n -> name
@@ -69,7 +52,8 @@ type CFlags struct {
 	remainArgs []string
 
 	// Desc command description
-	Desc string
+	Desc  string
+	Usage string // command usage contents
 	// Version command version number
 	Version string
 	// Example command usage examples
@@ -78,6 +62,9 @@ type CFlags struct {
 	LongHelp string
 	// HelpOnEmptyArgs show help when not input args
 	HelpOnEmptyArgs bool
+	// HelpFunc custom help render func
+	HelpFunc func(c *CFlags)
+
 	// Func handler for the command
 	Func func(c *CFlags) error
 }
@@ -97,6 +84,23 @@ type CFlags struct {
 func New(fns ...func(c *CFlags)) *CFlags {
 	return NewEmpty(func(c *CFlags) {
 		c.FlagSet = flag.NewFlagSet(os.Args[0], flag.ContinueOnError)
+	}).WithConfigFn(fns...)
+}
+
+// NewWith create new instance.
+//
+// Usage:
+//
+//	cmd := cflag.NewWith("0.1.2", "this is my cli tool")
+//
+//	// binding opts and args
+//
+//	cmd.Parse(nil)
+func NewWith(name, version, desc string, fns ...func(c *CFlags)) *CFlags {
+	return NewEmpty(func(c *CFlags) {
+		c.Desc = desc
+		c.Version = version
+		c.FlagSet = flag.NewFlagSet(name, flag.ContinueOnError)
 	}).WithConfigFn(fns...)
 }
 
@@ -239,7 +243,7 @@ func (c *CFlags) Parse(args []string) error {
 	}()
 
 	// prepare
-	if err := c.prepare(); err != nil {
+	if err := c.Prepare(); err != nil {
 		return err
 	}
 
@@ -250,8 +254,9 @@ func (c *CFlags) Parse(args []string) error {
 	}
 
 	// do parsing
-	if err := c.doParse(args); err != nil {
-		if err == flag.ErrHelp {
+	if err := c.DoParse(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			c.showHelp(nil)
 			return nil // ignore help error
 		}
 		return err
@@ -264,7 +269,13 @@ func (c *CFlags) Parse(args []string) error {
 	return nil
 }
 
-func (c *CFlags) prepare() error {
+// Prepare for parse. (internal use)
+func (c *CFlags) Prepare() error {
+	if c.prepared {
+		return nil
+	}
+	c.prepared = true
+
 	// dont use flag output.
 	c.SetOutput(io.Discard)
 
@@ -278,7 +289,8 @@ func (c *CFlags) prepare() error {
 	})
 
 	// custom something
-	c.FlagSet.Usage = c.ShowHelp
+	// c.FlagSet.Usage = c.ShowHelp
+	c.FlagSet.Usage = func() {}
 	return nil
 }
 
@@ -316,8 +328,8 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 	return desc
 }
 
-// do parse and validate, collect args
-func (c *CFlags) doParse(args []string) error {
+// DoParse parse options and validate, collect args. (internal use)
+func (c *CFlags) DoParse(args []string) error {
 	if len(c.shortcuts) > 0 && len(args) > 0 {
 		args = ReplaceShorts(args, c.shortcuts)
 	}
@@ -426,6 +438,11 @@ func (c *CFlags) ShowHelp() { c.showHelp(nil) }
 
 // show help for command
 func (c *CFlags) showHelp(err error) {
+	if c.HelpFunc != nil {
+		c.HelpFunc(c)
+		return
+	}
+
 	binName := c.Name()
 	helpVars := map[string]string{
 		"{{cmd}}":     binName,
@@ -441,12 +458,16 @@ func (c *CFlags) showHelp(err error) {
 		buf.Printf("<cyan>%s</>\n\n", c.helpDesc())
 	}
 
-	buf.Printf("<comment>Usage:</> %s [--Options...] [...Arguments]\n", binName)
+	if c.Usage != "" {
+		buf.Printf("<comment>Usage:</> %s\n", c.Usage)
+	} else {
+		buf.Printf("<comment>Usage:</> %s [--Options...] [...Arguments]\n", binName)
+	}
 	buf.WriteStr("<comment>Options:</>\n")
 
 	// render options help
-	c.renderOptionsHelp(buf)
-	buf.WriteStr1Nl("  <green>-h, --help</>" + strings.Repeat("    ", 4) + "Display command help")
+	c.RenderOptionsHelp(buf)
+	buf.WriteStr1Nl("  <green>--help, -h</>" + strings.Repeat("    ", 4) + "Display command help")
 
 	if len(c.bindArgs) > 0 {
 		buf.WriteStr1("\n<comment>Arguments:</>\n")
@@ -474,12 +495,12 @@ func (c *CFlags) showHelp(err error) {
 
 var optionIndentSpace = "\n" + strings.Repeat("    ", 7)
 
-// ShowOptionsHelp prints, to standard error unless configured otherwise, the
+// RenderOptionsHelp prints, to standard error unless configured otherwise, the
 // default values of all defined command-line flags in the set. See the
 // documentation for the global function PrintDefaults for more information.
 //
 // from flag.PrintDefaults
-func (c *CFlags) renderOptionsHelp(buf *strutil.Buffer) {
+func (c *CFlags) RenderOptionsHelp(buf *strutil.Buffer) {
 	c.VisitAll(func(opt *flag.Flag) {
 		var b strings.Builder
 		b.Grow(64)

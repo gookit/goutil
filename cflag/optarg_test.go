@@ -8,7 +8,7 @@ import (
 )
 
 func TestFlagArg_check(t *testing.T) {
-	c := cflag.New()
+	c := cflag.NewWith("test", "0.2.1", "test desc")
 
 	assert.PanicsErrMsg(t, func() {
 		c.AddArg("", "", false, nil)

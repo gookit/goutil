@@ -148,13 +148,13 @@ go run ./cflag/_example/cmd.go --name inhere
 
 ## Cli application
 
-Use `cflag` to quickly build a multi-command application.
+Use `cflag/capp` to quickly build a multi-command application.
 
 ```go
 package main
 
 import (
-	"github.com/gookit/goutil/cflag"
+	"github.com/gookit/goutil/cflag/capp"
 	"github.com/gookit/goutil/dump"
 )
 
@@ -173,26 +173,26 @@ var c2Opts = struct {
 // go run ./cflag/_example/app.go -h
 // go run ./cflag/_example/app.go demo -h
 func main() {
-	app := cflag.NewApp()
+	app := capp.NewApp()
 	app.Desc = "this is my cli application"
 	app.Version = "1.0.2"
 
 	// go run ./cflag/_example/app.go demo --name inhere --age 333 val0 val1
-	c1 := cflag.NewCmd("demo", "this is a demo command")
-	c1.OnAdd = func(c *cflag.Cmd) {
+	c1 := capp.NewCmd("demo", "this is a demo command")
+	c1.OnAdd = func(c *capp.Cmd) {
 		c.IntVar(&c1Opts.age, "age", 0, "this is a int option;;a")
 		c.StringVar(&c1Opts.name, "name", "", "this is a string option and required;true")
 
 		c.AddArg("arg1", "this is arg1", true, nil)
 		c.AddArg("arg2", "this is arg2", false, nil)
 	}
-	c1.Func = func(c *cflag.Cmd) error {
+	c1.Func = func(c *capp.Cmd) error {
 		dump.P(c1Opts, c.Args())
 		return nil
 	}
 
 	// add cmd by struct
-	app.Add(&cflag.Cmd{
+	app.Add(&capp.Cmd{
 	    Name: "demo2",
 	    Desc: "this is demo2 command",
 	    Func: func(c *cflag.Cmd) error {

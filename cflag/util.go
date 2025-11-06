@@ -2,11 +2,13 @@ package cflag
 
 import (
 	"flag"
+	"fmt"
 	"reflect"
 	"regexp"
 	"sort"
 	"strings"
 
+	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/x/ccolor"
 )
 
@@ -19,6 +21,21 @@ var (
 	// GoodName good name for option and argument
 	goodName = regexp.MustCompile(RegGoodName)
 )
+
+// Debug mode
+var Debug = envutil.GetBool("CFLAG_DEBUG")
+
+// SetDebug mode
+func SetDebug(open bool) {
+	Debug = open
+}
+
+// DebugMsg print debug message
+func DebugMsg(format string, args ...any) {
+	if Debug {
+		fmt.Printf("CFLAG [DEBUG] "+format, args...)
+	}
+}
 
 // IsGoodName check
 func IsGoodName(name string) bool {
