@@ -13,14 +13,14 @@ import (
 
 // ReplaceVars by regex replace given tpl vars.
 //
-// If a format is empty, will use {const defaultVarFormat}
+// If a format is empty, will use {const DefaultVarFormat}
 func ReplaceVars(text string, vars map[string]any, format string) string {
 	return NewVarReplacer(format).Replace(text, vars)
 }
 
 // RenderSMap by regex replacement given tpl vars.
 //
-// If a format is empty, will use {const defaultVarFormat}
+// If a format is empty, will use {const DefaultVarFormat}
 func RenderSMap(text string, vars map[string]string, format string) string {
 	return NewVarReplacer(format).RenderSimple(text, vars)
 }

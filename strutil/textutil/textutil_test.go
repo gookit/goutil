@@ -5,6 +5,7 @@ import (
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/strutil/textutil"
+	"github.com/gookit/goutil/testutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
 
@@ -108,8 +109,8 @@ func TestRenderSMap(t *testing.T) {
 func TestVarReplacer_ParseVars(t *testing.T) {
 	vp := textutil.NewVarReplacer("")
 	str := "hi {{ name }}, age {{age}}, age {{age }}"
-	ss := vp.ParseVars(str)
 
+	ss := vp.ParseVars(str)
 	assert.NotEmpty(t, ss)
 	assert.Len(t, ss, 2)
 	assert.Contains(t, ss, "name")
@@ -119,9 +120,25 @@ func TestVarReplacer_ParseVars(t *testing.T) {
 		"name": "inhere",
 		"age":  234,
 	}
-	assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
-	vp.DisableFlatten()
-	assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
+
+	t.Run("render", func(t *testing.T) {
+		assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
+		vp.DisableFlatten()
+		assert.Equal(t, "hi inhere, age 234, age 234", vp.Render(str, tplVars))
+	})
+
+	t.Run("name as env-var", func(t *testing.T) {
+		vp.WithParseEnv()
+
+		str = "hi {{ NAME }}, age {{age}}, age {{age }}"
+		ret := vp.Render(str, tplVars)
+		assert.Equal(t, "hi {{ NAME }}, age 234, age 234", ret)
+
+		testutil.MockEnvValue("NAME", "inhere007", func(s string) {
+			ret = vp.Render(str, tplVars)
+			assert.Equal(t, "hi inhere007, age 234, age 234", ret)
+		})
+	})
 }
 
 func TestIsMatchAll(t *testing.T) {

@@ -1,6 +1,7 @@
 package textutil
 
 import (
+	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -11,7 +12,8 @@ import (
 	"github.com/gookit/goutil/strutil"
 )
 
-const defaultVarFormat = "{{,}}"
+// DefaultVarFormat var template
+const DefaultVarFormat = "{{,}}"
 
 // FallbackFn type
 type FallbackFn = func(name string) (val string, ok bool)
@@ -28,7 +30,7 @@ type VarReplacer struct {
 	//
 	// eg: {name: {a: 1, b: 2}} => {name.a: 1, name.b: 2}
 	flatSubs bool
-	// do parse env value. default: false
+	// do parse env value in var-value and tpl var-name. default: false
 	parseEnv bool
 	// do parse default value. default: false
 	//
@@ -46,7 +48,7 @@ type VarReplacer struct {
 	RenderFn func(s string, vs map[string]string) string
 }
 
-// NewVarReplacer instance.
+// NewVarReplacer instance. default format is: DefaultVarFormat
 //
 // Usage:
 //
@@ -104,7 +106,7 @@ func (r *VarReplacer) OnNotFound(fn FallbackFn) *VarReplacer {
 
 // WithFormat custom var template
 func (r *VarReplacer) WithFormat(format string) *VarReplacer {
-	r.Left, r.Right = strutil.QuietCut(strutil.OrElse(format, defaultVarFormat), ",")
+	r.Left, r.Right = strutil.QuietCut(strutil.OrElse(format, DefaultVarFormat), ",")
 	r.Init()
 	return r
 }
@@ -183,7 +185,11 @@ func (r *VarReplacer) RenderSimple(s string, varMap map[string]string) string {
 
 	if r.parseEnv {
 		for name, val := range varMap {
-			varMap[name] = varexpr.SafeParse(val)
+			if strings.Contains(val, "${") {
+				varMap[name] = varexpr.SafeParse(val)
+			} else {
+				varMap[name] = val
+			}
 		}
 	}
 
@@ -222,6 +228,11 @@ func (r *VarReplacer) doReplace(s string, varMap map[string]string) string {
 
 		if val, ok := varMap[name]; ok {
 			return val
+		}
+		if r.parseEnv && strutil.IsEnvName(name) {
+			if val := os.Getenv(name); val != "" {
+				return val
+			}
 		}
 
 		// has custom not found handle func
