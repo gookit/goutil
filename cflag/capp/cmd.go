@@ -8,6 +8,9 @@ import (
 	"github.com/gookit/goutil/x/ccolor"
 )
 
+// CmdOptionFn for one command
+type CmdOptionFn func(c *Cmd)
+
 // Cmd for App
 type Cmd struct {
 	*cflag.CFlags
@@ -37,10 +40,17 @@ func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
 	return cmd
 }
 
-// Config the cmd. eg: bing flags
-func (c *Cmd) Config(fn func(c *Cmd)) *Cmd {
-	if fn != nil {
-		fn(c)
+// WithConfigFn config cmd, alias of ConfigCmd()
+func (c *Cmd) WithConfigFn(fns ...CmdOptionFn) *Cmd {
+	return c.ConfigCmd(fns...)
+}
+
+// ConfigCmd the cmd. eg: bing flags
+func (c *Cmd) ConfigCmd(fns ...CmdOptionFn) *Cmd {
+	for _, fn := range fns {
+		if fn != nil {
+			fn(c)
+		}
 	}
 	return c
 }
@@ -99,4 +109,11 @@ func (c *Cmd) getDesc() string {
 		return c.Desc
 	}
 	return c.CFlags.Desc
+}
+
+// WithAliases set aliases for command
+func WithAliases(aliases ...string) CmdOptionFn {
+	return func(c *Cmd) {
+		c.Aliases = aliases
+	}
 }

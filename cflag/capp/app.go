@@ -188,11 +188,13 @@ func (a *App) RunWithArgs(args []string) error {
 		return nil
 	}
 
+	// update args after parse global flags
+	args = a.RemainArgs()
+
 	// first as command name
-	first := args[0]
-	cmd, ok := a.findCmd(first)
+	cmd, ok := a.findCmd(args[0])
 	if !ok {
-		return fmt.Errorf("input not exists command %q", first)
+		return fmt.Errorf("input not exists command %q", args[0])
 	}
 
 	cmdArgs := args[1:]
@@ -216,12 +218,8 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 		return false, err
 	}
 
-	// empty args
-	if len(args) == 0 || args[0] == "" {
-		return true, nil
-	}
-	first := args[0]
-	if first == "help" || first == "--help" || first == "-h" {
+	// empty args or help flag
+	if len(args) == 0 || args[0] == "" || isHelp(args[0]) {
 		return true, nil
 	}
 
@@ -230,6 +228,11 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 		if errors.Is(err, flag.ErrHelp) {
 			return true, nil // ignore help error
 		}
+	}
+
+	rArgs := a.RemainArgs()
+	if len(rArgs) == 0 || isHelp(rArgs[0]) {
+		return true, nil
 	}
 	return
 }
@@ -242,6 +245,11 @@ func (a *App) init() {
 }
 
 func (a *App) findCmd(name string) (*Cmd, bool) {
+	if name[0] == '-' {
+		return nil, false
+	}
+
+	// resolve alias
 	name = a.cmdAs.ResolveAlias(name)
 	cmd, ok := a.cmds[name]
 	return cmd, ok
@@ -296,4 +304,8 @@ func (a *App) showHelp() error {
 
 	ccolor.Fprint(a.HelpWriter, buf.ResetAndGet())
 	return nil
+}
+
+func isHelp(s string) bool {
+	return s == "help" || s == "--help" || s == "-h"
 }

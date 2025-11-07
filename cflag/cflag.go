@@ -397,6 +397,8 @@ func (c *CFlags) bindParsedArgs() error {
 	// collect remain args
 	if lastIdx < argN {
 		c.remainArgs = args[lastIdx:]
+	} else {
+		c.remainArgs = args // all args
 	}
 	return nil
 }
