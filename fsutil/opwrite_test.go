@@ -104,3 +104,14 @@ func TestTempDir(t *testing.T) {
 	assert.True(t, fsutil.IsDir(dir))
 	assert.True(t, fsutil.IsEmptyDir(dir))
 }
+
+func TestCreateSymlink(t *testing.T) {
+	srcFile := "./testdata/symlink-src.txt"
+	assert.NoErr(t, fsutil.SaveFile(srcFile, "hello"))
+	assert.Eq(t, "hello", fsutil.ReadString(srcFile))
+
+	linkFile := "./testdata/symlink-dst.txt"
+	assert.NoErr(t, fsutil.CreateSymlink(srcFile, linkFile))
+	assert.False(t, fsutil.IsFile(linkFile))
+	assert.True(t, fsutil.IsSymlink(linkFile))
+}

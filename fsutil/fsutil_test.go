@@ -11,7 +11,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	fmt.Println("before test ... clean testdata/*.txt files")
+	fmt.Println("[TestMain] before test ... clean testdata/*.txt files")
 	err := fsutil.RemoveSub("testdata", func(fPath string, ent fs.DirEntry) bool {
 		return fsutil.PathMatch("*.txt", ent.Name())
 	})

@@ -1,6 +1,7 @@
 package fsutil
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -184,4 +185,17 @@ func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error {
 		err = err1
 	}
 	return err
+}
+
+// CreateSymlink creates a symbolic link
+func CreateSymlink(target, linkPath string) error {
+	// Check if the link already exists
+	if IsFile(linkPath) {
+		// Remove existing link/file
+		if err := os.Remove(linkPath); err != nil {
+			return fmt.Errorf("failed to remove existing symlink: %w", err)
+		}
+	}
+
+	return os.Symlink(target, linkPath)
 }
