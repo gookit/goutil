@@ -193,4 +193,12 @@ func TestMap(t *testing.T) {
 	assert.Contains(t, flatArr, 23)
 	assert.Len(t, flatArr, 2)
 	assert.Eq(t, 34, flatArr[1])
+
+	names := arrutil.Map1(list1, func(obj map[string]any) string {
+		return obj["name"].(string)
+	})
+	assert.NotEmpty(t, names)
+	assert.Contains(t, names, "tom")
+	assert.Len(t, names, 2)
+	assert.Eq(t, "john", names[1])
 }

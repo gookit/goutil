@@ -38,6 +38,9 @@ func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T {
 		fn = filter[0]
 	} else {
 		fn = func(el T) bool {
+			// if el == nil { // Filter nil value
+			// 	return false
+			// }
 			return !reflect.ValueOf(el).IsZero()
 		}
 	}
@@ -57,7 +60,7 @@ type MapFn[T any, V any] func(input T) (target V, find bool)
 // Map a list to new list
 //
 // eg: mapping [object0{},object1{},...] to flatten list [object0.someKey, object1.someKey, ...]
-func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V {
+func Map[T, V any](list []T, mapFn MapFn[T, V]) []V {
 	flatArr := make([]V, 0, len(list))
 
 	for _, obj := range list {
@@ -66,6 +69,16 @@ func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V {
 		}
 	}
 	return flatArr
+}
+
+// Map1 a list to new list, alias of Map func
+func Map1[T, R any](list []T, fn func(t T) R) []R {
+	ret := make([]R, len(list))
+
+	for i := range list {
+		ret[i] = fn(list[i])
+	}
+	return ret
 }
 
 // Column alias of Map func
