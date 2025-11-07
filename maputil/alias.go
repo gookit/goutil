@@ -56,3 +56,14 @@ func (as Aliases) AliasesNames() []string {
 	sort.Strings(ns)
 	return ns
 }
+
+// GroupAliases groups aliases by real name.
+//
+// returns: {real name -> []aliases, ...}
+func (as Aliases) GroupAliases() map[string][]string {
+	gaMap := make(map[string][]string)
+	for alias, name := range as {
+		gaMap[name] = append(gaMap[name], alias)
+	}
+	return gaMap
+}

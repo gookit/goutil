@@ -24,6 +24,7 @@ func TestAliases_AddAlias(t *testing.T) {
 	assert.Eq(t, "notExist", as.ResolveAlias("notExist"))
 
 	assert.NotEmpty(t, as.AliasesNames())
+	assert.NotEmpty(t, as.GroupAliases())
 
 	assert.PanicsMsg(t, func() {
 		as.AddAlias("a", "real3")
