@@ -118,11 +118,31 @@ func StringsContains(ss []string, s string) bool {
 	return false
 }
 
-// check is number: int or float
-var numReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
+var (
+	// check is number: int or float
+	numReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
+	// is positive number: int or float
+	pNumReg = regexp.MustCompile(`^\d*\.?\d+$`)
+)
 
 // IsNumeric returns true if the given string is a numeric, otherwise false.
-func IsNumeric(s string) bool { return numReg.MatchString(s) }
+func IsNumeric(s string) bool {
+	if s == "" {
+		return false
+	}
+	return numReg.MatchString(s)
+}
+
+// IsPositiveNum check input string is positive number
+func IsPositiveNum(s string) bool {
+	if s == "" {
+		return false
+	}
+	if s[0] == '-' {
+		return false
+	}
+	return pNumReg.MatchString(s)
+}
 
 // IsHttpURL check input is http/https url
 func IsHttpURL(s string) bool {

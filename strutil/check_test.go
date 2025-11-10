@@ -8,14 +8,26 @@ import (
 )
 
 func TestIsInt(t *testing.T) {
+	// IsInt
 	assert.True(t, strutil.IsInt("123"))
 	assert.True(t, strutil.IsInt("0"))
 	assert.True(t, strutil.IsInt("456789"))
+	assert.True(t, strutil.IsInt("-123"))
 
 	assert.False(t, strutil.IsInt("123.45"))
 	assert.False(t, strutil.IsInt("abc"))
 	assert.False(t, strutil.IsInt("123abc"))
 	assert.False(t, strutil.IsInt(""))
+
+	// IsUint
+	assert.True(t, strutil.IsUint("123"))
+	assert.True(t, strutil.IsUint("0"))
+	assert.True(t, strutil.IsUint("456789"))
+
+	assert.False(t, strutil.IsUint("-123"))
+	assert.False(t, strutil.IsUint("123.45"))
+	assert.False(t, strutil.IsUint("ab3"))
+	assert.False(t, strutil.IsUint(""))
 }
 
 func TestIsFloat(t *testing.T) {
@@ -33,6 +45,26 @@ func TestIsFloat(t *testing.T) {
 	assert.False(t, strutil.IsFloat(""))
 }
 
+func TestIsNumeric(t *testing.T) {
+	// IsNumeric
+	assert.True(t, strutil.IsNumeric("0"))
+	assert.True(t, strutil.IsNumeric("234"))
+	assert.True(t, strutil.IsNumeric("-234"))
+	assert.True(t, strutil.IsNumeric("23.4"))
+	assert.True(t, strutil.IsNumeric("-23.4"))
+	assert.False(t, strutil.IsNumeric(""))
+	assert.False(t, strutil.IsNumeric("a34"))
+
+	// IsPositiveNum
+	assert.True(t, strutil.IsPositiveNum("0.0"))
+	assert.True(t, strutil.IsPositiveNum("234"))
+	assert.True(t, strutil.IsPositiveNum("23.4"))
+	assert.False(t, strutil.IsPositiveNum("-23.4"))
+	assert.False(t, strutil.IsPositiveNum("-234"))
+	assert.False(t, strutil.IsPositiveNum("a34"))
+	assert.False(t, strutil.IsPositiveNum(""))
+}
+
 func TestIsAlphabet(t *testing.T) {
 	assert.True(t, strutil.IsNumChar('9'))
 	assert.False(t, strutil.IsNumChar('A'))
@@ -44,9 +76,6 @@ func TestIsAlphabet(t *testing.T) {
 	assert.True(t, strutil.IsAlphabet('a'))
 	assert.True(t, strutil.IsAlphabet('Z'))
 	assert.True(t, strutil.IsAlphabet('z'))
-
-	assert.True(t, strutil.IsNumeric("234"))
-	assert.False(t, strutil.IsNumeric("a34"))
 }
 
 func TestIsAlphaNum(t *testing.T) {

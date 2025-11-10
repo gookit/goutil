@@ -17,17 +17,42 @@ var IsHttpURL = checkfn.IsHttpURL
 // IsNumChar returns true if the given character is a numeric, otherwise false.
 func IsNumChar(c byte) bool { return c >= '0' && c <= '9' }
 
-var intReg = regexp.MustCompile(`^\d+$`)
-var floatReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
+var (
+	uintReg = regexp.MustCompile(`^\d+$`)
+	intReg  = regexp.MustCompile(`^[-+]?\d+$`)
+
+	floatReg = regexp.MustCompile(`^[-+]?\d*\.?\d+$`)
+)
 
 // IsInt check the string is an integer number
-func IsInt(s string) bool { return intReg.MatchString(s) }
+func IsInt(s string) bool {
+	if s == "" {
+		return false
+	}
+	return intReg.MatchString(s)
+}
+
+// IsUint check the string is an unsigned integer number
+func IsUint(s string) bool {
+	if s == "" {
+		return false
+	}
+	return uintReg.MatchString(s)
+}
 
 // IsFloat check the string is a float number
-func IsFloat(s string) bool { return floatReg.MatchString(s) }
+func IsFloat(s string) bool {
+	if s == "" {
+		return false
+	}
+	return floatReg.MatchString(s)
+}
 
 // IsNumeric returns true if the given string is a numeric(int/float), otherwise false.
 func IsNumeric(s string) bool { return checkfn.IsNumeric(s) }
+
+// IsPositiveNum check the string is a positive number
+func IsPositiveNum(s string) bool { return checkfn.IsPositiveNum(s) }
 
 // IsAlphabet char
 func IsAlphabet(char uint8) bool {
