@@ -358,15 +358,23 @@ func Int64OrErr(in any) (int64, error) { return ToInt64With(in) }
 
 // ToInt64With try to convert value to int64. can with some option func, more see ConvOption.
 func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
-	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
+	if len(optFns) == 0 && in == nil {
 		return 0, nil
 	}
 
-	switch tVal := in.(type) {
-	case string:
+	if tVal, ok := in.(string); ok {
+		if len(optFns) > 0 {
+			// in strict mode, cannot convert string to int
+			if NewConvOption(optFns...).StrictMode {
+				err = comdef.ErrConvType
+				return
+			}
+		}
+
+		// try convert to int
 		sVal := strings.TrimSpace(tVal)
 		i64, err = strconv.ParseInt(sVal, 10, 0)
+
 		// handle the case where the string might be a float
 		if err != nil && checkfn.IsNumeric(sVal) {
 			var floatVal float64
@@ -375,6 +383,10 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 				err = nil
 			}
 		}
+		return
+	}
+
+	switch tVal := in.(type) {
 	case int:
 		i64 = int64(tVal)
 	case int8:
@@ -398,14 +410,40 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case uint64:
 		i64 = int64(tVal)
 	case float32:
+		if len(optFns) > 0 {
+			// in strict mode, cannot convert float to int
+			if NewConvOption(optFns...).StrictMode {
+				err = comdef.ErrConvType
+				return
+			}
+		}
 		i64 = int64(tVal)
 	case float64:
+		if len(optFns) > 0 {
+			// in strict mode, cannot convert float to int
+			if NewConvOption(optFns...).StrictMode {
+				err = comdef.ErrConvType
+				return
+			}
+		}
+		if tVal > math.MaxInt64 {
+			err = comdef.ErrConvType
+			return
+		}
 		i64 = int64(tVal)
 	case time.Duration:
 		i64 = int64(tVal)
 	case comdef.Int64able: // eg: json.Number
 		i64, err = tVal.Int64()
 	default:
+		opt := NewConvOption(optFns...)
+		if in == nil {
+			if opt.NilAsFail {
+				err = comdef.ErrConvType
+			}
+			return
+		}
+
 		if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
@@ -425,7 +463,7 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 }
 
 /*************************************************************
- * convert value to uint
+ * region convert to uint
  *************************************************************/
 
 // Uint convert any to uint, return error on failed
