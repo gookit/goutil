@@ -190,6 +190,9 @@ func (a *App) RunWithArgs(args []string) error {
 
 	// update args after parse global flags
 	args = a.RemainArgs()
+	if len(args) == 0 {
+		return a.showHelp()
+	}
 
 	// first as command name
 	cmd, ok := a.findCmd(args[0])
@@ -230,10 +233,10 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 		}
 	}
 
-	rArgs := a.RemainArgs()
-	if len(rArgs) == 0 || isHelp(rArgs[0]) {
-		return true, nil
-	}
+	// rArgs := a.RemainArgs()
+	// if len(rArgs) == 0 || isHelp(rArgs[0]) {
+	// 	return true, nil
+	// }
 	return
 }
 

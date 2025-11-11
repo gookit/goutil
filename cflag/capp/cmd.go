@@ -42,11 +42,11 @@ func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
 
 // WithConfigFn config cmd, alias of ConfigCmd()
 func (c *Cmd) WithConfigFn(fns ...CmdOptionFn) *Cmd {
-	return c.ConfigCmd(fns...)
+	return c.Config(fns...)
 }
 
-// ConfigCmd the cmd. eg: bing flags
-func (c *Cmd) ConfigCmd(fns ...CmdOptionFn) *Cmd {
+// Config the cmd. eg: bing flags
+func (c *Cmd) Config(fns ...CmdOptionFn) *Cmd {
 	for _, fn := range fns {
 		if fn != nil {
 			fn(c)
