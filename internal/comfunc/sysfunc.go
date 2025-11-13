@@ -87,19 +87,24 @@ func CurrentShell(onlyName bool, fallbackShell ...string) (binPath string) {
 		// 检查父进程名称
 		parentProcess := os.Getenv("GOPROCESS")
 		if parentProcess != "" {
-			return parentProcess
-		}
-
-		binPath = os.Getenv("SHELL") // 适用于 Unix-like 系统
-		if len(binPath) == 0 {
-			// TODO check on Windows
-			binPath, err = ShellExec("echo $SHELL")
-			if err != nil {
-				return fbShell
+			binPath = parentProcess
+		} else {
+			binPath = os.Getenv("SHELL") // 适用于 Unix-like 系统
+			if len(binPath) == 0 {
+				// TODO check on Windows git bash
+				binPath, err = ShellExec("echo $SHELL")
+				if err != nil {
+					binPath = fbShell
+				}
 			}
+			binPath = strings.TrimSpace(binPath)
 		}
 
-		binPath = strings.TrimSpace(binPath)
+		// fix: 去除 .exe 后缀
+		if pos := strings.IndexByte(binPath, '.'); pos > 0 {
+			binPath = binPath[:pos]
+		}
+
 		// cache result
 		curShellCache = binPath
 	} else {

@@ -24,14 +24,10 @@ func (b *Buffer) PrintByte(c byte) {
 }
 
 // WriteStr1 quiet write one string to buffer
-func (b *Buffer) WriteStr1(s string) {
-	b.writeStringNl(s, false)
-}
+func (b *Buffer) WriteStr1(s string) { b.writeStringNl(s, false) }
 
 // WriteStr1Nl quiet write one string and end with newline
-func (b *Buffer) WriteStr1Nl(s string) {
-	b.writeStringNl(s, true)
-}
+func (b *Buffer) WriteStr1Nl(s string) { b.writeStringNl(s, true) }
 
 // writeStringNl quiet write one string and end with newline
 func (b *Buffer) writeStringNl(s string, nl bool) {
@@ -90,6 +86,9 @@ func (b *Buffer) writeAnysWithNl(vs []any, nl bool) {
 		_ = b.WriteByte('\n')
 	}
 }
+
+// Writef write message to buffer, ignore error. alias of Printf()
+func (b *Buffer) Writef(tpl string, vs ...any) { _, _ = fmt.Fprintf(b, tpl, vs...) }
 
 // Printf quick write message to buffer, ignore error.
 func (b *Buffer) Printf(tpl string, vs ...any) { _, _ = fmt.Fprintf(b, tpl, vs...) }

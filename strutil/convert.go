@@ -88,7 +88,7 @@ func JoinAny(sep string, parts ...any) string {
 func Implode(sep string, ss ...string) string { return strings.Join(ss, sep) }
 
 /*************************************************************
- * convert value to string
+ * region value to string
  *************************************************************/
 
 // String convert value to string, return error on failed
@@ -144,7 +144,7 @@ func AnyToString(val any, defaultAsErr bool) (s string, err error) {
 	if !defaultAsErr {
 		optFn = comfunc.WithUserConvFn(comfunc.StrBySprintFn)
 	}
-	return ToStringWith(val, optFn)
+	return comfunc.ToStringWith(val, optFn)
 }
 
 // ToStringWith try to convert value to string. can with some option func, more see comfunc.ConvOption.
@@ -153,7 +153,7 @@ func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error) {
 }
 
 /*************************************************************
- * convert string value to bool
+ * region string value to bool
  *************************************************************/
 
 // ToBool convert string to bool
@@ -185,7 +185,7 @@ func Bool(s string) (bool, error) {
 }
 
 /*************************************************************
- * convert string value to int
+ * region string value to int
  *************************************************************/
 
 // Int convert string to int, alias of ToInt()
@@ -234,7 +234,7 @@ func IntOrPanic(s string) int {
 }
 
 /*************************************************************
- * convert string value to int64
+ * region convert string to int64
  *************************************************************/
 
 // Int64 convert string to int, will ignore error
@@ -286,7 +286,7 @@ func Int64OrPanic(s string) int64 {
 }
 
 /*************************************************************
- * convert string value to uint
+ * region string value to uint
  *************************************************************/
 
 // Uint convert string to uint, will ignore error
@@ -335,7 +335,7 @@ func UintOr(s string, defVal uint64) uint64 {
 }
 
 /*************************************************************
- * convert string value to byte
+ * region string value to byte
  * refer from https://github.com/valyala/fastjson/blob/master/util.go
  *************************************************************/
 
@@ -361,7 +361,7 @@ func ToBytes(s string) (b []byte) {
 }
 
 /*************************************************************
- * convert string value to int/string slice, time.Time
+ * region string to int/string slice, time.Time
  *************************************************************/
 
 // Ints alias of the ToIntSlice(). default sep is comma(,)
@@ -405,11 +405,6 @@ func ToSlice(s string, sep ...string) []string {
 	}
 	return Split(s, ",")
 }
-
-// ToOSArgs split string to string[](such as os.Args)
-// func ToOSArgs(s string) []string {
-// 	return cliutil.StringToOSArgs(s) // error: import cycle not allowed
-// }
 
 // ToDuration parses a duration string. such as "300ms", "-1.5h" or "2h45m".
 // Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".

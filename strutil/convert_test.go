@@ -4,12 +4,57 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
+
+func BenchmarkAnyToString_int(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString(3, false)
+	}
+}
+
+func BenchmarkAnyToString_float(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString(3.4, false)
+		// _ = strconv.FormatFloat(3.4, 'f', -1, 64)
+	}
+}
+
+func BenchmarkAnyToString_string(b *testing.B) {
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		_, _ = strutil.AnyToString("string", false)
+	}
+}
+
+func Test_SafeString_AllocTimes(_ *testing.T) {
+	// string Alloc Times: 0
+	fmt.Println("string Alloc Times:", int(testing.AllocsPerRun(10, func() {
+		strutil.SafeString("msg")
+	})))
+
+	// int Alloc Times: 1
+	fmt.Println("int Alloc Times:", int(testing.AllocsPerRun(10, func() {
+		strutil.SafeString(2343)
+	})))
+
+	// Itoa Alloc Times: 1
+	fmt.Println("Itoa Alloc Times:", int(testing.AllocsPerRun(10, func() {
+		strconv.Itoa(2343)
+	})))
+
+	// float Alloc Times: 2
+	fmt.Println("float Alloc Times:", int(testing.AllocsPerRun(10, func() {
+		strutil.SafeString(123.2)
+	})))
+}
 
 func TestStringJoin(t *testing.T) {
 	assert.Eq(t, "a:b", strutil.Join(":", "a", "b"))
@@ -50,28 +95,6 @@ func TestStringToBool(t *testing.T) {
 	blVal, err = strutil.Bool("10")
 	is.Err(err)
 	is.False(blVal)
-}
-
-func BenchmarkAnyToString_int(b *testing.B) {
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		_, _ = strutil.AnyToString(3, false)
-	}
-}
-
-func BenchmarkAnyToString_float(b *testing.B) {
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		_, _ = strutil.AnyToString(3.4, false)
-		// _ = strconv.FormatFloat(3.4, 'f', -1, 64)
-	}
-}
-
-func BenchmarkAnyToString_string(b *testing.B) {
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		_, _ = strutil.AnyToString("string", false)
-	}
 }
 
 func TestToString(t *testing.T) {
