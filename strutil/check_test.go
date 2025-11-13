@@ -257,6 +257,35 @@ func TestHasAllSubs(t *testing.T) {
 	assert.False(t, strutil.IContainsAll("h3AB2c", []string{"A", "NO"}))
 }
 
+func TestCompare(t *testing.T) {
+	versions := []struct{ a, b string }{
+		{"1.0.221.9289", "1.05.00.0156"},
+		// Go versions
+		{"1", "1.0.1"},
+		{"1.0.1", "1.0.2"},
+		{"1.0.2", "1.0.3"},
+		{"1.0.3", "1.1"},
+		{"1.1", "1.1.1"},
+		{"1.1.1", "1.1.2"},
+		{"1.1.2", "1.2"},
+	}
+	for _, version := range versions {
+		assert.True(t, strutil.Compare(version.a, version.b, "<"), version.a+"<"+version.b)
+		assert.True(t, strutil.Compare(version.a, version.b, "<="), version.a+"<="+version.b)
+		assert.True(t, strutil.Compare(version.b, version.a, ">"), version.a+">"+version.b)
+		assert.True(t, strutil.Compare(version.b, version.a, ">="), version.a+">="+version.b)
+	}
+
+	assert.True(t, strutil.Compare("1.0", "1.0", ""))
+	assert.True(t, strutil.Compare("1.0", "1.0", "="))
+
+	assert.True(t, strutil.Compare("1.0", "2.0", "!="))
+	assert.False(t, strutil.Compare("2020-12-16", "2021-12-17", ">="))
+
+	// diff with VersionCompare
+	assert.False(t, strutil.Compare("1.11", "1.2", ">"))
+}
+
 func TestVersionCompare(t *testing.T) {
 	versions := []struct{ a, b string }{
 		{"1.0.221.9289", "1.05.00.0156"},
@@ -276,11 +305,12 @@ func TestVersionCompare(t *testing.T) {
 		assert.True(t, strutil.VersionCompare(version.b, version.a, ">="), version.a+">="+version.b)
 	}
 
-	assert.True(t, strutil.VersionCompare("1.0", "1.0", ""))
 	assert.True(t, strutil.VersionCompare("1.0", "1.0", "="))
-	assert.True(t, strutil.Compare("1.0", "2.0", "!="))
+	assert.True(t, strutil.VersionCompare("1.0", "2.0", "!="))
+	assert.False(t, strutil.VersionCompare("1.0", "1.0", ""))
 
-	assert.False(t, strutil.Compare("2020-12-16", "2021-12-17", ">="))
+	assert.True(t, strutil.VersionCompare("1.11", "1.2", ">"))
+	assert.True(t, strutil.VersionCompare("1.11.3", "1.2.34", ">"))
 }
 
 func TestGlobMatch(t *testing.T) {

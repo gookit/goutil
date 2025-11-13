@@ -3,6 +3,7 @@ package strutil
 import (
 	"path"
 	"regexp"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -290,24 +291,86 @@ func IsVarName(s string) bool { return varRegex.MatchString(s) }
 func IsEnvName(s string) bool { return envRegex.MatchString(s) }
 
 // Compare for two strings.
-func Compare(s1, s2, op string) bool { return VersionCompare(s1, s2, op) }
-
-// VersionCompare for two version strings.
-func VersionCompare(v1, v2, op string) bool {
+func Compare(s1, s2, op string) bool {
 	switch op {
 	case ">", "gt":
-		return v1 > v2
+		return s1 > s2
 	case "<", "lt":
-		return v1 < v2
+		return s1 < s2
 	case ">=", "gte":
-		return v1 >= v2
+		return s1 >= s2
 	case "<=", "lte":
-		return v1 <= v2
+		return s1 <= s2
 	case "!=", "ne", "neq":
-		return v1 != v2
+		return s1 != s2
 	default: // eq
-		return v1 == v2
+		return s1 == s2
 	}
+}
+
+// VersionCompare for two version strings. eg: 1.2.0 > 1.1.0
+func VersionCompare(v1, v2, op string) bool {
+	parts1 := parseVersion(v1)
+	parts2 := parseVersion(v2)
+
+	result := compareVersions(parts1, parts2)
+	switch op {
+	case ">", "gt":
+		return result > 0
+	case "<", "lt":
+		return result < 0
+	case "=", "==", "eq":
+		return result == 0
+	case "!=", "ne", "neq":
+		return result != 0
+	case ">=", "gte":
+		return result >= 0
+	case "<=", "lte":
+		return result <= 0
+	default:
+		return false
+	}
+}
+
+// parseVersion 将版本号字符串解析为整数数组
+func parseVersion(version string) []int {
+	parts := strings.Split(version, ".")
+	result := make([]int, len(parts))
+
+	for i, part := range parts {
+		num, _ := strconv.Atoi(part)
+		result[i] = num
+	}
+	return result
+}
+
+// compareVersions 比较两个版本号数组
+// 返回: -1 表示 v1 < v2, 0 表示 v1 = v2, 1 表示 v1 > v2
+func compareVersions(v1, v2 []int) int {
+	maxLen := len(v1)
+	if len(v2) > maxLen {
+		maxLen = len(v2)
+	}
+
+	for i := 0; i < maxLen; i++ {
+		num1 := 0
+		if i < len(v1) {
+			num1 = v1[i]
+		}
+
+		num2 := 0
+		if i < len(v2) {
+			num2 = v2[i]
+		}
+
+		if num1 > num2 {
+			return 1
+		} else if num1 < num2 {
+			return -1
+		}
+	}
+
+	return 0
 }
 
 // SimpleMatch all substring in the give text string.
