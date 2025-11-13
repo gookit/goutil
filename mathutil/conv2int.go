@@ -65,9 +65,29 @@ func ToInt(in any) (int, error) { return ToIntWith(in) }
 //	ToIntWithFunc(val, mathutil.WithNilAsFail, mathutil.WithUserConvFn(func(in any) (int, error) {
 //	})
 func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
-	opt := NewConvOption[int](optFns...)
-	if !opt.NilAsFail && in == nil {
+	if len(optFns) == 0 && in == nil {
 		return 0, nil
+	}
+
+	var opt *ConvOption[int]
+	if len(optFns) > 0 {
+		opt = NewConvOption(optFns...)
+		if in == nil && opt.NilAsFail {
+			err = comdef.ErrConvType
+			return
+		}
+	}
+
+	if tVal, ok := in.(string); ok {
+		// in strict mode, cannot convert string to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
+		}
+
+		// try convert to int
+		iVal, err = TryStrInt(tVal)
+		return
 	}
 
 	switch tVal := in.(type) {
@@ -119,17 +139,6 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 		} else {
 			iVal = int(tVal)
 		}
-	case string:
-		sVal := strings.TrimSpace(tVal)
-		iVal, err = strconv.Atoi(sVal)
-		// handle the case where the string might be a float
-		if err != nil && checkfn.IsNumeric(sVal) {
-			var floatVal float64
-			if floatVal, err = strconv.ParseFloat(sVal, 64); err == nil {
-				iVal = int(math.Round(floatVal))
-				err = nil
-			}
-		}
 	case comdef.Int64able: // eg: json.Number
 		var i64 int64
 		if i64, err = tVal.Int64(); err == nil {
@@ -140,36 +149,25 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 			}
 		}
 	default:
-		if opt.HandlePtr {
+		if opt == nil {
+			err = comdef.ErrConvType
+			return
+		}
+
+		if opt.UserConvFn != nil {
+			iVal, err = opt.UserConvFn(in)
+		} else if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
 				if checkfn.IsSimpleKind(rv.Kind()) {
 					return ToIntWith(rv.Interface(), optFns...)
 				}
 			}
+		} else {
+			err = comdef.ErrConvType
 		}
-
-		if opt.UserConvFn != nil {
-			return opt.UserConvFn(in)
-		}
-		err = comdef.ErrConvType
 	}
 	return
-}
-
-// StrInt convert.
-func StrInt(s string) int {
-	iVal, _ := strconv.Atoi(strings.TrimSpace(s))
-	return iVal
-}
-
-// StrIntOr convert string to int, return default val on failed
-func StrIntOr(s string, defVal int) int {
-	iVal, err := strconv.Atoi(strings.TrimSpace(s))
-	if err != nil {
-		return defVal
-	}
-	return iVal
 }
 
 /*************************************************************
@@ -221,27 +219,23 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 		return 0, nil
 	}
 
+	var opt *ConvOption[int64]
+	if len(optFns) > 0 {
+		opt = NewConvOption(optFns...)
+		if in == nil && opt.NilAsFail {
+			err = comdef.ErrConvType
+			return
+		}
+	}
+
 	if tVal, ok := in.(string); ok {
-		if len(optFns) > 0 {
-			// in strict mode, cannot convert string to int
-			if NewConvOption(optFns...).StrictMode {
-				err = comdef.ErrConvType
-				return
-			}
+		// in strict mode, cannot convert string to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
 		}
-
-		// try convert to int
-		sVal := strings.TrimSpace(tVal)
-		i64, err = strconv.ParseInt(sVal, 10, 0)
-
-		// handle the case where the string might be a float
-		if err != nil && checkfn.IsNumeric(sVal) {
-			var floatVal float64
-			if floatVal, err = strconv.ParseFloat(sVal, 64); err == nil {
-				i64 = int64(math.Round(floatVal))
-				err = nil
-			}
-		}
+		// try convert to int64
+		i64, err = TryStrInt64(tVal)
 		return
 	}
 
@@ -269,21 +263,17 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case uint64:
 		i64 = int64(tVal)
 	case float32:
-		if len(optFns) > 0 {
-			// in strict mode, cannot convert float to int
-			if NewConvOption(optFns...).StrictMode {
-				err = comdef.ErrConvType
-				return
-			}
+		// in strict mode, cannot convert float to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
 		}
 		i64 = int64(tVal)
 	case float64:
-		if len(optFns) > 0 {
-			// in strict mode, cannot convert float to int
-			if NewConvOption(optFns...).StrictMode {
-				err = comdef.ErrConvType
-				return
-			}
+		// in strict mode, cannot convert float to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
 		}
 		if tVal > math.MaxInt64 {
 			err = comdef.ErrConvType
@@ -295,25 +285,20 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case comdef.Int64able: // eg: json.Number
 		i64, err = tVal.Int64()
 	default:
-		opt := NewConvOption(optFns...)
-		if in == nil {
-			if opt.NilAsFail {
-				err = comdef.ErrConvType
-			}
+		if opt == nil {
+			err = comdef.ErrConvType
 			return
 		}
 
-		if opt.HandlePtr {
+		if opt.UserConvFn != nil {
+			i64, err = opt.UserConvFn(in)
+		} else if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
 				if checkfn.IsSimpleKind(rv.Kind()) {
 					return ToInt64With(rv.Interface(), optFns...)
 				}
 			}
-		}
-
-		if opt.UserConvFn != nil {
-			i64, err = opt.UserConvFn(in)
 		} else {
 			err = comdef.ErrConvType
 		}
@@ -366,9 +351,32 @@ func ToUint(in any) (u64 uint, err error) { return ToUintWith(in) }
 
 // ToUintWith try to convert value to uint. can with some option func, more see ConvOption.
 func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
-	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
+	if len(optFns) == 0 && in == nil {
 		return 0, nil
+	}
+
+	var opt *ConvOption[uint]
+	if len(optFns) > 0 {
+		opt = NewConvOption(optFns...)
+		if in == nil && opt.NilAsFail {
+			err = comdef.ErrConvType
+			return
+		}
+	}
+
+	if tVal, ok := in.(string); ok {
+		// in strict mode, cannot convert string to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
+		}
+
+		// try convert to uint64
+		var u64 uint64
+		if u64, err = TryStrUint64(tVal); err == nil {
+			uVal = uint(u64)
+		}
+		return
 	}
 
 	switch tVal := in.(type) {
@@ -404,22 +412,21 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 		var i64 int64
 		i64, err = tVal.Int64()
 		uVal = uint(i64)
-	case string:
-		var u64 uint64
-		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
-		uVal = uint(u64)
 	default:
-		if opt.HandlePtr {
+		if opt == nil {
+			err = comdef.ErrConvType
+			return
+		}
+
+		if opt.UserConvFn != nil {
+			uVal, err = opt.UserConvFn(in)
+		} else if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
 				if checkfn.IsSimpleKind(rv.Kind()) {
 					return ToUintWith(rv.Interface(), optFns...)
 				}
 			}
-		}
-
-		if opt.UserConvFn != nil {
-			uVal, err = opt.UserConvFn(in)
 		} else {
 			err = comdef.ErrConvType
 		}
@@ -472,9 +479,28 @@ func ToUint64(in any) (uint64, error) { return ToUint64With(in) }
 
 // ToUint64With try to convert value to uint64. can with some option func, more see ConvOption.
 func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error) {
-	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
+	if len(optFns) == 0 && in == nil {
 		return 0, nil
+	}
+
+	var opt *ConvOption[uint64]
+	if len(optFns) > 0 {
+		opt = NewConvOption(optFns...)
+		if in == nil && opt.NilAsFail {
+			err = comdef.ErrConvType
+			return
+		}
+	}
+
+	if tVal, ok := in.(string); ok {
+		// in strict mode, cannot convert string to int
+		if opt != nil && opt.StrictMode {
+			err = comdef.ErrConvType
+			return
+		}
+		// try convert to uint64
+		u64, err = TryStrUint64(tVal)
+		return
 	}
 
 	switch tVal := in.(type) {
@@ -510,23 +536,113 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 		var i64 int64
 		i64, err = tVal.Int64()
 		u64 = uint64(i64)
-	case string:
-		u64, err = strconv.ParseUint(strings.TrimSpace(tVal), 10, 0)
 	default:
-		if opt.HandlePtr {
+		if opt == nil {
+			err = comdef.ErrConvType
+			return
+		}
+
+		if opt.UserConvFn != nil {
+			u64, err = opt.UserConvFn(in)
+		} else if opt.HandlePtr {
 			if rv := reflect.ValueOf(in); rv.Kind() == reflect.Pointer {
 				rv = rv.Elem()
 				if checkfn.IsSimpleKind(rv.Kind()) {
 					return ToUint64With(rv.Interface(), optFns...)
 				}
 			}
-		}
-
-		if opt.UserConvFn != nil {
-			u64, err = opt.UserConvFn(in)
 		} else {
 			err = comdef.ErrConvType
 		}
 	}
 	return
+}
+
+/*************************************************************
+ * region string to intX/uintX
+ *************************************************************/
+
+// StrInt convert string to int, ignore error
+func StrInt(s string) int {
+	iVal, _ := strconv.Atoi(strings.TrimSpace(s))
+	return iVal
+}
+
+// StrIntOr convert string to int, return default val on failed
+func StrIntOr(s string, defVal int) int {
+	iVal, err := strconv.Atoi(strings.TrimSpace(s))
+	if err != nil {
+		return defVal
+	}
+	return iVal
+}
+
+// TryStrInt convert string to int, return error on failed.
+//
+//  - empty string will return 0.
+//  - allow float string.
+func TryStrInt(s string) (int, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0, nil
+	}
+
+	// try convert to int
+	iVal, err := strconv.Atoi(s)
+
+	// handle the case where the string might be a float
+	if err != nil && checkfn.IsNumeric(s) {
+		var floatVal float64
+		if floatVal, err = strconv.ParseFloat(s, 64); err == nil {
+			iVal = int(math.Round(floatVal))
+			err = nil
+		}
+	}
+	return iVal, err
+}
+
+// TryStrInt64 convert string to int64, return error on failed.
+//
+//  - empty string will return 0.
+//  - allow float string.
+func TryStrInt64(s string) (int64, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0, nil
+	}
+	i64, err := strconv.ParseInt(s, 10, 0)
+
+	// handle the case where the string might be a float
+	if err != nil && checkfn.IsNumeric(s) {
+		var floatVal float64
+		if floatVal, err = strconv.ParseFloat(s, 64); err == nil {
+			i64 = int64(math.Round(floatVal))
+			err = nil
+		}
+	}
+	return i64, err
+}
+
+// TryStrUint64 try to convert string to uint64, return error on failed
+//
+//  - empty string will return 0.
+//  - allow float string.
+func TryStrUint64(s string) (uint64, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return 0, nil
+	}
+
+	// try convert to int64
+	u64, err := strconv.ParseUint(s, 10, 0)
+
+	// handle the case where the string might be a float
+	if err != nil && checkfn.IsPositiveNum(s) {
+		var floatVal float64
+		if floatVal, err = strconv.ParseFloat(s, 64); err == nil {
+			u64 = uint64(math.Round(floatVal))
+			err = nil
+		}
+	}
+	return u64, err
 }

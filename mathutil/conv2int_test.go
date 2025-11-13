@@ -106,6 +106,7 @@ func TestToInt(t *testing.T) {
 
 		is.Eq(uint(0), mathutil.QuietUint(nil))
 		is.Eq(uint(2), mathutil.MustUint("2"))
+		is.Eq(uint(2), mathutil.UintOrDefault("2", 2))
 		is.Eq(uint(2), mathutil.UintOrDefault("invalid", 2))
 		is.Panics(func() {
 			mathutil.MustUint([]int{23})
@@ -137,6 +138,7 @@ func TestToInt(t *testing.T) {
 
 		is.Eq(uint64(0), mathutil.QuietUint64(nil))
 		is.Eq(uint64(2), mathutil.MustUint64("2"))
+		is.Eq(uint64(2), mathutil.Uint64Or("2", 2))
 		is.Eq(uint64(2), mathutil.Uint64OrDefault("invalid", 2))
 		is.Panics(func() {
 			mathutil.MustUint64([]int{23})
@@ -174,5 +176,90 @@ func TestToInt(t *testing.T) {
 		is.Panics(func() {
 			mathutil.MustInt64([]int{23})
 		})
+	})
+}
+
+func TestToIntXWith(t *testing.T) {
+	t.Run("ToIntWith", func(t *testing.T) {
+		_, err := mathutil.ToIntWith("2", mathutil.WithStrictMode[int])
+		assert.Err(t, err)
+		_, err = mathutil.ToIntWith([]string{"2b"}, mathutil.WithStrictMode[int])
+		assert.Err(t, err)
+	})
+
+	t.Run("ToInt64With", func(t *testing.T) {
+		_, err := mathutil.ToInt64With("2", mathutil.WithStrictMode[int64])
+		assert.Err(t, err)
+		_, err = mathutil.ToInt64With([]string{"2b"}, mathutil.WithStrictMode[int64])
+		assert.Err(t, err)
+	})
+}
+
+func TestToUintXWith(t *testing.T) {
+	t.Run("ToUintWith", func(t *testing.T) {
+		_, err := mathutil.ToUintWith("2", mathutil.WithStrictMode[uint])
+		assert.Err(t, err)
+		_, err = mathutil.ToUintWith([]string{"2b"}, mathutil.WithStrictMode[uint])
+		assert.Err(t, err)
+	})
+
+	t.Run("ToUint64With", func(t *testing.T) {
+		_, err := mathutil.ToUint64With("2", mathutil.WithStrictMode[uint64])
+		assert.Err(t, err)
+		_, err = mathutil.ToUint64With([]string{"2b"}, mathutil.WithStrictMode[uint64])
+		assert.Err(t, err)
+	})
+}
+
+func TestTryStrIntX(t *testing.T) {
+	tests := []struct {
+		in  string
+		out int64
+		err bool
+	}{
+		{in: "2", out: 2},
+		{in: "", out: 0},
+		{in: "2.3", out: 2},
+		{in: "2a", err: true},
+		{in: "2.3a", err: true},
+		{in: "2.3.4", err: true},
+		{in: "2.3.4.5", err: true},
+	}
+
+	t.Run("Int", func(t *testing.T) {
+		for _, tt := range tests {
+			v, err := mathutil.TryStrInt(tt.in)
+			if tt.err {
+				assert.Err(t, err)
+			} else {
+				assert.NoErr(t, err)
+				assert.Eq(t, int(tt.out), v)
+			}
+		}
+	})
+
+	t.Run("Int64", func(t *testing.T) {
+		for _, tt := range tests {
+			v, err := mathutil.TryStrInt64(tt.in)
+			if tt.err {
+				assert.Err(t, err)
+			} else {
+				assert.NoErr(t, err)
+				assert.Eq(t, tt.out, v)
+			}
+		}
+	})
+
+	// TryStrUint64
+	t.Run("Uint64", func(t *testing.T) {
+		for _, tt := range tests {
+			v, err := mathutil.TryStrUint64(tt.in)
+			if tt.err {
+				assert.Err(t, err)
+			} else {
+				assert.NoErr(t, err)
+				assert.Eq(t, uint64(tt.out), v)
+			}
+		}
 	})
 }

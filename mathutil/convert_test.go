@@ -3,7 +3,6 @@ package mathutil_test
 import (
 	"encoding/json"
 	"errors"
-	"math"
 	"testing"
 	"time"
 
