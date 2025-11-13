@@ -36,6 +36,9 @@ func TestBaseConv(t *testing.T) {
 			}
 		})
 	}
+
+	assert.Eq(t, "7b", strutil.BaseConvInt(123, 16))
+	assert.Eq(t, "1X", strutil.BaseConvInt(123, 64))
 }
 
 func TestBase10Conv(t *testing.T) {
