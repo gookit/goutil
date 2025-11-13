@@ -52,15 +52,48 @@ func TestDateSN(t *testing.T) {
 	}
 }
 
-func TestDateSNV2(t *testing.T) {
+func TestDateSNv2(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		no := strutil.DateSNV2("test")
+		no := strutil.DateSNv2("T")
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
 
 	for i := 0; i < 10; i++ {
-		no := strutil.DateSNV2("test", 36)
+		no := strutil.DateSNv2("T", 36)
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+}
+
+func TestDateSNv3(t *testing.T) {
+	no := strutil.DateSNv3("", 8)
+	fmt.Println(no, "len:", len(no))
+
+	fmt.Println("------ dateLen=8, base=32:")
+	for i := 0; i < 10; i++ {
+		no = strutil.DateSNv3("T", 8)
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+
+	fmt.Println("------ dateLen=6, base=36:")
+	for i := 0; i < 6; i++ {
+		no = strutil.DateSNv3("T", 6, 36)
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+
+	fmt.Println("------ dateLen=6, base=48:")
+	for i := 0; i < 6; i++ {
+		no = strutil.DateSNv3("T", 6, 48)
+		fmt.Println(no, "len:", len(no))
+		assert.NotEmpty(t, no)
+	}
+
+	fmt.Println("------ dateLen=4, base=62:")
+	for i := 0; i < 6; i++ {
+		no = strutil.DateSNv3("T", 4, 62)
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
