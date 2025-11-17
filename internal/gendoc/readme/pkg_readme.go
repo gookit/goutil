@@ -1,4 +1,4 @@
-package main
+package readme
 
 func pkgReadme() {
 

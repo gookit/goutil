@@ -53,17 +53,17 @@
 - [`cmdline`](cliutil/cmdline) 提供 cmdline 解析，args 构建到 cmdline
 - [`encodes`](x/encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`finder`](x/finder) 提供简单方便的file/dir查找功能，支持过滤、排除、匹配、忽略等。
-- [textscan](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
-- [textutil](strutil/textutil) 提供一些常用的扩展文本处理功能函数。
-- [cmdr](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
-- [process](sysutil/process) 提供一些进程操作相关的实用功能。
+- [`textscan`](strutil/textscan) 实现了一个快速扫描和分析文本内容的解析器. 可用于解析 INI, Properties 等格式内容
+- [`textutil`](strutil/textutil) 提供一些常用的扩展文本处理功能函数。
+- [`cmdr`](sysutil/cmdr) 提供快速构建和运行一个cmd，批量运行多个cmd任务
+- [`process`](sysutil/process) 提供一些进程操作相关的实用功能。
 - [`fmtutil`](x/fmtutil) 格式化数据工具函数 eg：数据size
 - [`goinfo`](x/goinfo) 提供一些与Go info, runtime 相关的工具函数。
 
 ## GoDoc
 
 - [Godoc for github](https://pkg.go.dev/github.com/gookit/goutil)
-- Wiki docs on [DeepWiki - gookit/goutil](https://deepwiki.com/gookit/goutil)
+- Wiki docs on [ZRead.ai - gookit/goutil](https://zread.ai/gookit/goutil)
 
 ## 获取
 

@@ -18,6 +18,7 @@
 *.out
 *.cov
 .DS_Store
+.xenv.toml
 
 *~
 testdata/

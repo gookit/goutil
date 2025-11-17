@@ -52,8 +52,8 @@
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`finder`](x/finder) Provides a simple and convenient file/dir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
-- [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
-- [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
+- [`textutil`](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
+- [`textscan`](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
 - [`cmdr`](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
 - [`clipboard`](x/clipboard) Provide a simple clipboard read and write operations.
 - [`process`](sysutil/process) Provide some process handle util functions.
@@ -63,7 +63,7 @@
 ## Go Doc
 
 Please see [Go doc](https://pkg.go.dev/github.com/gookit/goutil).
-Wiki docs on [DeepWiki - gookit/goutil](https://deepwiki.com/gookit/goutil)
+Wiki docs on [ZRead.ai - gookit/goutil](https://zread.ai/gookit/goutil)
 
 ## Install
 

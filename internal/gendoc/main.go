@@ -12,7 +12,6 @@ import (
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/cflag"
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/fsutil"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/ccolor"
@@ -26,10 +25,11 @@ var (
 		"netutil",
 		"comdef",
 		"internal",
+		"syncs",
 	}
 	nameMap = map[string]string{
 		"arr":     "array and Slice",
-		"str":     "strings",
+		"str":     "string Utils",
 		"byte":    "Bytes Utils",
 		"sys":     "system Utils",
 		"math":    "math/Number",
@@ -37,10 +37,17 @@ var (
 		"fmt":     "format Utils",
 		"test":    "testing Utils",
 		"dump":    "var Dumper",
-		"structs": "structs",
+		"structs": "struct Utils",
 		"json":    "JSON Utils",
 		"cli":     "CLI Utils",
 		"env":     "ENV/Environment",
+	}
+	// hidden details in readme markdown.
+	hiddenDetails = []string{
+		"byteutil",
+		"cflag",
+		"dump",
+		"errorx",
 	}
 
 	// allowLang = map[string]int{
@@ -96,8 +103,10 @@ var (
 	// short name => full name.
 	pkgNames = make(map[string]string, 16)
 
-	partDocTplS = "part-%s-s%s.md"
-	partDocTplE = "part-%s%s.md"
+	// eg: part-errorx-s.md
+	partDocTplStart = "part-%s-s%s.md"
+	// eg: part-errorx.md
+	partDocTplEnd = "part-%s%s.md"
 )
 
 // go run ./internal/gendoc -h
@@ -133,7 +142,7 @@ func main() {
 	cmd.MustParse(nil)
 }
 
-func handle(c *cflag.CFlags) error {
+func handle(_ *cflag.CFlags) error {
 	ms, err := filepath.Glob(genOpts.baseDir + "*/*.go")
 	goutil.PanicIfErr(err)
 
@@ -161,7 +170,7 @@ func handle(c *cflag.CFlags) error {
 	var tplBody []byte
 	if genOpts.tplDir != "" {
 		tplFile := genOpts.tplFilepath("")
-		ccolor.Info.Println("- read template file contents from", tplFile)
+		ccolor.Magentaln("😁  Read template contents from", tplFile)
 		tplBody = fsutil.MustReadFile(tplFile)
 	}
 
@@ -178,17 +187,18 @@ func handle(c *cflag.CFlags) error {
 	}
 
 	goutil.PanicIfErr(err)
-	ccolor.Cyanln("Collected packages:")
-	dump.Clear(pkgNames)
+	// ccolor.Cyanln("Collected packages:")
+	// dump.Clear(pkgNames)
 
 	if toFile {
-		ccolor.Infoln("OK. write result to the", genOpts.output)
+		ccolor.Successln("🎉🎉  OK. write result to the", genOpts.output)
 	}
 	return nil
 }
 
 func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
-	var name, dirname string
+	// name - format dirname, will remove suffix: util
+	var name, title, dirname, prevName string
 	var pkgFuncs = make(map[string][]string)
 
 	// match func
@@ -209,11 +219,11 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		filename = fsutil.UnixPath(filename)
 		idx := strings.IndexRune(filename, '/')
 		dir := filename[:idx] // sub pkg name.
-
 		if arrutil.StringsHas(hidden, dir) {
 			continue
 		}
 
+		dirname = dir
 		pkgPath := basePkg + "/" + dir
 		pkgNames[dir] = pkgPath
 
@@ -221,31 +231,37 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			pkgFuncs[pkgPath] = append(ss, "added")
 		} else {
 			if len(pkgFuncs) > 0 { // end of prev package.
-				bufWriteln(buf, "```")
-
+				bufWriteln(buf, "```\n")
+				if arrutil.StringsHas(hiddenDetails, prevName) {
+					bufWriteln(buf, "</details>\n")
+				}
 				// load prev sub-pkg doc file.
-				bufWriteDoc(buf, partDocTplE, dirname)
+				bufWriteDoc(buf, partDocTplEnd, prevName)
 			}
 
-			dirname = dir
 			name = dir
 			if strings.HasSuffix(dir, "util") {
 				name = dir[:len(dir)-4]
 			}
-
+			title = dir
 			if setTitle, ok := nameMap[name]; ok {
-				name = setTitle
+				title = setTitle
 			}
 
 			// now: name is package name.
-			bufWriteln(buf, "\n###", strutil.UpperFirst(name))
+			bufWriteln(buf, "\n###", strutil.UpperFirst(title))
 			bufWritef(buf, "\n> Package `%s`\n\n", pkgPath)
 			pkgFuncs[pkgPath] = []string{"xx"}
+			ccolor.Cyanf("- collect package: %s\n", pkgPath)
 
 			// load sub-pkg start doc file.
-			bufWriteDoc(buf, partDocTplS, name)
-
+			bufWriteDoc(buf, partDocTplStart, dirname)
+			// 隐藏详情
+			if arrutil.StringsHas(hiddenDetails, dirname) {
+				bufWriteln(buf, "<details><summary>Click to see functions</summary>\n")
+			}
 			bufWriteln(buf, "```go")
+			prevName = dirname
 		}
 
 		// read contents
@@ -266,9 +282,12 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	}
 
 	if len(pkgFuncs) > 0 {
-		bufWriteln(buf, "```")
+		bufWriteln(buf, "```\n")
+		if arrutil.StringsHas(hiddenDetails, dirname) {
+			bufWriteln(buf, "</details>")
+		}
 		// load last sub-pkg doc file.
-		bufWriteDoc(buf, partDocTplE, dirname)
+		bufWriteDoc(buf, partDocTplEnd, dirname)
 	}
 
 	return buf

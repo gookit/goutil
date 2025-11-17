@@ -52,8 +52,8 @@
 - [`encodes`](encodes): Provide some encoding/decoding, hash, crypto util functions. eg: base64, hex, etc.
 - [`finder`](x/finder) Provides a simple and convenient file/dir lookup function, supports filtering, excluding, matching, ignoring, etc.
 - [`netutil`](netutil) Network util functions. eg: Ip, IpV4, IpV6, Mac, Port, Hostname, etc.
-- [textutil](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
-- [textscan](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
+- [`textutil`](strutil/textutil) Provide some extensions text handle util functions. eg: text replace, etc.
+- [`textscan`](strutil/textscan) Implemented a parser that quickly scans and analyzes text content. It can be used to parse INI, Properties and other formats
 - [`cmdr`](sysutil/cmdr) Provide for quick build and run a cmd, batch run multi cmd tasks
 - [`clipboard`](x/clipboard) Provide a simple clipboard read and write operations.
 - [`process`](sysutil/process) Provide some process handle util functions.
@@ -63,7 +63,7 @@
 ## Go Doc
 
 Please see [Go doc](https://pkg.go.dev/github.com/gookit/goutil).
-Wiki docs on [DeepWiki - gookit/goutil](https://deepwiki.com/gookit/goutil)
+Wiki docs on [ZRead.ai - gookit/goutil](https://zread.ai/gookit/goutil)
 
 ## Install
 
@@ -152,6 +152,7 @@ func IntsToString[T comdef.Integer](ints []T) string
 func ToInt64s(arr any) (ret []int64, err error)
 func MustToInt64s(arr any) []int64
 func SliceToInt64s(arr []any) []int64
+func ToMap[T any, K comdef.ScalarType, V any](list []T, mapFn func(T) (K, V)) map[K]V
 func AnyToSlice(sl any) (ls []any, err error)
 func AnyToStrings(arr any) []string
 func MustToStrings(arr any) []string
@@ -171,7 +172,8 @@ func FormatIndent(arr any, indent string) string
 func Reverse[T any](ls []T)
 func Remove[T comdef.Compared](ls []T, val T) []T
 func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T
-func Map[T any, V any](list []T, mapFn MapFn[T, V]) []V
+func Map[T, V any](list []T, mapFn MapFn[T, V]) []V
+func Map1[T, R any](list []T, fn func(t T) R) []R
 func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V
 func Unique[T comdef.NumberOrString](list []T) []T
 func IndexOf[T comdef.NumberOrString](val T, list []T) int
@@ -189,6 +191,7 @@ func StringsFilter(ss []string, filter ...comdef.StringMatchFunc) []string
 func StringsMap(ss []string, mapFn func(s string) string) []string
 func TrimStrings(ss []string, cutSet ...string) []string
 ```
+
 #### ArrUtil Usage
 
 **check value**:
@@ -214,6 +217,8 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ### Bytes Utils
 
 > Package `github.com/gookit/goutil/byteutil`
+
+<details><summary>Click to see functions</summary>
 
 ```go
 // source at byteutil/buffer.go
@@ -245,17 +250,19 @@ func NewStdEncoder(encFn BytesEncodeFunc, decFn BytesDecodeFunc) *StdEncoder
 func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 ```
 
+</details>
+
+
 ### Cflag
 
 > Package `github.com/gookit/goutil/cflag`
 
+<details><summary>Click to see functions</summary>
+
 ```go
-// source at cflag/app.go
-func NewApp(fns ...func(app *App)) *App
-func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd
 // source at cflag/cflag.go
-func SetDebug(open bool)
 func New(fns ...func(c *CFlags)) *CFlags
+func NewWith(name, version, desc string, fns ...func(c *CFlags)) *CFlags
 func NewEmpty(fns ...func(c *CFlags)) *CFlags
 func WithDesc(desc string) func(c *CFlags)
 func WithVersion(version string) func(c *CFlags)
@@ -269,6 +276,8 @@ func Value
 // source at cflag/optarg.go
 func NewArg(name, desc string, required bool) *FlagArg
 // source at cflag/util.go
+func SetDebug(open bool)
+func DebugMsg(format string, args ...any)
 func IsGoodName(name string) bool
 func IsZeroValue(opt *flag.Flag, value string) (bool, bool)
 func AddPrefix(name string) string
@@ -280,6 +289,9 @@ func IsFlagHelpErr(err error) bool
 func WrapColorForCode(s string) string
 func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
+
+</details>
+
 #### `cflag` Usage
 
 `cflag` usage please see [cflag/README.md](cflag/README.md)
@@ -325,6 +337,7 @@ func InputIsYes(ans string) bool
 func ByteIsYes(ans byte) bool
 func ReadPassword(question ...string) string
 ```
+
 
 #### CLI Util Usage
 
@@ -385,6 +398,8 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > Package `github.com/gookit/goutil/dump`
 
+<details><summary>Click to see functions</summary>
+
 ```go
 // source at dump/dump.go
 func Std() *Dumper
@@ -411,7 +426,11 @@ func WithoutPosition() OptionFunc
 func WithoutOutput(out io.Writer) OptionFunc
 func WithoutColor() OptionFunc
 func WithoutType() OptionFunc
+func WithoutLen() OptionFunc
 ```
+
+</details>
+
 #### Examples
 
 example code:
@@ -503,6 +522,7 @@ func UnsetEnvs(keys ...string)
 func LoadText(text string)
 func LoadString(line string) bool
 ```
+
 #### ENV Util Usage
 
 **helper functions:**
@@ -528,6 +548,8 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
 
+
+<details><summary>Click to see functions</summary>
 
 ```go
 // source at errorx/assert.go
@@ -578,6 +600,9 @@ func Is(err, target error) bool
 func To(err error, target any) bool
 func As(err error, target any) bool
 ```
+
+</details>
+
 
 #### Errorx Usage
 
@@ -665,6 +690,7 @@ func PathExists(path string) bool
 func IsDir(path string) bool
 func FileExists(path string) bool
 func IsFile(path string) bool
+func IsSymlink(path string) bool
 func IsAbsPath(aPath string) bool
 func IsEmptyDir(dirPath string) bool
 func IsImageFile(path string) bool
@@ -680,6 +706,10 @@ func FirstExistsDir(paths ...string) string
 func FirstExistsFile(paths ...string) string
 func MatchPaths(paths []string, matcher PathMatchFunc) []string
 func MatchFirst(paths []string, matcher PathMatchFunc, defaultPath string) string
+func FindAllInParentDirs(dirPath, name string, optFns ...FindParentOptFn) []string
+func FindOneInParentDirs(dirPath, name string, optFns ...FindParentOptFn) string
+func FindNameInParentDirs(dirPath, name string, collectFn func(fullPath string), optFns ...FindParentOptFn)
+func FindInParentDirs(dirPath string, matchFunc func(dir string) bool, maxLevel int)
 func SearchNameUp(dirPath, name string) string
 func SearchNameUpx(dirPath, name string) (string, bool)
 func WalkDir(dir string, fn fs.WalkDirFunc) error
@@ -713,9 +743,12 @@ func FileExt(fPath string) string
 func Extname(fPath string) string
 func Suffix(fPath string) string
 func Expand(pathStr string) string
+func ExpandHome(pathStr string) string
 func ExpandPath(pathStr string) string
 func ResolvePath(pathStr string) string
 func SplitPath(pathStr string) (dir, name string)
+func UserHomeDir() string
+func HomeDir() string
 // source at fsutil/info_nonwin.go
 func Realpath(pathStr string) string
 // source at fsutil/mime.go
@@ -723,9 +756,11 @@ func DetectMime(path string) string
 func MimeType(path string) (mime string)
 func ReaderMimeType(r io.Reader) (mime string)
 // source at fsutil/operate.go
-func Mkdir(dirPath string, perm os.FileMode) error
-func MkDirs(perm os.FileMode, dirPaths ...string) error
-func MkSubDirs(perm os.FileMode, parentDir string, subDirs ...string) error
+func Mkdir(dirPath string, perm fs.FileMode) error
+func MkdirQuick(dirPath string) error
+func EnsureDir(path string) error
+func MkDirs(perm fs.FileMode, dirPaths ...string) error
+func MkSubDirs(perm fs.FileMode, parentDir string, subDirs ...string) error
 func MkParentDir(fpath string) error
 func NewOpenOption(optFns ...OpenOptionFunc) *OpenOption
 func OpenOptOrNew(opt *OpenOption) *OpenOption
@@ -779,7 +814,9 @@ func WriteOSFile(f *os.File, data any) (n int, err error)
 func CopyFile(srcPath, dstPath string) error
 func MustCopyFile(srcPath, dstPath string)
 func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error
+func CreateSymlink(target, linkPath string) error
 ```
+
 
 #### FsUtil Usage
 
@@ -841,7 +878,8 @@ func IsObject(s string) bool
 func StripComments(src string) string
 ```
 
-### Map
+
+### Maputil
 
 > Package `github.com/gookit/goutil/maputil`
 
@@ -890,6 +928,7 @@ func Merge1level(mps ...map[string]any) map[string]any
 func DeepMerge(src, dst map[string]any, deep int) map[string]any
 func MergeSMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func MergeStrMap(src, dst map[string]string) map[string]string
+func AppendSMap(dst, src map[string]string) map[string]string
 func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]string
 func MergeMultiSMap(mps ...map[string]string) map[string]string
 func MergeL2StrMap(mps ...map[string]map[string]string) map[string]map[string]string
@@ -901,6 +940,7 @@ func SetByPath(mp *map[string]any, path string, val any) error
 func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```
 
+
 ### Math/Number
 
 > Package `github.com/gookit/goutil/mathutil`
@@ -910,6 +950,7 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 func Abs[T comdef.Int](val T) T
 // source at mathutil/check.go
 func IsNumeric(c byte) bool
+func IsInteger(val any) bool
 func Compare(first, second any, op string) bool
 func CompInt[T comdef.Xint](first, second T, op string) (ok bool)
 func CompInt64(first, second int64, op string) bool
@@ -928,11 +969,7 @@ func SwapMaxInt(x, y int) (int, int)
 func MaxI64(x, y int64) int64
 func SwapMaxI64(x, y int64) (int64, int64)
 func MaxFloat(x, y float64) float64
-// source at mathutil/convert.go
-func NewConvOption[T any](optFns ...ConvOptionFn[T]) *ConvOption[T]
-func WithNilAsFail[T any](opt *ConvOption[T])
-func WithHandlePtr[T any](opt *ConvOption[T])
-func WithUserConvFn[T any](fn ToTypeFunc[T]) ConvOptionFn[T]
+// source at mathutil/conv2int.go
 func Int(in any) (int, error)
 func SafeInt(in any) int
 func QuietInt(in any) int
@@ -943,8 +980,6 @@ func IntOr(in any, defVal int) int
 func IntOrErr(in any) (int, error)
 func ToInt(in any) (int, error)
 func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error)
-func StrInt(s string) int
-func StrIntOr(s string, defVal int) int
 func Int64(in any) (int64, error)
 func SafeInt64(in any) int64
 func QuietInt64(in any) int64
@@ -972,6 +1007,19 @@ func Uint64Or(in any, defVal uint64) uint64
 func Uint64OrErr(in any) (uint64, error)
 func ToUint64(in any) (uint64, error)
 func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error)
+func StrInt(s string) int
+func StrIntOr(s string, defVal int) int
+func TryStrInt(s string) (int, error)
+func TryStrInt64(s string) (int64, error)
+func TryStrUint64(s string) (uint64, error)
+// source at mathutil/convert.go
+func NewConvOption[T any](optFns ...ConvOptionFn[T]) *ConvOption[T]
+func WithNilAsFail[T any](opt *ConvOption[T])
+func WithHandlePtr[T any](opt *ConvOption[T])
+func WithStrictMode[T any](opt *ConvOption[T])
+func WithUserConvFn[T any](fn ToTypeFunc[T]) ConvOptionFn[T]
+func StrictInt(val any) (int64, bool)
+func StrictUint(val any) (uint64, bool)
 func QuietFloat(in any) float64
 func SafeFloat(in any) float64
 func FloatOrPanic(in any) float64
@@ -995,6 +1043,7 @@ func TryToString(val any, defaultAsErr bool) (string, error)
 func ToStringWith(in any, optFns ...comfunc.ConvOptionFn) (string, error)
 // source at mathutil/format.go
 func DataSize(size uint64) string
+func FormatBytes(bytes int) string
 func HowLongAgo(sec int64) string
 // source at mathutil/mathutil.go
 func OrElse[T comdef.Number](val, defVal T) T
@@ -1015,6 +1064,7 @@ func RandInt(min, max int) int
 func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
+
 
 ### Reflects
 
@@ -1086,7 +1136,8 @@ func Wrap(rv reflect.Value) Value
 func ValueOf(v any) Value
 ```
 
-### Structs
+
+### Struct Utils
 
 > Package `github.com/gookit/goutil/structs`
 
@@ -1141,7 +1192,8 @@ func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
 ```
 
-### Strings
+
+### String Utils
 
 > Package `github.com/gookit/goutil/strutil`
 
@@ -1152,10 +1204,14 @@ func NewByteChanPool(maxSize, width, capWidth int) *ByteChanPool
 // source at strutil/check.go
 func IsNumChar(c byte) bool
 func IsInt(s string) bool
+func IsUint(s string) bool
 func IsFloat(s string) bool
 func IsNumeric(s string) bool
+func IsPositiveNum(s string) bool
 func IsAlphabet(char uint8) bool
 func IsAlphaNum(c uint8) bool
+func IsUpper(s string) bool
+func IsLower(s string) bool
 func StrPos(s, sub string) int
 func BytePos(s string, bt byte) int
 func IEqual(s1, s2 string) bool
@@ -1186,6 +1242,7 @@ func HasEmpty(ss ...string) bool
 func IsAllEmpty(ss ...string) bool
 func IsVersion(s string) bool
 func IsVarName(s string) bool
+func IsEnvName(s string) bool
 func Compare(s1, s2, op string) bool
 func VersionCompare(v1, v2, op string) bool
 func SimpleMatch(s string, keywords []string) bool
@@ -1197,7 +1254,9 @@ func MatchNodePath(pattern, s string, sep string) bool
 // source at strutil/convbase.go
 func Base10Conv(src string, to int) string
 func BaseConv(src string, from, to int) string
+func BaseConvInt(src uint64, to int) string
 func BaseConvByTpl(src string, fromBase, toBase string) string
+func BaseConvIntByTpl(dec uint64, toBase string) string
 // source at strutil/convert.go
 func Quote(s string) string
 func Unquote(s string) string
@@ -1257,7 +1316,6 @@ func ToArray(s string, sep ...string) []string
 func Strings(s string, sep ...string) []string
 func ToStrings(s string, sep ...string) []string
 func ToSlice(s string, sep ...string) []string
-func ToOSArgs(s string) []string
 func ToDuration(s string) (time.Duration, error)
 // source at strutil/encode.go
 func EscapeJS(s string) string
@@ -1299,6 +1357,10 @@ func Camel(s string, sep ...string) string
 func CamelCase(s string, sep ...string) string
 func Indent(s, prefix string) string
 func IndentBytes(b, prefix []byte) []byte
+func Replaces(str string, pairs map[string]string) string
+func ReplaceVars(s string, vars map[string]string) string
+func NewReplacer(pairs map[string]string) *strings.Replacer
+func WrapTag(s, tag string) string
 // source at strutil/gensn.go
 func MicroTimeID() string
 func MicroTimeHexID() string
@@ -1307,7 +1369,8 @@ func MTimeBase36() string
 func MTimeBaseID(toBase int) string
 func DatetimeNo(prefix string) string
 func DateSN(prefix string) string
-func DateSNV2(prefix string, extBase ...int) string
+func DateSNv2(prefix string, extBase ...int) string
+func DateSNv3(prefix string, dateLen int, extBase ...int) string
 // source at strutil/hash.go
 func Md5(src any) string
 func MD5(src any) string
@@ -1335,6 +1398,7 @@ func RepeatRune(char rune, times int) []rune
 func RepeatBytes(char byte, times int) []byte
 func RepeatChars[T byte | rune](char T, times int) []T
 // source at strutil/parse.go
+func NumVersion(s string) string
 func MustToTime(s string, layouts ...string) time.Time
 func ToTime(s string, layouts ...string) (t time.Time, err error)
 func ParseSizeRange(expr string, opt *ParseSizeOpt) (min, max uint64, err error)
@@ -1398,26 +1462,9 @@ func OrElse(s, orVal string) string
 func OrElseNilSafe(s *string, orVal string) string
 func OrHandle(s string, fn comdef.StringHandleFunc) string
 func Valid(ss ...string) string
-func Replaces(str string, pairs map[string]string) string
-func NewReplacer(pairs map[string]string) *strings.Replacer
-func WrapTag(s, tag string) string
 func SubstrCount(s, substr string, params ...uint64) (int, error)
 ```
 
-### Syncs
-
-> Package `github.com/gookit/goutil/syncs`
-
-```go
-// source at syncs/chan.go
-func Go(f func() error) error
-// source at syncs/group.go
-func NewCtxErrGroup(ctx context.Context, limit ...int) (*ErrGroup, context.Context)
-func NewErrGroup(limit ...int) *ErrGroup
-// source at syncs/signal.go
-func WaitCloseSignals(onClose func(sig os.Signal), sigCh ...chan os.Signal)
-func SignalHandler(ctx context.Context, signals ...os.Signal) (execute func() error, interrupt func(error))
-```
 
 ### System Utils
 
@@ -1473,6 +1520,13 @@ func OpenURL(URL string) error
 // source at sysutil/sysutil_nonwin.go
 func Kill(pid int, signal syscall.Signal) error
 func ProcessExists(pid int) bool
+// source at sysutil/sysutil_unix.go
+func IsWin() bool
+func IsWindows() bool
+func IsMac() bool
+func IsDarwin() bool
+func IsLinux() bool
+func OpenURL(URL string) error
 // source at sysutil/user.go
 func MustFindUser(uname string) *user.User
 func LoginUser() *user.User
@@ -1492,6 +1546,7 @@ func ChangeUserUidGid(newUID int, newGid int) error
 func ChangeUserUIDGid(newUID int, newGid int) (err error)
 ```
 
+
 ### Testing Utils
 
 > Package `github.com/gookit/goutil/testutil`
@@ -1499,16 +1554,17 @@ func ChangeUserUIDGid(newUID int, newGid int) (err error)
 ```go
 // source at testutil/buffer.go
 func NewBuffer() *byteutil.Buffer
+func NewSafeBuffer() *SafeBuffer
 // source at testutil/envmock.go
 func MockEnvValue(key, val string, fn func(nv string))
 func MockEnvValues(kvMap map[string]string, fn func())
 func MockOsEnvByText(envText string, fn func())
-func MockOsEnv(mp map[string]string, fn func())
 func SetOsEnvs(mp map[string]string) string
 func RemoveTmpEnvs(tmpKey string)
 func ClearOSEnv()
 func RevertOSEnv()
 func RunOnCleanEnv(runFn func())
+func MockOsEnv(mp map[string]string, fn func())
 func MockCleanOsEnv(mp map[string]string, fn func())
 // source at testutil/httpmock.go
 func NewHTTPRequest(method, path string, data *MD) *http.Request
@@ -1534,6 +1590,7 @@ func NewTestWriter() *TestWriter
 func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry
 ```
 
+
 ### Timex
 
 > Package `github.com/gookit/goutil/timex`
@@ -1546,12 +1603,14 @@ func InRange(dst, start, end time.Time) bool
 // source at timex/conv.go
 func Elapsed(start, end time.Time) string
 func ElapsedNow(start time.Time) string
+func FormatDuration(d time.Duration) string
 func FromNow(t time.Time) string
 func FromNowWith(u time.Time, tms []TimeMessage) string
 func HowLongAgo(diffSec int64) string
 func HowLongAgo2(diffSec int64, tms []TimeMessage) string
 func ToTime(s string, layouts ...string) (time.Time, error)
 func ToDur(s string) (time.Duration, error)
+func ParseDuration(s string) (time.Duration, error)
 func ToDuration(s string) (time.Duration, error)
 func TryToTime(s string, bt time.Time) (time.Time, error)
 func ParseRange(expr string, opt *ParseRangeOpt) (start, end time.Time, err error)
@@ -1600,6 +1659,7 @@ func FormatUnix(sec int64, layout ...string) string
 func FormatUnixBy(sec int64, layout string) string
 func FormatUnixByTpl(sec int64, template ...string) string
 ```
+
 #### Timex Usage
 
 **Create timex instance**
