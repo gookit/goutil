@@ -546,7 +546,9 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 > Package `github.com/gookit/goutil/errorx`
 
-Package errorx provide a enhanced error implements, allow with call stack and wrap another error.
+`errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
+
+> 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
 
 
 <details><summary>Click to see functions</summary>
@@ -604,11 +606,11 @@ func As(err error, target any) bool
 </details>
 
 
-#### Errorx Usage
+#### Errorx 使用示例
 
-**Create error with call stack info**
+**创建错误带有调用栈信息**
 
-- use the `errorx.New` instead `errors.New`
+- 使用 `errorx.New` 替代 `errors.New`
 
 ```go
 func doSomething() error {
@@ -619,7 +621,7 @@ func doSomething() error {
 }
 ```
 
-- use the `errorx.Newf` or `errorx.Errorf` instead `fmt.Errorf`
+- 使用 `errorx.Newf` 或者 `errorx.Errorf` 替代 `fmt.Errorf`
 
 ```go
 func doSomething() error {
@@ -630,9 +632,9 @@ func doSomething() error {
 }
 ```
 
-**Wrap the previous error**
+**包装上一级错误**
 
-used like this before:
+之前这样使用:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -640,7 +642,7 @@ used like this before:
 	}
 ```
 
-can be replaced with:
+可以替换成:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -648,9 +650,9 @@ can be replaced with:
 	}
 ```
 
-**Print the errorx.New() error**
+**使用效果示例**
 
-Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
+更多关于 `errorx` 的使用请看 [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
@@ -1218,6 +1220,7 @@ func IEqual(s1, s2 string) bool
 func NoCaseEq(s, t string) bool
 func IContains(s, sub string) bool
 func ContainsByte(s string, c byte) bool
+func ContainsByteOne(s string, bs []byte) bool
 func ContainsOne(s string, subs []string) bool
 func HasOneSub(s string, subs []string) bool
 func IContainsOne(s string, subs []string) bool

@@ -103,10 +103,10 @@ var (
 	// short name => full name.
 	pkgNames = make(map[string]string, 16)
 
-	// eg: part-errorx-s.md
-	partDocTplStart = "part-%s-s%s.md"
-	// eg: part-errorx.md
-	partDocTplEnd = "part-%s%s.md"
+	// eg: subpkg/errorx-s.md
+	partDocTplStart = "subpkg/%s-s%s.md"
+	// eg: subpkg/errorx.md
+	partDocTplEnd = "subpkg/%s%s.md"
 )
 
 // go run ./internal/gendoc -h

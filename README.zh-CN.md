@@ -1220,6 +1220,7 @@ func IEqual(s1, s2 string) bool
 func NoCaseEq(s, t string) bool
 func IContains(s, sub string) bool
 func ContainsByte(s string, c byte) bool
+func ContainsByteOne(s string, bs []byte) bool
 func ContainsOne(s string, subs []string) bool
 func HasOneSub(s string, subs []string) bool
 func IContainsOne(s string, subs []string) bool
