@@ -233,6 +233,10 @@ func TestIContains(t *testing.T) {
 
 	assert.True(t, strutil.ContainsByte("H3AB2C", 'A'))
 	assert.False(t, strutil.ContainsByte("H3AB2C", 'a'))
+
+	assert.True(t, strutil.ContainsByteOne("H3AB2C", []byte("A")))
+	assert.True(t, strutil.ContainsByteOne("H3AB2C", []byte("DB")))
+	assert.False(t, strutil.ContainsByteOne("H3AB2C", []byte("D")))
 }
 
 func TestHasOneSub(t *testing.T) {

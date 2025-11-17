@@ -116,6 +116,16 @@ func IContains(s, sub string) bool {
 // ContainsByte in given string.
 func ContainsByte(s string, c byte) bool { return strings.IndexByte(s, c) >= 0 }
 
+// ContainsByteOne in given string.
+func ContainsByteOne(s string, bs []byte) bool {
+	for _, b := range bs {
+		if strings.IndexByte(s, b) >= 0 {
+			return true
+		}
+	}
+	return false
+}
+
 // InArray alias of HasOneSub()
 var InArray = HasOneSub
 

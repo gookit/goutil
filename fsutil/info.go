@@ -30,7 +30,9 @@ func PathNoExt(fPath string) string {
 
 // Name get file/dir name from full path.
 //
-// eg: path/to/main.go => "main.go"
+// eg:
+//  "path/to/main.go" => "main.go"
+//  "/foo/bar/baz" => "baz"
 func Name(fPath string) string {
 	if fPath == "" {
 		return ""
