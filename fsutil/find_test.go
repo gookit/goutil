@@ -2,6 +2,7 @@ package fsutil_test
 
 import (
 	"io/fs"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -11,6 +12,38 @@ import (
 	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/x/fakeobj"
 )
+
+func TestFindAllInParentDirs(t *testing.T) {
+	// find all
+	ss := fsutil.FindAllInParentDirs("testdata", "find.go", func(opt *fsutil.FindParentOption) {
+		opt.MaxLevel = 3
+	})
+	assert.NotEmpty(t, ss)
+	assert.Len(t, ss, 1)
+
+	ss = fsutil.FindAllInParentDirs("testdata", "README.md", func(opt *fsutil.FindParentOption) {
+		opt.MaxLevel = 5
+	})
+	assert.NotEmpty(t, ss)
+	assert.Gt(t, len(ss), 1)
+}
+
+func TestFindOneInParentDirs(t *testing.T) {
+	// find one
+	s := fsutil.FindOneInParentDirs("testdata", "goutil.go")
+	assert.NotEmpty(t, s)
+	if runtime.GOOS == "windows" {
+		assert.StrContains(t, s, "goutil\\goutil.go")
+	} else {
+		assert.Eq(t, s, "goutil/goutil.go")
+	}
+
+	// find dir
+	s = fsutil.FindOneInParentDirs("testdata", "errorx", func(opt *fsutil.FindParentOption) {
+		opt.NeedDir = true
+	})
+	assert.NotEmpty(t, s)
+}
 
 func TestFilePathInDirs(t *testing.T) {
 	result := fsutil.FilePathInDirs("not_existing_file.txt")

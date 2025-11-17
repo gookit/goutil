@@ -23,7 +23,7 @@ func FilePathInDirs(fPath string, dirs ...string) string {
 	}
 
 	for _, dirPath := range dirs {
-		fPath := JoinSubPaths(dirPath, fPath)
+		fPath = JoinSubPaths(dirPath, fPath)
 		if FileExists(fPath) {
 			return fPath
 		}
@@ -65,6 +65,103 @@ func MatchFirst(paths []string, matcher PathMatchFunc, defaultPath string) strin
 		}
 	}
 	return defaultPath
+}
+
+// FindParentOption options
+type FindParentOption struct {
+	MaxLevel int // default: 10
+	// NeedDir true: find dirs; false(default): find files
+	NeedDir bool
+	OnlyOne bool // only find one, default: true
+	// Collector func
+	Collector func(fullPath string)
+	// MatchFunc custom matcher func. return false to stop find.
+	MatchFunc func(currentDir string) bool
+}
+
+// FindParentOptFn find parent option func
+type FindParentOptFn func(opt *FindParentOption)
+
+// FindAllInParentDirs looks for all match file(default)/dir in the current directory and parent directories
+func FindAllInParentDirs(dirPath, name string, optFns ...FindParentOptFn) []string {
+	var foundPaths []string
+	optFns = append(optFns, func(opt *FindParentOption) {
+		opt.OnlyOne = false
+	})
+
+	FindNameInParentDirs(dirPath, name, func(fullPath string) {
+		foundPaths = append(foundPaths, fullPath)
+	}, optFns...)
+	return foundPaths
+}
+
+// FindOneInParentDirs looks for a file(default)/dir in the current directory and parent directories
+func FindOneInParentDirs(dirPath, name string, optFns ...FindParentOptFn) string {
+	var foundPath string
+	FindNameInParentDirs(dirPath, name, func(fullPath string) {
+		foundPath = fullPath
+	}, optFns...)
+	return foundPath
+}
+
+// FindNameInParentDirs looks for file(default)/dir in the current directory and parent directories
+func FindNameInParentDirs(dirPath, name string, collectFn func(fullPath string), optFns ...FindParentOptFn) {
+	opts := &FindParentOption{
+		MaxLevel:  10,
+		OnlyOne:   true,
+		Collector: collectFn,
+	}
+	for _, fn := range optFns {
+		fn(opts)
+	}
+
+	FindInParentDirs(dirPath, func(currentDir string) bool {
+		filePath := filepath.Join(currentDir, name)
+		if fi, err := os.Stat(filePath); err == nil {
+			found := false
+			if fi.IsDir() {
+				found = opts.NeedDir
+			} else {
+				found = !opts.NeedDir
+			}
+
+			if found {
+				opts.Collector(filePath)
+				return !opts.OnlyOne
+			}
+		}
+		return true
+	}, opts.MaxLevel)
+}
+
+// FindInParentDirs looks for file/dir in the current directory and parent directories
+//  - MatchFunc custom matcher func. return false to stop find.
+func FindInParentDirs(dirPath string, matchFunc func(dir string) bool, maxLevel int) {
+	currentLv := 1
+	currentDir := ToAbsPath(dirPath)
+
+	for {
+		// Check if the file exists in the current directory
+		if !matchFunc(currentDir) {
+			return
+		}
+
+		// check find level
+		if maxLevel > 0 && currentLv > maxLevel {
+			break
+		}
+
+		// Get parent directory
+		parentDir := filepath.Dir(currentDir)
+		if parentDir == currentDir {
+			// Reached the root, file not found
+			return
+		}
+
+		// Move to parent directory
+		currentLv++
+		currentDir = parentDir
+	}
 }
 
 // SearchNameUp find file/dir name in dirPath or parent dirs,
@@ -158,14 +255,10 @@ type (
 )
 
 // OnlyFindDir on find
-func OnlyFindDir(_ string, ent fs.DirEntry) bool {
-	return ent.IsDir()
-}
+func OnlyFindDir(_ string, ent fs.DirEntry) bool { return ent.IsDir() }
 
 // OnlyFindFile on find
-func OnlyFindFile(_ string, ent fs.DirEntry) bool {
-	return !ent.IsDir()
-}
+func OnlyFindFile(_ string, ent fs.DirEntry) bool { return !ent.IsDir() }
 
 // ExcludeNames on find
 func ExcludeNames(names ...string) FilterFunc {
@@ -182,9 +275,7 @@ func IncludeSuffix(ss ...string) FilterFunc {
 }
 
 // ExcludeDotFile on find
-func ExcludeDotFile(_ string, ent fs.DirEntry) bool {
-	return ent.Name()[0] != '.'
-}
+func ExcludeDotFile(_ string, ent fs.DirEntry) bool { return ent.Name()[0] != '.' }
 
 // ExcludeSuffix on find
 func ExcludeSuffix(ss ...string) FilterFunc {
@@ -205,7 +296,7 @@ func ApplyFilters(fPath string, ent fs.DirEntry, filters []FilterFunc) bool {
 
 // FindInDir code refer the go pkg: path/filepath.glob()
 //
-// - TIP: will be not found in sub-dir.
+// - TIP: default will be not found in sub-dir.
 //
 // filters: return false will skip the file.
 func FindInDir(dir string, handleFn HandleFunc, filters ...FilterFunc) (e error) {
