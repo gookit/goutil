@@ -218,7 +218,7 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 
 > Package `github.com/gookit/goutil/byteutil`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at byteutil/buffer.go
@@ -257,7 +257,7 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 
 > Package `github.com/gookit/goutil/cflag`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at cflag/cflag.go
@@ -301,6 +301,8 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 
 > Package `github.com/gookit/goutil/cliutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at cliutil/cliutil.go
 func SplitMulti(ss []string, sep string) []string
@@ -337,6 +339,8 @@ func InputIsYes(ans string) bool
 func ByteIsYes(ans byte) bool
 func ReadPassword(question ...string) string
 ```
+
+</details>
 
 
 #### CLI Util Usage
@@ -398,7 +402,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > Package `github.com/gookit/goutil/dump`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at dump/dump.go
@@ -551,7 +555,7 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 > 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
 
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at errorx/assert.go

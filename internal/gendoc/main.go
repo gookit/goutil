@@ -46,6 +46,7 @@ var (
 	hiddenDetails = []string{
 		"byteutil",
 		"cflag",
+		"cliutil",
 		"dump",
 		"errorx",
 	}
@@ -260,7 +261,7 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			bufWriteDoc(buf, partDocTplStart, dirname)
 			// 隐藏详情
 			if arrutil.StringsHas(hiddenDetails, dirname) {
-				bufWriteln(buf, "<details><summary>Click to see functions</summary>")
+				bufWriteln(buf, "<details><summary>Click to see functions 👈</summary>")
 				buf.WriteByte('\n')
 			}
 			bufWriteln(buf, "```go")
@@ -274,9 +275,9 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		if len(lines) > 0 {
 			bufWriteln(buf, "// source at", filename)
 			for _, line := range lines {
-				idx := strings.IndexByte(line, '{')
-				if idx > 0 {
-					bufWriteln(buf, strings.TrimSpace(line[:idx]))
+				pos := strings.IndexByte(line, '{')
+				if pos > 0 {
+					bufWriteln(buf, strings.TrimSpace(line[:pos]))
 				} else {
 					bufWriteln(buf, strings.TrimSpace(line))
 				}

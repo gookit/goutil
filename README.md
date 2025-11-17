@@ -218,7 +218,7 @@ ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 
 > Package `github.com/gookit/goutil/byteutil`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at byteutil/buffer.go
@@ -257,7 +257,7 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 
 > Package `github.com/gookit/goutil/cflag`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at cflag/cflag.go
@@ -301,6 +301,8 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 
 > Package `github.com/gookit/goutil/cliutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at cliutil/cliutil.go
 func SplitMulti(ss []string, sep string) []string
@@ -337,6 +339,8 @@ func InputIsYes(ans string) bool
 func ByteIsYes(ans byte) bool
 func ReadPassword(question ...string) string
 ```
+
+</details>
 
 
 #### CLI Util Usage
@@ -398,7 +402,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > Package `github.com/gookit/goutil/dump`
 
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at dump/dump.go
@@ -546,12 +550,11 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 > Package `github.com/gookit/goutil/errorx`
 
-`errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
+'errorx' provides an enhanced error reporting implementation that contains call stack information and can wrap the previous level of error.
 
-> 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
+> Additional call stack information is included when printing errors, making it easy to log and find problems.
 
-
-<details><summary>Click to see functions</summary>
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at errorx/assert.go
@@ -606,11 +609,11 @@ func As(err error, target any) bool
 </details>
 
 
-#### Errorx 使用示例
+#### Errorx Usage
 
-**创建错误带有调用栈信息**
+**Create error with call stack info**
 
-- 使用 `errorx.New` 替代 `errors.New`
+- use the `errorx.New` instead `errors.New`
 
 ```go
 func doSomething() error {
@@ -621,7 +624,7 @@ func doSomething() error {
 }
 ```
 
-- 使用 `errorx.Newf` 或者 `errorx.Errorf` 替代 `fmt.Errorf`
+- use the `errorx.Newf` or `errorx.Errorf` instead `fmt.Errorf`
 
 ```go
 func doSomething() error {
@@ -632,9 +635,9 @@ func doSomething() error {
 }
 ```
 
-**包装上一级错误**
+**Wrap the previous error**
 
-之前这样使用:
+used like this before:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -642,7 +645,7 @@ func doSomething() error {
 	}
 ```
 
-可以替换成:
+can be replaced with:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -650,9 +653,9 @@ func doSomething() error {
 	}
 ```
 
-**使用效果示例**
+**Print the errorx.New() error**
 
-更多关于 `errorx` 的使用请看 [./errorx/README](errorx/README.md)
+Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
