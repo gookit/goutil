@@ -231,9 +231,11 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			pkgFuncs[pkgPath] = append(ss, "added")
 		} else {
 			if len(pkgFuncs) > 0 { // end of prev package.
-				bufWriteln(buf, "```\n")
+				bufWriteln(buf, "```")
+				buf.WriteByte('\n')
 				if arrutil.StringsHas(hiddenDetails, prevName) {
-					bufWriteln(buf, "</details>\n")
+					bufWriteln(buf, "</details>")
+					buf.WriteByte('\n')
 				}
 				// load prev sub-pkg doc file.
 				bufWriteDoc(buf, partDocTplEnd, prevName)
@@ -258,7 +260,8 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			bufWriteDoc(buf, partDocTplStart, dirname)
 			// 隐藏详情
 			if arrutil.StringsHas(hiddenDetails, dirname) {
-				bufWriteln(buf, "<details><summary>Click to see functions</summary>\n")
+				bufWriteln(buf, "<details><summary>Click to see functions</summary>")
+				buf.WriteByte('\n')
 			}
 			bufWriteln(buf, "```go")
 			prevName = dirname
@@ -282,7 +285,8 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	}
 
 	if len(pkgFuncs) > 0 {
-		bufWriteln(buf, "```\n")
+		bufWriteln(buf, "```")
+		buf.WriteByte('\n')
 		if arrutil.StringsHas(hiddenDetails, dirname) {
 			bufWriteln(buf, "</details>")
 		}

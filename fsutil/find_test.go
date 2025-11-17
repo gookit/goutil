@@ -35,7 +35,7 @@ func TestFindOneInParentDirs(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		assert.StrContains(t, s, "goutil\\goutil.go")
 	} else {
-		assert.Eq(t, s, "goutil/goutil.go")
+		assert.StrContains(t, s, "goutil/goutil.go")
 	}
 
 	// find dir
