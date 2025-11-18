@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/x/basefn"
 )
 
@@ -34,12 +33,12 @@ func MicroTimeID() string { return MTimeBaseID(10) }
 
 // MicroTimeHexID micro time HEX ID generate.
 //
-// return like: 5b5f0588af1761ad3(len: 16-17)
+// return like: 643d4cec7db9e(len: 13)
 func MicroTimeHexID() string { return MTimeHexID() }
 
 // MTimeHexID micro time HEX ID generate.
 //
-// return like: 5b5f0588af1761ad3(len: 16-17)
+// return like: 643d4cec7db9e(len: 13)
 func MTimeHexID() string { return MTimeBaseID(16) }
 
 // MTimeBase36 micro time BASE36 id generate.
@@ -48,12 +47,19 @@ func MTimeBase36() string { return MTimeBaseID(36) }
 // MTimeBaseID micro time BASE id generate. toBase: 2-36
 //
 // Examples:
-//   - MTimeBaseID(16): 5b5f0588af1761ad3(len: 16-17)
-//   - MTimeBaseID(36): gorntzvsa73mo(len: 13)
+//   - toBase=16: 643d4cec7db9e(len: 13)
+//   - toBase=36: hd312z9ka2(len: 10)
 func MTimeBaseID(toBase int) string {
+	// eg: 1763431181849557
 	ms := time.Now().UnixMicro()
-	ri := mathutil.RandomInt(DefMinInt, DefMaxInt)
-	return strconv.FormatInt(ms, toBase) + strconv.FormatInt(int64(ri), toBase)
+	// rand 1000 - 9999
+	// ri := mathutil.RandomInt(DefMinInt, DefMaxInt)
+	ri := 1000 + rand.Int63n(8999)
+
+	if toBase > 36 {
+		return BaseConvInt(uint64(ms)+uint64(ri), toBase)
+	}
+	return strconv.FormatInt(ms+ri, toBase)
 }
 
 // DatetimeNo generate. can use for order-no.

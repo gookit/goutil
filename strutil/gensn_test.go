@@ -28,20 +28,43 @@ func TestMicroTimeID(t *testing.T) {
 }
 
 func TestMicroTimeBaseID(t *testing.T) {
-	fmt.Println("Base 16:")
-	for i := 0; i < 10; i++ {
-		id := strutil.MicroTimeHexID()
-		fmt.Println(id, "len:", len(id))
-		assert.NotEmpty(t, id)
-	}
+	t.Run("Base 16", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 10; i++ {
+			id := strutil.MicroTimeHexID()
+			assert.False(t, idMap[id])
 
-	fmt.Println("Base 36:")
-	for i := 0; i < 10; i++ {
-		id := strutil.MTimeBaseID(36)
-		fmt.Println(id, "len:", len(id))
-		assert.NotEmpty(t, id)
-	}
-	assert.NotEmpty(t, strutil.MTimeBase36())
+			idMap[id] = true
+			fmt.Println(id, "len:", len(id))
+			assert.NotEmpty(t, id)
+		}
+	})
+
+	t.Run("Base 36", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 10; i++ {
+			id := strutil.MTimeBaseID(36)
+			assert.False(t, idMap[id])
+
+			idMap[id] = true
+			fmt.Println(id, "len:", len(id))
+			assert.NotEmpty(t, id)
+		}
+		assert.NotEmpty(t, strutil.MTimeBase36())
+	})
+
+	t.Run("Base 48", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 10; i++ {
+			id := strutil.MTimeBaseID(48)
+			assert.False(t, idMap[id])
+
+			idMap[id] = true
+			fmt.Println(id, "len:", len(id))
+			assert.NotEmpty(t, id)
+		}
+		assert.NotEmpty(t, strutil.MTimeBase36())
+	})
 }
 
 func TestDateSN(t *testing.T) {
