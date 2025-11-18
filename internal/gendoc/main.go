@@ -224,11 +224,10 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 		} else {
 			if len(pkgFuncs) > 0 { // end of prev package.
 				bufWriteln(buf, "```")
-				buf.WriteByte('\n')
 				if !arrutil.StringsHas(showDetails, prevName) {
 					bufWriteln(buf, "</details>")
-					buf.WriteByte('\n')
 				}
+				buf.WriteByte('\n')
 				// load prev sub-pkg doc file.
 				bufWriteDoc(buf, "end", prevName)
 			}
@@ -278,10 +277,10 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 
 	if len(pkgFuncs) > 0 {
 		bufWriteln(buf, "```")
-		buf.WriteByte('\n')
 		if !arrutil.StringsHas(showDetails, dirname) {
 			bufWriteln(buf, "</details>")
 		}
+		buf.WriteByte('\n')
 		// load last sub-pkg doc file.
 		bufWriteDoc(buf, "end", dirname)
 	}
@@ -325,6 +324,7 @@ func doWriteDoc2buf(buf *bytes.Buffer, filename string) bool {
 	if len(partBody) > 0 {
 		ccolor.Infoln("- find and inject sub-package doc:", filename)
 		stdio.Fprintln(buf, string(partBody))
+		buf.WriteByte('\n')
 		return true
 	}
 

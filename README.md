@@ -1,4 +1,4 @@
-# Go Util
+# GoUtil
 
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/gookit/goutil?style=flat-square)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/gookit/goutil)](https://github.com/gookit/goutil)
@@ -193,7 +193,6 @@ func StringsFilter(ss []string, filter ...comdef.StringMatchFunc) []string
 func StringsMap(ss []string, mapFn func(s string) string) []string
 func TrimStrings(ss []string, cutSet ...string) []string
 ```
-
 </details>
 
 #### ArrUtil Usage
@@ -216,6 +215,7 @@ arrutil.Contains([]uint32{9, 2, 3}, 9) // True
 ints, err := arrutil.ToInt64s([]string{"1", "2"}) // ints: []int64{1, 2} 
 ss, err := arrutil.ToStrings([]int{1, 2}) // ss: []string{"1", "2"}
 ```
+
 
 
 ### Bytes Utils
@@ -253,7 +253,6 @@ func NewStdEncoder(encFn BytesEncodeFunc, decFn BytesDecodeFunc) *StdEncoder
 // source at byteutil/pool.go
 func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 ```
-
 </details>
 
 
@@ -262,6 +261,7 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 > Package `github.com/gookit/goutil/cflag`
 
 `cflag` - Wraps and extends go `flag.FlagSet` to build simple command line applications
+
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -295,12 +295,12 @@ func IsFlagHelpErr(err error) bool
 func WrapColorForCode(s string) string
 func ReplaceShorts(args []string, shortsMap map[string]string) []string
 ```
-
 </details>
 
 #### `cflag` Usage
 
 `cflag` usage please see [cflag/README.md](cflag/README.md)
+
 
 
 ### CLI Utils
@@ -345,7 +345,6 @@ func InputIsYes(ans string) bool
 func ByteIsYes(ans byte) bool
 func ReadPassword(question ...string) string
 ```
-
 </details>
 
 
@@ -404,6 +403,7 @@ Build line: ./myapp -a val0 -m "this is message" arg0
 
 > More, please see [./cliutil/README](cliutil/README.md)
 
+
 ### Var Dumper
 
 > Package `github.com/gookit/goutil/dump`
@@ -438,7 +438,6 @@ func WithoutColor() OptionFunc
 func WithoutType() OptionFunc
 func WithoutLen() OptionFunc
 ```
-
 </details>
 
 #### Examples
@@ -483,6 +482,7 @@ Preview:
 > source code at `dump/dumper_test.TestStruct_WithNested`
 
 ![](dump/_examples/preview-nested-struct.png)
+
 
 
 ### ENV/Environment
@@ -534,7 +534,6 @@ func UnsetEnvs(keys ...string)
 func LoadText(text string)
 func LoadString(line string) bool
 ```
-
 </details>
 
 #### ENV Util Usage
@@ -556,6 +555,7 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 ```
 
 
+
 ### Errorx
 
 > Package `github.com/gookit/goutil/errorx`
@@ -563,6 +563,7 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 `errorx` provides an enhanced error reporting implementation that contains call stack information and can wrap the previous level of error.
 
 > Additional call stack information is included when printing errors, making it easy to log and find problems.
+
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -615,7 +616,6 @@ func Is(err, target error) bool
 func To(err error, target any) bool
 func As(err error, target any) bool
 ```
-
 </details>
 
 
@@ -695,11 +695,13 @@ runtime.goexit()
 ```
 
 
+
 ### File System
 
 > Package `github.com/gookit/goutil/fsutil`
 
 Package `fsutil` Filesystem util functions: quick check, create, read and write file. eg: file and dir check, operate
+
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -835,7 +837,6 @@ func MustCopyFile(srcPath, dstPath string)
 func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error
 func CreateSymlink(target, linkPath string) error
 ```
-
 </details>
 
 
@@ -867,6 +868,7 @@ func main() {
 	}, fsutil.ExcludeDotFile)
 }
 ```
+
 
 
 ### JSON Utils
@@ -962,7 +964,6 @@ func MakeByKeys(keys []string, val any) (mp map[string]any)
 func SetByPath(mp *map[string]any, path string, val any) error
 func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```
-
 </details>
 
 
@@ -971,6 +972,7 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 > Package `github.com/gookit/goutil/mathutil`
 
 Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random
+
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1092,7 +1094,6 @@ func RandInt(min, max int) int
 func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
-
 </details>
 
 
@@ -1101,6 +1102,7 @@ func RandomIntWithSeed(min, max int, seed int64) int
 > Package `github.com/gookit/goutil/reflects`
 
 Package `reflects` Provide extends reflection util functions. eg: check, convert, value set, etc.
+
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1168,7 +1170,6 @@ func SetRValue(rv, val reflect.Value)
 func Wrap(rv reflect.Value) Value
 func ValueOf(v any) Value
 ```
-
 </details>
 
 
@@ -1177,6 +1178,7 @@ func ValueOf(v any) Value
 > Package `github.com/gookit/goutil/structs`
 
 Package `structs` Provide some extends util functions for struct. eg: tag parse, struct init, value set/get
+
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1229,7 +1231,6 @@ func WithBeforeSetFn(fn BeforeSetFunc) SetOptFunc
 func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
 ```
-
 </details>
 
 
@@ -1507,7 +1508,6 @@ func OrHandle(s string, fn comdef.StringHandleFunc) string
 func Valid(ss ...string) string
 func SubstrCount(s, substr string, params ...uint64) (int, error)
 ```
-
 </details>
 
 
@@ -1592,7 +1592,6 @@ func ChangeUserByName(newUname string) error
 func ChangeUserUidGid(newUID int, newGid int) error
 func ChangeUserUIDGid(newUID int, newGid int) (err error)
 ```
-
 </details>
 
 
@@ -1640,7 +1639,6 @@ func RestoreTimeLocal()
 func NewTestWriter() *TestWriter
 func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry
 ```
-
 </details>
 
 
@@ -1649,6 +1647,7 @@ func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry
 > Package `github.com/gookit/goutil/timex`
 
 Provides an enhanced `time.Time` implementation, and add more commonly used functional methods.
+
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1714,8 +1713,8 @@ func FormatUnix(sec int64, layout ...string) string
 func FormatUnixBy(sec int64, layout string) string
 func FormatUnixByTpl(sec int64, template ...string) string
 ```
-
 </details>
+
 #### Timex Usage
 
 **Create timex instance**
@@ -1833,6 +1832,7 @@ ts := timex.NowUnix() // current unix timestamp
 date := FormatUnix(ts, "2006-01-02 15:04:05") // Get: 2022-04-20 19:40:34
 date := FormatUnixByTpl(ts, "Y-m-d H:I:S") // Get: 2022-04-20 19:40:34
 ```
+
 
 
 ## Code Check & Testing

@@ -9,6 +9,7 @@ import (
 )
 
 func TestMicroTimeID(t *testing.T) {
+	fmt.Println("microTimeID:")
 	for i := 0; i < 10; i++ {
 		id := strutil.MicroTimeID()
 		fmt.Println(id, "len:", len(id))
@@ -29,6 +30,7 @@ func TestMicroTimeID(t *testing.T) {
 
 func TestMicroTimeBaseID(t *testing.T) {
 	t.Run("Base 16", func(t *testing.T) {
+		fmt.Println("MicroTimeHexID:")
 		idMap := make(map[string]bool)
 		for i := 0; i < 10; i++ {
 			id := strutil.MicroTimeHexID()
@@ -42,6 +44,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 
 	t.Run("Base 36", func(t *testing.T) {
 		idMap := make(map[string]bool)
+		fmt.Println("MTimeBaseID: 36")
 		for i := 0; i < 10; i++ {
 			id := strutil.MTimeBaseID(36)
 			assert.False(t, idMap[id])
@@ -55,6 +58,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 
 	t.Run("Base 48", func(t *testing.T) {
 		idMap := make(map[string]bool)
+		fmt.Println("MTimeBaseID: 48")
 		for i := 0; i < 10; i++ {
 			id := strutil.MTimeBaseID(48)
 			assert.False(t, idMap[id])
@@ -68,6 +72,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 }
 
 func TestDateSN(t *testing.T) {
+	fmt.Println("DatetimeNo:")
 	for i := 0; i < 10; i++ {
 		no := strutil.DatetimeNo("test")
 		fmt.Println(no, "len:", len(no))
@@ -76,6 +81,7 @@ func TestDateSN(t *testing.T) {
 }
 
 func TestDateSNv2(t *testing.T) {
+	fmt.Println("DateSNv2:")
 	for i := 0; i < 10; i++ {
 		no := strutil.DateSNv2("T")
 		fmt.Println(no, "len:", len(no))
@@ -90,24 +96,25 @@ func TestDateSNv2(t *testing.T) {
 }
 
 func TestDateSNv3(t *testing.T) {
+	fmt.Println("DateSNv3:")
 	no := strutil.DateSNv3("", 8)
 	fmt.Println(no, "len:", len(no))
 
-	fmt.Println("------ dateLen=8, base=32:")
+	fmt.Println("- dateLen=8, base=32:")
 	for i := 0; i < 10; i++ {
 		no = strutil.DateSNv3("T", 8)
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
 
-	fmt.Println("------ dateLen=6, base=36:")
+	fmt.Println("- dateLen=6, base=36:")
 	for i := 0; i < 6; i++ {
 		no = strutil.DateSNv3("T", 6, 36)
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
 
-	fmt.Println("------ dateLen=6, base=48:")
+	fmt.Println("- dateLen=6, base=48:")
 	for i := 0; i < 6; i++ {
 		no = strutil.DateSNv3("T", 6, 48)
 		fmt.Println(no, "len:", len(no))
