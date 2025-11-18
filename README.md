@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-💪 Useful utils(**800+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
+💪 Useful utils(**900+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 
@@ -256,6 +256,8 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 ### Cflag
 
 > Package `github.com/gookit/goutil/cflag`
+
+`cflag` - Wraps and extends go `flag.FlagSet` to build simple command line applications
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -550,7 +552,7 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 > Package `github.com/gookit/goutil/errorx`
 
-'errorx' provides an enhanced error reporting implementation that contains call stack information and can wrap the previous level of error.
+`errorx` provides an enhanced error reporting implementation that contains call stack information and can wrap the previous level of error.
 
 > Additional call stack information is included when printing errors, making it easy to log and find problems.
 
@@ -688,6 +690,8 @@ runtime.goexit()
 ### File System
 
 > Package `github.com/gookit/goutil/fsutil`
+
+Package `fsutil` Filesystem util functions: quick check, create, read and write file. eg: file and dir check, operate
 
 ```go
 // source at fsutil/check.go
@@ -950,6 +954,7 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 
 > Package `github.com/gookit/goutil/mathutil`
 
+Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random
 ```go
 // source at mathutil/calc.go
 func Abs[T comdef.Int](val T) T
@@ -1075,6 +1080,8 @@ func RandomIntWithSeed(min, max int, seed int64) int
 
 > Package `github.com/gookit/goutil/reflects`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at reflects/check.go
 func IsTimeType(t reflect.Type) bool
@@ -1141,10 +1148,14 @@ func Wrap(rv reflect.Value) Value
 func ValueOf(v any) Value
 ```
 
+</details>
+
 
 ### Struct Utils
 
 > Package `github.com/gookit/goutil/structs`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at structs/alias.go
@@ -1197,10 +1208,14 @@ func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
 ```
 
+</details>
+
 
 ### String Utils
 
 > Package `github.com/gookit/goutil/strutil`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at strutil/bytes.go
@@ -1470,6 +1485,8 @@ func OrHandle(s string, fn comdef.StringHandleFunc) string
 func Valid(ss ...string) string
 func SubstrCount(s, substr string, params ...uint64) (int, error)
 ```
+
+</details>
 
 
 ### System Utils

@@ -49,6 +49,9 @@ var (
 		"cliutil",
 		"dump",
 		"errorx",
+		"reflects",
+		"structs",
+		"strutil",
 	}
 
 	// allowLang = map[string]int{

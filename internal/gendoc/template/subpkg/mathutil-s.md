@@ -1,0 +1,1 @@
+Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random

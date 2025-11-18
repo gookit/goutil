@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-`goutil` Go 常用功能的扩展工具库(**800+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
+`goutil` Go 常用功能的扩展工具库(**900+**)。包含：数字，byte, 字符串，slice/数组，Map，结构体，反射，文本，文件，错误，时间日期，测试，特殊处理，格式化，常用信息获取等等。
 
 > **[EN README](README.md)**
 
@@ -256,6 +256,8 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 ### Cflag
 
 > Package `github.com/gookit/goutil/cflag`
+
+`cflag` - 包装和扩展 Go `flag.FlagSet` 以构建简单的命令行应用程序
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -690,6 +692,8 @@ runtime.goexit()
 
 > Package `github.com/gookit/goutil/fsutil`
 
+Package `fsutil` Filesystem util functions: quick check, create, read and write file. eg: file and dir check, operate
+
 ```go
 // source at fsutil/check.go
 func PathExists(path string) bool
@@ -951,6 +955,7 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 
 > Package `github.com/gookit/goutil/mathutil`
 
+Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random
 ```go
 // source at mathutil/calc.go
 func Abs[T comdef.Int](val T) T
@@ -1076,6 +1081,8 @@ func RandomIntWithSeed(min, max int, seed int64) int
 
 > Package `github.com/gookit/goutil/reflects`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at reflects/check.go
 func IsTimeType(t reflect.Type) bool
@@ -1142,10 +1149,14 @@ func Wrap(rv reflect.Value) Value
 func ValueOf(v any) Value
 ```
 
+</details>
+
 
 ### Struct Utils
 
 > Package `github.com/gookit/goutil/structs`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at structs/alias.go
@@ -1198,10 +1209,14 @@ func BindData(ptr any, data map[string]any, optFns ...SetOptFunc) error
 func SetValues(ptr any, data map[string]any, optFns ...SetOptFunc) error
 ```
 
+</details>
+
 
 ### String Utils
 
 > Package `github.com/gookit/goutil/strutil`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at strutil/bytes.go
@@ -1471,6 +1486,8 @@ func OrHandle(s string, fn comdef.StringHandleFunc) string
 func Valid(ss ...string) string
 func SubstrCount(s, substr string, params ...uint64) (int, error)
 ```
+
+</details>
 
 
 ### System Utils

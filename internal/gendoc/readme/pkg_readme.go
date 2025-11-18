@@ -1,5 +1,0 @@
-package readme
-
-func pkgReadme() {
-
-}

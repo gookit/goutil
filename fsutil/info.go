@@ -9,12 +9,15 @@ import (
 )
 
 // DirPath get dir path from filepath, without a last name.
+//  eg: "/foo/bar/baz.js" => "/foo/bar"
 func DirPath(fPath string) string { return filepath.Dir(fPath) }
 
 // Dir get dir path from filepath, without a last name.
+//  eg: "/foo/bar/baz.js" => "/foo/bar"
 func Dir(fPath string) string { return filepath.Dir(fPath) }
 
-// PathName get file/dir name from a full path
+// PathName get file/dir name from a full path.
+//  eg: "/foo/bar/baz.js" => "baz.js"
 func PathName(fPath string) string { return filepath.Base(fPath) }
 
 // PathNoExt get path from full path, without ext.
