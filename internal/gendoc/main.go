@@ -42,16 +42,9 @@ var (
 		"cli":     "CLI Utils",
 		"env":     "ENV/Environment",
 	}
-	// hidden details in readme markdown.
-	hiddenDetails = []string{
-		"byteutil",
-		"cflag",
-		"cliutil",
-		"dump",
-		"errorx",
-		"reflects",
-		"structs",
-		"strutil",
+	// show details in readme markdown.
+	showDetails = []string{
+		"jsonutil",
 	}
 
 	// allowLang = map[string]int{
@@ -106,11 +99,6 @@ var (
 	// collected sub package names.
 	// short name => full name.
 	pkgNames = make(map[string]string, 16)
-
-	// eg: subpkg/errorx-s.md
-	partDocTplStart = "subpkg/%s-s%s.md"
-	// eg: subpkg/errorx.md
-	partDocTplEnd = "subpkg/%s%s.md"
 )
 
 // go run ./internal/gendoc -h
@@ -237,12 +225,12 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			if len(pkgFuncs) > 0 { // end of prev package.
 				bufWriteln(buf, "```")
 				buf.WriteByte('\n')
-				if arrutil.StringsHas(hiddenDetails, prevName) {
+				if !arrutil.StringsHas(showDetails, prevName) {
 					bufWriteln(buf, "</details>")
 					buf.WriteByte('\n')
 				}
 				// load prev sub-pkg doc file.
-				bufWriteDoc(buf, partDocTplEnd, prevName)
+				bufWriteDoc(buf, "end", prevName)
 			}
 
 			name = dir
@@ -261,9 +249,9 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 			ccolor.Cyanf("- collect package: %s\n", pkgPath)
 
 			// load sub-pkg start doc file.
-			bufWriteDoc(buf, partDocTplStart, dirname)
+			bufWriteDoc(buf, "start", dirname)
 			// 隐藏详情
-			if arrutil.StringsHas(hiddenDetails, dirname) {
+			if !arrutil.StringsHas(showDetails, dirname) {
 				bufWriteln(buf, "<details><summary>Click to see functions 👈</summary>")
 				buf.WriteByte('\n')
 			}
@@ -291,11 +279,11 @@ func collectPgkFunc(ms []string, basePkg string) *bytes.Buffer {
 	if len(pkgFuncs) > 0 {
 		bufWriteln(buf, "```")
 		buf.WriteByte('\n')
-		if arrutil.StringsHas(hiddenDetails, dirname) {
+		if !arrutil.StringsHas(showDetails, dirname) {
 			bufWriteln(buf, "</details>")
 		}
 		// load last sub-pkg doc file.
-		bufWriteDoc(buf, partDocTplEnd, dirname)
+		bufWriteDoc(buf, "end", dirname)
 	}
 
 	return buf
@@ -309,18 +297,23 @@ func bufWriteln(buf *bytes.Buffer, a ...any) {
 	_, _ = fmt.Fprintln(buf, a...)
 }
 
-func bufWriteDoc(buf *bytes.Buffer, partNameTpl, pkgName string) {
-	var lang string
-	if genOpts.lang != "en" {
-		lang = "." + genOpts.lang
+func bufWriteDoc(buf *bytes.Buffer, partType, pkgName string) {
+	var lang, suffix string
+	if partType == "start" || partType == "s" {
+		suffix = "-s"
 	}
 
-	filename := fmt.Sprintf(partNameTpl, pkgName, lang)
+	enFilename := fmt.Sprintf("readme-parts/%s%s.md", pkgName, suffix)
+	lnFilename := enFilename
 
-	if !doWriteDoc2buf(buf, filename) {
-		// fallback use en docs
-		filename = fmt.Sprintf(partNameTpl, pkgName, "")
-		doWriteDoc2buf(buf, filename)
+	if genOpts.lang != "en" {
+		lang = "." + genOpts.lang
+		lnFilename = fmt.Sprintf("readme-parts/%s/%s%s.md", lang, pkgName, suffix)
+	}
+
+	// fallback use en docs
+	if !doWriteDoc2buf(buf, lnFilename) {
+		doWriteDoc2buf(buf, enFilename)
 	}
 }
 

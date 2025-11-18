@@ -109,6 +109,8 @@ dump.Print(somevar, somevar2, ...)
 
 > Package `github.com/gookit/goutil/arrutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at arrutil/arrutil.go
 func GetRandomOne[T any](arr []T) T
@@ -192,6 +194,8 @@ func StringsMap(ss []string, mapFn func(s string) string) []string
 func TrimStrings(ss []string, cutSet ...string) []string
 ```
 
+</details>
+
 #### ArrUtil Usage
 
 **check value**:
@@ -257,7 +261,7 @@ func NewChanPool(chSize int, width int, capWidth int) *ChanPool
 
 > Package `github.com/gookit/goutil/cflag`
 
-`cflag` - 包装和扩展 Go `flag.FlagSet` 以构建简单的命令行应用程序
+`cflag` - Wraps and extends go `flag.FlagSet` to build simple command line applications
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -296,7 +300,7 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string
 
 #### `cflag` Usage
 
-`cflag` 使用说明请看 [cflag/README.zh-CN.md](cflag/README.zh-CN.md)
+`cflag` usage please see [cflag/README.md](cflag/README.md)
 
 
 ### CLI Utils
@@ -485,6 +489,8 @@ Preview:
 
 > Package `github.com/gookit/goutil/envutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at envutil/envutil.go
 func VarReplace(s string) string
@@ -529,6 +535,8 @@ func LoadText(text string)
 func LoadString(line string) bool
 ```
 
+</details>
+
 #### ENV Util Usage
 
 **helper functions:**
@@ -552,10 +560,9 @@ envutil.ParseValue("${ENV_NAME | defValue}")
 
 > Package `github.com/gookit/goutil/errorx`
 
-`errorx` 提供了增强的错误报告实现，包含调用堆栈信息并且可以包装上一级错误。
+`errorx` provides an enhanced error reporting implementation that contains call stack information and can wrap the previous level of error.
 
-> 在打印 error 时会额外附带调用栈信息, 方便记录日志和查找问题。
-
+> Additional call stack information is included when printing errors, making it easy to log and find problems.
 
 <details><summary>Click to see functions 👈</summary>
 
@@ -612,11 +619,11 @@ func As(err error, target any) bool
 </details>
 
 
-#### Errorx 使用示例
+#### Errorx Usage
 
-**创建错误带有调用栈信息**
+**Create error with call stack info**
 
-- 使用 `errorx.New` 替代 `errors.New`
+- use the `errorx.New` instead `errors.New`
 
 ```go
 func doSomething() error {
@@ -627,7 +634,7 @@ func doSomething() error {
 }
 ```
 
-- 使用 `errorx.Newf` 或者 `errorx.Errorf` 替代 `fmt.Errorf`
+- use the `errorx.Newf` or `errorx.Errorf` instead `fmt.Errorf`
 
 ```go
 func doSomething() error {
@@ -638,9 +645,9 @@ func doSomething() error {
 }
 ```
 
-**包装上一级错误**
+**Wrap the previous error**
 
-之前这样使用:
+used like this before:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -648,7 +655,7 @@ func doSomething() error {
 	}
 ```
 
-可以替换成:
+can be replaced with:
 
 ```go
     if err := SomeFunc(); err != nil {
@@ -656,9 +663,9 @@ func doSomething() error {
 	}
 ```
 
-**使用效果示例**
+**Print the errorx.New() error**
 
-更多关于 `errorx` 的使用请看 [./errorx/README](errorx/README.md)
+Examples for use `errorx` package, more please see [./errorx/README](errorx/README.md)
 
 ```go
     err := errorx.New("the error message")
@@ -693,6 +700,8 @@ runtime.goexit()
 > Package `github.com/gookit/goutil/fsutil`
 
 Package `fsutil` Filesystem util functions: quick check, create, read and write file. eg: file and dir check, operate
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at fsutil/check.go
@@ -827,6 +836,8 @@ func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error
 func CreateSymlink(target, linkPath string) error
 ```
 
+</details>
+
 
 #### FsUtil Usage
 
@@ -893,6 +904,8 @@ func StripComments(src string) string
 
 > Package `github.com/gookit/goutil/maputil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at maputil/check.go
 func HasKey(mp, key any) (ok bool)
@@ -950,12 +963,16 @@ func SetByPath(mp *map[string]any, path string, val any) error
 func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```
 
+</details>
+
 
 ### Math/Number
 
 > Package `github.com/gookit/goutil/mathutil`
 
 Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at mathutil/calc.go
 func Abs[T comdef.Int](val T) T
@@ -1076,11 +1093,14 @@ func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
 
+</details>
+
 
 ### Reflects
 
 > Package `github.com/gookit/goutil/reflects`
 
+Package `reflects` Provide extends reflection util functions. eg: check, convert, value set, etc.
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1156,6 +1176,7 @@ func ValueOf(v any) Value
 
 > Package `github.com/gookit/goutil/structs`
 
+Package `structs` Provide some extends util functions for struct. eg: tag parse, struct init, value set/get
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1494,6 +1515,8 @@ func SubstrCount(s, substr string, params ...uint64) (int, error)
 
 > Package `github.com/gookit/goutil/sysutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at sysutil/exec.go
 func NewCmd(bin string, args ...string) *cmdr.Cmd
@@ -1570,10 +1593,14 @@ func ChangeUserUidGid(newUID int, newGid int) error
 func ChangeUserUIDGid(newUID int, newGid int) (err error)
 ```
 
+</details>
+
 
 ### Testing Utils
 
 > Package `github.com/gookit/goutil/testutil`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at testutil/buffer.go
@@ -1614,12 +1641,16 @@ func NewTestWriter() *TestWriter
 func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry
 ```
 
+</details>
+
 
 ### Timex
 
 > Package `github.com/gookit/goutil/timex`
 
-Provides an enhanced time.Time implementation, and add more commonly used functional methods.
+Provides an enhanced `time.Time` implementation, and add more commonly used functional methods.
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at timex/check.go
 func IsDuration(s string) bool
@@ -1684,6 +1715,7 @@ func FormatUnixBy(sec int64, layout string) string
 func FormatUnixByTpl(sec int64, template ...string) string
 ```
 
+</details>
 #### Timex Usage
 
 **Create timex instance**

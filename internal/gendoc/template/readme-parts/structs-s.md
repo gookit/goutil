@@ -1,0 +1,1 @@
+Package `structs` Provide some extends util functions for struct. eg: tag parse, struct init, value set/get

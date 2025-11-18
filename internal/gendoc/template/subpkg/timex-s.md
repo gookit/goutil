@@ -1,1 +1,0 @@
-Provides an enhanced time.Time implementation, and add more commonly used functional methods.

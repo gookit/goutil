@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/gookit/goutil/badge.svg?branch=master)](https://coveralls.io/github/gookit/goutil?branch=master)
 [![Go Reference](https://pkg.go.dev/badge/github.com/gookit/goutil.svg)](https://pkg.go.dev/github.com/gookit/goutil)
 
-💪 Useful utils(**900+**) package for the Go: int, string, array/slice, map, error, time, format, CLI, ENV, filesystem, system, testing and more.
+💪 Useful utils(**900+**) package for the Go: int, string, array/slice, map, struct, reflect, error, time, format, CLI, ENV, filesystem, system, testing and more.
 
 > **[中文说明](README.zh-CN.md)**
 
@@ -109,6 +109,8 @@ dump.Print(somevar, somevar2, ...)
 
 > Package `github.com/gookit/goutil/arrutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at arrutil/arrutil.go
 func GetRandomOne[T any](arr []T) T
@@ -191,6 +193,8 @@ func StringsFilter(ss []string, filter ...comdef.StringMatchFunc) []string
 func StringsMap(ss []string, mapFn func(s string) string) []string
 func TrimStrings(ss []string, cutSet ...string) []string
 ```
+
+</details>
 
 #### ArrUtil Usage
 
@@ -485,6 +489,8 @@ Preview:
 
 > Package `github.com/gookit/goutil/envutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at envutil/envutil.go
 func VarReplace(s string) string
@@ -528,6 +534,8 @@ func UnsetEnvs(keys ...string)
 func LoadText(text string)
 func LoadString(line string) bool
 ```
+
+</details>
 
 #### ENV Util Usage
 
@@ -693,6 +701,8 @@ runtime.goexit()
 
 Package `fsutil` Filesystem util functions: quick check, create, read and write file. eg: file and dir check, operate
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at fsutil/check.go
 func PathExists(path string) bool
@@ -826,6 +836,8 @@ func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error
 func CreateSymlink(target, linkPath string) error
 ```
 
+</details>
+
 
 #### FsUtil Usage
 
@@ -892,6 +904,8 @@ func StripComments(src string) string
 
 > Package `github.com/gookit/goutil/maputil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at maputil/check.go
 func HasKey(mp, key any) (ok bool)
@@ -949,12 +963,16 @@ func SetByPath(mp *map[string]any, path string, val any) error
 func SetByKeys(mp *map[string]any, keys []string, val any) (err error)
 ```
 
+</details>
+
 
 ### Math/Number
 
 > Package `github.com/gookit/goutil/mathutil`
 
 Package `mathutil` provide math(int, number) util functions. eg: convert, math calc, random
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at mathutil/calc.go
 func Abs[T comdef.Int](val T) T
@@ -1075,11 +1093,14 @@ func RandIntWithSeed(min, max int, seed int64) int
 func RandomIntWithSeed(min, max int, seed int64) int
 ```
 
+</details>
+
 
 ### Reflects
 
 > Package `github.com/gookit/goutil/reflects`
 
+Package `reflects` Provide extends reflection util functions. eg: check, convert, value set, etc.
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1155,6 +1176,7 @@ func ValueOf(v any) Value
 
 > Package `github.com/gookit/goutil/structs`
 
+Package `structs` Provide some extends util functions for struct. eg: tag parse, struct init, value set/get
 <details><summary>Click to see functions 👈</summary>
 
 ```go
@@ -1493,6 +1515,8 @@ func SubstrCount(s, substr string, params ...uint64) (int, error)
 
 > Package `github.com/gookit/goutil/sysutil`
 
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at sysutil/exec.go
 func NewCmd(bin string, args ...string) *cmdr.Cmd
@@ -1569,10 +1593,14 @@ func ChangeUserUidGid(newUID int, newGid int) error
 func ChangeUserUIDGid(newUID int, newGid int) (err error)
 ```
 
+</details>
+
 
 ### Testing Utils
 
 > Package `github.com/gookit/goutil/testutil`
+
+<details><summary>Click to see functions 👈</summary>
 
 ```go
 // source at testutil/buffer.go
@@ -1613,12 +1641,16 @@ func NewTestWriter() *TestWriter
 func NewDirEnt(fPath string, isDir ...bool) *fakeobj.DirEntry
 ```
 
+</details>
+
 
 ### Timex
 
 > Package `github.com/gookit/goutil/timex`
 
-Provides an enhanced time.Time implementation, and add more commonly used functional methods.
+Provides an enhanced `time.Time` implementation, and add more commonly used functional methods.
+<details><summary>Click to see functions 👈</summary>
+
 ```go
 // source at timex/check.go
 func IsDuration(s string) bool
@@ -1683,6 +1715,7 @@ func FormatUnixBy(sec int64, layout string) string
 func FormatUnixByTpl(sec int64, template ...string) string
 ```
 
+</details>
 #### Timex Usage
 
 **Create timex instance**
