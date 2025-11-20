@@ -61,6 +61,11 @@ func NewScanner(in any) *bufio.Scanner {
 	}
 }
 
+// SafeClose close io.Closer, ignore error
+func SafeClose(c io.Closer) {
+	_ = c.Close()
+}
+
 // WriteByte to stdout, will ignore error
 func WriteByte(b byte) {
 	_, _ = os.Stdout.Write([]byte{b})

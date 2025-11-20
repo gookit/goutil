@@ -69,3 +69,9 @@ func TestWriteBytes(t *testing.T) {
 	stdio.WriteString("inhere.")
 	stdio.Writeln("welcome")
 }
+
+func TestSafeClose(t *testing.T) {
+	w := fakeobj.NewWriter()
+	w.SetErrOnClose()
+	stdio.SafeClose(w)
+}

@@ -43,7 +43,7 @@ func LoadText(text string) {
 	}
 }
 
-// LoadString set line to ENV. e.g.: KEY=VALUE
+// LoadString set line to ENV. e.g.: "KEY=VALUE"
 func LoadString(line string) bool {
 	k, v := comfunc.SplitLineToKv(line, "=")
 	if len(k) > 0 {

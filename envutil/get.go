@@ -9,6 +9,12 @@ import (
 	"github.com/gookit/goutil/x/basefn"
 )
 
+// HasEnv check ENV key exists
+func HasEnv(name string) bool {
+	_, ok := os.LookupEnv(name)
+	return ok
+}
+
 // Getenv get ENV value by key name, can with default value
 func Getenv(name string, def ...string) string {
 	val := os.Getenv(name)
@@ -68,7 +74,7 @@ func GetMulti(names ...string) map[string]string {
 	return valMap
 }
 
-// OnExist check ENV value by key name, if exists call fn
+// OnExist check ENV value by key name, will call fn on value exists(not-empty)
 func OnExist(name string, fn func(val string)) bool {
 	if val := os.Getenv(name); val != "" {
 		fn(val)
