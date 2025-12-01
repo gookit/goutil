@@ -1,8 +1,10 @@
 package strutil_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -29,26 +31,48 @@ func TestPadding(t *testing.T) {
 			assert.Eq(t, tt.want, strutil.PadLeft(tt.give, tt.pad, tt.len))
 		}
 	}
+
+	s := "hi,你好"
+	assert.Eq(t, "hi,你好0", strutil.Padding(s, "0", 10, strutil.PosRight))
+	assert.Eq(t, "hi,你好 ", strutil.Padding(s, " ", 10, strutil.PosRight))
+	assert.Eq(t, "hi,你好000", strutil.Utf8Padding(s, "0", 10, strutil.PosRight))
 }
 
 func TestResize(t *testing.T) {
 	tests := []struct {
 		want, give string
 		len        int
-		pos        strutil.PosFlag
+		align strutil.PosFlag
 	}{
-		{"ab   ", "ab", 5, strutil.PosRight},
-		{"   ab", "ab", 5, strutil.PosLeft},
+		{"ab   ", "ab", 5, strutil.PosLeft},
+		{"   ab", "ab", 5, strutil.PosRight},
 		{"ab012", "ab012", 5, strutil.PosLeft},
 		{"ab", "ab", 2, strutil.PosLeft},
 	}
 
 	for _, tt := range tests {
-		assert.Eq(t, tt.want, strutil.Resize(tt.give, tt.len, tt.pos))
+		assert.Eq(t, tt.want, strutil.Resize(tt.give, tt.len, tt.align))
 	}
 
 	want := "       title        "
 	assert.Eq(t, want, strutil.Resize("title", 20, strutil.PosMiddle))
+
+	s := "hi,你好"
+	fmt.Println(len(s), strutil.Utf8Width(s))
+	assert.Eq(t, "hi,你好 ", strutil.Align(s, 10, strutil.PosLeft))
+	assert.Eq(t, "hi,你好 ", strutil.Resize(s, 10, strutil.PosLeft))
+
+	// utf8
+	assert.Eq(t, "hi,你好   ", strutil.Utf8Align(s, 10, strutil.PosAuto))
+	assert.Eq(t, "hi,你好   ", strutil.Utf8Resize(s, 10, comdef.PosAuto))
+
+	// long string
+	s1 := "hi,你好 some 内容太长"
+	assert.Eq(t, s1, strutil.Align(s1, 13, strutil.PosLeft))
+	assert.Eq(t, "hi,你好 some ", strutil.Resize(s1, 15, strutil.PosLeft))
+
+	assert.Eq(t, s1, strutil.Utf8Align(s1, 13, strutil.PosLeft))
+	assert.Eq(t, "hi,你好 some 内", strutil.Utf8Resize(s1, 15, comdef.Left))
 }
 
 func TestRepeat(t *testing.T) {

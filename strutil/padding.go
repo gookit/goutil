@@ -1,43 +1,59 @@
 package strutil
 
 import (
-	"fmt"
 	"strings"
+
+	"github.com/gookit/goutil/comdef"
 )
 
 // PosFlag type
-type PosFlag uint8
+type PosFlag = comdef.Position
 
 // Position for padding/resize string
 const (
 	PosLeft PosFlag = iota
-	PosRight
 	PosMiddle
+	PosRight
+	PosAuto
 )
 
 /*************************************************************
  * String padding operation
  *************************************************************/
 
-// Padding a string.
-func Padding(s, pad string, length int, pos PosFlag) string {
-	diff := len(s) - length
+// Padding Fill the string to the specified length.
+//
+// params:
+//   - s: 原始字符串
+//   - pad: 用于填充的字符或字符串
+//   - length: 目标长度
+//   - padPos: 填充位置标志（左填充或右填充）
+func Padding(s, pad string, length int, padPos PosFlag) string {
+	return padding(s, pad, len(s), length, padPos)
+}
+
+// Utf8Padding Fill the string to the specified length. use utf8 width.
+func Utf8Padding(s, pad string, wantLen int, padPos PosFlag) string {
+	return padding(s, pad, Utf8Width(s), wantLen, padPos)
+}
+
+func padding(s, pad string, sLen, wantLen int, padPos PosFlag) string {
+	diff := sLen - wantLen
 	if diff >= 0 { // do not need padding.
 		return s
 	}
 
-	if pad == "" || pad == " " {
-		mark := ""
-		if pos == PosRight { // to right
-			mark = "-"
+	// pad space.
+	if len(s) == sLen && (pad == "" || pad == " ") {
+		// Sprintf: 是按字数来填充的，不管中英文都是一个字符 - 有问题
+		if padPos == PosRight { // to right
+			return s + strings.Repeat(" ", -diff)
 		}
-
-		// padding left: "%7s", padding right: "%-7s"
-		tpl := fmt.Sprintf("%s%d", mark, length)
-		return fmt.Sprintf(`%`+tpl+`s`, s)
+		return strings.Repeat(" ", -diff) + s
 	}
 
-	if pos == PosRight { // to right
+	// other character.
+	if padPos == PosRight { // to right
 		return s + Repeat(pad, -diff)
 	}
 	return Repeat(pad, -diff) + s
@@ -51,26 +67,6 @@ func PadLeft(s, pad string, length int) string {
 // PadRight a string.
 func PadRight(s, pad string, length int) string {
 	return Padding(s, pad, length, PosRight)
-}
-
-// Resize a string by given length and align settings. padding space.
-func Resize(s string, length int, align PosFlag) string {
-	diff := len(s) - length
-	if diff >= 0 { // do not need padding.
-		return s
-	}
-
-	if align == PosMiddle {
-		padLn := (length - len(s)) / 2
-		if diff := length - padLn*2; diff > 0 {
-			s += " "
-		}
-
-		padStr := string(RepeatBytes(' ', padLn))
-		return padStr + s + padStr
-	}
-
-	return Padding(s, " ", length, align)
 }
 
 // PadChars padding a rune/byte to want length and with position flag
@@ -128,6 +124,59 @@ func PadRunesLeft(rs []rune, pad rune, length int) []rune {
 // PadRunesRight a rune to want length
 func PadRunesRight(rs []rune, pad rune, length int) []rune {
 	return PadChars(rs, pad, length, PosRight)
+}
+
+// Align a string by given length and align settings. alias of Resize
+func Align(s string, length int, align comdef.Align) string {
+	return resize(s, len(s), length, align, false)
+}
+
+// Utf8Align a string by given length and align settings. alias of Utf8Resize
+func Utf8Align(s string, length int, align comdef.Align) string {
+	return resize(s, Utf8Width(s), length, align, false)
+}
+
+// Resize a string by given length and align settings. use padding space.
+// If len(s) > wantLen, will truncate it.
+func Resize(s string, length int, align comdef.Align) string {
+	return resize(s, len(s), length, align, true)
+}
+
+// Utf8Resize a string by given length and align settings. use padding space.
+// If width(s) > wantLen, will truncate it.
+func Utf8Resize(s string, length int, align comdef.Align) string {
+	return resize(s, Utf8Width(s), length, align, true)
+}
+
+// resize a string by given length and align settings. use padding space.
+func resize(s string, sLen, wantLen int, align comdef.Align, cutOverflow bool) string {
+	diff := sLen - wantLen
+	if diff >= 0 { // do not need padding.
+		// cutOverflow: truncate on sLen > wantLen
+		if cutOverflow && sLen > wantLen {
+			if len(s) == sLen {
+				return s[:wantLen]
+			}
+			return utf8Truncate(s, sLen, wantLen, "")
+		}
+		return s
+	}
+
+	if align == comdef.Center {
+		padLn := (wantLen - sLen) / 2
+		if diff = wantLen - padLn*2; diff > 0 {
+			s += " "
+		}
+		padStr := string(RepeatBytes(' ', padLn))
+		return padStr + s + padStr
+	}
+
+	padStr := string(RepeatBytes(' ', wantLen-sLen))
+	// tip: 左对齐 - 使用空白填充右边
+	if align == comdef.Left || align == comdef.PosAuto {
+		return s + padStr
+	}
+	return padStr + s
 }
 
 /*************************************************************

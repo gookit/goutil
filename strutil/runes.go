@@ -31,13 +31,29 @@ func IsSpaceRune(r rune) bool {
 	return r <= 256 && IsSpace(byte(r)) || unicode.IsSpace(r)
 }
 
-// Utf8Len count of the string
+// Utf8Len count rune of the string.
+//
+// Examples:
+//
+//	str := "hi,你好"
+//
+//	len(str) // 9
+//	strutil.RunesWidth(str) // 7 一个中文字占两个字符
+//	RuneCount(str) = Utf8Len(s) // 5 按字算
 func Utf8Len(s string) int { return utf8.RuneCountInString(s) }
 
-// Utf8len of the string
+// Utf8len count rune of the string.
 func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 
-// RuneCount of the string
+// RuneCount of the string.
+//
+// Examples:
+//
+//	str := "hi,你好"
+//
+//	len(str) // 9
+//	strutil.RunesWidth(str) // 7 一个中文字占两个字符
+//	RuneCount(str) = utf8.RuneCountInString(s) // 5 按字算
 func RuneCount(s string) int { return len([]rune(s)) }
 
 // RuneWidth of the rune.
@@ -95,8 +111,11 @@ func Truncate(s string, w int, tail string) string { return Utf8Truncate(s, w, t
 func TextTruncate(s string, w int, tail string) string { return Utf8Truncate(s, w, tail) }
 
 // Utf8Truncate a string with given width.
-func Utf8Truncate(s string, w int, tail string) string {
-	if sw := Utf8Width(s); sw <= w {
+func Utf8Truncate(s string, w int, tail string) string { return utf8Truncate(s, Utf8Width(s), w, tail) }
+
+// utf8Truncate a string with given width.
+func utf8Truncate(s string, sw, w int, tail string) string {
+	if sw <= w {
 		return s
 	}
 

@@ -1,6 +1,6 @@
 package comdef
 
-// consts for compare operation
+// constants for compare operation
 const (
 	OpEq  = "="
 	OpNeq = "!="
@@ -10,7 +10,7 @@ const (
 	OpGte = ">="
 )
 
-// consts quote chars
+// constants quote chars
 const (
 	SingleQuote = '\''
 	DoubleQuote = '"'
@@ -25,3 +25,15 @@ const (
 const NoIdx = -1
 
 // const VarPathReg = `(\w[\w-]*(?:\.[\w-]+)*)`
+
+// Align define align, position: L, C, R, Auto
+type Align uint8
+type Position = Align // Position alias of Align
+
+// constants for align, position: L, C, R, Auto
+const (
+	Left Align = iota
+	Center
+	Right
+	PosAuto
+)
