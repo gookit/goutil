@@ -28,6 +28,8 @@ type Dotenv struct {
 	//
 	// - default: false - will return error if not exists
 	IgnoreNotExist bool
+	// LoadFirstExist only load first exists env file on Files
+	LoadFirstExist bool
 
 	loadFiles []string
 	loadData  map[string]string
@@ -71,6 +73,9 @@ func (c *Dotenv) doLoadFiles(files []string) error {
 		// load and parse to ENV
 		if err := c.loadFile(filePath); err != nil {
 			return err
+		}
+		if c.LoadFirstExist && len(c.loadFiles) > 0 {
+			break
 		}
 	}
 
@@ -184,5 +189,10 @@ func LoadEnvFiles(baseDir string, files ...string) error {
 			cfg.Files = files
 		}
 	})
+}
+
+// LoadedEnvFiles get loaded dotenv files
+func LoadedEnvFiles() []string {
+	return stdEnv.LoadedFiles()
 }
 
