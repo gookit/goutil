@@ -8,6 +8,8 @@ import (
 )
 
 func TestCurrentShell(t *testing.T) {
+	assert.NotNil(t, termenv.IsTerminal())
+
 	path := termenv.CurrentShell(true)
 
 	if path != "" {

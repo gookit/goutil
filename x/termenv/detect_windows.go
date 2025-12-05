@@ -169,3 +169,8 @@ func EnableVTProcessing(stream syscall.Handle, enable bool) error {
 func syscallStdinFd() int {
 	return int(syscall.Stdin)
 }
+
+// on Windows, must convert to int
+func syscallStdoutFd() int {
+	return int(syscall.Stdout)
+}

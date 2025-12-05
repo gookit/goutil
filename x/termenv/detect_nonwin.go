@@ -41,6 +41,6 @@ func detectSpecialTermColor(termVal string) (ColorLevel, bool) {
 	return TermColor16, false
 }
 
-func syscallStdinFd() int {
-	return syscall.Stdin
-}
+func syscallStdinFd() int { return syscall.Stdin }
+
+func syscallStdoutFd() int { return syscall.Stdout }

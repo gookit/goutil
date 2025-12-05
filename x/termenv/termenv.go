@@ -5,6 +5,7 @@ package termenv
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"golang.org/x/term"
 )
@@ -60,20 +61,37 @@ func setLastErr(err error) {
 // )
 var terminalWidth, terminalHeight int
 
-// GetTermSize for current console terminal.
+// GetTermSize for current console terminal. will first try to get from environment variables COLUMNS and LINES.
 func GetTermSize(refresh ...bool) (w int, h int) {
-	if terminalWidth > 0 && len(refresh) > 0 && !refresh[0] {
+	if terminalWidth > 0 && (len(refresh) == 0 || !refresh[0]) {
+		return terminalWidth, terminalHeight
+	}
+
+	// 首先尝试从环境变量获取
+	if cols := os.Getenv("COLUMNS"); cols != "" {
+		if width, err := strconv.Atoi(cols); err == nil && width > 0 {
+			terminalWidth = width
+		}
+	}
+	if rows := os.Getenv("LINES"); rows != "" {
+		if height, err := strconv.Atoi(rows); err == nil && height > 0 {
+			terminalHeight = height
+		}
+	}
+	if terminalWidth > 0 && terminalHeight > 0 {
 		return terminalWidth, terminalHeight
 	}
 
 	var err error
-	w, h, err = term.GetSize(syscallStdinFd())
+	w, h, err = term.GetSize(syscallStdoutFd())
 	if err != nil {
+		debugf("get terminal size error: %v", err)
 		return
 	}
 
 	// cache result
 	terminalWidth, terminalHeight = w, h
+	debugf("get terminal size: %d,%d", w, h)
 	return
 }
 
