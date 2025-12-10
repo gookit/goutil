@@ -65,7 +65,6 @@ func TestTimeX_Format(t *testing.T) {
 
 func TestTimeX_SubUnix(t *testing.T) {
 	tx := timex.Now()
-
 	after1m := tx.AddMinutes(1)
 
 	assert.Eq(t, timex.OneMinSec, after1m.SubUnix(tx.Time))
