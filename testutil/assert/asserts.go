@@ -546,6 +546,16 @@ func Eq(t TestingT, want, give any, fmtAndArgs ...any) bool {
 		)
 	}
 
+	// float 特殊处理 - 默认按 0.009 精度对比
+	if mathutil.IsFloat(want) {
+		if mathutil.InDeltaAny(want, give, 0.009) {
+			return true
+		}
+		return fail(t, fmt.Sprintf("Not equal(inDelta=0.009): \n"+
+			"expect: %s\n"+
+			"actual: %s", want, give), fmtAndArgs)
+	}
+
 	if !reflects.IsEqual(want, give) {
 		// TODO diff := diff(want, give)
 		want, give = formatUnequalValues(want, give)
@@ -625,6 +635,16 @@ func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
 
 	t.Helper()
 	return fail(t, fmt.Sprintf("Given %v should greater than or equal %v", give, min), fmtAndArgs)
+}
+
+// InDelta assert that two floating-point values differ from each other within a certain range.
+func InDelta(t TestingT, want, give any, delta float64, fmtAndArgs ...any) bool {
+	if mathutil.InDeltaAny(want, give, delta) {
+		return true
+	}
+
+	t.Helper()
+	return fail(t, fmt.Sprintf("Given %v should in delta %v with %v", give, delta, want), fmtAndArgs)
 }
 
 // IsType assert data type equals

@@ -59,11 +59,15 @@ func TestCommon_success(t *testing.T) {
 	assert.Eq(t, 1, 1)
 	assert.Eq(t, nil, nil)
 	assert.Equal(t, 1, 1)
+	assert.Equal(t, 23.455, 23.456)
 
 	// neq
 	assert.Neq(t, 1, 2)
 	assert.NotEq(t, 1, 2)
 	assert.NotEqual(t, 1, 2)
+
+	// InDelta
+	assert.InDelta(t, 1.1, 1.2, 0.1)
 
 	// kind
 	assert.IsType(t, 1, 1)
