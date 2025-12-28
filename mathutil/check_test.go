@@ -13,6 +13,13 @@ func TestIsNumeric(t *testing.T) {
 	assert.False(t, mathutil.IsNumeric('a'))
 }
 
+func TestIsFloat(t *testing.T) {
+	assert.True(t, mathutil.IsFloat(23.4))
+	assert.True(t, mathutil.IsFloat(float32(23.4)))
+	assert.False(t, mathutil.IsFloat(34))
+	assert.False(t, mathutil.IsFloat('a'))
+}
+
 func TestIsInteger(t *testing.T) {
 	tests1 := []any{
 		2, uintptr(2), '2',
@@ -98,4 +105,15 @@ func TestInRange(t *testing.T) {
 	assert.True(t, mathutil.InUintRange[uint](1, 1, 1))
 	assert.True(t, mathutil.InUintRange[uint](1, 1, 0))
 	assert.False(t, mathutil.InUintRange[uint](1, 2, 1))
+}
+
+// test for InDeltaAny
+func TestInDeltaAny(t *testing.T) {
+	assert.True(t, mathutil.InDeltaAny(1.1, 1.2, 0.1))
+	assert.True(t, mathutil.InDeltaAny(1.1, 1.2, 0.2))
+	assert.False(t, mathutil.InDeltaAny(1.1, 1.2, 0.01))
+
+	// type error
+	assert.False(t, mathutil.InDeltaAny("abc", 1.2, 0.01))
+	assert.False(t, mathutil.InDeltaAny(1.2, "abc", 0.01))
 }

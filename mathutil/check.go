@@ -15,6 +15,16 @@ func IsInteger(val any) bool {
 	}
 }
 
+// IsFloat returns true if the given character is a float(32/64), otherwise false.
+func IsFloat(val any) bool {
+	switch val.(type) {
+	case float32, float64:
+		return true
+	default:
+		return false
+	}
+}
+
 // Compare any intX,floatX value by given op. returns `first op(=,!=,<,<=,>,>=) second`
 //
 // Usage:
@@ -98,4 +108,31 @@ func InUintRange[T comdef.Uint](val, min, max T) bool {
 		return val >= min
 	}
 	return val >= min && val <= max
+}
+
+// InDelta Check whether two floating-point numbers are equal within a specified margin of error
+//
+// Params:
+//   want - 期望的浮点数值
+//   give - 实际给定的浮点数值
+//   delta - 允许的误差范围
+func InDelta[T comdef.Float](want, give T, delta float64) bool {
+	diff := float64(want) - float64(give)
+	if diff < 0 {
+		diff = -diff
+	}
+	return diff <= delta
+}
+
+// InDeltaAny Check whether two floating-point numbers are equal within a specified margin of error
+func InDeltaAny(want, give any, delta float64) bool {
+	wantVal, err := ToFloat(want)
+	if err != nil {
+		return false
+	}
+	giveVal, err := ToFloat(give)
+	if err != nil {
+		return false
+	}
+	return InDelta(wantVal, giveVal, delta)
 }
