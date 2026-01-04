@@ -107,3 +107,10 @@ func ToBytesWithFunc(v any, usrFn ToBytesFunc) ([]byte, error) {
 		return usrFn(val)
 	}
 }
+
+// Reverse 反转字节数组 eg: ABCD -> DCBA
+func Reverse(arr []byte) {
+	for i := 0; i < len(arr)/2; i++ {
+		arr[i], arr[len(arr)-1-i] = arr[len(arr)-1-i], arr[i]
+	}
+}

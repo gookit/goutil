@@ -29,6 +29,12 @@ func TestToString(t *testing.T) {
 	assert.Eq(t, "123", byteutil.ToString([]byte("123")))
 }
 
+func TestReverse(t *testing.T) {
+	bs := []byte("123")
+	byteutil.Reverse(bs)
+	assert.Eq(t, []byte("321"), bs)
+}
+
 func TestToBytes(t *testing.T) {
 	tests := []struct {
 		v   any
