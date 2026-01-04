@@ -60,11 +60,15 @@ type CFlags struct {
 	Example string
 	// LongHelp custom help
 	LongHelp string
-	// HelpOnEmptyArgs show help when not input args
+	// HelpOnEmptyArgs show help when not input args. default: false
 	HelpOnEmptyArgs bool
 	// HelpFunc custom help render func
 	HelpFunc func(c *CFlags)
 
+	// BeforeRun handler for the command. return false to stop run Func.
+	//
+	// TIP: You can do some processing or intercept command execution before running.
+	BeforeRun func(c *CFlags) bool
 	// Func handler for the command
 	Func func(c *CFlags) error
 }
@@ -225,9 +229,11 @@ func (c *CFlags) MustParse(args []string) {
 	}
 }
 
-// Parse flags and run command func
+// Parse flags and run command func.
 //
 // If args is nil, will parse os.Args
+//
+//  - will auto handle display help on with --help, -h
 func (c *CFlags) Parse(args []string) error {
 	if args == nil {
 		args = os.Args[1:]
@@ -253,13 +259,18 @@ func (c *CFlags) Parse(args []string) error {
 		return nil
 	}
 
-	// do parsing
+	// do parsing(will handle show help)
 	if err := c.DoParse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			c.showHelp(nil)
 			return nil // ignore help error
 		}
 		return err
+	}
+
+	// call before run
+	if c.BeforeRun != nil && !c.BeforeRun(c) {
+		return nil
 	}
 
 	// call func

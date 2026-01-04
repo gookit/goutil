@@ -38,6 +38,8 @@ type FlagArg struct {
 	Index int
 	// Required argument
 	Required bool
+	// Arrayed argument. must on the last
+	Arrayed bool // TODO support arrayed argument
 	// Validator for check value
 	Validator func(val string) error
 }
