@@ -139,42 +139,69 @@ func (d Data) Default(key string, def any) any {
 	return def
 }
 
-// Int value get
-func (d Data) Int(key string) int {
+// Int value get, or default value
+func (d Data) Int(key string, defVal ...int) int {
 	if val, ok := d.GetByPath(key); ok {
-		return mathutil.QuietInt(val)
+		return mathutil.SafeInt(val)
+	}
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	return 0
 }
 
-// Int64 value get
-func (d Data) Int64(key string) int64 {
+// Int64 value get, or default value
+func (d Data) Int64(key string, defVal ...int64) int64 {
 	if val, ok := d.GetByPath(key); ok {
-		return mathutil.QuietInt64(val)
+		return mathutil.SafeInt64(val)
+	}
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	return 0
 }
 
-// Uint value get
-func (d Data) Uint(key string) uint {
+// Uint value get, or default value
+func (d Data) Uint(key string, defVal ...uint) uint {
 	if val, ok := d.GetByPath(key); ok {
 		return mathutil.QuietUint(val)
 	}
-	return 0
-}
-
-// Uint64 value get
-func (d Data) Uint64(key string) uint64 {
-	if val, ok := d.GetByPath(key); ok {
-		return mathutil.QuietUint64(val)
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	return 0
 }
 
-// Str value gets by key
-func (d Data) Str(key string) string {
+// Uint16 value get, or default value
+func (d Data) Uint16(key string, defVal ...uint16) uint16 {
+	if val, ok := d.GetByPath(key); ok {
+		return uint16(mathutil.SafeUint(val))
+	}
+
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return 0
+}
+
+// Uint64 value get, or default value
+func (d Data) Uint64(key string, defVal ...uint64) uint64 {
+	if val, ok := d.GetByPath(key); ok {
+		return mathutil.QuietUint64(val)
+	}
+	if len(defVal) > 0 {
+		return defVal[0]
+	}
+	return 0
+}
+
+// Str value gets by key, or default value
+func (d Data) Str(key string, defVal ...string) string {
 	if val, ok := d.GetByPath(key); ok {
 		return strutil.SafeString(val)
+	}
+	if len(defVal) > 0 {
+		return defVal[0]
 	}
 	return ""
 }

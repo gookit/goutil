@@ -39,31 +39,58 @@ func TestData_usage(t *testing.T) {
 	assert.Nil(t, mp.One("not-exists"))
 
 	// int
-	assert.Eq(t, 23, mp.Int("k1"))
-	assert.Eq(t, int64(23), mp.Int64("k1"))
-	assert.Eq(t, uint(23), mp.Uint("k1"))
-	assert.Eq(t, uint64(23), mp.Uint64("k1"))
+	t.Run("intx", func(t *testing.T) {
+		assert.Eq(t, 23, mp.Int("k1"))
+		assert.Eq(t, 0, mp.Int("key_not_exist"))
+		assert.Eq(t, 345, mp.Int("key_not_exist", 345))
+
+		// Int64
+		assert.Eq(t, int64(23), mp.Int64("k1"))
+		assert.Eq(t, int64(0), mp.Int64("key_not_exist"))
+		assert.Eq(t, int64(345), mp.Int64("key_not_exist", 345))
+
+		// Uint
+		assert.Eq(t, uint(23), mp.Uint("k1"))
+		assert.Eq(t, uint(0), mp.Uint("key_not_exist"))
+		assert.Eq(t, uint(345), mp.Uint("key_not_exist", 345))
+
+		// Uint16
+		assert.Eq(t, uint16(23), mp.Uint16("k1"))
+		assert.Eq(t, uint16(0), mp.Uint16("key_not_exist"))
+		assert.Eq(t, uint16(345), mp.Uint16("key_not_exist", 345))
+
+		// Uint64
+		assert.Eq(t, uint64(23), mp.Uint64("k1"))
+		assert.Eq(t, uint64(0), mp.Uint64("key_not_exist"))
+		assert.Eq(t, uint64(345), mp.Uint64("key_not_exist", 345))
+	})
 
 	// str
-	assert.Eq(t, "23", mp.Str("k1"))
-	assert.Eq(t, "ab", mp.Str("k2"))
+	t.Run("string", func(t *testing.T) {
+		assert.Eq(t, "23", mp.Str("k1"))
+		assert.Eq(t, "ab", mp.Str("k2"))
+		assert.Empty(t, mp.Str("key_not_exist"))
+		assert.Eq(t, "defVal", mp.Str("key_not_exist", "defVal"))
 
-	// strOne
-	assert.Eq(t, "ab", mp.StrOne("k2", "k1"))
-	assert.Eq(t, "", mp.StrOne("not-exists"))
+		// strOne
+		assert.Eq(t, "ab", mp.StrOne("k2", "k1"))
+		assert.Eq(t, "", mp.StrOne("not-exists"))
+	})
 
 	// Strings
-	assert.Eq(t, []string{"ab", "cd"}, mp.Strings("k7"))
-	assert.Nil(t, mp.Strings("k1"))
-	assert.Nil(t, mp.Strings("notExists"))
+	t.Run("strings", func(t *testing.T) {
+		assert.Eq(t, []string{"ab", "cd"}, mp.Strings("k7"))
+		assert.Nil(t, mp.Strings("k1"))
+		assert.Nil(t, mp.Strings("notExists"))
 
-	// StringsOne
-	assert.Eq(t, []string{"ab", "cd"}, mp.StringsOne("k7", "k8"))
-	assert.Eq(t, []string{"a1", "b2"}, mp.StringsOne("k8", "k7"))
-	assert.Nil(t, mp.StringsOne("notExists"))
+		// StringsOne
+		assert.Eq(t, []string{"ab", "cd"}, mp.StringsOne("k7", "k8"))
+		assert.Eq(t, []string{"a1", "b2"}, mp.StringsOne("k8", "k7"))
+		assert.Nil(t, mp.StringsOne("notExists"))
 
-	// StringsByStr
-	assert.Eq(t, []string{"23", "45"}, mp.StringsByStr("k6"))
+		// StringsByStr
+		assert.Eq(t, []string{"23", "45"}, mp.StringsByStr("k6"))
+	})
 
 	// set
 	mp.Set("new", "val1")
