@@ -54,34 +54,49 @@ func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T {
 	return newLs
 }
 
-// MapFn map handle function type.
-type MapFn[T any, V any] func(input T) (target V, find bool)
-
-// Map a list to new list
+// Map a list to new list with map filter function.
 //
 // eg: mapping [object0{},object1{},...] to flatten list [object0.someKey, object1.someKey, ...]
-func Map[T, V any](list []T, mapFn MapFn[T, V]) []V {
-	flatArr := make([]V, 0, len(list))
+func Map[T, V any](list []T, mapFilter func(input T) (target V, ok bool)) []V {
+	if len(list) == 0 {
+		return nil
+	}
 
+	flatArr := make([]V, 0, len(list))
 	for _, obj := range list {
-		if target, ok := mapFn(obj); ok {
+		if target, ok := mapFilter(obj); ok {
 			flatArr = append(flatArr, target)
 		}
 	}
 	return flatArr
 }
 
-// Map1 a list to new list, alias of Map func
-func Map1[T, R any](list []T, fn func(t T) R) []R {
-	ret := make([]R, len(list))
+// Map1 a list to new list with map function.
+//
+// eg: mapping [object0{},object1{},...] to flatten list [object0.someKey, object1.someKey, ...]
+func Map1[T, R any](list []T, mapFn func(t T) R) []R {
+	if len(list) == 0 {
+		return nil
+	}
 
+	ret := make([]R, len(list))
 	for i := range list {
-		ret[i] = fn(list[i])
+		ret[i] = mapFn(list[i])
 	}
 	return ret
 }
 
-// Column alias of Map func
+// Column collect sub elements from list. alias of Map func
+//
+// Example:
+//   list := []map[string]any{
+//     {"id": 1, "name": "one", "age": 23},
+//     {"id": 2, "name": "two", "age": 23},
+//     {"id": 3, "name": "three", "age": 23},
+//   }
+//   names := arrutil.Column(list, func(el map[string]any) string {
+//     return el["name"].(string)
+//   })
 func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V {
 	return Map(list, mapFn)
 }
@@ -125,4 +140,83 @@ func FirstOr[T any](list []T, defVal ...T) T {
 	}
 	var zero T
 	return zero
+}
+
+// Chunk split slice to chunks by size.
+//
+// eg: [1,2,3,4,5,6,7,8,9,10] -> [[1,2,3,4], [5,6,7,8], [9,10]]
+func Chunk[T any](list []T, size int) [][]T {
+	if size <= 0 {
+		return nil
+	}
+
+	ln := len(list)
+	if ln == 0 {
+		return nil
+	}
+
+	chunks := make([][]T, 0, ln/size+1)
+
+	for i := 0; i < ln; i += size {
+		end := i + size
+		if end > ln {
+			end = ln
+		}
+		chunks = append(chunks, list[i:end])
+	}
+
+	return chunks
+}
+
+// ChunkBy split slice to chunks by size, and with custom chunk function.
+//
+// Example:
+//   list := []map[string]any{
+//     {"id": 1, "name": "one", "age": 23},
+//     {"id": 2, "name": "two", "age": 23},
+//     {"id": 3, "name": "three", "age": 23},
+//   }
+//   chunks := arrutil.ChunkBy(list, 2, func(el map[string]any) map[string]any {
+//     return map[string]any{
+//       "id": el["id"],
+//       "name": el["name"],
+//     }
+//   })
+// 	Output: [
+// 		[{"id": 1, "name": "one"}, {"id": 2, "name": "two"}],
+// 		[{"id": 3, "name": "three"}]
+// 	]
+func ChunkBy[T, R any](list []T, size int, mapFn func(el T) R) [][]R {
+	if size <= 0 {
+		return nil
+	}
+
+	ln := len(list)
+	if ln == 0 {
+		return nil
+	}
+
+	// 计算需要的块数量
+	numChunks := ln/size + 1
+	if ln%size == 0 {
+		numChunks = ln / size
+	}
+
+	chunks := make([][]R, 0, numChunks)
+
+	for i := 0; i < ln; i += size {
+		end := i + size
+		if end > ln {
+			end = ln
+		}
+
+		// 创建当前块的切片
+		currentChunk := make([]R, 0, size)
+		for j := i; j < end; j++ {
+			currentChunk = append(currentChunk, mapFn(list[j]))
+		}
+		chunks = append(chunks, currentChunk)
+	}
+
+	return chunks
 }

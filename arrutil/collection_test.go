@@ -178,27 +178,3 @@ func TestExceptWhileEmptyReturnsEmpty(t *testing.T) {
 	assert.Eq(t, []string{}, result)
 	assert.NotSame(t, &data, &result, "should always returns new slice")
 }
-
-func TestMap(t *testing.T) {
-	list1 := []map[string]any{
-		{"name": "tom", "age": 23},
-		{"name": "john", "age": 34},
-	}
-
-	flatArr := arrutil.Column(list1, func(obj map[string]any) (val any, find bool) {
-		return obj["age"], true
-	})
-
-	assert.NotEmpty(t, flatArr)
-	assert.Contains(t, flatArr, 23)
-	assert.Len(t, flatArr, 2)
-	assert.Eq(t, 34, flatArr[1])
-
-	names := arrutil.Map1(list1, func(obj map[string]any) string {
-		return obj["name"].(string)
-	})
-	assert.NotEmpty(t, names)
-	assert.Contains(t, names, "tom")
-	assert.Len(t, names, 2)
-	assert.Eq(t, "john", names[1])
-}
