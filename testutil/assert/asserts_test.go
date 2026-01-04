@@ -66,8 +66,8 @@ func TestCommon_success(t *testing.T) {
 	assert.NotEq(t, 1, 2)
 	assert.NotEqual(t, 1, 2)
 
-	// InDelta
-	assert.InDelta(t, 1.1, 1.2, 0.1)
+	// EqFloat/InDelta
+	assert.EqFloat(t, 1.1, 1.2, 0.1)
 
 	// kind
 	assert.IsType(t, 1, 1)

@@ -637,6 +637,12 @@ func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
 	return fail(t, fmt.Sprintf("Given %v should greater than or equal %v", give, min), fmtAndArgs)
 }
 
+// EqFloat asserts that the want should equal to the given with delta. alias of InDelta()
+func EqFloat(t TestingT, want, give any, delta float64, fmtAndArgs ...any) bool {
+	t.Helper()
+	return InDelta(t, want, give, delta, fmtAndArgs...)
+}
+
 // InDelta assert that two floating-point values differ from each other within a certain range.
 func InDelta(t TestingT, want, give any, delta float64, fmtAndArgs ...any) bool {
 	if mathutil.InDeltaAny(want, give, delta) {
