@@ -637,6 +637,31 @@ func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
 	return fail(t, fmt.Sprintf("Given %v should greater than or equal %v", give, min), fmtAndArgs)
 }
 
+// EqInt asserts that the want should equal to the given intX.
+//
+// NOTE: Will always convert to int64 to compare.
+//
+// Example:
+// 	assert.Eq(t, uint(1), int(1)) // false
+// 	assert.EqInt(t, uint(1), int(1)) // true
+func EqInt(t TestingT, want, give any, fmtAndArgs ...any) bool {
+	t.Helper()
+
+	wantI64, err := mathutil.Int64(want)
+	if err != nil {
+		return fail(t, fmt.Sprintf("Want value cannot convert to int64: %#v, %#v. err=%v", want, give, err), fmtAndArgs)
+	}
+	giveI64, err1 := mathutil.Int64(give)
+	if err1 != nil {
+		return fail(t, fmt.Sprintf("Give value cannot convert to int64: %#v, %#v. err=%v", want, give, err1), fmtAndArgs)
+	}
+
+	if wantI64 == giveI64 {
+		return true
+	}
+	return fail(t, fmt.Sprintf("Given %v(i64=%d) should equal to %v(i64=%d)", give, giveI64, want, wantI64), fmtAndArgs)
+}
+
 // EqFloat asserts that the want should equal to the given with delta. alias of InDelta()
 func EqFloat(t TestingT, want, give any, delta float64, fmtAndArgs ...any) bool {
 	t.Helper()

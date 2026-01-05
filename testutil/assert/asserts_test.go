@@ -65,6 +65,10 @@ func TestCommon_success(t *testing.T) {
 	assert.Neq(t, 1, 2)
 	assert.NotEq(t, 1, 2)
 	assert.NotEqual(t, 1, 2)
+	assert.NotEq(t, 13, uint16(13))
+
+	// eqInt
+	assert.EqInt(t, 13, uint16(13))
 
 	// EqFloat/InDelta
 	assert.EqFloat(t, 1.1, 1.2, 0.1)
