@@ -148,3 +148,16 @@ func IsPositiveNum(s string) bool {
 func IsHttpURL(s string) bool {
 	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
 }
+
+// IndexByteAfter find index of byte after startIndex. return -1 if not found
+//
+// eg:
+// 	IndexByteAfter("abcabc", 'b', 0) = 1
+// 	IndexByteAfter("abcabc", 'b', 2) = 4
+func IndexByteAfter(s string, b byte, startIndex int) int {
+	idx := strings.IndexByte(s[startIndex:], b)
+	if idx < 0 {
+		return -1
+	}
+	return idx + startIndex
+}
