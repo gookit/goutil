@@ -17,3 +17,25 @@ func FreePort() (port int, err error) {
 	}
 	return
 }
+
+// AllMacAddrs get all mac addresses
+func AllMacAddrs() ([]string, error) {
+	var macAddrs []string
+	interfaces, err := net.Interfaces()
+	if err != nil {
+		return macAddrs, err
+	}
+
+	for _, iface := range interfaces {
+		// 跳过回环接口（如 lo）和未启用的接口
+		if iface.Flags&net.FlagLoopback != 0 || iface.HardwareAddr == nil {
+			continue
+		}
+
+		mac := iface.HardwareAddr.String()
+		if mac != "" {
+			macAddrs = append(macAddrs, mac)
+		}
+	}
+	return macAddrs, nil
+}
