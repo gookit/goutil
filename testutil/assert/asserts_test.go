@@ -317,6 +317,7 @@ func TestErr(t *testing.T) {
 	assert.Err(t, err, "user custom message")
 	assert.Error(t, err)
 	assert.ErrMsg(t, err, "this is a error")
+	assert.ErrHasMsg(t, err, "a error")
 }
 
 func TestContains(t *testing.T) {

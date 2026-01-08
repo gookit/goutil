@@ -486,6 +486,13 @@ func ErrMsgContains(t TestingT, err error, subMsg string, fmtAndArgs ...any) boo
 
 // ErrSubMsg asserts that the given is a not nil error and the error message contains subMsg
 func ErrSubMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
+	t.Helper()
+	return ErrMsgContains(t, err, subMsg, fmtAndArgs...)
+}
+
+// ErrHasMsg asserts that the given is a not nil error and the error message contains subMsg
+func ErrHasMsg(t TestingT, err error, subMsg string, fmtAndArgs ...any) bool {
+	t.Helper()
 	return ErrMsgContains(t, err, subMsg, fmtAndArgs...)
 }
 
