@@ -26,7 +26,12 @@ type Cmd struct {
 	Func func(c *Cmd) error
 }
 
-// NewCmd instance
+// WrapRunFunc wrap a no-params func as cmd run func
+func WrapRunFunc(fn func() error) func(c *Cmd) error {
+	return func(c *Cmd) error { return fn() }
+}
+
+// NewCmd create a Cmd instance
 func NewCmd(name, desc string, runFunc ...func(c *Cmd) error) *Cmd {
 	fs := cflag.NewEmpty(func(c *cflag.CFlags) {
 		c.Desc = desc
