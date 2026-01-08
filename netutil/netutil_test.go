@@ -20,4 +20,8 @@ func TestAllMacAddrs(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, macs)
 	dump.P(macs)
+
+	first, err := netutil.FirstMacAddr()
+	assert.NoError(t, err)
+	assert.NotEmpty(t, first)
 }
