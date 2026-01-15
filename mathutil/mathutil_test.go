@@ -60,7 +60,7 @@ func TestRange(t *testing.T) {
 		err := mathutil.Range("abc", func(val int) {
 			// This should not be called
 		})
-		assert.ErrMsg(t, err, "invalid integer value: abc")
+		assert.ErrMsg(t, err, `invalid integer value: "abc"`)
 	})
 
 	t.Run("invalid range expression", func(t *testing.T) {
@@ -94,7 +94,7 @@ func TestRange(t *testing.T) {
 			results = append(results, val)
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, []int{}, results)
+		assert.Empty(t, results)
 	})
 
 	t.Run("only empty items", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestRange(t *testing.T) {
 			results = append(results, val)
 		})
 		assert.NoError(t, err)
-		assert.Equal(t, []int{}, results)
+		assert.Empty(t, results)
 	})
 
 	t.Run("zero range", func(t *testing.T) {
@@ -194,12 +194,12 @@ func TestExpand(t *testing.T) {
 		t.Run("invalid number", func(t *testing.T) {
 			result, err := mathutil.Expand("abc")
 			assert.Nil(t, result)
-			assert.ErrMsg(t, err, "invalid integer value: abc")
+			assert.ErrMsg(t, err, `invalid integer value: "abc"`)
 		})
 
 		t.Run("invalid number in list", func(t *testing.T) {
 			result, err := mathutil.Expand("1,abc,3")
-			assert.ErrMsg(t, err, "invalid integer value: abc")
+			assert.ErrMsg(t, err, `invalid integer value: "abc"`)
 			assert.Nil(t, result)
 		})
 
@@ -211,19 +211,19 @@ func TestExpand(t *testing.T) {
 
 		t.Run("range with invalid numbers", func(t *testing.T) {
 			result, err := mathutil.Expand("a-b")
-			assert.ErrMsg(t, err, "invalid range start value: a")
+			assert.ErrMsg(t, err, `invalid range start value: "a"`)
 			assert.Nil(t, result)
 		})
 
 		t.Run("range with non-numeric start", func(t *testing.T) {
 			result, err := mathutil.Expand("abc-5")
-			assert.ErrSubMsg(t, err, "invalid range start value")
+			assert.ErrMsg(t, err, `invalid range start value: "abc"`)
 			assert.Nil(t, result)
 		})
 
 		t.Run("range with non-numeric end", func(t *testing.T) {
 			result, err := mathutil.Expand("1-xyz")
-			assert.ErrMsg(t, err, "invalid range end value: xyz")
+			assert.ErrMsg(t, err, `invalid range end value: "xyz"`)
 			assert.Nil(t, result)
 		})
 	})

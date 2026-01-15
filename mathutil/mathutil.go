@@ -48,6 +48,7 @@ func Percent(val, total int) float64 {
 // Range a number range expression, and handle each value. eg: "1-100,123,124"
 func Range(expr string, handle func(val int)) error {
 	for _, item := range strings.Split(expr, ",") {
+		item = strings.TrimSpace(item)
 		if item == "" {
 			continue
 		}
@@ -66,7 +67,7 @@ func Range(expr string, handle func(val int)) error {
 		} else {
 			iVal, err := strconv.Atoi(item)
 			if err != nil {
-				return fmt.Errorf("invalid integer value: %s", item)
+				return fmt.Errorf("invalid integer value: %q", item)
 			}
 			handle(iVal)
 		}
@@ -92,7 +93,7 @@ func Expand(expr string) ([]int, error) {
 		} else {
 			iVal, err := strconv.Atoi(item)
 			if err != nil {
-				return nil, fmt.Errorf("invalid integer value: %s", item)
+				return nil, fmt.Errorf("invalid integer value: %q", item)
 			}
 			nums = append(nums, iVal)
 		}
@@ -107,13 +108,13 @@ func parseIntRange(value string, sepIdx int) (min int, max int, err error) {
 
 	min, err = strconv.Atoi(start)
 	if err != nil {
-		err = fmt.Errorf("invalid range start value: %s", start)
+		err = fmt.Errorf("invalid range start value: %q", start)
 		return
 	}
 
 	max, err = strconv.Atoi(end)
 	if err != nil {
-		err = fmt.Errorf("invalid range end value: %s", end)
+		err = fmt.Errorf("invalid range end value: %q", end)
 		return
 	}
 
