@@ -12,4 +12,10 @@ func TestGo(t *testing.T) {
 		return nil
 	})
 	assert.NoErr(t, err)
+
+	// test panic
+	err = syncs.Go(func() error {
+		panic("test panic")
+	})
+	assert.ErrMsg(t, err, "panic recover: test panic")
 }
