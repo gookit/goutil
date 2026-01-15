@@ -198,6 +198,12 @@ func Replaces(str string, pairs map[string]string) string {
 }
 
 // ReplaceVars replaces simple variables in a string. format: {varName}
+//
+// Usage:
+//	strutil.ReplaceVars("{name}, age is {age}", map[string]string{
+//		"name": "Joe",
+//		"age": "18"
+//	})
 func ReplaceVars(s string, vars map[string]string) string {
 	if !ContainsByte(s, '{') {
 		return s

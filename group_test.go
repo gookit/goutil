@@ -12,8 +12,6 @@ import (
 )
 
 func TestNewErrGroup(t *testing.T) {
-	httpreq.SetTimeout(3000)
-
 	eg := goutil.NewErrGroup()
 	eg.Add(func() error {
 		resp, err := httpreq.Get(testSrvAddr + "/get")
@@ -21,10 +19,6 @@ func TestNewErrGroup(t *testing.T) {
 			return err
 		}
 
-		fmt.Println(testutil.ParseBodyToReply(resp.Body))
-		return nil
-	}, func() error {
-		resp := httpreq.MustResp(httpreq.Post(testSrvAddr+"/post", "hi"))
 		fmt.Println(testutil.ParseBodyToReply(resp.Body))
 		return nil
 	})

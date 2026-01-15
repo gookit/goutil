@@ -1,6 +1,7 @@
 package reflects_test
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -70,9 +71,18 @@ func TestIsEqual(t *testing.T) {
 	is.True(reflects.IsEqual([]byte("abc"), []byte("abc")))
 	is.False(reflects.IsEqual([]byte("abc"), 123))
 
+	/*
+			原因
+			变量初始化状态不同：
+		      []string{} 是一个非零值的空切片，其长度为0，但已初始化
+			  data []string 是一个零值的切片，声明但未初始化
+			底层实现差异：
+			  []string{}：len=0, cap=0, ptr != nil
+			  data []string：len=0, cap=0, ptr = nil
+	*/
 	var data []string
-	// fmt.Printf("%+v %+v\n", data, []string{})
 	is.False(reflects.IsEqual([]string{}, data))
+	fmt.Printf("%+v %+v\n", []string{}, data)
 }
 
 // ST for testing
