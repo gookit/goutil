@@ -63,13 +63,18 @@ func InternalIPv6() string { return IPv6() }
 // IPv6 get local first internal IPv6 addr
 func IPv6() string { return getLocalIP(6) }
 
-// MustIPv4 get first internal IP v4 addr, will panic on error.
+// MustIPv4 get first internal IP v4 addr, will panic on error or not found.
 func MustIPv4() (ip string) {
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		panic("MustIPv4: " + err.Error())
 	}
-	return getFirstIP(4, addrs)
+
+	ipStr := getFirstIP(4, addrs)
+	if len(ipStr) < 5 {
+		panic("MustIPv4: no local ipv4 addr")
+	}
+	return ipStr
 }
 
 // get local first internal IP v4/v6 addr.
