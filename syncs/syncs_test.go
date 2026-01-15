@@ -2,6 +2,7 @@ package syncs_test
 
 import (
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -82,23 +83,36 @@ func TestSafeMap(t *testing.T) {
 	})
 
 	t.Run("ConcurrentSetAndGet", func(t *testing.T) {
+		var wg sync.WaitGroup
 		m := syncs.NewSafeMap[int, string]()
 		const numGoroutines = 100
 
 		// Concurrently set values
 		for i := 0; i < numGoroutines; i++ {
-			go m.Set(i, "value"+string(rune(i+'0')))
+			wg.Add(1)
+
+			// Set operation
+			go func(i int) {
+				defer wg.Done()
+				m.Set(i, "value"+string(rune(i+'0')))
+			}(i)
 		}
 
 		// Give some time for goroutines to complete
 		for i := 0; i < numGoroutines; i++ {
+			wg.Add(1)
+			// Get operation
 			go func(i int) {
+				defer wg.Done()
 				_, ok := m.Get(i)
 				if !ok {
 					t.Errorf("Expected key %d to exist", i)
 				}
 			}(i)
 		}
+
+		// Wait for all operations to complete
+		wg.Wait()
 	})
 
 	t.Run("Range", func(t *testing.T) {
