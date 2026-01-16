@@ -41,6 +41,15 @@ func TestRead_cases(t *testing.T) {
 		assert.Equal(t, "inhere", ans)
 	})
 
+	// test readInt
+	t.Run("ReadInt", func(t *testing.T) {
+		buf.WriteString("123")
+		ans, err := cliutil.ReadInt("hi, your age? ")
+		fmt.Println("ans:", ans)
+		assert.NoError(t, err)
+		assert.Equal(t, 123, ans)
+	})
+
 	// test ReadFirst
 	t.Run("ReadFirst", func(t *testing.T) {
 		buf.WriteString("Y")

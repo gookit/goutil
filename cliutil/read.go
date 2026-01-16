@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gookit/goutil/x/ccolor"
@@ -32,7 +33,7 @@ func ReadInput(question string) (string, error) {
 	return strings.TrimSpace(scanner.Text()), nil
 }
 
-// ReadLine read one line from user input.
+// ReadLine read first line from user input.
 //
 // Usage:
 //
@@ -46,6 +47,15 @@ func ReadLine(question string) (string, error) {
 	reader := bufio.NewReader(Input)
 	answer, _, err := reader.ReadLine()
 	return strings.TrimSpace(string(answer)), err
+}
+
+// ReadInt read input value as int
+func ReadInt(question string) (int, error) {
+	answer, err := ReadLine(question)
+	if err != nil {
+		return 0, err
+	}
+	return strconv.Atoi(answer)
 }
 
 // ReadFirst read first char
