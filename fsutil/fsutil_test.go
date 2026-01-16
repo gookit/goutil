@@ -33,9 +33,13 @@ func TestToAbsPath(t *testing.T) {
 	assert.Neq(t, "~/path/to/dir", fsutil.ToAbsPath("~/path/to/dir"))
 	assert.NotEmpty(t, fsutil.ToAbsPath(""))
 	assert.Neq(t, ".", fsutil.ToAbsPath("."))
-	assert.Neq(t, "..", fsutil.ToAbsPath(".."))
 	assert.Neq(t, "./", fsutil.ToAbsPath("./"))
-	assert.Neq(t, "../", fsutil.ToAbsPath("../"))
+
+	s := fsutil.ToAbsPath("..")
+	assert.StrNotContains(t, s, "..")
+
+	s = fsutil.ToAbsPath("../")
+	assert.StrNotContains(t, s, "../")
 }
 
 func TestSlashPath(t *testing.T) {

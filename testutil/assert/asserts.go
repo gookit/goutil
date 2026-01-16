@@ -510,7 +510,7 @@ func Len(t TestingT, give any, wantLn int, fmtAndArgs ...any) bool {
 
 	if gln != wantLn {
 		t.Helper()
-		return fail(t, fmt.Sprintf("\"%s\" should have %d item(s), but has %d", give, wantLn, gln), fmtAndArgs)
+		return fail(t, fmt.Sprintf("\"%v\" should have %d item(s), but has %d", give, wantLn, gln), fmtAndArgs)
 	}
 	return true
 }
@@ -525,7 +525,7 @@ func LenGt(t TestingT, give any, minLn int, fmtAndArgs ...any) bool {
 
 	if gln <= minLn {
 		t.Helper()
-		return fail(t, fmt.Sprintf("\"%s\" should have more than %d item(s), but has %d", give, minLn, gln), fmtAndArgs)
+		return fail(t, fmt.Sprintf("\"%v\" should have more than %d item(s), but has %d", give, minLn, gln), fmtAndArgs)
 	}
 	return true
 }
