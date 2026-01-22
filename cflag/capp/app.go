@@ -297,6 +297,10 @@ func (a *App) showHelp() error {
 	buf.Printf("  <green>%s</>    Display application help\n", name)
 	buf.Printf("\nUse \"<cyan>%s COMMAND --help</>\" for about a command\n", bin)
 
+	if a.LongHelp != "" {
+		buf.WriteStr1Nl("\n" + a.LongHelp)
+	}
+
 	if a.AfterHelpBuild != nil {
 		a.AfterHelpBuild(buf)
 	}
