@@ -769,28 +769,3 @@ func samePointers(first, second any) bool {
 	// compare pointer addresses
 	return first == second
 }
-
-//
-// -------------------- fail --------------------
-//
-
-// Fail reports a failure through
-func Fail(t TestingT, failMsg string, fmtAndArgs ...any) bool {
-	t.Helper()
-	return fail(t, failMsg, fmtAndArgs)
-}
-
-type failNower interface {
-	FailNow()
-}
-
-// FailNow fails test
-func FailNow(t TestingT, failMsg string, fmtAndArgs ...any) bool {
-	t.Helper()
-	fail(t, failMsg, fmtAndArgs)
-
-	if fnr, ok := t.(failNower); ok {
-		fnr.FailNow()
-	}
-	return false
-}

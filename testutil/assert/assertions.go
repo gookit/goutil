@@ -8,7 +8,11 @@ type Assertions struct {
 	Msg string
 }
 
-// New makes a new Assertions object for the specified TestingT.
+// New makes a new Assertions object for the specified TestingT
+//
+// Usage:
+//	as := assert.New(t)
+//	as.True(true)
 func New(t TestingT) *Assertions {
 	return &Assertions{t: t}
 }
