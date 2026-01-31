@@ -78,6 +78,25 @@ func NotEmpty(t TestingT, give any, fmtAndArgs ...any) bool {
 	return nEmpty
 }
 
+// Zero asserts that the give should be zero value
+func Zero(t TestingT, give any, fmtAndArgs ...any) bool {
+	t.Helper()
+
+	if give != nil && !reflect.DeepEqual(give, reflect.Zero(reflect.TypeOf(give)).Interface()) {
+		return Fail(t, fmt.Sprintf("Should be zero value, but was: %v", give), fmtAndArgs...)
+	}
+	return true
+}
+
+// NotZero asserts that the give should not be zero value
+func NotZero(t TestingT, give any, fmtAndArgs ...any) bool {
+	t.Helper()
+	if give == nil || reflect.DeepEqual(give, reflect.Zero(reflect.TypeOf(give)).Interface()) {
+		return Fail(t, fmt.Sprintf("Should not be zero, but was: %v", give), fmtAndArgs...)
+	}
+	return true
+}
+
 // PanicRunFunc define
 type PanicRunFunc func()
 

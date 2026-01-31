@@ -73,6 +73,10 @@ func TestCommon_success(t *testing.T) {
 	// EqFloat/InDelta
 	assert.EqFloat(t, 1.1, 1.2, 0.1)
 
+	// zero
+	assert.Zero(t, 0)
+	assert.NotZero(t, 1)
+
 	// kind
 	assert.IsType(t, 1, 1)
 	assert.IsKind(t, reflect.Int, 1)
@@ -135,9 +139,15 @@ func TestCommon_fail(t *testing.T) {
 	// empty
 	assert.Empty(tc, "abc")
 	assert.StrContains(t, tc.ResetGet(), "Should be empty, but was:")
-
 	assert.NotEmpty(tc, "")
 	assert.StrContains(t, tc.ResetGet(), "Should not be empty, but was:")
+
+	// zero
+	assert.Zero(tc, 10)
+	assert.StrContains(t, tc.ResetGet(), "Should be zero value, but was")
+
+	assert.NotZero(tc, 0)
+	assert.StrContains(t, tc.ResetGet(), "Should not be zero, but was")
 
 	// error
 	assert.Error(tc, nil)
