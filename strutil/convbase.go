@@ -1,6 +1,7 @@
 package strutil
 
 import (
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -47,11 +48,21 @@ func BaseConv(src string, from, to int) string {
 // Usage:
 //
 //	BaseConv(123, 16) // Output: "7b"
-func BaseConvInt(src uint64, to int) string {
-	if to > 64 || to < 2 {
-		to = 16
+func BaseConvInt(src uint64, toBase int) string {
+	if toBase > 64 || toBase < 2 {
+		toBase = 16
 	}
-	return BaseConvIntByTpl(src, Base64Chars[:to])
+
+	// bigInt 支持 2-62 进制转换处理 TODO
+	if toBase <= 36 {
+		return strconv.FormatUint(src, toBase)
+	}
+	if toBase <= 62 {
+		bigInt := new(big.Int).SetUint64(src)
+		return bigInt.Text(toBase)
+	}
+
+	return BaseConvIntByTpl(src, Base64Chars[:toBase])
 }
 
 // BaseConvByTpl convert base string by template.
