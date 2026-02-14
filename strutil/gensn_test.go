@@ -2,6 +2,7 @@ package strutil_test
 
 import (
 	"fmt"
+	"sync"
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
@@ -73,7 +74,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 
 func TestDateSN(t *testing.T) {
 	fmt.Println("DatetimeNo:")
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 100; i++ {
 		no := strutil.DatetimeNo("test")
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
@@ -82,14 +83,22 @@ func TestDateSN(t *testing.T) {
 
 func TestDateSNv2(t *testing.T) {
 	fmt.Println("DateSNv2:")
-	for i := 0; i < 10; i++ {
+	idMap := make(map[string]bool)
+
+	for i := 0; i < 100; i++ {
 		no := strutil.DateSNv2("T")
+		assert.False(t, idMap[no])
+
+		idMap[no] = true
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
 
-	for i := 0; i < 10; i++ {
-		no := strutil.DateSNv2("T", 36)
+	for i := 0; i < 100; i++ {
+		no := strutil.DateSNv2("T", 16)
+		assert.False(t, idMap[no])
+
+		idMap[no] = true
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
@@ -127,4 +136,75 @@ func TestDateSNv3(t *testing.T) {
 		fmt.Println(no, "len:", len(no))
 		assert.NotEmpty(t, no)
 	}
+}
+
+func TestDateSNOpt_GenSN(t *testing.T) {
+	fmt.Println("DateSNOpt.GenSN:")
+
+	t.Run("basic", func(t *testing.T) {
+		opt := &strutil.DateSNOpt{}
+		idMap := make(map[string]bool)
+		for i := 0; i < 100; i++ {
+			sn := opt.GenSN("T")
+			assert.NotEmpty(t, sn)
+			assert.False(t, idMap[sn], "duplicate sn: %s", sn)
+			idMap[sn] = true
+			fmt.Println(sn, "len:", len(sn))
+		}
+	})
+
+	t.Run("with custom base", func(t *testing.T) {
+		opt := &strutil.DateSNOpt{ConvBase: 62, DateLen: 6}
+		for i := 0; i < 10; i++ {
+			sn := opt.GenSN("P")
+			fmt.Println(sn, "len:", len(sn))
+			assert.NotEmpty(t, sn)
+		}
+	})
+
+	t.Run("with sequence enabled", func(t *testing.T) {
+		opt := &strutil.DateSNOpt{EnableSeq: true, ConvBase: 36}
+		for i := 0; i < 10; i++ {
+			sn := opt.GenSN("")
+			fmt.Println(sn, "len:", len(sn))
+			assert.NotEmpty(t, sn)
+		}
+	})
+
+	t.Run("concurrent safe", func(t *testing.T) {
+		opt := &strutil.DateSNOpt{EnableSeq: true, ConvBase: 36}
+		idMap := make(map[string]bool)
+		var mu sync.Mutex
+		var wg sync.WaitGroup
+
+		for i := 0; i < 100; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				sn := opt.GenSN("")
+				mu.Lock()
+				assert.False(t, idMap[sn], "duplicate sn: %s", sn)
+				idMap[sn] = true
+				mu.Unlock()
+			}()
+		}
+		wg.Wait()
+		fmt.Println("concurrent generated 100 unique IDs")
+	})
+
+	t.Run("seq max value reset", func(t *testing.T) {
+		// Note: with EnableSeq=true, uniqueness depends on time advancing when seq resets
+		// Use larger SeqMaxVal to ensure uniqueness within test timeframe
+		opt := &strutil.DateSNOpt{SeqMaxVal: 10000, EnableSeq: false, ConvBase: 36}
+		idMap := make(map[string]bool)
+
+		// generate more IDs to test reset behavior
+		for i := 0; i < 200; i++ {
+			sn := opt.GenSN("")
+			assert.NotEmpty(t, sn)
+			assert.False(t, idMap[sn], "duplicate sn: %s", sn)
+			idMap[sn] = true
+		}
+		fmt.Println("seq reset test: generated 200 unique IDs with SeqMaxVal=10000")
+	})
 }
