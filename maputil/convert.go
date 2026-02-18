@@ -233,6 +233,19 @@ func FormatIndent(mp any, indent string) string {
 	return NewFormatter(mp).WithIndent(indent).Format()
 }
 
+// StrMapToText 将 map[string]string 转换为多行 key=value 格式文本
+func StrMapToText(m map[string]string) string {
+	if len(m) == 0 {
+		return ""
+	}
+
+	var lines []string
+	for key, value := range m {
+		lines = append(lines, key+"="+value)
+	}
+	return strings.Join(lines, "\n")
+}
+
 /*************************************************************
  * Flat convert tree map to flatten key-value map.
  *************************************************************/

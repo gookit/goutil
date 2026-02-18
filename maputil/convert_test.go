@@ -248,6 +248,52 @@ func TestToString2(t *testing.T) {
 	fmt.Println(s3)
 }
 
+func TestStrMapToText(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    map[string]string
+		expected string
+	}{
+		{
+			name:     "empty map",
+			input:    map[string]string{},
+			expected: "",
+		},
+		{
+			name: "single key-value pair",
+			input: map[string]string{
+				"key1": "value1",
+			},
+			expected: "key1=value1",
+		},
+		{
+			name: "multiple key-value pairs",
+			input: map[string]string{
+				"key1": "value1",
+				"key2": "value2",
+				"key3": "value3",
+			},
+			expected: "key1=value1\nkey2=value2\nkey3=value3",
+		},
+		{
+			name: "empty values",
+			input: map[string]string{
+				"key1": "",
+				"key2": "value2",
+				"":     "value3",
+			},
+			expected: "key1=\nkey2=value2\n=value3",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := maputil.StrMapToText(tt.input)
+			assert.Equal(t, tt.expected, result)
+		})
+	}
+}
+
 func TestFlatten(t *testing.T) {
 	data := map[string]any{
 		"name": "inhere",
