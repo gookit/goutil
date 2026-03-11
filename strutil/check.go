@@ -289,6 +289,8 @@ var (
 	envRegex = regexp.MustCompile(`^[A-Z][A-Z0-9_]*$`)
 	// IsVariableName alias for IsVarName
 	IsVariableName = IsVarName
+	// regex for check uuid string. format: 8-4-4-4-12
+	uuidPattern = regexp.MustCompile(`^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$`)
 )
 
 // IsVersion number. eg: 1.2.0
@@ -299,6 +301,9 @@ func IsVarName(s string) bool { return varRegex.MatchString(s) }
 
 // IsEnvName is valid ENV var name. eg: APP_NAME
 func IsEnvName(s string) bool { return envRegex.MatchString(s) }
+
+// IsUUID check if the string is a valid UUID format.
+func IsUUID(s string) bool { return uuidPattern.MatchString(s) }
 
 // Compare for two strings.
 func Compare(s1, s2, op string) bool {

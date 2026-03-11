@@ -1,6 +1,7 @@
 package strutil_test
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -50,4 +51,32 @@ func TestHashPasswd(t *testing.T) {
 	dump.P(msgMac)
 	assert.NotEmpty(t, msgMac)
 	assert.True(t, strutil.VerifyPasswd(msgMac, pwd, key))
+}
+
+func TestUUIDv4(t *testing.T) {
+	uuid1, err := strutil.UUIDv4()
+	assert.NoErr(t, err)
+	assert.Len(t, uuid1, 36)
+	assert.True(t, strutil.IsUUID(uuid1))
+
+	uuid2, err := strutil.UUIDv4()
+	assert.NoErr(t, err)
+	assert.Len(t, uuid2, 36)
+	assert.True(t, strutil.IsUUID(uuid2))
+
+	assert.Neq(t, uuid1, uuid2)
+}
+
+func TestShortUUID(t *testing.T) {
+	shortPattern := regexp.MustCompile(`^[0-9a-f]{8}$`)
+
+	uuid1 := strutil.ShortUUID()
+	assert.Len(t, uuid1, 8)
+	assert.True(t, shortPattern.MatchString(uuid1))
+
+	uuid2 := strutil.ShortUUID()
+	assert.Len(t, uuid2, 8)
+	assert.True(t, shortPattern.MatchString(uuid2))
+
+	assert.Neq(t, uuid1, uuid2)
 }

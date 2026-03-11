@@ -148,7 +148,7 @@ func SplitByWhitespace(s string) []string {
 	return whitespaceRegexp.Split(s, -1)
 }
 
-// Substr for a string.
+// Substr for a string. NOTE: strLn := len(runes)
 // if length <= 0, return pos to end.
 func Substr(s string, pos, length int) string {
 	runes := []rune(s)

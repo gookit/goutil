@@ -30,6 +30,12 @@ func TestUtf8Len(t *testing.T) {
 
 func TestUtf8Width(t *testing.T) {
 	assert.Eq(t, 0, strutil.TextWidth(""))
+
+	// case from bun.js
+	// assert.Eq(t, 2, strutil.TextWidth("🇺🇸"))     // Now: 2 (was: 1) - flag emoji
+	// assert.Eq(t, 2, strutil.TextWidth("👋🏽"))     // Now: 2 (was: 4) - emoji + skin tone
+	// assert.Eq(t, 2, strutil.TextWidth("👨‍👩‍👧"))  // Now: 2 (was: 8) - ZWJ family sequence
+	// assert.Eq(t, 0, strutil.TextWidth("\u2060")) // Now: 0 (was: 1) - word joiner
 }
 
 func TestUtf8Truncate(t *testing.T) {
