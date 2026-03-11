@@ -108,10 +108,10 @@ func Contains(data, elem any) (valid, found bool) {
 	return true, false
 }
 
-// StringsContains check string slice contains string
-func StringsContains(ss []string, s string) bool {
+// StringsContains check string slice contains sub-string
+func StringsContains(ss []string, sub string) bool {
 	for _, v := range ss {
-		if v == s {
+		if v == sub {
 			return true
 		}
 	}
@@ -152,8 +152,9 @@ func IsHttpURL(s string) bool {
 // IndexByteAfter find index of byte after startIndex. return -1 if not found
 //
 // eg:
-// 	IndexByteAfter("abcabc", 'b', 0) = 1
-// 	IndexByteAfter("abcabc", 'b', 2) = 4
+//
+//	IndexByteAfter("abcabc", 'b', 0) = 1
+//	IndexByteAfter("abcabc", 'b', 2) = 4
 func IndexByteAfter(s string, b byte, startIndex int) int {
 	idx := strings.IndexByte(s[startIndex:], b)
 	if idx < 0 {

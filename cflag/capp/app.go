@@ -268,7 +268,7 @@ func (a *App) showHelp() error {
 
 	buf.Printf("<cyan>%s</> - %s", bin, a.Desc)
 	if a.Version != "" {
-		buf.Printf("(Version: <cyan>%s</>)", a.Version)
+		buf.Printf(" Version: <cyan>%s</>", a.Version)
 	}
 
 	buf.Printf("\n\n<comment>Usage:</> %s <green>COMMAND</> [--Options...] [...Arguments]\n", bin)

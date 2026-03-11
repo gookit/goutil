@@ -4,9 +4,9 @@ package byteutil
 import (
 	"bytes"
 	"crypto/md5"
+	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"math/rand"
 	"strconv"
 	"time"
 )

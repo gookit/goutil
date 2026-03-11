@@ -203,7 +203,7 @@ func SearchPath(keywords string, limit int, opts ...SearchPathOption) []string {
 				// if windows, will limit with .exe, .bat, .cmd
 				for _, fPath := range matches {
 					fExt := filepath.Ext(fPath)
-					if checkfn.StringsContains(opt.LimitExt, fExt) {
+					if !checkfn.StringsContains(opt.LimitExt, fExt) {
 						continue
 					}
 					list = append(list, fPath)

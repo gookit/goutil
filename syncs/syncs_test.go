@@ -97,6 +97,11 @@ func TestSafeMap(t *testing.T) {
 				m.Set(i, "value"+string(rune(i+'0')))
 			}(i)
 		}
+		// Wait for all Set operations to complete!
+		wg.Wait()
+
+		// Reset WaitGroup for Get operations
+		wg = sync.WaitGroup{}
 
 		// Give some time for goroutines to complete
 		for i := 0; i < numGoroutines; i++ {
@@ -110,8 +115,6 @@ func TestSafeMap(t *testing.T) {
 				}
 			}(i)
 		}
-
-		// Wait for all operations to complete
 		wg.Wait()
 	})
 
