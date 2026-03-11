@@ -145,3 +145,76 @@ func TestMakeByKeys(t *testing.T) {
 	assert.Eq(t, []string{"", "val"}, maputil.DeepGet(mp, "top.arr"))
 	assert.Eq(t, "val", maputil.DeepGet(mp, "top.arr.1"))
 }
+
+func TestCopy(t *testing.T) {
+	dst := map[string]int{"a": 1, "b": 2}
+	src := map[string]int{"b": 3, "c": 4}
+
+	maputil.Copy(dst, src)
+
+	assert.Len(t, dst, 3)
+	assert.Eq(t, 1, dst["a"])
+	assert.Eq(t, 3, dst["b"])
+	assert.Eq(t, 4, dst["c"])
+
+	dst2 := map[string]string{"x": "v1"}
+	src2 := map[string]string{"y": "v2"}
+
+	maputil.Copy(dst2, src2)
+
+	assert.Len(t, dst2, 2)
+	assert.Eq(t, "v1", dst2["x"])
+	assert.Eq(t, "v2", dst2["y"])
+
+	dst3 := map[int]string{1: "one"}
+	src3 := map[int]string{2: "two", 1: "ONE"}
+
+	maputil.Copy(dst3, src3)
+
+	assert.Len(t, dst3, 2)
+	assert.Eq(t, "ONE", dst3[1])
+	assert.Eq(t, "two", dst3[2])
+}
+
+func TestDeleteFunc(t *testing.T) {
+	m := map[string]int{"a": 1, "b": 2, "c": 3, "d": 4}
+
+	maputil.DeleteFunc(m, func(k string, v int) bool {
+		return v%2 == 0
+	})
+
+	assert.Len(t, m, 2)
+	assert.ContainsKey(t, m, "a")
+	assert.ContainsKey(t, m, "c")
+	assert.NotContainsKey(t, m, "b")
+	assert.NotContainsKey(t, m, "d")
+
+	m2 := map[int]string{1: "one", 2: "two", 3: "three"}
+
+	maputil.DeleteFunc(m2, func(k int, v string) bool {
+		return k == 2
+	})
+
+	assert.Len(t, m2, 2)
+	assert.ContainsKey(t, m2, 1)
+	assert.ContainsKey(t, m2, 3)
+	assert.NotContainsKey(t, m2, 2)
+
+	m3 := map[string]string{"key1": "val1", "key2": "val2"}
+
+	maputil.DeleteFunc(m3, func(k string, v string) bool {
+		return k == "key1"
+	})
+
+	assert.Len(t, m3, 1)
+	assert.NotContainsKey(t, m3, "key1")
+	assert.ContainsKey(t, m3, "key2")
+
+	m4 := map[string]int{"a": 1, "b": 2}
+
+	maputil.DeleteFunc(m4, func(k string, v int) bool {
+		return false
+	})
+
+	assert.Len(t, m4, 2)
+}
