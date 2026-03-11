@@ -68,6 +68,15 @@ func (h *Client) SetTimeout(ms int) *Client {
 	return h
 }
 
+// SetMaxIdleConns Set the maximum number of idle connections.
+func (h *Client) SetMaxIdleConns(maxIdleConns, maxIdleConnsPerHost int) {
+	if hc, ok := h.client.(*http.Client); ok {
+		transport := hc.Transport.(*http.Transport)
+		transport.MaxIdleConns = maxIdleConns
+		transport.MaxIdleConnsPerHost = maxIdleConnsPerHost
+	}
+}
+
 // BaseURL set request base URL
 func (h *Client) BaseURL(baseURL string) *Client {
 	h.baseURL = baseURL
