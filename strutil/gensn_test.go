@@ -185,7 +185,7 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 	})
 
 	t.Run("with sequence enabled", func(t *testing.T) {
-		opt := &strutil.DateSNOpt{EnableSeq: true, ConvBase: 36}
+		opt := &strutil.DateSNOpt{ConvBase: 36}
 		for i := 0; i < 10; i++ {
 			sn := opt.GenSN("")
 			fmt.Println(sn, "len:", len(sn))
@@ -195,7 +195,7 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 
 	t.Run("concurrent safe", func(t *testing.T) {
 		fmt.Println("concurrent generated 100 unique IDs")
-		opt := &strutil.DateSNOpt{EnableSeq: true, ConvBase: 36}
+		opt := &strutil.DateSNOpt{ConvBase: 36}
 		idMap := make(map[string]bool)
 		var mu sync.Mutex
 		var wg sync.WaitGroup
@@ -215,7 +215,7 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 	})
 
 	t.Run("use random and base36", func(t *testing.T) {
-		opt := &strutil.DateSNOpt{EnableSeq: false, ConvBase: 36}
+		opt := &strutil.DateSNOpt{ConvBase: 36}
 		idMap := make(map[string]bool)
 
 		for i := 0; i < 100; i++ {

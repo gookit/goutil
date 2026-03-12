@@ -101,13 +101,13 @@ func DateSN(prefix string) string {
 
 // DateSNOpt 基于时间生成唯一编号
 type DateSNOpt struct {
-	Layout    string // time layout
-	RandMax   int    // rand max
-	DateLen   int    // 时间格式长度，后面部分将会进行进制转换 默认 8(yyyyMMdd)
-	ConvBase  int    // DateLen 之后的转换 base 2-64. default 36
-	EnableSeq bool   // 需要高并发生成时可以启用自增序号。默认不启用
-	SeqMaxVal int    // 自增序号最大值，之后后自动重置
-	globalSeq int64  // 自增，确保同一时刻生成的编号不重复. EnableSeq=true 时启用
+	Layout string // time layout
+	// RandMax   int    // rand max
+	DateLen   int   // 时间格式长度，后面部分将会进行进制转换 默认 8(yyyyMMdd)
+	ConvBase  int   // DateLen 之后的转换 base 2-64. default 36
+	// EnableSeq bool  // 需要高并发生成时可以启用自增序号。默认不启用
+	SeqMaxVal int   // 自增序号最大值，之后后自动重置
+	globalSeq int64 // 自增，确保同一时刻生成的编号不重复. EnableSeq=true 时启用
 }
 
 // default setting: {时间年到秒14位}
@@ -121,11 +121,11 @@ func ConfigSNOpt(fn func(opt *DateSNOpt)) {
 // NewDateSNOpt create a new DateSNOpt instance.
 func NewDateSNOpt() *DateSNOpt {
 	return &DateSNOpt{
-		Layout:    "20060102150405.000000",
-		RandMax:   8999,
+		Layout: "20060102150405.000000",
+		// RandMax:   8999,
 		DateLen:   8,
 		ConvBase:  36,
-		EnableSeq: true,
+		// EnableSeq: true,
 		SeqMaxVal: 8999,
 	}
 }
@@ -190,29 +190,16 @@ func (do *DateSNOpt) GenSN(prefix string) string {
 	}
 
 	// determine date length (default 8 for yyyyMMdd)
-	dateLen := do.DateLen
-	// build extension part using UnixNano for maximum precision
-	extNano := nt.UnixNano()
-
-	var ext int64
-	if do.EnableSeq {
-		// high concurrency mode: sequence is the main differentiator
-		ext = extNano + (10000000 + do.getSeqValue())
-	} else {
-		// simple mode: nanosecond timestamp + random
-		randMax := do.RandMax
-		if randMax <= 0 {
-			randMax = 8999
-		}
-		ext = extNano + (10000000 + rand.Int63n(int64(randMax)))
+	idx := do.DateLen + pl
+	// high concurrency mode: sequence is the main differentiator
+	extBs := strconv.AppendInt(bs[idx:], do.getSeqValue(), 10)
+	if extBs[0] == '0' {
+		extBs[0] = '1'
 	}
+	extInt := SafeUint(string(extBs))
 
 	// convert extension to target base
-	if do.ConvBase > 36 {
-		bs = append(bs[:dateLen+pl], BaseConvInt(uint64(ext), do.ConvBase)...)
-	} else {
-		bs = append(bs[:dateLen+pl], strconv.FormatInt(ext, do.ConvBase)...)
-	}
+	bs = append(bs[:idx], BaseConvInt(extInt, do.ConvBase)...)
 	return string(bs)
 }
 
@@ -281,24 +268,24 @@ var (
 //   - prefix=P, dateLen=6, extBase=48, return: P202511k9ksgD1fe6x len: 18
 //   - prefix=P, dateLen=4, extBase=62, return: P2025aZl8N0y58M7 len: 16
 func DateSNv3(prefix string, dateLen int, extBase ...int) string {
-    baseVal := basefn.FirstOr(extBase, 36)
-    cacheKey := fmt.Sprintf("%d%d", dateLen, baseVal)
+	baseVal := basefn.FirstOr(extBase, 36)
+	cacheKey := fmt.Sprintf("%d%d", dateLen, baseVal)
 
-    dsoMutex.RLock()
-    dso, ok := dsoMap[cacheKey]
-    dsoMutex.RUnlock()
+	dsoMutex.RLock()
+	dso, ok := dsoMap[cacheKey]
+	dsoMutex.RUnlock()
 
-    if !ok {
-        dsoMutex.Lock()
-        // double check，防止在加锁期间其他 goroutine 已经创建
-        if dso, ok = dsoMap[cacheKey]; !ok {
-            dso = NewDateSNOpt()
-			dso.EnableSeq = true
-            dso.DateLen = dateLen
-            dso.ConvBase = baseVal
-            dsoMap[cacheKey] = dso
-        }
-        dsoMutex.Unlock()
-    }
-    return dso.GenSN(prefix)
+	if !ok {
+		dsoMutex.Lock()
+		// double check，防止在加锁期间其他 goroutine 已经创建
+		if dso, ok = dsoMap[cacheKey]; !ok {
+			dso = NewDateSNOpt()
+			// dso.EnableSeq = true
+			dso.DateLen = dateLen
+			dso.ConvBase = baseVal
+			dsoMap[cacheKey] = dso
+		}
+		dsoMutex.Unlock()
+	}
+	return dso.GenSN(prefix)
 }
