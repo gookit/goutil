@@ -197,14 +197,14 @@ func (do *DateSNOpt) GenSN(prefix string) string {
 	var ext int64
 	if do.EnableSeq {
 		// high concurrency mode: sequence is the main differentiator
-		ext = extNano + do.getSeqValue()
+		ext = extNano + (10000000 + do.getSeqValue())
 	} else {
 		// simple mode: nanosecond timestamp + random
 		randMax := do.RandMax
 		if randMax <= 0 {
 			randMax = 8999
 		}
-		ext = extNano + 1000 + rand.Int63n(int64(randMax)+1)
+		ext = extNano + (10000000 + rand.Int63n(int64(randMax)))
 	}
 
 	// convert extension to target base

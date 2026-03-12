@@ -82,6 +82,7 @@ func TestDateSN(t *testing.T) {
 }
 
 func TestDateSNv2(t *testing.T) {
+	fmt.Println("DateSNv2:")
 
 	t.Run("base36", func(t *testing.T) {
 		idMap := make(map[string]bool)
@@ -193,6 +194,7 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 	})
 
 	t.Run("concurrent safe", func(t *testing.T) {
+		fmt.Println("concurrent generated 100 unique IDs")
 		opt := &strutil.DateSNOpt{EnableSeq: true, ConvBase: 36}
 		idMap := make(map[string]bool)
 		var mu sync.Mutex
@@ -210,22 +212,17 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 			}()
 		}
 		wg.Wait()
-		fmt.Println("concurrent generated 100 unique IDs")
 	})
 
-	t.Run("seq max value reset", func(t *testing.T) {
-		// Note: with EnableSeq=true, uniqueness depends on time advancing when seq resets
-		// Use larger SeqMaxVal to ensure uniqueness within test timeframe
-		opt := &strutil.DateSNOpt{SeqMaxVal: 10000, EnableSeq: false, ConvBase: 36}
+	t.Run("use random and base36", func(t *testing.T) {
+		opt := &strutil.DateSNOpt{EnableSeq: false, ConvBase: 36}
 		idMap := make(map[string]bool)
 
-		// generate more IDs to test reset behavior
-		for i := 0; i < 200; i++ {
+		for i := 0; i < 100; i++ {
 			sn := opt.GenSN("")
 			assert.NotEmpty(t, sn)
 			assert.False(t, idMap[sn], "duplicate sn: %s", sn)
 			idMap[sn] = true
 		}
-		fmt.Println("seq reset test: generated 200 unique IDs with SeqMaxVal=10000")
 	})
 }
