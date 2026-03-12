@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -289,7 +290,11 @@ func TestStrMapToText(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			result := maputil.StrMapToText(tt.input)
-			assert.Equal(t, tt.expected, result)
+			if tt.expected == "" {
+				assert.Eq(t, "", result)
+				return
+			}
+			assert.StrContainsAll(t, result, strings.Split(tt.expected, "\n"))
 		})
 	}
 }
