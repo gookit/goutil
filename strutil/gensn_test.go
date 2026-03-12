@@ -82,26 +82,30 @@ func TestDateSN(t *testing.T) {
 }
 
 func TestDateSNv2(t *testing.T) {
-	fmt.Println("DateSNv2:")
-	idMap := make(map[string]bool)
 
-	for i := 0; i < 100; i++ {
-		no := strutil.DateSNv2("T")
-		assert.False(t, idMap[no])
+	t.Run("base36", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 100; i++ {
+			no := strutil.DateSNv2("T")
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
 
-		idMap[no] = true
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+			idMap[no] = true
+			fmt.Println(no, "len:", len(no))
+			assert.NotEmpty(t, no)
+		}
+	})
 
-	for i := 0; i < 100; i++ {
-		no := strutil.DateSNv2("T", 16)
-		assert.False(t, idMap[no])
+	t.Run("base16", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 100; i++ {
+			no := strutil.DateSNv2("T", 16)
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
 
-		idMap[no] = true
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+			idMap[no] = true
+			fmt.Println(no, "len:", len(no))
+			assert.NotEmpty(t, no)
+		}
+	})
 }
 
 func TestDateSNv3(t *testing.T) {
@@ -109,33 +113,50 @@ func TestDateSNv3(t *testing.T) {
 	no := strutil.DateSNv3("", 8)
 	fmt.Println(no, "len:", len(no))
 
-	fmt.Println("- dateLen=8, base=32:")
-	for i := 0; i < 10; i++ {
-		no = strutil.DateSNv3("T", 8)
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+	t.Run("dateLen8 base32", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 50; i++ {
+			no = strutil.DateSNv3("T", 8)
+			assert.NotEmpty(t, no)
+			fmt.Println(no, "len:", len(no))
 
-	fmt.Println("- dateLen=6, base=36:")
-	for i := 0; i < 6; i++ {
-		no = strutil.DateSNv3("T", 6, 36)
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
+			idMap[no] = true
+		}
+	})
 
-	fmt.Println("- dateLen=6, base=48:")
-	for i := 0; i < 6; i++ {
-		no = strutil.DateSNv3("T", 6, 48)
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+	t.Run("dateLen6 base36", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 60; i++ {
+			no = strutil.DateSNv3("T", 6, 36)
+			fmt.Println(no, "len:", len(no))
+			assert.NotEmpty(t, no)
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
+			idMap[no] = true
+		}
+	})
 
-	fmt.Println("------ dateLen=4, base=62:")
-	for i := 0; i < 6; i++ {
-		no = strutil.DateSNv3("T", 4, 62)
-		fmt.Println(no, "len:", len(no))
-		assert.NotEmpty(t, no)
-	}
+	t.Run("dateLen6 base48", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 60; i++ {
+			no = strutil.DateSNv3("T", 6, 48)
+			fmt.Println(no, "len:", len(no))
+			assert.NotEmpty(t, no)
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
+			idMap[no] = true
+		}
+	})
+
+	t.Run("dateLen4 base62", func(t *testing.T) {
+		idMap := make(map[string]bool)
+		for i := 0; i < 60; i++ {
+			no = strutil.DateSNv3("T", 4, 62)
+			fmt.Println(no, "len:", len(no))
+			assert.NotEmpty(t, no)
+			assert.False(t, idMap[no], "duplicate sn: %s", no)
+			idMap[no] = true
+		}
+	})
 }
 
 func TestDateSNOpt_GenSN(t *testing.T) {

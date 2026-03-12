@@ -1,10 +1,12 @@
 package strutil
 
 import (
+	"fmt"
 	"hash/crc32"
 	"math/rand" // TODO use v2 on 1.22+
 	"os"
 	"strconv"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -120,11 +122,11 @@ func ConfigSNOpt(fn func(opt *DateSNOpt)) {
 func NewDateSNOpt() *DateSNOpt {
 	return &DateSNOpt{
 		Layout:    "20060102150405.000000",
-		RandMax:   999,
+		RandMax:   8999,
 		DateLen:   8,
 		ConvBase:  36,
-		EnableSeq: false,
-		SeqMaxVal: 9999,
+		EnableSeq: true,
+		SeqMaxVal: 8999,
 	}
 }
 
@@ -139,6 +141,27 @@ func (do *DateSNOpt) prepare() {
 	if do.Layout == "" {
 		do.Layout = "20060102150405.000000"
 	}
+	// get sequence max value (default 9999)
+	if do.SeqMaxVal <= 0 {
+		do.SeqMaxVal = 8999
+	}
+}
+
+func (do *DateSNOpt) getSeqValue() int64 {
+	// use atomic sequence for guaranteed uniqueness (even without EnableSeq)
+	// this ensures no collisions in tight loops
+	seq := atomic.AddInt64(&do.globalSeq, 1)
+
+	// auto reset when seq exceeds SeqMaxVal (thread-safe using CAS)
+	if seq > int64(do.SeqMaxVal) {
+		// try to reset to 1, other goroutines may have already done it
+		atomic.CompareAndSwapInt64(&do.globalSeq, seq, 1)
+		seq = seq % int64(do.SeqMaxVal)
+		if seq == 0 {
+			seq = 1
+		}
+	}
+	return 1000 + seq
 }
 
 // GenSN generate date serial number.
@@ -171,38 +194,17 @@ func (do *DateSNOpt) GenSN(prefix string) string {
 	// build extension part using UnixNano for maximum precision
 	extNano := nt.UnixNano()
 
-	// get sequence max value (default 9999)
-	seqMax := do.SeqMaxVal
-	if seqMax <= 0 {
-		seqMax = 9999
-	}
-
-	// use atomic sequence for guaranteed uniqueness (even without EnableSeq)
-	// this ensures no collisions in tight loops
-	seq := atomic.AddInt64(&do.globalSeq, 1)
-
-	// auto reset when seq exceeds SeqMaxVal (thread-safe using CAS)
-	if seq > int64(seqMax) {
-		// try to reset to 1, other goroutines may have already done it
-		atomic.CompareAndSwapInt64(&do.globalSeq, seq, 1)
-		seq = seq % int64(seqMax)
-		if seq == 0 {
-			seq = 1
-		}
-	}
-
 	var ext int64
 	if do.EnableSeq {
 		// high concurrency mode: sequence is the main differentiator
-		ext = extNano + seq
+		ext = extNano + do.getSeqValue()
 	} else {
-		// normal mode: nanosecond timestamp + sequence offset + random
-		// sequence ensures uniqueness, random adds entropy
+		// simple mode: nanosecond timestamp + random
 		randMax := do.RandMax
 		if randMax <= 0 {
-			randMax = 9999
+			randMax = 8999
 		}
-		ext = extNano + seq*int64(randMax+1) + rand.Int63n(int64(randMax)+1)
+		ext = extNano + 1000 + rand.Int63n(int64(randMax)+1)
 	}
 
 	// convert extension to target base
@@ -214,8 +216,25 @@ func (do *DateSNOpt) GenSN(prefix string) string {
 	return string(bs)
 }
 
-// 确保同一时刻生成的编号不重复
-// var globalSeqSnV2 int64 = 0
+// 确保同一时刻生成的编号不重复 max: 89999
+var globalSeqSnV2 int64 = 0
+
+func getSeqValue() int64 {
+	// use atomic sequence for guaranteed uniqueness (even without EnableSeq)
+	// this ensures no collisions in tight loops
+	seq := atomic.AddInt64(&globalSeqSnV2, 1)
+
+	// auto reset when seq exceeds SeqMaxVal (thread-safe using CAS)
+	if seq > 89999 {
+		// try to reset to 1, other goroutines may have already done it
+		atomic.CompareAndSwapInt64(&globalSeqSnV2, seq, 1)
+		seq = seq % 89999
+		if seq == 0 {
+			seq = 1
+		}
+	}
+	return seq
+}
 
 // DateSNv2 generate date serial number.
 //   - 2 < extBase <= 36
@@ -235,17 +254,21 @@ func DateSNv2(prefix string, extBase ...int) string {
 	nt := time.Now()
 	bs = nt.AppendFormat(bs, "20060102150405.000000")
 
-	// rand 10000 - 99999
-	// rs := rand.New(rand.NewSource(nt.UnixNano()))
-	// 6bit micro + 5bit rand
-	ext := strconv.AppendInt(bs[16+pl:], 10000+rand.Int63n(89999), 10)
-
-	base := basefn.FirstOr(extBase, 36)
+	// 6bit micro + 5bit rand 10000 - 99999
+	// ext := strconv.AppendInt(bs[16+pl:], 10000+rand.Int63n(89999), 10)
+	ext := strconv.AppendInt(bs[16+pl:], 10000+getSeqValue(), 10)
 	// prefix + yyyyMMddHHmmss + ext(convert to base)
+	base := basefn.FirstOr(extBase, 36)
 	bs = append(bs[:14+pl], strconv.FormatInt(SafeInt64(string(ext)), base)...)
 
 	return string(bs)
 }
+
+var (
+	// key is dateLen + extBase
+	dsoMap   = make(map[string]*DateSNOpt)
+	dsoMutex sync.RWMutex
+)
 
 // DateSNv3 generate date serial number.
 //   - 2 < extBase <= 64
@@ -258,8 +281,24 @@ func DateSNv2(prefix string, extBase ...int) string {
 //   - prefix=P, dateLen=6, extBase=48, return: P202511k9ksgD1fe6x len: 18
 //   - prefix=P, dateLen=4, extBase=62, return: P2025aZl8N0y58M7 len: 16
 func DateSNv3(prefix string, dateLen int, extBase ...int) string {
-	dso := NewDateSNOpt()
-	dso.DateLen = dateLen
-	dso.ConvBase = basefn.FirstOr(extBase, 36)
-	return dso.GenSN(prefix)
+    baseVal := basefn.FirstOr(extBase, 36)
+    cacheKey := fmt.Sprintf("%d%d", dateLen, baseVal)
+
+    dsoMutex.RLock()
+    dso, ok := dsoMap[cacheKey]
+    dsoMutex.RUnlock()
+
+    if !ok {
+        dsoMutex.Lock()
+        // double check，防止在加锁期间其他 goroutine 已经创建
+        if dso, ok = dsoMap[cacheKey]; !ok {
+            dso = NewDateSNOpt()
+			dso.EnableSeq = true
+            dso.DateLen = dateLen
+            dso.ConvBase = baseVal
+            dsoMap[cacheKey] = dso
+        }
+        dsoMutex.Unlock()
+    }
+    return dso.GenSN(prefix)
 }
