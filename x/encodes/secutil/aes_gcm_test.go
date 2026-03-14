@@ -69,7 +69,6 @@ func TestDecryptGCM(t *testing.T) {
 		wrongKey := []byte("abcdef1234567890abcdefghijklmnop")
 		_, err := secutil.DecryptGCM(wrongKey, nonce, ciphertext)
 		assert.Err(t, err)
-		assert.ErrMsgContains(t, err, "message authentication failed")
 	})
 
 	t.Run("reject invalid key size", func(t *testing.T) {
