@@ -65,6 +65,9 @@ type CFlags struct {
 	// HelpFunc custom help render func
 	HelpFunc func(c *CFlags)
 
+	// AfterFlagParse handler. return false to stop continue run Func.
+	//  - fire on flag options parsed, before binding arguments
+	AfterFlagParse func(c *CFlags) bool
 	// BeforeRun handler for the command. return false to stop run Func.
 	//
 	// TIP: You can do some processing or intercept command execution before running.
@@ -229,11 +232,14 @@ func (c *CFlags) MustParse(args []string) {
 	}
 }
 
+// ErrStopRun error
+var ErrStopRun = errors.New("stop run")
+
 // Parse flags and run command func.
 //
 // If args is nil, will parse os.Args
 //
-//  - will auto handle display help on with --help, -h
+//   - will auto handle display help on with --help, -h
 func (c *CFlags) Parse(args []string) error {
 	if args == nil {
 		args = os.Args[1:]
@@ -264,6 +270,9 @@ func (c *CFlags) Parse(args []string) error {
 		if errors.Is(err, flag.ErrHelp) {
 			c.showHelp(nil)
 			return nil // ignore help error
+		}
+		if errors.Is(err, ErrStopRun) {
+			return nil
 		}
 		return err
 	}
@@ -353,6 +362,11 @@ func (c *CFlags) DoParse(args []string) error {
 	// check option values
 	if err := c.checkBindOpts(); err != nil {
 		return err
+	}
+
+	// fire hook: after flag parse
+	if c.AfterFlagParse != nil && !c.AfterFlagParse(c) {
+		return ErrStopRun
 	}
 
 	return c.bindParsedArgs()

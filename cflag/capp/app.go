@@ -1,7 +1,7 @@
 // Package capp provides a simple command line application build.
 //
-//  - Support add multiple commands
-//  - Support add aliases for command
+//   - Support add multiple commands
+//   - Support add aliases for command
 package capp
 
 import (
@@ -55,10 +55,10 @@ type App struct {
 //
 // Usage:
 //
-//	 app := capp.New(func(app *cflag.App) {})
-//	 app.Name = "mycli"
-//	 app.Version = "0.0.1"
-//	 app.Desc = "mycli is a command line tool"
+//	app := capp.New(func(app *cflag.App) {})
+//	app.Name = "mycli"
+//	app.Version = "0.0.1"
+//	app.Desc = "mycli is a command line tool"
 func New(fns ...func(app *App)) *App {
 	// global flags for app
 	gfs := cflag.NewEmpty(func(cf *cflag.CFlags) {
@@ -68,7 +68,7 @@ func New(fns ...func(app *App)) *App {
 	app := &App{
 		CFlags: gfs,
 		cmds:   make(map[string]*Cmd),
-		cmdAs: make(maputil.Aliases),
+		cmdAs:  make(maputil.Aliases),
 		// with default version
 		Version: "0.0.1",
 		// NameWidth default value
@@ -230,6 +230,9 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 	if err = a.DoParse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return true, nil // ignore help error
+		}
+		if errors.Is(err, cflag.ErrStopRun) {
+			return true, nil
 		}
 	}
 
