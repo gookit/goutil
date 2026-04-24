@@ -64,7 +64,11 @@ func TestIsAbsPath(t *testing.T) {
 	assert.True(t, fsutil.IsAbsPath("/data/some.txt"))
 	assert.False(t, fsutil.IsAbsPath(""))
 	assert.False(t, fsutil.IsAbsPath("some.txt"))
+	assert.False(t, fsutil.IsAbsPath("~/some.txt"))
 	assert.NoErr(t, fsutil.DeleteIfFileExist("/not-exist"))
+
+	assert.True(t, fsutil.IsAbsPath2("/data/some.txt"))
+	assert.True(t, fsutil.IsAbsPath2("~/some.txt"))
 }
 
 func TestGlobMatch(t *testing.T) {

@@ -83,10 +83,21 @@ func IsSymlink(path string) bool {
 	return fi.Mode()&os.ModeSymlink != 0
 }
 
-// IsAbsPath is abs path.
+// IsAbsPath is abs path check
 func IsAbsPath(aPath string) bool {
 	if len(aPath) > 0 {
 		if aPath[0] == '/' {
+			return true
+		}
+		return filepath.IsAbs(aPath)
+	}
+	return false
+}
+
+// IsAbsPath2 is abs path check. if start withs / OR ~, will direct return true.
+func IsAbsPath2(aPath string) bool {
+	if len(aPath) > 0 {
+		if aPath[0] == '/' || aPath[0] == '~' {
 			return true
 		}
 		return filepath.IsAbs(aPath)
