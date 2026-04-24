@@ -17,6 +17,7 @@ import (
 	"strings"
 
 	"github.com/gookit/goutil/errorx"
+	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/strutil"
@@ -185,14 +186,37 @@ func (c *CFlags) addShortcuts(name string, shorts []string) {
 	}
 }
 
-// AddArg binding for command
-func (c *CFlags) AddArg(name, desc string, required bool, value any) {
+// AddArg binding for command, by position
+//
+//	c.AddArg("name", "desc ...")
+//	c.AddArg("name", "desc ...", required: bool)
+//	c.AddArg("name", "desc ...", required: bool, default: any)
+//	c.AddArg("name", "desc ...", required: bool, default: any, isArray: bool)
+func (c *CFlags) AddArg(name, desc string, rdaParams ...any) {
+	var required, isArray bool
+	var defValue any
+	if ln := len(rdaParams); ln > 0 {
+		bVal, err := comfunc.ToBool(rdaParams[0])
+		if err == nil {
+			required = bVal
+		}
+		if ln > 1 { // 2th set default value
+			defValue = rdaParams[1]
+		}
+		if ln > 2 { // 3th set isArrayed
+			if bVal, ok := rdaParams[2].(bool); ok {
+				isArray = bVal
+			}
+		}
+	}
+
 	arg := &FlagArg{
 		Name:  name,
 		Desc:  desc,
-		Value: structs.NewValue(value),
+		Value: structs.NewValue(defValue),
 		// required
 		Required: required,
+		Arrayed:  isArray,
 	}
 
 	c.BindArg(arg)
@@ -416,11 +440,16 @@ func (c *CFlags) bindParsedArgs() error {
 			return errorx.Rawf("argument '%s'(#%d) is required", name, arg.Index)
 		}
 
+		if arg.Arrayed {
+			arg.V = args[arg.Index:]
+			args = nil // clean it
+			break
+		}
 		arg.V = val
 	}
 
 	// collect remain args
-	if lastIdx < argN {
+	if lastIdx <= argN && len(args) > 0 {
 		c.remainArgs = args[lastIdx:]
 	} else {
 		c.remainArgs = args // all args
@@ -429,6 +458,8 @@ func (c *CFlags) bindParsedArgs() error {
 }
 
 // Arg get by bind name
+//
+//	val := c.Arg("name").String()
 func (c *CFlags) Arg(name string) *FlagArg {
 	idx, ok := c.argNames[name]
 	if !ok {

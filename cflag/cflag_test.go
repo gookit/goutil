@@ -135,3 +135,51 @@ func TestCFlags_Parse(t *testing.T) {
 	assert.Eq(t, "[ag1 ag2]", fmt.Sprint(c.RemainArgs()))
 	os.Args = osArgs
 }
+
+func TestCFlags_Parse_bindArgs(t *testing.T) {
+
+	t.Run("one arg", func(t *testing.T) {
+		var str string
+		c := newTestFlag()
+		c.StringVar(&str, "name", "", "this is a str option;false;n")
+		c.AddArg("keyword", "keywords for search repositories")
+		err := c.Parse([]string{"-n", "inhere", "keyword1", "more01"})
+		assert.NoErr(t, err)
+		assert.Eq(t, str, "inhere")
+		assert.Eq(t, c.Arg("keyword").String(), "keyword1")
+		assert.Eq(t, c.RemainArgs(), []string{"more01"})
+	})
+
+	t.Run("more args", func(t *testing.T) {
+		c := newTestFlag()
+		c.AddArg("keyword", "keywords for search repositories")
+		c.AddArg("arg2", "arg 2")
+		err := c.Parse([]string{"keyword1", "more01", "more02"})
+		assert.NoErr(t, err)
+		assert.Eq(t, c.Arg("keyword").String(), "keyword1")
+		assert.Eq(t, c.Arg("arg2").String(), "more01")
+		assert.Eq(t, c.RemainArgs(), []string{"more02"})
+	})
+
+	t.Run("with array args", func(t *testing.T) {
+		var str string
+		c := newTestFlag()
+		c.StringVar(&str, "name", "", "this is a str option;false;n")
+		c.AddArg("keyword", "keywords for search repositories")
+		c.AddArg("extras", "extra search conditions, allow multiple", false, nil, true)
+		err := c.Parse([]string{"-n", "inhere", "keyword1", "more01", "more02"})
+		assert.NoErr(t, err)
+		assert.Eq(t, str, "inhere")
+		assert.Eq(t, c.Arg("keyword").String(), "keyword1")
+		assert.Eq(t, c.Arg("extras").Strings(), []string{"more01", "more02"})
+		assert.Empty(t, c.RemainArgs())
+	})
+
+}
+
+func newTestFlag() *cflag.CFlags {
+	return cflag.New(func(c *cflag.CFlags) {
+		c.Desc = "this is a demo command"
+		c.Version = "0.5.1"
+	})
+}
