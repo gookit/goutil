@@ -11,6 +11,7 @@ import (
 	"hash"
 	"hash/crc32"
 	"hash/crc64"
+	"hash/fnv"
 	"strings"
 
 	"github.com/gookit/goutil/x/encodes"
@@ -120,4 +121,11 @@ func NewHash(algo string) hash.Hash {
 	default:
 		panic("invalid hash algorithm:" + algo)
 	}
+}
+
+// ShortHash 生成 8 位十六进制 FNV-32a hash
+func ShortHash(s string) string {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(s))
+	return fmt.Sprintf("%08x", h.Sum32())
 }

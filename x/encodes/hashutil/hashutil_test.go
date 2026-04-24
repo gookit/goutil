@@ -73,3 +73,7 @@ func TestMd5(t *testing.T) {
 	assert.Eq(t, "ac59075b964b0715", hashutil.ShortMD5("123"))
 	assert.Eq(t, "3cd24fb0d6963f7d", hashutil.ShortMD5("abc"))
 }
+
+func TestShortHash(t *testing.T) {
+	assert.NotEmpty(t, hashutil.ShortHash("abc345"))
+}
