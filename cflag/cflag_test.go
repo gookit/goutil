@@ -154,6 +154,17 @@ func TestCFlags_Parse_bindArgs(t *testing.T) {
 		c := newTestFlag()
 		c.AddArg("keyword", "keywords for search repositories")
 		c.AddArg("arg2", "arg 2")
+		err := c.Parse([]string{"keyword1", "more01"})
+		assert.NoErr(t, err)
+		assert.Eq(t, c.Arg("keyword").String(), "keyword1")
+		assert.Eq(t, c.Arg("arg2").String(), "more01")
+		assert.Empty(t, c.RemainArgs())
+	})
+
+	t.Run("more args2", func(t *testing.T) {
+		c := newTestFlag()
+		c.AddArg("keyword", "keywords for search repositories")
+		c.AddArg("arg2", "arg 2")
 		err := c.Parse([]string{"keyword1", "more01", "more02"})
 		assert.NoErr(t, err)
 		assert.Eq(t, c.Arg("keyword").String(), "keyword1")

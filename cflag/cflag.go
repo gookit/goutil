@@ -192,19 +192,19 @@ func (c *CFlags) addShortcuts(name string, shorts []string) {
 //	c.AddArg("name", "desc ...", required: bool)
 //	c.AddArg("name", "desc ...", required: bool, default: any)
 //	c.AddArg("name", "desc ...", required: bool, default: any, isArray: bool)
-func (c *CFlags) AddArg(name, desc string, rdaParams ...any) {
+func (c *CFlags) AddArg(name, desc string, requireDefaultArrayed ...any) {
 	var required, isArray bool
 	var defValue any
-	if ln := len(rdaParams); ln > 0 {
-		bVal, err := comfunc.ToBool(rdaParams[0])
+	if ln := len(requireDefaultArrayed); ln > 0 {
+		bVal, err := comfunc.ToBool(requireDefaultArrayed[0])
 		if err == nil {
 			required = bVal
 		}
 		if ln > 1 { // 2th set default value
-			defValue = rdaParams[1]
+			defValue = requireDefaultArrayed[1]
 		}
 		if ln > 2 { // 3th set isArrayed
-			if bVal, ok := rdaParams[2].(bool); ok {
+			if bVal, ok := requireDefaultArrayed[2].(bool); ok {
 				isArray = bVal
 			}
 		}
@@ -422,7 +422,7 @@ func (c *CFlags) checkBindOpts() error {
 // desc for command
 func (c *CFlags) bindParsedArgs() error {
 	args := c.Args()
-	argN := len(args) - 1
+	argN := len(args) - 1 // max index
 
 	var lastIdx int
 	for _, arg := range c.bindArgs {
@@ -451,8 +451,10 @@ func (c *CFlags) bindParsedArgs() error {
 	// collect remain args
 	if lastIdx <= argN && len(args) > 0 {
 		c.remainArgs = args[lastIdx:]
-	} else {
+	} else if lastIdx == 0 {
 		c.remainArgs = args // all args
+	} else {
+		c.remainArgs = nil
 	}
 	return nil
 }

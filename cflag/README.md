@@ -208,6 +208,37 @@ func main() {
 }
 ```
 
+### Arguments
+
+```go
+type FlagArg struct {
+	// Name of the argument
+	Name string
+	// Desc arg description
+	Desc string
+	// Required argument
+	Required bool
+	// Arrayed argument. MUST on the last
+	Arrayed bool // support arrayed argument
+}
+```
+
+Binding Arguments:
+
+```go
+	c.AddArg("arg1", "this is arg1")
+	c.AddArg("arg1", "this is arg1", true) // with required
+	c.AddArg("arg2", "this is arg2", false, "default value") // with required and default value
+	c.AddArg("arrayed-arg", "this is array arg", false, nil, true) // is array arg
+```
+
+Get argument value:
+
+```go
+	cliutil.Infoln("arg1 =", c.Arg("arg1").String())
+	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
+```
+
 ### Show commands
 
 ```shell
@@ -224,4 +255,3 @@ go run ./cflag/_example/app.go demo --name inhere --age 333 val0 val1
 ```
 
 ![app-run](_example/app-run.png)
-

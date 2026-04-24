@@ -103,11 +103,26 @@ func main() {
 
 ### 绑定和获取参数
 
-绑定参数信息
+```go
+type FlagArg struct {
+	// Name of the argument
+	Name string
+	// Desc arg description
+	Desc string
+	// Required argument
+	Required bool
+	// Arrayed argument. MUST on the last
+	Arrayed bool // support arrayed argument
+}
+```
+
+绑定参数信息:
 
 ```go
-	c.AddArg("arg1", "this is arg1", true, nil)
-	c.AddArg("arg2", "this is arg2", true, nil)
+	c.AddArg("arg1", "this is arg1")
+	c.AddArg("arg1", "this is arg1", true) // with required
+	c.AddArg("arg2", "this is arg2", false, "default value") // with required and default value
+	c.AddArg("arrayed-arg", "this is array arg", false, nil, true) // is array arg
 ```
 
 获取参数信息
@@ -229,4 +244,3 @@ go run ./cflag/_example/app.go demo --name inhere --age 333 val0 val1
 ```
 
 ![app-run](_example/app-run.png)
-
