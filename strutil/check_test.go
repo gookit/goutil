@@ -86,6 +86,11 @@ func TestIsAlphaNum(t *testing.T) {
 	assert.True(t, strutil.IsAlphaNum('a'))
 	assert.True(t, strutil.IsAlphaNum('Z'))
 	assert.True(t, strutil.IsAlphaNum('z'))
+
+	// IsAllASCII
+	assert.True(t, strutil.IsAllASCII("abc"))
+	assert.True(t, strutil.IsAllASCII("abc "))
+	assert.False(t, strutil.IsAllASCII("abc 你好"))
 }
 
 func TestNoCaseEq(t *testing.T) {

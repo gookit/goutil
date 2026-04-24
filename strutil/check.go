@@ -96,6 +96,16 @@ func IsLower(s string) bool {
 	return true
 }
 
+// IsAllASCII 判断字符串是否全为可打印 ASCII（无中文等多字节字符）
+func IsAllASCII(s string) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] > 0x7E || s[i] < 0x20 {
+			return false
+		}
+	}
+	return true
+}
+
 // StrPos alias of the strings.Index
 func StrPos(s, sub string) int { return strings.Index(s, sub) }
 
