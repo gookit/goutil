@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
@@ -40,6 +41,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			time.Sleep(time.Millisecond)
 		}
 	})
 
@@ -53,6 +55,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			time.Sleep(time.Millisecond)
 		}
 		assert.NotEmpty(t, strutil.MTimeBase36())
 	})
@@ -67,6 +70,7 @@ func TestMicroTimeBaseID(t *testing.T) {
 			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			time.Sleep(time.Millisecond)
 		}
 		assert.NotEmpty(t, strutil.MTimeBase36())
 	})
