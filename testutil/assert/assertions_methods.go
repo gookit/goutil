@@ -1,5 +1,7 @@
 package assert
 
+import "reflect"
+
 // Nil asserts that the given is a nil value
 func (as *Assertions) Nil(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
@@ -39,6 +41,20 @@ func (as *Assertions) Empty(give any, fmtAndArgs ...any) *Assertions {
 func (as *Assertions) NotEmpty(give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = NotEmpty(as.t, give, fmtAndArgs...)
+	return as
+}
+
+// Zero check, please see Zero()
+func (as *Assertions) Zero(give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Zero(as.t, give, fmtAndArgs...)
+	return as
+}
+
+// NotZero check, please see NotZero()
+func (as *Assertions) NotZero(give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NotZero(as.t, give, fmtAndArgs...)
 	return as
 }
 
@@ -91,10 +107,59 @@ func (as *Assertions) ContainsKey(mp, key any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// NotContainsKey asserts that the given map is not contains key
+func (as *Assertions) NotContainsKey(mp, key any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NotContainsKey(as.t, mp, key, fmtAndArgs...)
+	return as
+}
+
+// ContainsKeys asserts that the map is contains all given keys
+func (as *Assertions) ContainsKeys(mp any, keys any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = ContainsKeys(as.t, mp, keys, fmtAndArgs...)
+	return as
+}
+
+// NotContainsKeys asserts that the map is not contains all given keys
+func (as *Assertions) NotContainsKeys(mp any, keys any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NotContainsKeys(as.t, mp, keys, fmtAndArgs...)
+	return as
+}
+
+// ContainsElems asserts that the given list should contain sub elements
+func (as *Assertions) ContainsElems(list any, sub any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = ContainsElemsAny(as.t, list, sub, fmtAndArgs...)
+	return as
+}
+
 // StrContains asserts that the given strings is contains sub-string
 func (as *Assertions) StrContains(s, sub string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = StrContains(as.t, s, sub, fmtAndArgs...)
+	return as
+}
+
+// StrNotContains asserts that the given strings is not contains sub-string
+func (as *Assertions) StrNotContains(s, sub string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = StrNotContains(as.t, s, sub, fmtAndArgs...)
+	return as
+}
+
+// StrContainsAll asserts that the given strings is contains all sub-strings
+func (as *Assertions) StrContainsAll(s string, subs []string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = StrContainsAll(as.t, s, subs, fmtAndArgs...)
+	return as
+}
+
+// StrCount asserts that the given strings contains substring count
+func (as *Assertions) StrCount(s, sub string, count int, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = StrCount(as.t, s, sub, count, fmtAndArgs...)
 	return as
 }
 
@@ -144,6 +209,48 @@ func (as *Assertions) ErrMsg(err error, errMsg string, fmtAndArgs ...any) *Asser
 func (as *Assertions) ErrSubMsg(err error, subMsg string, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = ErrSubMsg(as.t, err, subMsg, fmtAndArgs...)
+	return as
+}
+
+// ErrMsgContains asserts that the given is a not nil error and error message contains subMsg
+func (as *Assertions) ErrMsgContains(err error, subMsg string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = ErrMsgContains(as.t, err, subMsg, fmtAndArgs...)
+	return as
+}
+
+// ErrHasMsg asserts that the given is a not nil error and the error message contains subMsg
+func (as *Assertions) ErrHasMsg(err error, subMsg string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = ErrHasMsg(as.t, err, subMsg, fmtAndArgs...)
+	return as
+}
+
+// FileExists asserts that the given file exists
+func (as *Assertions) FileExists(filePath string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = FileExists(as.t, filePath, fmtAndArgs...)
+	return as
+}
+
+// FileNotExists asserts that the given file not exists
+func (as *Assertions) FileNotExists(filePath string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = FileNotExists(as.t, filePath, fmtAndArgs...)
+	return as
+}
+
+// DirExists asserts that the given dir exists
+func (as *Assertions) DirExists(dirPath string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = DirExists(as.t, dirPath, fmtAndArgs...)
+	return as
+}
+
+// DirNotExists asserts that the given dir not exists
+func (as *Assertions) DirNotExists(dirPath string, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = DirNotExists(as.t, dirPath, fmtAndArgs...)
 	return as
 }
 
@@ -229,10 +336,52 @@ func (as *Assertions) Gte(give, min any, fmtAndArgs ...any) *Assertions {
 	return as
 }
 
+// EqInt asserts that the want should equal to the given intX
+func (as *Assertions) EqInt(want, give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = EqInt(as.t, want, give, fmtAndArgs...)
+	return as
+}
+
+// EqFloat asserts that the want should equal to the given float with delta
+func (as *Assertions) EqFloat(want, give any, delta float64, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = EqFloat(as.t, want, give, delta, fmtAndArgs...)
+	return as
+}
+
+// InDelta asserts that two floating-point values differ within a certain range
+func (as *Assertions) InDelta(want, give any, delta float64, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = InDelta(as.t, want, give, delta, fmtAndArgs...)
+	return as
+}
+
 // IsType type equals assert
 func (as *Assertions) IsType(wantType, give any, fmtAndArgs ...any) *Assertions {
 	as.t.Helper()
 	as.ok = IsType(as.t, wantType, give, fmtAndArgs...)
+	return as
+}
+
+// IsKind asserts that the given data reflect.Kind equals
+func (as *Assertions) IsKind(wantKind reflect.Kind, give any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = IsKind(as.t, wantKind, give, fmtAndArgs...)
+	return as
+}
+
+// Same asserts that two pointers reference the same object
+func (as *Assertions) Same(wanted, actual any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = Same(as.t, wanted, actual, fmtAndArgs...)
+	return as
+}
+
+// NotSame asserts that two pointers do not reference the same object
+func (as *Assertions) NotSame(want, actual any, fmtAndArgs ...any) *Assertions {
+	as.t.Helper()
+	as.ok = NotSame(as.t, want, actual, fmtAndArgs...)
 	return as
 }
 

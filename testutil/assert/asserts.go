@@ -326,6 +326,42 @@ func ContainsElems[T comdef.ScalarType](t TestingT, list, sub []T, fmtAndArgs ..
 	return fail(t, fmt.Sprintf("%#v\nShould contain: %#v", list, sub), fmtAndArgs)
 }
 
+// ContainsElemsAny asserts that the given list should contain sub elements.
+//   - non-generic wrapper for ContainsElems
+func ContainsElemsAny(t TestingT, list, sub any, fmtAndArgs ...any) bool {
+	t.Helper()
+
+	listVal := reflect.ValueOf(list)
+	subVal := reflect.ValueOf(sub)
+
+	if listVal.Kind() != reflect.Slice && listVal.Kind() != reflect.Array {
+		return fail(t, fmt.Sprintf("list is not a slice/array: %T", list), fmtAndArgs)
+	}
+
+	if subVal.Kind() != reflect.Slice && subVal.Kind() != reflect.Array {
+		return fail(t, fmt.Sprintf("sub is not a slice/array: %T", sub), fmtAndArgs)
+	}
+
+	// check all elements in sub are contained in list
+	subLen := subVal.Len()
+	for i := 0; i < subLen; i++ {
+		subElem := subVal.Index(i).Interface()
+		found := false
+		listLen := listVal.Len()
+		for j := 0; j < listLen; j++ {
+			if reflects.IsEqual(listVal.Index(j).Interface(), subElem) {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return fail(t, fmt.Sprintf("%#v\nShould contain: %#v", list, sub), fmtAndArgs)
+		}
+	}
+
+	return true
+}
+
 // StrContains asserts that the given string should contain substring
 func StrContains(t TestingT, s, sub string, fmtAndArgs ...any) bool {
 	if strings.Contains(s, sub) {
@@ -668,8 +704,9 @@ func Gte(t TestingT, give, min any, fmtAndArgs ...any) bool {
 // NOTE: Will always convert to int64 to compare.
 //
 // Example:
-// 	assert.Eq(t, uint(1), int(1)) // false
-// 	assert.EqInt(t, uint(1), int(1)) // true
+//
+//	assert.Eq(t, uint(1), int(1)) // false
+//	assert.EqInt(t, uint(1), int(1)) // true
 func EqInt(t TestingT, want, give any, fmtAndArgs ...any) bool {
 	t.Helper()
 

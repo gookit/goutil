@@ -79,6 +79,7 @@ func fail(t TestingT, failMsg string, fmtAndArgs []any) bool {
 // If it's not, it calls t.FailNow() to terminate the test.
 //
 // Usage:
+//
 //	assert.Must(t, assert.True(false))
 func Must(t TestingT, condition bool, fmtAndArgs ...any) {
 	t.Helper()
@@ -92,6 +93,7 @@ func Must(t TestingT, condition bool, fmtAndArgs ...any) {
 // If it's not, it calls t.FailNow() to terminate the test.
 //
 // Usage:
+//
 //	assert.Require(t, assert.True(false))
 func Require(t TestingT, condition bool, fmtAndArgs ...any) {
 	t.Helper()
@@ -124,4 +126,3 @@ func FailNow(t TestingT, failMsg string, fmtAndArgs ...any) bool {
 	}
 	return false
 }
-
