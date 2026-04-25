@@ -148,6 +148,13 @@ func TestCFlags_Parse_bindArgs(t *testing.T) {
 		assert.Eq(t, str, "inhere")
 		assert.Eq(t, c.Arg("keyword").String(), "keyword1")
 		assert.Eq(t, c.RemainArgs(), []string{"more01"})
+
+		// repeat parse
+		err = c.Parse([]string{"-n", "inhere2"})
+		assert.NoErr(t, err)
+		assert.Eq(t, str, "inhere2")
+		assert.Empty(t, c.Arg("keyword").String())
+		assert.Empty(t, c.RemainArgs())
 	})
 
 	t.Run("more args", func(t *testing.T) {

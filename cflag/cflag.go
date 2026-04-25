@@ -426,6 +426,8 @@ func (c *CFlags) bindParsedArgs() error {
 
 	var lastIdx int
 	for _, arg := range c.bindArgs {
+		// fix: need reset value to default, on repeat parse
+		arg.V = arg.defVal
 		name := arg.Name
 		if arg.Index > argN {
 			if arg.Required {
