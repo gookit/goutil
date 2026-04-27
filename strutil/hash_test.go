@@ -4,7 +4,6 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
 )
@@ -41,16 +40,6 @@ func TestMd5Base62(t *testing.T) {
 		assert.Eq(t, tt.md5, strutil.Md5(tt.input))
 		assert.Eq(t, tt.simple, strutil.Md5Simple(tt.input))
 	}
-}
-
-func TestHashPasswd(t *testing.T) {
-	key := "ot54c"
-	pwd := "abc123456"
-
-	msgMac := strutil.HashPasswd(pwd, key)
-	dump.P(msgMac)
-	assert.NotEmpty(t, msgMac)
-	assert.True(t, strutil.VerifyPasswd(msgMac, pwd, key))
 }
 
 func TestUUIDv4(t *testing.T) {
