@@ -1,8 +1,8 @@
 package termenv
 
 func init() {
-	// terminal supports color OR noColor=true: Don't need to enable virtual process
-	if colorLevel != TermColorNone || noColor {
+	// needVTP=false OR noColor=true: Don't need to enable virtual process
+	if !needVTP || noColor {
 		return
 	}
 
