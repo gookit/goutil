@@ -58,6 +58,10 @@ func TestData_usage(t *testing.T) {
 		assert.Eq(t, uint16(23), mp.Uint16("k1"))
 		assert.Eq(t, uint16(0), mp.Uint16("key_not_exist"))
 		assert.Eq(t, uint16(345), mp.Uint16("key_not_exist", 345))
+		// Uint16 overflow: value > math.MaxUint16 should fall back to default or 0
+		mp["k1big"] = 70000 // 70000 > 65535 = math.MaxUint16
+		assert.Eq(t, uint16(0), mp.Uint16("k1big"))
+		assert.Eq(t, uint16(999), mp.Uint16("k1big", 999))
 
 		// Uint64
 		assert.Eq(t, uint64(23), mp.Uint64("k1"))
