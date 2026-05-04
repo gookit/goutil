@@ -11,6 +11,7 @@ require (
 require (
 	github.com/kr/text v0.1.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/term v0.29.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 )
 
