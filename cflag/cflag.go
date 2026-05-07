@@ -11,7 +11,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -321,7 +320,7 @@ func (c *CFlags) Prepare() error {
 	c.prepared = true
 
 	// dont use flag output.
-	c.SetOutput(io.Discard)
+	// c.SetOutput(io.Discard)
 
 	// parse flag usage string
 	c.VisitAll(func(f *flag.Flag) {
@@ -552,7 +551,7 @@ func (c *CFlags) showHelp(err error) {
 		buf.WriteStr1(strings.Trim(c.Example, "\n"))
 	}
 
-	ccolor.Println(strutil.Replaces(buf.String(), helpVars))
+	ccolor.Fprintln(c.Output(), strutil.Replaces(buf.String(), helpVars))
 }
 
 var optionIndentSpace = "\n" + strings.Repeat("    ", 7)

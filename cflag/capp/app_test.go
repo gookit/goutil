@@ -11,6 +11,7 @@ import (
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/ccolor"
 )
 
 func ExampleNewApp() {
@@ -123,7 +124,7 @@ func TestApp_Run(t *testing.T) {
 
 	// show help2
 	buf := new(bytes.Buffer)
-	app.HelpWriter = buf
+	app.SetOutput(buf)
 	err := app.RunWithArgs([]string{"--help"})
 	assert.NoErr(t, err)
 
@@ -161,6 +162,45 @@ func TestApp_Run_error(t *testing.T) {
 	}))
 
 	assert.ErrMsg(t, app.RunWithArgs([]string{"demo"}), "command run error")
+}
+
+func TestApp_AfterFlagParse(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app := capp.NewWith("myapp", "1.0.2", "this is my cli application")
+	c1 := capp.NewCmd("demo", "this is a demo command")
+	app.Add(c1)
+
+    var showVersion bool
+	app.BoolVar(&showVersion, "version", false, "Show version information;;V")
+
+	var buf bytes.Buffer
+	app.SetOutput(&buf)
+
+	// test: if --version is set, we show version and stop run.
+	app.AfterFlagParse = func(c *capp.CFlags) bool {
+		if showVersion {
+			buf.WriteString("Version: " + app.Version)
+			buf.WriteString("\n")
+			return false
+		}
+		return true
+	}
+
+	t.Run("show help", func(t *testing.T) {
+		err := app.RunWithArgs([]string{"--help"})
+		assert.NoErr(t, err)
+		assert.StrContainsAll(t, buf.String(), []string{"--help", "demo", "This is a demo command"})
+		buf.Reset()
+	})
+
+	t.Run("show version", func(t *testing.T) {
+		err := app.RunWithArgs([]string{"-V"})
+		assert.NoErr(t, err)
+		assert.StrContainsAll(t, buf.String(), []string{"Version: " + app.Version})
+		assert.StrNotContains(t, buf.String(), "--help")
+	})
 }
 
 func TestCmd_Run(t *testing.T) {

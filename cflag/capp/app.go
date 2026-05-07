@@ -8,7 +8,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -21,6 +20,9 @@ import (
 	"github.com/gookit/goutil/x/basefn"
 	"github.com/gookit/goutil/x/ccolor"
 )
+
+// CFlags alias for cflag.CFlags
+type CFlags = cflag.CFlags
 
 // App struct
 type App struct {
@@ -36,7 +38,6 @@ type App struct {
 	Version string
 	// NameWidth max width for command name
 	NameWidth  int
-	HelpWriter io.Writer
 
 	// OnAppFlagParsed hook func
 	OnAppFlagParsed func(app *App) bool
@@ -73,7 +74,6 @@ func New(fns ...func(app *App)) *App {
 		Version: "0.0.1",
 		// NameWidth default value
 		NameWidth:  12,
-		HelpWriter: os.Stdout,
 	}
 
 	return app.WithConfigFn(fns...)
@@ -177,8 +177,13 @@ func (a *App) RunWithArgs(args []string) error {
 	a.init()
 
 	if showHelp, err := a.preRun(args); showHelp {
-		return a.showHelp() // stop run.
+		return a.showHelp() // show help and stop run.
 	} else if err != nil {
+		// manual stop run
+		if errors.Is(err, cflag.ErrStopRun) {
+			cflag.DebugMsg("app flagParse return ErrStopRun, stop continue run.")
+			return  nil
+		}
 		return err
 	}
 
@@ -230,9 +235,6 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 	if err = a.DoParse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return true, nil // ignore help error
-		}
-		if errors.Is(err, cflag.ErrStopRun) {
-			return true, nil
 		}
 	}
 
@@ -308,11 +310,7 @@ func (a *App) showHelp() error {
 		a.AfterHelpBuild(buf)
 	}
 
-	if a.HelpWriter == nil {
-		a.HelpWriter = os.Stdout
-	}
-
-	ccolor.Fprint(a.HelpWriter, buf.ResetAndGet())
+	ccolor.Fprint(a.Output(), buf.ResetAndGet())
 	return nil
 }
 
