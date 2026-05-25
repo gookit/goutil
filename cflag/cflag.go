@@ -489,7 +489,11 @@ func (c *CFlags) helpDesc() string {
 	desc := strutil.UpperFirst(c.Desc)
 
 	if c.Version != "" {
-		desc += "(v" + c.Version + ")"
+		if strings.HasPrefix(c.Version, "v") {
+			desc += "(v" + c.Version[1:] + ")"
+		} else {
+			desc += "(v" + c.Version + ")"
+		}
 	}
 	return desc
 }

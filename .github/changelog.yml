@@ -29,12 +29,12 @@ rules:
   - name: Breaking
     start_withs: [breaking, break]
     contains: ['breaking:', 'break:']
-  - name: Fixed
-    start_withs: [fix]
-    contains: ['fix:']
   - name: Feature
     start_withs: [feat, new]
     contains: [feature, 'feat:']
   - name: Update
     start_withs: [up]
     contains: ['update:', 'up:']
+  - name: Fixed
+    start_withs: [fix]
+    contains: ['fix:']

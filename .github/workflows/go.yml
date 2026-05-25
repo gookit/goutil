@@ -6,6 +6,8 @@ on:
       - '**.go'
       - '**.yml'
   push:
+    branches: # Only trigger branch pushes; tag pushes are ignored.
+      - '**'
     paths:
       - 'go.mod'
       - '**.go'
