@@ -320,6 +320,7 @@ func TestVersionCompare(t *testing.T) {
 
 	assert.True(t, strutil.VersionCompare("1.11", "1.2", ">"))
 	assert.True(t, strutil.VersionCompare("1.11.3", "1.2.34", ">"))
+	assert.True(t, strutil.VersionCompare("v1.7.1-16-gc43a587", "v1.7.1", ">"))
 }
 
 func TestGlobMatch(t *testing.T) {
