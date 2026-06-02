@@ -503,6 +503,58 @@ func TestAnyToStrMap(t *testing.T) {
 	assert.Nil(t, result3)
 }
 
+func TestCloneAnyMap(t *testing.T) {
+	t.Run("clone map string any", func(t *testing.T) {
+		src := map[string]any{"name": "inhere", "age": 30}
+		cloned := maputil.CloneAnyMap(src)
+
+		assert.Eq(t, src, cloned)
+		cloned["name"] = "gookit"
+		cloned["new"] = true
+
+		assert.Eq(t, "inhere", src["name"])
+		assert.NotContainsKey(t, src, "new")
+	})
+
+	t.Run("nil and empty map", func(t *testing.T) {
+		assert.Nil(t, maputil.CloneAnyMap(nil))
+		assert.Nil(t, maputil.CloneAnyMap(map[string]any{}))
+	})
+}
+
+func TestClone(t *testing.T) {
+	t.Run("clone typed map", func(t *testing.T) {
+		src := map[int]string{1: "one", 2: "two"}
+		cloned := maputil.Clone(src)
+
+		assert.Eq(t, src, cloned)
+		cloned[1] = "ONE"
+		cloned[3] = "three"
+
+		assert.Eq(t, "one", src[1])
+		assert.NotContainsKey(t, src, 3)
+	})
+
+	t.Run("clone custom map type", func(t *testing.T) {
+		type strMap map[string]int
+
+		src := strMap{"a": 1, "b": 2}
+		cloned := maputil.Clone(src)
+
+		assert.Eq(t, src, cloned)
+		cloned["a"] = 10
+
+		assert.Eq(t, 1, src["a"])
+	})
+
+	t.Run("nil and empty map", func(t *testing.T) {
+		var nilMap map[string]int
+
+		assert.Nil(t, maputil.Clone(nilMap))
+		assert.Nil(t, maputil.Clone(map[string]int{}))
+	})
+}
+
 func TestSliceToSMap(t *testing.T) {
 	// Test with valid key-value pairs
 	result := maputil.SliceToSMap("k1", "v1", "k2", "v2")
