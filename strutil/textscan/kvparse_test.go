@@ -6,7 +6,7 @@ import (
 	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/errorx"
 	"github.com/gookit/goutil/strutil/textscan"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestKeyValueMatcher_Match(t *testing.T) {

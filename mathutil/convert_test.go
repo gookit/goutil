@@ -8,7 +8,7 @@ import (
 
 	"github.com/gookit/goutil/internal/comfunc"
 	"github.com/gookit/goutil/mathutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestStrictInt(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/maputil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestAliases_AddAlias(t *testing.T) {

@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestUtil_basic(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/errorx"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestErrorR_usage(t *testing.T) {

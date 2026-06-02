@@ -20,7 +20,7 @@ go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
 
 ```text
 /unittest 生成测试
-使用 "github.com/gookit/goutil/testutil/assert" 断言
+使用 "github.com/gookit/goutil/x/assert" 断言
 一个方法如果有多个case，使用 t.Run 方式测试
 ```
 
@@ -30,5 +30,5 @@ go run ./internal/gendoc -o README.zh-CN.md -l zh-CN
 
 ```text
 为 SliceToSMap, SliceToMap, SliceToTypeMap  生成单元测试
-- 测试框架使用 github.com/gookit/goutil/testutil/assert
+- 测试框架使用 github.com/gookit/goutil/x/assert
 ```

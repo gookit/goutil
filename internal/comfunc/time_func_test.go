@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/internal/comfunc"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestIsDuration(t *testing.T) {

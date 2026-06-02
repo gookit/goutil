@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/byteutil"
-	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestRandom(t *testing.T) {

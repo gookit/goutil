@@ -6,8 +6,8 @@ import (
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil"
-	"github.com/gookit/goutil/testutil/assert"
 	"github.com/gookit/goutil/timex"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestGetVersion(t *testing.T) {

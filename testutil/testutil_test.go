@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestDiscardStdout(t *testing.T) {

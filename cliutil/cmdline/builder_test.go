@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/cliutil/cmdline"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestQuote(t *testing.T) {

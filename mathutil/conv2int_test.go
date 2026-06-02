@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/mathutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestToInt(t *testing.T) {

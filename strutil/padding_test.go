@@ -6,7 +6,7 @@ import (
 
 	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestPadding(t *testing.T) {
@@ -42,7 +42,7 @@ func TestResize(t *testing.T) {
 	tests := []struct {
 		want, give string
 		len        int
-		align strutil.PosFlag
+		align      strutil.PosFlag
 	}{
 		{"ab   ", "ab", 5, strutil.PosLeft},
 		{"   ab", "ab", 5, strutil.PosRight},

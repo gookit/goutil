@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil/textutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 var data = map[string]any{

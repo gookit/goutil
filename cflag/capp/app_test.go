@@ -10,7 +10,7 @@ import (
 	"github.com/gookit/goutil/cflag/capp"
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 	"github.com/gookit/goutil/x/ccolor"
 )
 
@@ -172,7 +172,7 @@ func TestApp_AfterFlagParse(t *testing.T) {
 	c1 := capp.NewCmd("demo", "this is a demo command")
 	app.Add(c1)
 
-    var showVersion bool
+	var showVersion bool
 	app.BoolVar(&showVersion, "version", false, "Show version information;;V")
 
 	var buf bytes.Buffer

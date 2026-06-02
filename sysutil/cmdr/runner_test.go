@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/sysutil/cmdr"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestRunner_Run(t *testing.T) {

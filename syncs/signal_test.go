@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/syncs"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestWaitCloseSignals(t *testing.T) {

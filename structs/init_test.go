@@ -7,7 +7,7 @@ import (
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/structs"
 	"github.com/gookit/goutil/testutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestInitDefaults(t *testing.T) {

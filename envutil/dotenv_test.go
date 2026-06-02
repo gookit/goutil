@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/envutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func Test_dotenv(t *testing.T) {

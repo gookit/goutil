@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/errorx/panics"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestIsTrue(t *testing.T) {

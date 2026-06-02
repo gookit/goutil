@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/reflects"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 var testFunc1 = func(a, b int) int {

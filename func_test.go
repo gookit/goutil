@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestFuncName(t *testing.T) {

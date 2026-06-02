@@ -7,7 +7,7 @@ import (
 
 	"github.com/gookit/goutil/envutil"
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestMkdir(t *testing.T) {

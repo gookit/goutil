@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/structs"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestNewValue(t *testing.T) {

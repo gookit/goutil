@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/maputil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestSMap_usage(t *testing.T) {

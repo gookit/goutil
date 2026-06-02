@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/sysutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestUser_func(t *testing.T) {

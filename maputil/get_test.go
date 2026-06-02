@@ -8,7 +8,7 @@ import (
 	"github.com/gookit/goutil/dump"
 	"github.com/gookit/goutil/jsonutil"
 	"github.com/gookit/goutil/maputil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestGetByPath(t *testing.T) {

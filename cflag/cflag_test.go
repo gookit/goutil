@@ -8,7 +8,7 @@ import (
 	"github.com/gookit/goutil/cflag"
 	"github.com/gookit/goutil/cliutil"
 	"github.com/gookit/goutil/errorx"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func Example() {

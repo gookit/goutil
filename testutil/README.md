@@ -12,7 +12,9 @@
 go get github.com/gookit/goutil/testutil
 ```
 
-## [`assert`](./assert) tests
+## assert tests
+
+Use [`x/assert`](../x/assert) for new code. The old [`testutil/assert`](./assert) path remains available for compatibility.
 
 ```go
 package assert_test
@@ -21,7 +23,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/errorx"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestErr(t *testing.T) {
@@ -100,7 +102,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/testutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestNewTestWriter(t *testing.T) {

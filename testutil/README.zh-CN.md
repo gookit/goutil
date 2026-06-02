@@ -7,7 +7,9 @@
 go get github.com/gookit/goutil/testutil
 ```
 
-## [`assert`](./assert) tests
+## assert tests
+
+新代码请使用 [`x/assert`](../x/assert)。旧的 [`testutil/assert`](./assert) 路径会继续保留兼容。
 
 ```go
 package assert_test
@@ -16,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/errorx"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestErr(t *testing.T) {

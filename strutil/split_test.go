@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestBeforeAfter(t *testing.T) {

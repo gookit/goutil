@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestJoinPaths_nw(t *testing.T) {

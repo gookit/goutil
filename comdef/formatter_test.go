@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/comdef"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 // TestFormatter struct

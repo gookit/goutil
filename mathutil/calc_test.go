@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/mathutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestAbs(t *testing.T) {

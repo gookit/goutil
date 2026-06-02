@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/jsonutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 type user struct {

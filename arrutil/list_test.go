@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestInts_methods(t *testing.T) {

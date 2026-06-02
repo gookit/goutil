@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func BenchmarkAnyToString_int(b *testing.B) {

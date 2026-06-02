@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/gookit/goutil/fsutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestMimeType(t *testing.T) {
