@@ -87,3 +87,21 @@ func TestTrimStrings(t *testing.T) {
 	ss = arrutil.TrimStrings([]string{",a", "b.", ",.c,"}, ",", ".")
 	is.Eq("[a b c]", fmt.Sprint(ss))
 }
+
+func TestFirstNonEmptyString(t *testing.T) {
+	t.Run("return first non blank string", func(t *testing.T) {
+		val := arrutil.FirstNonEmptyString("", " \t", " name ", "fallback")
+
+		assert.Eq(t, " name ", val)
+	})
+
+	t.Run("return empty for all blank values", func(t *testing.T) {
+		val := arrutil.FirstNonEmptyString("", " ", "\n")
+
+		assert.Eq(t, "", val)
+	})
+
+	t.Run("return empty for no values", func(t *testing.T) {
+		assert.Eq(t, "", arrutil.FirstNonEmptyString())
+	})
+}
