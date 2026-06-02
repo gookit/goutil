@@ -87,7 +87,7 @@ func callerInfos() []string {
 	skip := 2
 	ss := make([]string, 0, num)
 
-	for i := skip; i < skip+num; i++ {
+	for i := skip; i < skip+12 && len(ss) < num; i++ {
 		pc, file, line, ok := runtime.Caller(i)
 		if !ok {
 			// The breaks below failed to terminate the loop, and we ran off the
@@ -106,7 +106,9 @@ func callerInfos() []string {
 		}
 
 		fcName := fc.Name()
-		if fcName == "testing.tRunner" || strings.Contains(fcName, "goutil/testutil/assert.") {
+		if fcName == "testing.tRunner" ||
+			strings.Contains(fcName, "goutil/x/assert.") ||
+			strings.Contains(fcName, "goutil/testutil/assert.") {
 			continue
 		}
 

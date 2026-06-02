@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 type tCustomTesting struct {
@@ -117,10 +117,10 @@ func TestCommon_fail(t *testing.T) {
 	assert.Nil(tc, 1)
 	str := tc.First()
 	assert.StrContains(t, str, "TestCommon_fail")
-	assert.StrContains(t, str, "goutil/testutil/assert/asserts_test.go:")
+	assert.StrContains(t, str, "goutil/x/assert/asserts_test.go:")
 	assert.StrContains(t, str, "Expected nil, but got:")
 	assert.StrNotContains(t, str, "NOT EXIST")
-	assert.StrContainsAll(t, str, []string{"goutil", "testutil"})
+	assert.StrContainsAll(t, str, []string{"goutil", "x", "assert"})
 	tc.Reset()
 
 	assert.NotNil(tc, nil)
@@ -310,11 +310,11 @@ func TestCommon_fail(t *testing.T) {
 }
 
 func TestFileSystem(t *testing.T) {
-	assert.FileExists(t, "compat.go")
+	assert.FileExists(t, "asserts.go")
 	assert.FileNotExists(t, "testdata/file1.txt")
 
 	// dir
-	assert.DirExists(t, "../_example")
+	assert.DirExists(t, "../../testutil/_example")
 	assert.DirNotExists(t, "testdata/dir1")
 }
 

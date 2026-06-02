@@ -2,8 +2,6 @@
 
 Package assert provides some tool functions for use with the Go testing.
 
-Deprecated: use `github.com/gookit/goutil/x/assert`.
-
 ## Install
 
 ```bash
@@ -12,11 +10,11 @@ go get github.com/gookit/goutil/x/assert
 
 ## GoDocs
 
-Please see [Go docs](https://pkg.go.dev/github.com/gookit/goutil/testutil/assert)
+Please see [Go docs](https://pkg.go.dev/github.com/gookit/goutil/x/assert)
 
 ## Function API
 
-> generate by: `go doc ./testutil/assert`
+> generate by: `go doc ./x/assert`
 
 ```go
 func Contains(t TestingT, src, elem any, fmtAndArgs ...any) bool
