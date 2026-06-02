@@ -2,6 +2,7 @@ package strutil_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/testutil"
@@ -63,6 +64,27 @@ func TestToTime(t *testing.T) {
 	is.Panics(func() {
 		strutil.MustToTime("invalid")
 	})
+}
+
+func TestToTimeIn(t *testing.T) {
+	is := assert.New(t)
+	loc := time.FixedZone("CST", 8*3600)
+
+	tm, err := strutil.ToTimeIn("2018-09-27 12:34:45", loc)
+	is.NoErr(err)
+	is.Eq("2018-09-27 12:34:45 +0800 CST", tm.String())
+
+	tm, err = strutil.ToTimeIn("2018/09/27 12:34", loc, "2006/01/02 15:04")
+	is.NoErr(err)
+	is.Eq("2018-09-27 12:34:00 +0800 CST", tm.String())
+
+	tm, err = strutil.ToTimeIn("2018-09-27 12:34:45", nil)
+	is.NoErr(err)
+	is.Eq(time.Local, tm.Location())
+
+	tm, err = strutil.ToTimeIn("invalid", loc)
+	is.Err(err)
+	is.True(tm.IsZero())
 }
 
 func TestToDuration(t *testing.T) {
