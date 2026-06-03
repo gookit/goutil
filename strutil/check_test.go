@@ -318,6 +318,8 @@ func TestVersionCompare(t *testing.T) {
 	assert.True(t, strutil.VersionCompare("1.0", "2.0", "!="))
 	assert.False(t, strutil.VersionCompare("1.0", "1.0", ""))
 
+	assert.True(t, strutil.VersionCompare("1.2.1", "1.2.1-rc1", ">"))
+	assert.True(t, strutil.VersionCompare("1.2.1-rc2", "1.2.1-rc1", ">"))
 	assert.True(t, strutil.VersionCompare("1.11", "1.2", ">"))
 	assert.True(t, strutil.VersionCompare("1.11.3", "1.2.34", ">"))
 	assert.True(t, strutil.VersionCompare("v1.7.1-16-gc43a587", "v1.7.1", ">"))
