@@ -19,7 +19,7 @@ type tCustomTesting struct {
 func (tc *tCustomTesting) FailNow() {}
 
 // Error logs args to error
-func (tc *tCustomTesting) Error(args ...interface{}) {
+func (tc *tCustomTesting) Error(args ...any) {
 	tc.errs = append(tc.errs, fmt.Sprint(args...))
 }
 
@@ -54,6 +54,8 @@ func TestCommon_success(t *testing.T) {
 	assert.Empty(t, "")
 	assert.Empty(t, nil)
 	assert.NotEmpty(t, "abc")
+	buf := assert.Buffer()
+	assert.NotEmpty(t, buf)
 
 	// eq
 	assert.Eq(t, 1, 1)

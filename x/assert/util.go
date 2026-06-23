@@ -10,12 +10,18 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gookit/goutil/byteutil"
 	"github.com/gookit/goutil/comdef"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/reflects"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/ccolor"
 )
+
+// NewBuffer new byteutil.NewBuffer for testing
+func Buffer() *byteutil.Buffer {
+	return byteutil.NewBuffer()
+}
 
 // isEmpty value check
 func isEmpty(v any) bool {
