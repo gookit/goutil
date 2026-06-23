@@ -97,7 +97,10 @@ func ToTimeIn(s string, loc *time.Location, layouts ...string) (t time.Time, err
 
 		// date string has "/". eg: "2006/01/02 15:04:05"
 		if hasSlashR {
-			layout = strings.Replace(layout, "-", "/", -1)
+			layout = strings.ReplaceAll(layout, "-", "/")
+		}
+		if strLn > 10 && s[10] != ' ' && len(layout) > 10 && layout[10] == ' ' {
+			layout = layout[:10] + string(s[10]) + layout[11:]
 		}
 
 		t, err = time.ParseInLocation(layout, s, loc)
