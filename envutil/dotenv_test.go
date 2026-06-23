@@ -1,6 +1,7 @@
 package envutil_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/gookit/goutil/envutil"
@@ -75,4 +76,27 @@ func Test_Dotenv_notExistFile(t *testing.T) {
 		cfg.Files = []string{"not-exist-file.env"}
 	})
 	assert.NoErr(t, err)
+}
+
+func Test_Dotenv_envPriority(t *testing.T) {
+	const key = "T_APP_ENV"
+
+	t.Run("os env first", func(t *testing.T) {
+		c := envutil.NewDotenv()
+		t.Setenv(key, "local")
+
+		err := c.LoadText("T_APP_ENV=dev")
+		assert.NoErr(t, err)
+		assert.Eq(t, "local", os.Getenv(key))
+	})
+
+	t.Run("dotenv first", func(t *testing.T) {
+		c := envutil.NewDotenv()
+		c.DotenvFirst = true
+		t.Setenv(key, "local")
+
+		err := c.LoadText("T_APP_ENV=dev")
+		assert.NoErr(t, err)
+		assert.Eq(t, "dev", os.Getenv(key))
+	})
 }
