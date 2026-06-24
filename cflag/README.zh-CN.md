@@ -1,15 +1,17 @@
 # cflag
 
-`cflag` - 包装和扩展 Go `flag.FlagSet` 以构建简单的命令行应用程序
+`cflag` 基于 Go 标准库 `flag.FlagSet` 做了一层轻量封装，用于构建小型命令行应用。
 
-- 使用跟 Go `flag` 一样简单
-- 支持自动渲染漂亮的帮助信息
-- 允许为标志选项添加短选项,并且允许多个
-- 允许绑定命名参数
-- 允许设置参数或选项为必须
-- 允许设置参数或选项的验证器
+- 基本使用方式与 Go `flag` 一致
+- 自动渲染更友好的帮助信息
+- 支持短选项别名，且一个选项可配置多个别名
+- 支持必填选项和必填位置参数
+- 支持命名位置参数
+- 支持参数和选项校验器
+- 支持选项出现在位置参数前后
+- 通过 `cflag/capp` 支持多命令应用
 
-> **[EN Readme](README.md)**
+> **[English README](README.md)**
 
 ## 安装
 
@@ -17,219 +19,215 @@
 go get github.com/gookit/goutil/cflag
 ```
 
-## Go docs
+## Go Docs
 
-- [Go docs](https://pkg.go.dev/github.com/gookit/goutil/cflag)
+- [github.com/gookit/goutil/cflag](https://pkg.go.dev/github.com/gookit/goutil/cflag)
+- [github.com/gookit/goutil/cflag/capp](https://pkg.go.dev/github.com/gookit/goutil/cflag/capp)
 
-## 使用
+## 快速开始
 
-例子，代码请看 [_example/cmd.go](_example/cmd.go)
+完整示例见 [_example/cmd.go](_example/cmd.go)。
 
-```go title="cflag/_example/cmd.go"
+```go
 package main
 
 import (
+	"fmt"
+
 	"github.com/gookit/goutil/cflag"
-	"github.com/gookit/goutil/cliutil"
 )
 
 var opts = struct {
-    age  int
-    name string
-    str1 string
-    lOpt string
-    bol  bool
+	age  int
+	name string
+	str1 string
+	lOpt string
 }{}
 
-// go run ./_example/cmd.go
-// go run ./cflag/_example/cmd.go -h
-// go run ./cflag/_example/cmd.go --name inhere --lo val ab cd
 func main() {
 	c := cflag.New(func(c *cflag.CFlags) {
 		c.Desc = "this is a demo command"
 		c.Version = "0.5.1"
 	})
-	c.IntVar(&opts.age, "age", 0, "this is a int option;;a")
+
+	c.IntVar(&opts.age, "age", 0, "this is an int option;;a")
 	c.StringVar(&opts.name, "name", "", "this is a string option and required;true")
 	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
-	c.StringVar(&opts.lOpt, "long-opt", "", "this is a string option with shorts;;lo")
+	c.StringVar(&opts.lOpt, "long-opt", "", "this is a string option with shortcuts;;lo")
 
 	c.AddArg("arg1", "this is arg1", true, nil)
-	c.AddArg("arg2", "this is arg2", true, nil)
+	c.AddArg("arg2", "this is arg2", false, "default value")
 
 	c.Func = func(c *cflag.CFlags) error {
-		cliutil.Magentaln("hello, this is command:", c.Name())
-		cliutil.Infoln("option.age =", opts.age)
-		cliutil.Infoln("option.name =", opts.name)
-		cliutil.Infoln("option.str1 =", opts.str1)
-		cliutil.Infoln("option.lOpt =", opts.lOpt)
-
-		cliutil.Infoln("arg1 =", c.Arg("arg1").String())
-		cliutil.Infoln("arg2 =", c.Arg("arg2").String())
-		cliutil.Infoln("remain args =", c.RemainArgs())
-
+		fmt.Println("command:", c.Name())
+		fmt.Println("option.age:", opts.age)
+		fmt.Println("option.name:", opts.name)
+		fmt.Println("option.str1:", opts.str1)
+		fmt.Println("option.lOpt:", opts.lOpt)
+		fmt.Println("arg1:", c.Arg("arg1").String())
+		fmt.Println("arg2:", c.Arg("arg2").String())
+		fmt.Println("remain args:", c.RemainArgs())
 		return nil
 	}
 
-	// c.MustParse(os.Args[1:])
 	c.MustParse(nil)
 }
 ```
 
-### 设置必须和短选项
+运行：
 
-可以设置选项为 `required` 必填项，并且支持设置 **短选项** 名称。
-
-> TIPs: 通过扩展解析了选项的 `usage` 来实现 `required` 和 `shorts`
-
-#### `usage` 格式
-
-- 默认：`desc`
-- 格式1: `desc;required`
-- 格式2: `desc;required;shorts`
-- `required`: 一个布尔字符串。标记选项是必需的
-  - True: `true,on,yes`
-  - False: `false,off,no,''`
-- `shorts`: 选项的快捷方式名称，允许多值，用逗号 `,` 分隔
-
-**示例**:
-
-```go
-    // set option 'name' is required
-	c.StringVar(&opts.name, "name", "", "this is a string option and required;true")
-    // set option 'str1' shorts: s
-	c.StringVar(&opts.str1, "str1", "def-val", "this is a string option with default value;;s")
+```shell
+go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd
+go run ./cflag/_example/cmd.go ab --name inhere -a 12 --lo val cd
 ```
 
-### 绑定和获取参数
+## 选项
+
+`cflag` 通过扩展标准 flag 的 usage 字符串来配置必填和短选项。
+
+usage 格式：
+
+```text
+desc
+desc;required
+desc;required;shorts
+```
+
+- `desc`: 选项描述
+- `required`: 布尔字符串，例如 `true`、`on`、`yes`、`false`、`off`、`no`
+- `shorts`: 逗号分隔的短选项，例如 `s` 或 `s,short`
+
+示例：
+
+```go
+// 必填选项。
+c.StringVar(&opts.name, "name", "", "user name;true")
+
+// 可选项，设置短选项 "-s"。
+c.StringVar(&opts.str1, "str1", "def-val", "string value;;s")
+
+// 可选项，设置别名 "-lo" 和 "-l"。
+c.StringVar(&opts.lOpt, "long-opt", "", "long option;;lo,l")
+```
+
+## 位置参数
+
+使用 `AddArg` 绑定位置参数。
+
+```go
+c.AddArg("arg1", "this is arg1")
+c.AddArg("arg2", "this is required arg2", true)
+c.AddArg("arg3", "this arg has default value", false, "default value")
+c.AddArg("extras", "array argument, must be the last one", false, nil, true)
+```
+
+按名称读取参数：
+
+```go
+fmt.Println(c.Arg("arg1").String())
+fmt.Println(c.Arg("extras").Strings())
+fmt.Println(c.RemainArgs())
+```
+
+`FlagArg` 字段：
 
 ```go
 type FlagArg struct {
-	// Name of the argument
-	Name string
-	// Desc arg description
-	Desc string
-	// Required argument
+	Name     string
+	Desc     string
 	Required bool
-	// Arrayed argument. MUST on the last
-	Arrayed bool // support arrayed argument
+	Arrayed  bool // 数组参数必须是最后一个绑定的位置参数。
 }
 ```
 
-绑定参数信息:
+## 选项和参数顺序
 
-```go
-	c.AddArg("arg1", "this is arg1")
-	c.AddArg("arg1", "this is arg1", true) // with required
-	c.AddArg("arg2", "this is arg2", false, "default value") // with required and default value
-	c.AddArg("arrayed-arg", "this is array arg", false, nil, true) // is array arg
+对于单命令，选项可以放在位置参数前，也可以放在位置参数后。
+
+下面两条命令等价：
+
+```shell
+mycmd --name inhere -a 12 keyword more
+mycmd keyword --name inhere more -a 12
 ```
 
-获取参数信息
+`--` 会停止选项解析，后面的内容都会作为参数处理：
 
-```go
-	cliutil.Infoln("arg1 =", c.Arg("arg1").String())
-	cliutil.Infoln("arg2 =", c.Arg("arg2").String())
+```shell
+mycmd keyword -- --name inhere
 ```
 
-### 显示帮助信息
+解析结果：
+
+```text
+arg keyword = keyword
+remain args = [--name inhere]
+```
+
+第一个位置参数之前的未知选项仍然会返回 flag 错误。位置参数之后的未知选项如果不是已注册选项，会保留为参数。
+
+## 帮助信息
 
 ```shell
 go run ./cflag/_example/cmd.go -h
 ```
 
-**Output**:
-
 ![cmd-help](_example/cmd-help.png)
 
-### 运行命令
-
-```shell
-go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd
-go run ./cflag/_example/cmd.go --name inhere -a 12 --lo val ab cd de fg
-```
-
-**Output**:
-
-![cmd-run](_example/cmd-run.png)
-
-### `required` 检查
+## 必填检查
 
 ```shell
 go run ./cflag/_example/cmd.go -a 22
 go run ./cflag/_example/cmd.go --name inhere
 ```
 
-**Output**:
-
 ![cmd-required.png](_example/cmd-required.png)
 
+## 多命令应用
 
-## Cli 应用
+使用 `cflag/capp` 可以快速构建多命令应用。
 
-使用 `cflag/capp` 可以快速的构建一个支持多命令的应用.
+完整示例见 [_example/app.go](_example/app.go)。
 
 ```go
 package main
 
 import (
+	"fmt"
+
 	"github.com/gookit/goutil/cflag/capp"
-	"github.com/gookit/goutil/dump"
 )
 
-var c1Opts = struct {
+var demoOpts = struct {
 	age  int
 	name string
 }{}
 
-var c2Opts = struct {
-	str1 string
-	lOpt string
-	bol  bool
-}{}
-
-// go run ./_example/app.go
-// go run ./cflag/_example/app.go -h
-// go run ./cflag/_example/app.go demo -h
 func main() {
 	app := capp.NewApp()
+	app.Name = "myapp"
 	app.Desc = "this is my cli application"
 	app.Version = "1.0.2"
 
-	// go run ./cflag/_example/app.go demo --name inhere --age 333 val0 val1
-	c1 := capp.NewCmd("demo", "this is a demo command")
-	c1.OnAdd = func(c *capp.Cmd) {
-		c.IntVar(&c1Opts.age, "age", 0, "this is a int option;;a")
-		c.StringVar(&c1Opts.name, "name", "", "this is a string option and required;true")
-
-		c.AddArg("arg1", "this is arg1", true, nil)
-		c.AddArg("arg2", "this is arg2", false, nil)
-	}
-	c1.Func = func(c *capp.Cmd) error {
-		dump.P(c1Opts, c.Args())
+	cmd := capp.NewCmd("demo", "this is a demo command")
+	cmd.IntVar(&demoOpts.age, "age", 0, "this is an int option;;a")
+	cmd.StringVar(&demoOpts.name, "name", "", "this is a string option and required;true")
+	cmd.AddArg("arg1", "this is arg1", true, nil)
+	cmd.AddArg("arg2", "this is arg2", false, nil)
+	cmd.Func = func(c *capp.Cmd) error {
+		fmt.Println("age:", demoOpts.age)
+		fmt.Println("name:", demoOpts.name)
+		fmt.Println("arg1:", c.Arg("arg1").String())
+		fmt.Println("arg2:", c.Arg("arg2").String())
 		return nil
 	}
 
-	// add cmd by struct
-	app.Add(&capp.Cmd{
-	  Name: "demo2",
-	  Desc: "this is demo2 command",
-	  Func: func(c *cflag.Cmd) error {
-	    dump.P("hi, on demo2 command")
-	    return nil
-	  },
-	})
-
-	// 可以添加多个命令
-	app.Add(c1)
-
+	app.Add(cmd)
 	app.Run()
 }
 ```
 
-### 显示命令
-
-显示可用命令
+显示命令：
 
 ```shell
 go run ./cflag/_example/app.go -h
@@ -237,10 +235,38 @@ go run ./cflag/_example/app.go -h
 
 ![app-help](_example/app-help.png)
 
-### 运行命令
+运行命令：
 
 ```shell
 go run ./cflag/_example/app.go demo --name inhere --age 333 val0 val1
+go run ./cflag/_example/app.go demo val0 --name inhere val1 --age 333
 ```
 
 ![app-run](_example/app-run.png)
+
+### 全局选项和命令选项
+
+`capp` 只会在命令名称之前解析全局选项。进入具体命令后，命令选项可以出现在命令参数的任意位置。
+
+```shell
+myapp --workdir /tmp demo val0 --name inhere -a 333 val1
+```
+
+解析结果：
+
+```text
+global option: --workdir /tmp
+command: demo
+command options: --name inhere, -a 333
+command args: val0 val1
+```
+
+这样可以避免把命令选项误当成全局选项解析。
+
+在命令参数里使用 `--` 可以停止命令选项解析：
+
+```shell
+myapp demo val0 -- --name inhere
+```
+
+此时 `--name inhere` 会保留在命令参数中。
