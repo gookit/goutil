@@ -88,4 +88,26 @@ func TestStrVarRenderer(t *testing.T) {
 		fmt.Println(text)
 		assert.Eq(t, `call func: 2025-01-01, has params: value, params: [v001 inhere arg002 345]`, text)
 	})
+
+	t.Run("var default value", func(t *testing.T) {
+		text = sv.Render(`name: ${name|guest}, miss: ${not_found | guest}`, vars)
+		assert.Eq(t, `name: inhere, miss: guest`, text)
+	})
+
+	t.Run("typed func call", func(t *testing.T) {
+		sv.SetFunc("sum", func(a, b int) int {
+			return a + b
+		})
+		sv.SetFunc("hello", func(name string) (string, error) {
+			return "hi " + name, nil
+		})
+		sv.SetFuncs(map[string]any{
+			"wrap": func(name string) string {
+				return "[" + name + "]"
+			},
+		})
+
+		text = sv.Render(`sum: ${sum($int_var, 5)}, hello: ${hello($name)}, wrap: ${wrap($name)}`, vars)
+		assert.Eq(t, `sum: 350, hello: hi inhere, wrap: [inhere]`, text)
+	})
 }
