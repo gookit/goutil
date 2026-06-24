@@ -145,27 +145,44 @@ func WrapColorForCode(s string) string {
 const ParseStopMark = "--"
 
 // ReplaceShorts replace shorts to full option. will stop on ParseStopMark
+// The optional stopFn can stop replacement early and mark current option consumes
+// the next arg value. It is used by app-level parsing to avoid rewriting command args.
 //
 // For example:
 //
 //	eg: '-f' -> '--file'.
 //	eg: '-n=tom' -> '--name=tom'.
-func ReplaceShorts(args []string, shortsMap map[string]string) []string {
+func ReplaceShorts(args []string, shortsMap map[string]string, stopFn ...func(string) (bool, bool)) []string {
 	if len(args) == 0 {
 		return args
 	}
 
 	fmtArgs := make([]string, 0, len(args))
+	var stopper func(string) (bool, bool)
+	if len(stopFn) > 0 {
+		stopper = stopFn[0]
+	}
 
-	for i, arg := range args {
-		if arg == "" || arg[0] != '-' || len(arg) > 64 {
-			fmtArgs = append(fmtArgs, arg)
-			continue
-		}
-
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
 		if arg == ParseStopMark {
 			fmtArgs = append(fmtArgs, args[i:]...)
 			break
+		}
+
+		var skipNext bool
+		if stopper != nil {
+			stop, skip := stopper(arg)
+			if stop {
+				fmtArgs = append(fmtArgs, args[i:]...)
+				break
+			}
+			skipNext = skip
+		}
+
+		if arg == "" || arg[0] != '-' || len(arg) > 64 {
+			fmtArgs = append(fmtArgs, arg)
+			continue
 		}
 
 		var handled bool
@@ -189,6 +206,10 @@ func ReplaceShorts(args []string, shortsMap map[string]string) []string {
 
 		if !handled {
 			fmtArgs = append(fmtArgs, arg)
+		}
+		if skipNext && i+1 < len(args) {
+			i++
+			fmtArgs = append(fmtArgs, args[i])
 		}
 	}
 

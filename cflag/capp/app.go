@@ -37,7 +37,7 @@ type App struct {
 	// Version for app
 	Version string
 	// NameWidth max width for command name
-	NameWidth  int
+	NameWidth int
 
 	// OnAppFlagParsed hook func
 	OnAppFlagParsed func(app *App) bool
@@ -73,7 +73,7 @@ func New(fns ...func(app *App)) *App {
 		// with default version
 		Version: "0.0.1",
 		// NameWidth default value
-		NameWidth:  12,
+		NameWidth: 12,
 	}
 
 	return app.WithConfigFn(fns...)
@@ -182,7 +182,7 @@ func (a *App) RunWithArgs(args []string) error {
 		// manual stop run
 		if errors.Is(err, cflag.ErrStopRun) {
 			cflag.DebugMsg("app flagParse return ErrStopRun, stop continue run.")
-			return  nil
+			return nil
 		}
 		return err
 	}
@@ -232,7 +232,7 @@ func (a *App) preRun(args []string) (showHelp bool, err error) {
 	}
 
 	// parse global flags
-	if err = a.DoParse(args); err != nil {
+	if err = a.DoParseStopOnArg(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
 			return true, nil // ignore help error
 		}

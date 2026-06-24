@@ -373,8 +373,24 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 
 // DoParse parse options and validate, collect args. (internal use)
 func (c *CFlags) DoParse(args []string) error {
+	return c.doParse(args, true)
+}
+
+// DoParseStopOnArg parse options and stop at first argument.
+func (c *CFlags) DoParseStopOnArg(args []string) error {
+	return c.doParse(args, false)
+}
+
+func (c *CFlags) doParse(args []string, interspersed bool) error {
 	if len(c.shortcuts) > 0 && len(args) > 0 {
-		args = ReplaceShorts(args, c.shortcuts)
+		if interspersed {
+			args = ReplaceShorts(args, c.shortcuts)
+		} else {
+			args = ReplaceShorts(args, c.shortcuts, c.stopOnFirstArg)
+		}
+	}
+	if interspersed && len(args) > 0 {
+		args = c.interspersedArgs(args)
 	}
 
 	// do parsing
@@ -393,6 +409,84 @@ func (c *CFlags) DoParse(args []string) error {
 	}
 
 	return c.bindParsedArgs()
+}
+
+func (c *CFlags) stopOnFirstArg(arg string) (bool, bool) {
+	fg, hasValue := c.lookupArgFlag(arg)
+	if fg == nil {
+		return arg == "" || arg[0] != '-', false
+	}
+	return false, !hasValue && !isBoolFlag(fg)
+}
+
+func (c *CFlags) interspersedArgs(args []string) []string {
+	opts := make([]string, 0, len(args))
+	rest := make([]string, 0, len(args))
+	seenArg := false
+
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == ParseStopMark {
+			rest = append(rest, args[i+1:]...)
+			break
+		}
+
+		fg, hasValue := c.lookupArgFlag(arg)
+		if fg == nil {
+			if seenArg {
+				rest = append(rest, arg)
+			} else {
+				if arg == "" || arg[0] != '-' {
+					seenArg = true
+					rest = append(rest, arg)
+				} else {
+					opts = append(opts, arg)
+				}
+			}
+			continue
+		}
+
+		opts = append(opts, arg)
+		if !hasValue && !isBoolFlag(fg) && i+1 < len(args) {
+			i++
+			opts = append(opts, args[i])
+		}
+	}
+
+	return append(opts, rest...)
+}
+
+func (c *CFlags) lookupArgFlag(arg string) (*flag.Flag, bool) {
+	if arg == "" || arg == "-" || arg[0] != '-' {
+		return nil, false
+	}
+
+	name := strings.TrimLeft(arg, "-")
+	if name == "" {
+		return nil, false
+	}
+
+	hasValue := false
+	if idx := strings.IndexByte(name, '='); idx >= 0 {
+		name = name[:idx]
+		hasValue = true
+	}
+
+	if c.Lookup(name) == nil {
+		if fullName, ok := c.shortcuts[name]; ok {
+			name = fullName
+		}
+	}
+	return c.Lookup(name), hasValue
+}
+
+type boolFlag interface {
+	IsBoolFlag() bool
+}
+
+func isBoolFlag(fg *flag.Flag) bool {
+	bf, ok := fg.Value.(boolFlag)
+	return ok && bf.IsBoolFlag()
 }
 
 // check bind option flags

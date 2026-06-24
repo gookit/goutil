@@ -193,6 +193,51 @@ func TestCFlags_Parse_bindArgs(t *testing.T) {
 		assert.Empty(t, c.RemainArgs())
 	})
 
+	t.Run("options after args", func(t *testing.T) {
+		var str string
+		var age int
+		c := newTestFlag()
+		c.StringVar(&str, "name", "", "this is a str option;false;n")
+		c.IntVar(&age, "age", 0, "this is an int option;false;a")
+		c.AddArg("keyword", "keywords for search repositories")
+
+		err := c.Parse([]string{"keyword1", "--name", "inhere", "more01", "-a", "23"})
+		assert.NoErr(t, err)
+		assert.Eq(t, "inhere", str)
+		assert.Eq(t, 23, age)
+		assert.Eq(t, "keyword1", c.Arg("keyword").String())
+		assert.Eq(t, []string{"more01"}, c.RemainArgs())
+	})
+
+	t.Run("stop parse mark keeps later options as args", func(t *testing.T) {
+		var str string
+		c := newTestFlag()
+		c.StringVar(&str, "name", "", "this is a str option;false;n")
+		c.AddArg("keyword", "keywords for search repositories")
+
+		err := c.Parse([]string{"keyword1", "--", "--name", "inhere"})
+		assert.NoErr(t, err)
+		assert.Eq(t, "", str)
+		assert.Eq(t, "keyword1", c.Arg("keyword").String())
+		assert.Eq(t, []string{"--name", "inhere"}, c.RemainArgs())
+	})
+
+	t.Run("bool and equals options after args", func(t *testing.T) {
+		var str string
+		var bol bool
+		c := newTestFlag()
+		c.StringVar(&str, "name", "", "this is a str option;false;n")
+		c.BoolVar(&bol, "bool", false, "this is a bool option;false;b")
+		c.AddArg("keyword", "keywords for search repositories")
+
+		err := c.Parse([]string{"keyword1", "--bool", "more01", "--name=inhere"})
+		assert.NoErr(t, err)
+		assert.True(t, bol)
+		assert.Eq(t, "inhere", str)
+		assert.Eq(t, "keyword1", c.Arg("keyword").String())
+		assert.Eq(t, []string{"more01"}, c.RemainArgs())
+	})
+
 }
 
 func newTestFlag() *cflag.CFlags {

@@ -164,6 +164,35 @@ func TestApp_Run_error(t *testing.T) {
 	assert.ErrMsg(t, app.RunWithArgs([]string{"demo"}), "command run error")
 }
 
+func TestApp_Run_cmdOptionsAfterArgs(t *testing.T) {
+	app := capp.NewWith("myapp", "1.0.2", "this is my cli application")
+
+	var global string
+	var verbose bool
+	app.StringVar(&global, "global", "", "this is global option;;a")
+	app.BoolVar(&verbose, "verbose", false, "this is verbose option;;v")
+
+	var cmdOpts = struct {
+		age  int
+		name string
+	}{}
+	cmd := capp.NewCmd("demo", "this is a demo command")
+	cmd.IntVar(&cmdOpts.age, "age", 0, "this is a int option;;a")
+	cmd.StringVar(&cmdOpts.name, "name", "", "this is a string option and required;true")
+	cmd.AddArg("arg1", "this is arg1", true, nil)
+	cmd.AddArg("arg2", "this is arg2", false, nil)
+	app.Add(cmd)
+
+	err := app.RunWithArgs([]string{"-a", "G", "-v", "demo", "val1", "--name", "inhere", "-a", "231", "val2"})
+	assert.NoErr(t, err)
+	assert.Eq(t, "G", global)
+	assert.True(t, verbose)
+	assert.Eq(t, 231, cmdOpts.age)
+	assert.Eq(t, "inhere", cmdOpts.name)
+	assert.Eq(t, "val1", cmd.Arg("arg1").String())
+	assert.Eq(t, "val2", cmd.Arg("arg2").String())
+}
+
 func TestApp_AfterFlagParse(t *testing.T) {
 	ccolor.Disable()
 	defer ccolor.RevertColorSupport()
