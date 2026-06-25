@@ -23,8 +23,9 @@ func TestSetEnvs(t *testing.T) {
 	for key, val := range envMp {
 		assert.Eq(t, val, Getenv(key))
 	}
+	kvPairs := []string{"name", "one", "two"}
 	assert.Panics(t, func() {
-		SetEnvs("name", "one", "two")
+		SetEnvs(kvPairs...)
 	})
 
 	// MustGet
