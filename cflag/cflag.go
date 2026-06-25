@@ -436,7 +436,7 @@ func (c *CFlags) interspersedArgs(args []string) []string {
 			if seenArg {
 				rest = append(rest, arg)
 			} else {
-				if arg == "" || arg[0] != '-' {
+				if arg == "" || arg[0] != '-' || strutil.IsNumeric(arg) {
 					seenArg = true
 					rest = append(rest, arg)
 				} else {
@@ -453,6 +453,9 @@ func (c *CFlags) interspersedArgs(args []string) []string {
 		}
 	}
 
+	if len(rest) > 0 {
+		opts = append(opts, ParseStopMark)
+	}
 	return append(opts, rest...)
 }
 

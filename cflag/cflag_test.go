@@ -238,6 +238,20 @@ func TestCFlags_Parse_bindArgs(t *testing.T) {
 		assert.Eq(t, []string{"more01"}, c.RemainArgs())
 	})
 
+	t.Run("negative number option value and args", func(t *testing.T) {
+		var num int
+		c := newTestFlag()
+		c.IntVar(&num, "num", 0, "this is an int option;false;n")
+		c.AddArg("first", "first number")
+		c.AddArg("second", "second number")
+
+		err := c.Parse([]string{"-5", "--num", "-10", "-6"})
+		assert.NoErr(t, err)
+		assert.Eq(t, -10, num)
+		assert.Eq(t, "-5", c.Arg("first").String())
+		assert.Eq(t, "-6", c.Arg("second").String())
+	})
+
 }
 
 func newTestFlag() *cflag.CFlags {
