@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	// hidden pacakges.
+	// hidden packages.
 	hidden = []string{
 		"basefn",
 		"netutil",

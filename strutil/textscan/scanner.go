@@ -150,7 +150,7 @@ func (s *TextScanner) matchToken(text string) (ok bool) {
 		}
 	}
 
-	// emtpy line, match next valid token
+	// empty line, match next valid token
 	if strings.TrimSpace(text) == "" {
 		ok, text := s.ScanNext()
 		if ok {
