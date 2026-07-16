@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Go SDK
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@v7
         timeout-minutes: 3
         with:
           go-version: ${{ matrix.go_version }}
