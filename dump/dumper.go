@@ -293,7 +293,7 @@ func (d *Dumper) printRValue(t reflect.Type, v reflect.Value) {
 			break // don't print v again
 		}
 
-		// up: special handel time.Time struct
+		// up: special handle time.Time struct
 		if t == timeType {
 			d.printf("time.Time(%s),\n", d.ColorTheme.string(d.fmtTimeValue(v)))
 			break

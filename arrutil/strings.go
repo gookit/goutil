@@ -77,7 +77,7 @@ func StringsRemove(ss []string, s string) []string {
 	})
 }
 
-// StringsFilter given strings, default will filter emtpy string.
+// StringsFilter given strings, default will filter empty string.
 //
 // Usage:
 //
