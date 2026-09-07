@@ -166,6 +166,12 @@ func Substr(s string, pos, length int) string {
 		stopIdx = strLn + length
 	}
 
+	// A negative length can move stopIdx before pos; clamp to avoid an
+	// out-of-range slice.
+	if stopIdx < pos {
+		stopIdx = pos
+	}
+
 	return string(runes[pos:stopIdx])
 }
 

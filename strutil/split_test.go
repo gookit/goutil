@@ -120,6 +120,12 @@ func TestSubstr(t *testing.T) {
 	assert.Eq(t, "", strutil.Substr("abcDEF", 23, 5))
 	assert.Eq(t, "cDEF12", strutil.Substr("abcDEF123", 2, -1))
 	assert.Eq(t, "cDEF", strutil.Substr("abcDEF123", 2, -3))
+
+	// negative length trimming more than the remaining substring must not
+	// panic; it should yield an empty string.
+	assert.Eq(t, "", strutil.Substr("hello", 4, -3))
+	assert.Eq(t, "", strutil.Substr("hello", 3, -5))
+	assert.Eq(t, "", strutil.Substr("abcDEF123", 8, -3))
 }
 
 func TestSplitInlineComment(t *testing.T) {
