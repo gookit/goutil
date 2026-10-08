@@ -10,12 +10,11 @@ import (
 //
 // Usage:
 //
-// 	wg := syncs.WaitGroup{}
+//	wg := syncs.WaitGroup{}
 //	wg.Go(func() {
-// 		time.Sleep(time.Second)
+//		time.Sleep(time.Second)
 //	})
-// 	wg.Wait()
-//
+//	wg.Wait()
 type WaitGroup struct {
 	sync.WaitGroup
 }

@@ -9,39 +9,39 @@ import (
 )
 
 const (
-	SimpleTemplate = `{emoji} [{level}] | {message}`
+	SimpleTemplate  = `{emoji} [{level}] | {message}`
 	DefaultTemplate = `{time} [{level}] | {emoji} {message}`
 )
 
 const (
-	DebugLevel = "debug"
-	InfoLevel = "info"
-	WarnLevel = "warn"
-	ErrorLevel = "error"
-	FatalLevel = "fatal"
-	TraceLevel = "trace"
+	DebugLevel   = "debug"
+	InfoLevel    = "info"
+	WarnLevel    = "warn"
+	ErrorLevel   = "error"
+	FatalLevel   = "fatal"
+	TraceLevel   = "trace"
 	SuccessLevel = "success"
 )
 
 // LevelColorMap 定义日志级别对应的颜色
 var LevelColorMap = map[string]string{
-	DebugLevel: "cyan",
-	InfoLevel: "blue",
-	WarnLevel: "yellow",
-	ErrorLevel: "red",
-	FatalLevel: "red",
-	TraceLevel: "gray",
+	DebugLevel:   "cyan",
+	InfoLevel:    "blue",
+	WarnLevel:    "yellow",
+	ErrorLevel:   "red",
+	FatalLevel:   "red",
+	TraceLevel:   "gray",
 	SuccessLevel: "green",
 }
 
 // LevelEmojiMap 定义日志级别对应的 emoji ⚠️💡
 var LevelEmojiMap = map[string]string{
-	DebugLevel: "🐛",
-	InfoLevel: "ℹ️",
-	WarnLevel: "💡",
-	ErrorLevel: "❌",
-	FatalLevel: "🚨",
-	TraceLevel: "🔍",
+	DebugLevel:   "🐛",
+	InfoLevel:    "ℹ️",
+	WarnLevel:    "💡",
+	ErrorLevel:   "❌",
+	FatalLevel:   "🚨",
+	TraceLevel:   "🔍",
 	SuccessLevel: "🎉",
 }
 

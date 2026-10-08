@@ -128,15 +128,16 @@ func SliceToInt64s(arr []any) []int64 {
 // ToMap convert a list to new map.
 //
 // Example:
-//  type User struct {
-//		Name string
-//		Age  int
-//	}
-//	users := []User{{"Tom", 18}, {"Jack", 20}}
-//	mp := arrutil.ToMap(users, func(u User) (string, int) {
-//		return u.Name, u.Age
-//	})
-//  // mp = map[string]int{"Tom":18, "Jack":20}
+//
+//	 type User struct {
+//			Name string
+//			Age  int
+//		}
+//		users := []User{{"Tom", 18}, {"Jack", 20}}
+//		mp := arrutil.ToMap(users, func(u User) (string, int) {
+//			return u.Name, u.Age
+//		})
+//	 // mp = map[string]int{"Tom":18, "Jack":20}
 func ToMap[T any, K comdef.ScalarType, V any](list []T, mapFn func(T) (K, V)) map[K]V {
 	mp := make(map[K]V, len(list))
 	for _, item := range list {

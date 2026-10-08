@@ -14,8 +14,9 @@ type Clock struct {
 // NewClock create a mock clock instance from layout "2006-01-02 15:04:05"
 //
 // Example:
-// 	tc := NewClock("2023-01-01 12:00:00")
-// 	tc.Add(time.Second * 15)
+//
+//	tc := NewClock("2023-01-01 12:00:00")
+//	tc.Add(time.Second * 15)
 //	ds := tc.Datetime() // "2023-01-01 12:00:15"
 func NewClock(value string) *Clock {
 	nt, err := time.Parse("2006-01-02 15:04:05", value)

@@ -186,8 +186,9 @@ func TextWrap(s string, w int) string { return WidthWrap(s, w) }
 // WidthWrap a string by "\n"
 //
 // Example:
-//	s := "hello 你好, world 世界"
-//  s1 := strutil.TextWrap(s, 6) // "hello \n你好, \nworld \n世界"
+//
+//		s := "hello 你好, world 世界"
+//	 s1 := strutil.TextWrap(s, 6) // "hello \n你好, \nworld \n世界"
 func WidthWrap(s string, w int) string {
 	tmpW := 0
 	out := ""

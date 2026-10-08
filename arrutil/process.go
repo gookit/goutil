@@ -89,14 +89,15 @@ func Map1[T, R any](list []T, mapFn func(t T) R) []R {
 // Column collect sub elements from list. alias of Map func
 //
 // Example:
-//   list := []map[string]any{
-//     {"id": 1, "name": "one", "age": 23},
-//     {"id": 2, "name": "two", "age": 23},
-//     {"id": 3, "name": "three", "age": 23},
-//   }
-//   names := arrutil.Column(list, func(el map[string]any) string {
-//     return el["name"].(string)
-//   })
+//
+//	list := []map[string]any{
+//	  {"id": 1, "name": "one", "age": 23},
+//	  {"id": 2, "name": "two", "age": 23},
+//	  {"id": 3, "name": "three", "age": 23},
+//	}
+//	names := arrutil.Column(list, func(el map[string]any) string {
+//	  return el["name"].(string)
+//	})
 func Column[T any, V any](list []T, mapFn func(obj T) (val V, find bool)) []V {
 	return Map(list, mapFn)
 }
@@ -171,21 +172,22 @@ func Chunk[T any](list []T, size int) [][]T {
 // ChunkBy split slice to chunks by size, and with custom chunk function.
 //
 // Example:
-//   list := []map[string]any{
-//     {"id": 1, "name": "one", "age": 23},
-//     {"id": 2, "name": "two", "age": 23},
-//     {"id": 3, "name": "three", "age": 23},
-//   }
-//   chunks := arrutil.ChunkBy(list, 2, func(el map[string]any) map[string]any {
-//     return map[string]any{
-//       "id": el["id"],
-//       "name": el["name"],
-//     }
-//   })
-// 	Output: [
-// 		[{"id": 1, "name": "one"}, {"id": 2, "name": "two"}],
-// 		[{"id": 3, "name": "three"}]
-// 	]
+//
+//	  list := []map[string]any{
+//	    {"id": 1, "name": "one", "age": 23},
+//	    {"id": 2, "name": "two", "age": 23},
+//	    {"id": 3, "name": "three", "age": 23},
+//	  }
+//	  chunks := arrutil.ChunkBy(list, 2, func(el map[string]any) map[string]any {
+//	    return map[string]any{
+//	      "id": el["id"],
+//	      "name": el["name"],
+//	    }
+//	  })
+//		Output: [
+//			[{"id": 1, "name": "one"}, {"id": 2, "name": "two"}],
+//			[{"id": 3, "name": "three"}]
+//		]
 func ChunkBy[T, R any](list []T, size int, mapFn func(el T) R) [][]R {
 	if size <= 0 {
 		return nil

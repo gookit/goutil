@@ -113,9 +113,10 @@ func InUintRange[T comdef.Uint](val, min, max T) bool {
 // InDelta Check whether two floating-point numbers are equal within a specified margin of error
 //
 // Params:
-//   want - 期望的浮点数值
-//   give - 实际给定的浮点数值
-//   delta - 允许的误差范围
+//
+//	want - 期望的浮点数值
+//	give - 实际给定的浮点数值
+//	delta - 允许的误差范围
 func InDelta[T comdef.Float](want, give T, delta float64) bool {
 	diff := float64(want) - float64(give)
 	if diff < 0 {

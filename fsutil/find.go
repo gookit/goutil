@@ -135,7 +135,7 @@ func FindNameInParentDirs(dirPath, name string, collectFn func(fullPath string),
 }
 
 // FindInParentDirs looks for file/dir in the current directory and parent directories
-//  - MatchFunc custom matcher func. return false to stop find.
+//   - MatchFunc custom matcher func. return false to stop find.
 func FindInParentDirs(dirPath string, matchFunc func(dir string) bool, maxLevel int) {
 	currentLv := 1
 	currentDir := ToAbsPath(dirPath)

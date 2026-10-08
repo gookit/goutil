@@ -3,7 +3,8 @@ package main
 import "github.com/gookit/goutil/dump"
 
 // rum demo:
-// 	go run ./dump/_examples/basic_types.go
+//
+//	go run ./dump/_examples/basic_types.go
 func main() {
 	dump.P(
 		nil, true,

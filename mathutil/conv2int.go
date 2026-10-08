@@ -579,8 +579,8 @@ func StrIntOr(s string, defVal int) int {
 
 // TryStrInt convert string to int, return error on failed.
 //
-//  - empty string will return 0.
-//  - allow float string.
+//   - empty string will return 0.
+//   - allow float string.
 func TryStrInt(s string) (int, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -603,8 +603,8 @@ func TryStrInt(s string) (int, error) {
 
 // TryStrInt64 convert string to int64, return error on failed.
 //
-//  - empty string will return 0.
-//  - allow float string.
+//   - empty string will return 0.
+//   - allow float string.
 func TryStrInt64(s string) (int64, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {
@@ -625,8 +625,8 @@ func TryStrInt64(s string) (int64, error) {
 
 // TryStrUint64 try to convert string to uint64, return error on failed
 //
-//  - empty string will return 0.
-//  - allow float string.
+//   - empty string will return 0.
+//   - allow float string.
 func TryStrUint64(s string) (uint64, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {

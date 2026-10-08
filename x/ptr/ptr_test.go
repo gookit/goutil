@@ -38,4 +38,3 @@ func TestLegacyHelpers(t *testing.T) {
 		t.Fatalf("Bool failed, got: %v", bp)
 	}
 }
-

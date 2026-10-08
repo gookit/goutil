@@ -44,9 +44,9 @@ func StrToBool(s string) (bool, error) {
 
 // FormatWithArgs format message with args
 //
-//  - only one element, format to string
-//  - first is format: fmt.Sprintf(firstElem, fmtAndArgs[1:]...)
-//  - all is args: return fmt.Sprint(fmtAndArgs...)
+//   - only one element, format to string
+//   - first is format: fmt.Sprintf(firstElem, fmtAndArgs[1:]...)
+//   - all is args: return fmt.Sprint(fmtAndArgs...)
 func FormatWithArgs(fmtAndArgs []any) string {
 	ln := len(fmtAndArgs)
 	if ln == 0 {
