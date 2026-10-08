@@ -35,10 +35,19 @@ var (
 	FailFast = xassert.FailFast
 )
 
+// syncConfig copies the compat options into x/assert. It is called by every
+// assertion, so it only writes when a value actually changed: unconditional
+// writes to the package globals race between t.Parallel tests.
 func syncConfig() {
-	xassert.ShowFullPath = ShowFullPath
-	xassert.EnableColor = EnableColor
-	xassert.FailFast = FailFast
+	if xassert.ShowFullPath != ShowFullPath {
+		xassert.ShowFullPath = ShowFullPath
+	}
+	if xassert.EnableColor != EnableColor {
+		xassert.EnableColor = EnableColor
+	}
+	if xassert.FailFast != FailFast {
+		xassert.FailFast = FailFast
+	}
 }
 
 // Deprecated: use github.com/gookit/goutil/x/assert.DisableColor.
