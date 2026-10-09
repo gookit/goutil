@@ -56,7 +56,13 @@ func Utf8len(s string) int { return utf8.RuneCountInString(s) }
 //	RuneCount(str) = utf8.RuneCountInString(s) // 5 按字算
 func RuneCount(s string) int { return len([]rune(s)) }
 
-// RuneWidth of the rune.
+// RuneWidth of the rune: the number of terminal columns it occupies.
+//
+//   - East Asian Wide and Fullwidth runes take 2 columns.
+//   - Control characters, combining marks (Mn, Me) and format characters (Cf,
+//     e.g. zero width joiner) take 0 columns.
+//   - Everything else takes 1 column, including East Asian Ambiguous runes
+//     (é, Greek, Cyrillic, box drawing ─), as modern terminals render them.
 //
 // Example:
 //
@@ -64,15 +70,11 @@ func RuneCount(s string) int { return len([]rune(s)) }
 //	RuneWidth('a') // 1
 //	RuneWidth('\n') // 0
 func RuneWidth(r rune) int {
-	p := width.LookupRune(r)
-	k := p.Kind()
-
-	// eg: "\n"
-	if k == width.Neutral {
+	if unicode.IsControl(r) || unicode.In(r, unicode.Mn, unicode.Me, unicode.Cf) {
 		return 0
 	}
-
-	if k == width.EastAsianFullwidth || k == width.EastAsianWide || k == width.EastAsianAmbiguous {
+	switch width.LookupRune(r).Kind() {
+	case width.EastAsianFullwidth, width.EastAsianWide:
 		return 2
 	}
 	return 1

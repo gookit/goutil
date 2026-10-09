@@ -13,6 +13,22 @@ func TestRuneWidth(t *testing.T) {
 	assert.Eq(t, 2, strutil.RuneWidth('你'))
 	assert.Eq(t, 1, strutil.RuneWidth('a'))
 	assert.Eq(t, 0, strutil.RuneWidth('\n'))
+
+	// fullwidth punctuation and Hangul are wide
+	assert.Eq(t, 2, strutil.RuneWidth('，'))
+	assert.Eq(t, 2, strutil.RuneWidth('한'))
+	// combining marks and format characters take no column
+	assert.Eq(t, 0, strutil.RuneWidth('\u0301'))
+	assert.Eq(t, 0, strutil.RuneWidth('\u200d'))
+	// ambiguous runes render as one column in common terminals
+	assert.Eq(t, 1, strutil.RuneWidth('é'))
+	assert.Eq(t, 1, strutil.RuneWidth('Ж'))
+	assert.Eq(t, 1, strutil.RuneWidth('─'))
+	// neutral runes (e.g. Arabic) take one column
+	assert.Eq(t, 1, strutil.RuneWidth('ع'))
+	assert.Eq(t, 0, strutil.RuneWidth('\t'))
+	// "é" written as e + combining acute, then a wide rune
+	assert.Eq(t, 3, strutil.TextWidth("e\u0301你"))
 }
 
 func TestUtf8Len(t *testing.T) {
