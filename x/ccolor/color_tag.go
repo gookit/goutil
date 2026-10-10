@@ -191,6 +191,9 @@ func ParseTagByEnv(str string) string {
 //	<TAG_NAME>CONTENT</>
 //	// e.g: `<info>message</>`
 //
+// Text that only looks like a tag (e.g. "<provider>/<model>") is kept as is,
+// and a real tag after it is still rendered.
+//
 // TIP: code is from gookit/color package
 //
 //   - Not support custom attributes
@@ -201,28 +204,48 @@ func ParseTag(str string) string {
 		return str
 	}
 
-	// find color tags by regex. str eg: "<fg=white;bg=blue;op=bold>content</>"
-	matched := matchRegex.FindAllStringSubmatch(str, -1)
-
-	// item: 0 full text 1 tag name 2 tag content
-	for _, item := range matched {
-		full, tag, body := item[0], item[1], item[2]
-
-		// use defined color tag name: "<info>content</>" -> tag: "info"
-		if code := colorTags[tag]; len(code) > 0 {
-			str = strings.Replace(str, full, RenderString(code, body), 1)
+	var b strings.Builder
+	b.Grow(len(str) + 32)
+	rest := str
+	for {
+		// loc: full text [0:1], tag name [2:3], tag content [4:5]
+		loc := matchRegex.FindStringSubmatchIndex(rest)
+		if loc == nil {
+			b.WriteString(rest)
+			break
 		}
-	}
 
-	return str
+		code := colorTags[rest[loc[2]:loc[3]]]
+		if code == "" {
+			// unknown tag: keep "<name>" as text and search again after it,
+			// so it cannot swallow a real tag before the next "</>".
+			end := loc[3] + 1
+			b.WriteString(rest[:end])
+			rest = rest[end:]
+			continue
+		}
+
+		b.WriteString(rest[:loc[0]])
+		b.WriteString(RenderString(code, rest[loc[4]:loc[5]]))
+		rest = rest[loc[1]:]
+	}
+	return b.String()
 }
 
-// ClearTag clear-all tag for a string
+// ClearTag clear-all tag for a string: "</>", known color tags and tags with
+// attributes ("<fg=red;op=bold>") are removed; other text in angle brackets,
+// such as "<provider>/<model>", is kept.
 func ClearTag(s string) string {
 	if !strings.Contains(s, "</>") {
 		return s
 	}
-	return stripRegex.ReplaceAllString(s, "")
+	return stripRegex.ReplaceAllStringFunc(s, func(tag string) string {
+		name := strings.Trim(tag, "</>")
+		if name == "" || strings.ContainsAny(name, "=,;") || colorTags[name] != "" {
+			return ""
+		}
+		return tag
+	})
 }
 
 /*************************************************************

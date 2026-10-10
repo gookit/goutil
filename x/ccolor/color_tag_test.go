@@ -71,3 +71,20 @@ def <info>info text
 	s = ccolor.Render()
 	is.Equal("", s)
 }
+
+func TestParseTag_unknownTagKeepsLaterTags(t *testing.T) {
+	ccolor.ForceEnableColor()
+	defer ccolor.RevertColorSupport()
+
+	s := "  <info>--model</> Model, <provider>/<model> or id\n  <info>--no-project-rules</> Skip"
+	got := ccolor.ParseTag(s)
+	assert.Eq(t, "  \x1b[0;32m--model\x1b[0m Model, <provider>/<model> or id\n  \x1b[0;32m--no-project-rules\x1b[0m Skip", got)
+
+	// unknown tag wrapping real content is left untouched
+	assert.Eq(t, "<name>text</>", ccolor.ParseTag("<name>text</>"))
+}
+
+func TestClearTag_keepsPlainAngleText(t *testing.T) {
+	s := "<info>--model</> Model, <provider>/<model> or id <fg=red;op=bold>x</> <>y</info>"
+	assert.Eq(t, "--model Model, <provider>/<model> or id x y", ccolor.ClearTag(s))
+}
