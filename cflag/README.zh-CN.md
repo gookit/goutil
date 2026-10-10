@@ -91,9 +91,11 @@ usage 格式：
 desc
 desc;required
 desc;required;shorts
+desc{[required;shorts]}
 ```
 
 - `desc`: 选项描述
+- `{[...]}`: 放在 usage 末尾显式包裹定义部分，`desc` 中的 `;` 作为正文保留（`;` 写法中每个 `;` 都是分隔符）
 - `required`: 布尔字符串，例如 `true`、`on`、`yes`、`false`、`off`、`no`
 - `shorts`: 逗号分隔的短选项，例如 `s` 或 `s,short`
 
@@ -108,6 +110,9 @@ c.StringVar(&opts.str1, "str1", "def-val", "string value;;s")
 
 // 可选项，设置别名 "-lo" 和 "-l"。
 c.StringVar(&opts.lOpt, "long-opt", "", "long option;;lo,l")
+
+// 描述中含 ';'，并设置别名 "--ro"。
+c.BoolVar(&opts.readOnly, "read-only", false, "disable mutating tools; MCP tools are limited{[;ro]}")
 ```
 
 ## 位置参数

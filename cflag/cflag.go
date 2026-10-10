@@ -34,6 +34,8 @@ import (
 //	cmd.IntVar(&age, "age", 0, "your age;true")
 //	// format2: desc;required;shorts
 //	cmd.IntVar(&age, "age", 0, "your age;true;a")
+//	// format3: desc{[required;shorts]} - the desc may contain ';'
+//	cmd.IntVar(&age, "age", 0, "your age; in years{[true;a]}")
 type CFlags struct {
 	*flag.FlagSet
 	prepared bool
@@ -346,28 +348,42 @@ func (c *CFlags) parseFlagUsage(name, usage string) string {
 	}
 
 	desc := strings.Trim(usage, "; ")
+
+	// FORMAT: desc{[required;shorts]}. The definition is wrapped explicitly,
+	// so a ';' in the desc text stays part of the desc.
+	if strings.HasSuffix(desc, "]}") {
+		if i := strings.LastIndex(desc, "{["); i >= 0 {
+			parts := strutil.SplitNTrimmed(desc[i+2:len(desc)-2], ";", 2)
+			return c.applyUsageMeta(name, opt, strings.TrimSpace(desc[:i]), parts)
+		}
+	}
+
 	if !strings.ContainsRune(desc, ';') {
 		return strutil.UpperFirst(desc)
 	}
 
 	// FORMAT: desc;required;shorts
 	parts := strutil.SplitNTrimmed(desc, ";", 3)
-	if ln := len(parts); ln > 1 {
-		// required
-		if bl, err := strutil.Bool(parts[1]); err == nil && bl {
-			desc = "<red>*</>" + strutil.UpperFirst(parts[0])
-			opt.Required = true
-		} else {
-			desc = strutil.UpperFirst(parts[0])
-		}
+	return c.applyUsageMeta(name, opt, parts[0], parts[1:])
+}
 
-		// shortcuts
-		if ln > 2 && len(parts[2]) > 0 {
-			opt.Shortcuts = SplitShortcut(parts[2])
-			c.addShortcuts(name, opt.Shortcuts)
+// applyUsageMeta applies the definition parts [required, shorts] of a flag
+// usage to opt and returns the display desc.
+func (c *CFlags) applyUsageMeta(name string, opt *FlagOpt, desc string, meta []string) string {
+	desc = strutil.UpperFirst(desc)
+	// required
+	if len(meta) > 0 {
+		if bl, err := strutil.Bool(meta[0]); err == nil && bl {
+			desc = "<red>*</>" + desc
+			opt.Required = true
 		}
 	}
 
+	// shortcuts
+	if len(meta) > 1 && len(meta[1]) > 0 {
+		opt.Shortcuts = SplitShortcut(meta[1])
+		c.addShortcuts(name, opt.Shortcuts)
+	}
 	return desc
 }
 

@@ -1,6 +1,7 @@
 package cflag_test
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"testing"
@@ -259,4 +260,36 @@ func newTestFlag() *cflag.CFlags {
 		c.Desc = "this is a demo command"
 		c.Version = "0.5.1"
 	})
+}
+
+func TestCFlags_wrappedUsageDefinition(t *testing.T) {
+	var opts = struct {
+		readOnly bool
+		name     string
+	}{}
+
+	c := cflag.New(cflag.WithDesc("wrapped definitions"))
+	buf := new(bytes.Buffer)
+	c.SetOutput(buf)
+	// a ';' in the desc text is kept; the definition is inside {[...]}
+	c.BoolVar(&opts.readOnly, "read-only", false, "disable mutating tools; MCP tools are limited{[;ro]}")
+	c.StringVar(&opts.name, "name", "", "user name; full form{[true;n]}")
+
+	assert.NoErr(t, c.Parse([]string{"--ro", "-n", "tom"}))
+	assert.True(t, opts.readOnly)
+	assert.Eq(t, "tom", opts.name)
+
+	// name is required
+	var name string
+	c2 := cflag.New()
+	c2.StringVar(&name, "name", "", "user name; full form{[true;n]}")
+	assert.ErrMsg(t, c2.Parse([]string{}), "flag option 'name' is required")
+
+	buf.Reset()
+	c.ShowHelp()
+	help := buf.String()
+	assert.StrContains(t, help, "--read-only, --ro")
+	assert.StrContains(t, help, "Disable mutating tools; MCP tools are limited")
+	assert.StrContains(t, help, "User name; full form")
+	assert.NotContains(t, help, "{[")
 }

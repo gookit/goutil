@@ -91,9 +91,11 @@ Usage format:
 desc
 desc;required
 desc;required;shorts
+desc{[required;shorts]}
 ```
 
 - `desc`: option description
+- `{[...]}`: wraps the definition explicitly at the end of the usage, so `;` in `desc` stays part of the text (in the `;` forms every `;` is a separator)
 - `required`: bool string, such as `true`, `on`, `yes`, `false`, `off`, `no`
 - `shorts`: comma-separated aliases, such as `s` or `s,short`
 
@@ -108,6 +110,9 @@ c.StringVar(&opts.str1, "str1", "def-val", "string value;;s")
 
 // Optional option with aliases "-lo" and "-l".
 c.StringVar(&opts.lOpt, "long-opt", "", "long option;;lo,l")
+
+// Description with ';' and the alias "--ro".
+c.BoolVar(&opts.readOnly, "read-only", false, "disable mutating tools; MCP tools are limited{[;ro]}")
 ```
 
 ## Positional Arguments
