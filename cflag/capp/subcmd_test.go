@@ -205,7 +205,124 @@ func TestGroupHelp_GroupHelp(t *testing.T) {
 	assert.Nil(t, group.Func)
 }
 
-// T5: the three entries of the group help are consistent.
+// T6 (A2): the group command parses its own options only once.
+func TestSubCmd_RepeatableOptOnce(t *testing.T) {
+	app, group, _, _, opts := newGroupApp()
+
+	var ran bool
+	group.Func = func(c *capp.Cmd) error {
+		ran = true
+		return nil
+	}
+
+	opts.reset()
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "--gname", "tom"}))
+	assert.True(t, ran)
+	assert.Eq(t, []string{"tom"}, opts.gName.Strings())
+}
+
+// T6 (A3): AfterFlagParse only fires once on a group command.
+func TestSubCmd_AfterFlagParseOnce(t *testing.T) {
+	app, group, _, _, _ := newGroupApp()
+
+	count := 0
+	group.AfterFlagParse = func(c *cflag.CFlags) bool {
+		count++
+		return true
+	}
+
+	var ran bool
+	group.Func = func(c *capp.Cmd) error {
+		ran = true
+		return nil
+	}
+
+	// the group runs itself
+	assert.NoErr(t, app.RunWithArgs([]string{"session"}))
+	assert.True(t, ran)
+	assert.Eq(t, 1, count)
+
+	// descend into a sub command
+	count = 0
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "list"}))
+	assert.Eq(t, 1, count)
+}
+
+// T6 (A1/D10): a group command cannot declare positional args, so the sub command
+// name can never be bound as an argument value.
+func TestSubCmd_GroupWithPosArg(t *testing.T) {
+	group := capp.NewCmd("session", "manage sessions")
+	group.AddArg("arg1", "the arg1")
+
+	assert.ErrSubMsg(
+		t,
+		group.AddOrErr(capp.NewCmd("list", "list sessions")),
+		"cannot declare positional args",
+	)
+	assert.False(t, group.HasSubs())
+}
+
+// T6 (A4/P7): the group help works on the reverse registration order too.
+func TestSubCmd_ReverseOrderGroupHelp(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app := capp.NewWith("myapp", "0.0.1", "test app")
+	group := capp.NewCmd("session", "manage sessions")
+	sub := capp.NewCmd("list", "list sessions")
+	// add the sub command to the group at first
+	group.Add(sub)
+	app.Add(group)
+
+	assert.Eq(t, "myapp session list", sub.Path())
+
+	var buf bytes.Buffer
+	group.SetOutput(&buf)
+
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	help := buf.String()
+	assert.StrContainsAll(t, help, []string{
+		"Usage: myapp session SUBCOMMAND",
+		"Commands:",
+		"list",
+	})
+}
+
+// T6 (D2): the group short option and the sub command short option can coexist.
+func TestSubCmd_ShortsNotEaten(t *testing.T) {
+	app, _, _, _, opts := newGroupApp()
+
+	opts.reset()
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-v", "send", "-x", "val", "a1"}))
+	assert.True(t, opts.verbose)
+	assert.Eq(t, "val", opts.x)
+	assert.Eq(t, "a1", opts.arg1)
+}
+
+// T6 (S6): a missing required group option errors before the group help.
+func TestSubCmd_RequiredGroupOpt(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app := capp.NewWith("myapp", "0.0.1", "test app")
+	group := capp.NewCmd("session", "manage sessions")
+
+	var req string
+	group.StringVar(&req, "req", "", "the required option;true")
+	group.Add(capp.NewCmd("list", "list sessions"))
+	app.Add(group)
+
+	var buf bytes.Buffer
+	group.SetOutput(&buf)
+
+	// required option not given
+	err := app.RunWithArgs([]string{"session"})
+	assert.ErrSubMsg(t, err, "flag option 'req' is required")
+
+	// -h first: show the group help
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	assert.StrContains(t, buf.String(), "Commands:")
+}
 func TestGroupHelp_Entries(t *testing.T) {
 	ccolor.Disable()
 	defer ccolor.RevertColorSupport()
