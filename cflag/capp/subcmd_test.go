@@ -14,13 +14,21 @@ import (
 type groupOpts struct {
 	verbose bool
 	names   cflag.Strings
+	gName   cflag.Strings
 	x       string
 	arg1    string
 	calls   []string
 }
 
 func (o *groupOpts) addCall(name string) { o.calls = append(o.calls, name) }
-func (o *groupOpts) reset()              { o.calls = nil }
+
+func (o *groupOpts) reset() {
+	o.calls = nil
+	o.names = nil
+	o.gName = nil
+	o.x, o.arg1 = "", ""
+	o.verbose = false
+}
 
 // newGroupApp build an app with a group command "session" and sub commands "list"(ls) and "send".
 func newGroupApp() (*capp.App, *capp.Cmd, *capp.Cmd, *capp.Cmd, *groupOpts) {
@@ -29,6 +37,7 @@ func newGroupApp() (*capp.App, *capp.Cmd, *capp.Cmd, *capp.Cmd, *groupOpts) {
 
 	group := capp.NewCmd("session", "manage sessions")
 	group.BoolVar(&opts.verbose, "verbose", false, "verbose output;;v")
+	group.Var(&opts.gName, "gname", "the group names option")
 
 	sub1 := capp.NewCmd("list", "list sessions")
 	sub1.Aliases = []string{"ls"}
@@ -194,4 +203,143 @@ func TestGroupHelp_GroupHelp(t *testing.T) {
 		`Use "myapp session SUBCOMMAND --help" for about a command`,
 	})
 	assert.Nil(t, group.Func)
+}
+
+// T4: two level command dispatch.
+func TestSubCmd_Run(t *testing.T) {
+	app, _, _, _, opts := newGroupApp()
+
+	t.Run("run sub command by name", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "list", "--names", "tom"}))
+		assert.Eq(t, []string{"list"}, opts.calls)
+		assert.Eq(t, []string{"tom"}, opts.names.Strings())
+	})
+
+	t.Run("run sub command by alias", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "ls"}))
+		assert.Eq(t, []string{"list"}, opts.calls)
+	})
+
+	t.Run("group option before the sub command name", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "-v", "list"}))
+		assert.True(t, opts.verbose)
+		assert.Eq(t, []string{"list"}, opts.calls)
+	})
+
+	t.Run("group option after the sub command name", func(t *testing.T) {
+		opts.reset()
+		err := app.RunWithArgs([]string{"session", "list", "-v"})
+		assert.ErrSubMsg(t, err, "flag provided but not defined: -v")
+	})
+
+	t.Run("sub command option and argument", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "send", "-x", "val", "the-arg"}))
+		assert.Eq(t, []string{"send"}, opts.calls)
+		assert.Eq(t, "val", opts.x)
+		assert.Eq(t, "the-arg", opts.arg1)
+	})
+
+	t.Run("sub command short option with value", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "send", "-x=val2", "a2"}))
+		assert.Eq(t, "val2", opts.x)
+		assert.Eq(t, "a2", opts.arg1)
+	})
+
+	t.Run("not exists sub command", func(t *testing.T) {
+		err := app.RunWithArgs([]string{"session", "notExists"})
+		assert.ErrMsg(t, err, `command "notExists" not exists in "myapp session"`)
+	})
+
+	t.Run("-- on the app args", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"--", "session", "list"}))
+		assert.Eq(t, []string{"list"}, opts.calls)
+	})
+
+	t.Run("-- on the group args", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "--", "list"}))
+		assert.Eq(t, []string{"list"}, opts.calls)
+	})
+
+	t.Run("-- on the leaf command args", func(t *testing.T) {
+		opts.reset()
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "send", "the-arg", "--", "-x", "val"}))
+		assert.Eq(t, "the-arg", opts.arg1)
+		assert.Eq(t, "", opts.x) // -x is kept as a raw argument
+	})
+
+	t.Run("three level dispatch", func(t *testing.T) {
+		l3App := capp.NewWith("myapp", "0.0.1", "test app")
+		g1 := capp.NewCmd("g1", "group 1")
+		g2 := capp.NewCmd("g2", "group 2")
+
+		var ran string
+		leaf := capp.NewCmd("leaf", "the leaf command", func(c *capp.Cmd) error {
+			ran = "g1 g2 leaf"
+			return nil
+		})
+		g2.Add(leaf)
+		g1.Add(g2)
+		l3App.Add(g1)
+
+		assert.NoErr(t, l3App.RunWithArgs([]string{"g1", "g2", "leaf"}))
+		assert.Eq(t, "g1 g2 leaf", ran)
+		assert.Eq(t, "myapp g1 g2 leaf", leaf.Path())
+	})
+}
+
+// T4: the app hooks only fire on the command that really runs.
+func TestSubCmd_Hooks(t *testing.T) {
+	app, group, _, _, opts := newGroupApp()
+
+	var beforeCalls, afterCalls []string
+	var beforeArgs []string
+	app.BeforeRun = func(c *capp.Cmd, cmdArgs []string) bool {
+		beforeCalls = append(beforeCalls, c.Name)
+		beforeArgs = cmdArgs
+		return true
+	}
+	app.AfterRun = func(c *capp.Cmd, err error) {
+		afterCalls = append(afterCalls, c.Name)
+	}
+
+	t.Run("leaf command", func(t *testing.T) {
+		beforeCalls, afterCalls = nil, nil
+		opts.reset()
+
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "list", "--names", "tom"}))
+		assert.Eq(t, []string{"list"}, beforeCalls)
+		assert.Eq(t, []string{"list"}, afterCalls)
+		assert.Eq(t, []string{"--names", "tom"}, beforeArgs)
+	})
+
+	t.Run("descend into a sub command", func(t *testing.T) {
+		beforeCalls, afterCalls = nil, nil
+		opts.reset()
+
+		assert.NoErr(t, app.RunWithArgs([]string{"session", "ls"}))
+		assert.Eq(t, []string{"list"}, beforeCalls)
+		assert.Eq(t, []string{"list"}, afterCalls)
+	})
+
+	t.Run("group command runs itself", func(t *testing.T) {
+		var ran bool
+		group.Func = func(c *capp.Cmd) error {
+			ran = true
+			return nil
+		}
+		defer func() { group.Func = nil }()
+
+		beforeCalls, afterCalls = nil, nil
+		assert.NoErr(t, app.RunWithArgs([]string{"session"}))
+		assert.True(t, ran)
+		assert.Eq(t, []string{"session"}, beforeCalls)
+		assert.Eq(t, []string{"session"}, afterCalls)
+	})
 }
