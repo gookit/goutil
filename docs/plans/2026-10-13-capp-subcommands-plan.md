@@ -2,6 +2,7 @@
 # capp 两级子命令支持实施计划
 
 > 状态：Draft 0.2 / 待人工计划批准
+> 实施进度：T1–T8 已全部完成（2026-10-13），对应提交 `a2811a9`…`c926560`；另有一项计划外的独立修复 `17e1775`（命令描述空值安全 + 命令帮助跟随 app 输出）。
 
 ## 修订记录
 
@@ -98,7 +99,7 @@
 
 workspace baseline（2026-10-13 实测）：
 
-- Git root：`D:/work/inhere/my-tools-dev/gookit2/goutil`（独立仓库，本计划的唯一 Git 边界）；branch `master`；HEAD `b29ee8c`。
+- Git root：本仓库根（工作区内的 `gookit2/goutil`，独立 Git 仓库，本计划的唯一 Git 边界）；branch `master`；HEAD `b29ee8c`。
 - HEAD 说明：设计文档盘点时记录的是代码 HEAD `068984d`；`b29ee8c` 只多出设计文档提交，`cflag` 代码未变（T1 复核）。
 - `git status --short` 为空：无 in-scope dirty/untracked，无需要保留的无关 dirty 路径。
 - 工具链：`go1.25.10 windows/amd64`；`goutil` 不在任何 `go.work` 中（工作区内的 `go.work` 只在 `gookit/clitools`、`gookit2/gcli`）。
