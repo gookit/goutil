@@ -145,11 +145,18 @@ func ToDuration(s string) (time.Duration, error) { return comfunc.ToDuration(s) 
 // TryToTime parse a date string or duration string to time.Time.
 //
 // if s is empty, return zero time.
+// if s is "now" or a duration string, it is relative to the bt(base time).
+// if bt is zero time, will use time.Now() as base time.
 func TryToTime(s string, bt time.Time) (time.Time, error) {
 	if s == "" {
 		return ZeroTime, nil
 	}
+
 	if s == "now" {
+		// TIP: honor the given base time, like the "0" and duration strings below.
+		if !bt.IsZero() {
+			return bt, nil
+		}
 		return time.Now(), nil
 	}
 

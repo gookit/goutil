@@ -98,6 +98,14 @@ func TestTryToTime(t *testing.T) {
 		assert.Eq(t, item.out, timex.Format(tt), "in=%s", item.in)
 	}
 
+	// NOTE: "now" and "0" should use the given base time, no wall-clock reads.
+	fixed := time.Date(2020, 1, 2, 3, 4, 5, 0, time.Local)
+	for _, in := range []string{"now", "0"} {
+		tt, err := timex.TryToTime(in, fixed)
+		assert.NoErr(t, err)
+		assert.Eq(t, "2020-01-02 03:04:05", timex.Format(tt), "in=%s", in)
+	}
+
 	bt := timex.ZeroTime
 	assert.True(t, bt.IsZero())
 	assert.Neq(t, 0, bt.Unix())
@@ -171,13 +179,17 @@ func TestParseRange(t *testing.T) {
 	t.Run("keyword now", func(t *testing.T) {
 		start, end, err := timex.ParseRange("now", nil)
 		assert.NoError(t, err)
-		assert.Eq(t, timex.Now().Unix(), start.Unix())
+		// NOTE: the parse uses its own time.Now() as base time. allow a 1s wall-clock tick
+		// between the parse and the check here, to avoid a boundary flake.
+		assert.Lte(t, timex.Now().Unix()-start.Unix(), int64(1))
+		assert.Gte(t, timex.Now().Unix()-start.Unix(), int64(0))
 		assert.Eq(t, timex.ZeroUnix, end.Unix())
 
 		start, end, err = timex.ParseRange("~now", nil)
 		assert.NoError(t, err)
 		assert.Eq(t, timex.ZeroUnix, start.Unix())
-		assert.Eq(t, timex.Now().Unix(), end.Unix())
+		assert.Lte(t, timex.Now().Unix()-end.Unix(), int64(1))
+		assert.Gte(t, timex.Now().Unix()-end.Unix(), int64(0))
 	})
 
 	t.Run("keyword today", func(t *testing.T) {

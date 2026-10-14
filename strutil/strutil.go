@@ -83,6 +83,9 @@ func Valid(ss ...string) string {
 //   - substr The substring to search for
 //   - params[0] The rune offset where to start counting.
 //   - params[1] The maximum number of runes after the specified offset to search.
+//
+// NOTE: the offset is a rune index, not a byte index. Like Substr(), an offset at or
+// after the end of the string gives an empty range, so the count is 0.
 func SubstrCount(s, substr string, params ...uint64) (int, error) {
 	larg := len(params)
 	hasArgs := larg != 0
@@ -94,13 +97,16 @@ func SubstrCount(s, substr string, params ...uint64) (int, error) {
 	}
 
 	runes := []rune(s)
-	strlen := len(runes)
-	if params[0] > uint64(strlen) {
-		return 0, errors.New("offset exceeds string length")
+	runeCount := len(runes)
+	// same boundary convention as Substr(). it also keeps the uint64 -> int
+	// conversion below in range, on all platforms.
+	if params[0] >= uint64(runeCount) {
+		return strings.Count("", substr), nil
 	}
+
 	offset := int(params[0])
-	end := strlen
-	if larg == 2 && params[1] < uint64(strlen-offset) {
+	end := runeCount
+	if larg == 2 && params[1] < uint64(runeCount-offset) {
 		end = offset + int(params[1])
 	}
 

@@ -98,9 +98,13 @@ func TestSubstrCountRuneRanges(t *testing.T) {
 		{"end offset", "你好", "好", []uint64{2}, 0, false},
 		{"empty string", "", "x", []uint64{0}, 0, false},
 		{"empty substring", "你好", "", []uint64{1, 1}, 2, false},
-		{"invalid offset", "abc", "a", []uint64{4}, 0, true},
-		{"overflowing offset", "abc", "a", []uint64{^uint64(0)}, 0, true},
+		// NOTE: like Substr(), an offset at or after the end gives an empty range.
+		{"offset past end", "abc", "a", []uint64{4}, 0, false},
+		{"overflowing offset", "abc", "a", []uint64{^uint64(0)}, 0, false},
+		{"offset at end, empty substr", "abc", "", []uint64{3}, 1, false},
+		{"offset past end, empty substr", "abc", "", []uint64{9}, 1, false},
 		{"overflowing length", "abcabc", "abc", []uint64{3, ^uint64(0)}, 1, false},
+		{"too many params", "abc", "a", []uint64{1, 2, 3}, 0, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := strutil.SubstrCount(tc.text, tc.substr, tc.params...)
