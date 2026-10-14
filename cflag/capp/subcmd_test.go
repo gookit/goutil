@@ -205,7 +205,90 @@ func TestGroupHelp_GroupHelp(t *testing.T) {
 	assert.Nil(t, group.Func)
 }
 
-// T4: two level command dispatch.
+// T5: the three entries of the group help are consistent.
+func TestGroupHelp_Entries(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app, group, _, _, _ := newGroupApp()
+
+	var buf bytes.Buffer
+	app.SetOutput(&buf)
+	group.SetOutput(&buf)
+
+	// 1) by -h
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	helpByFlag := buf.String()
+
+	// 2) by the help keyword
+	buf.Reset()
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "help"}))
+	helpByKeyword := buf.String()
+
+	// 3) by no positional args
+	buf.Reset()
+	assert.NoErr(t, app.RunWithArgs([]string{"session"}))
+	helpByEmpty := buf.String()
+
+	assert.Eq(t, helpByFlag, helpByKeyword)
+	assert.Eq(t, helpByFlag, helpByEmpty)
+
+	// with the LongHelp and Example
+	group.LongHelp = "this is a long help text"
+	group.Example = "myapp session list"
+
+	buf.Reset()
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	help := buf.String()
+	assert.StrContainsAll(t, help, []string{"Help:", "this is a long help text", "Examples:", "myapp session list"})
+}
+
+// T5: the leaf command help is not affected.
+func TestGroupHelp_LeafHelp(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app, _, sub1, _, _ := newGroupApp()
+
+	var buf bytes.Buffer
+	app.SetOutput(&buf)
+	sub1.SetOutput(&buf)
+
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "list", "-h"}))
+
+	help := buf.String()
+	assert.StrContainsAll(t, help, []string{
+		"List sessions (alias: ls)",
+		"Usage: list [--Options...] [...Arguments]",
+		"--names",
+		"--help, -h",
+	})
+	assert.StrNotContains(t, help, "SUBCOMMAND")
+}
+
+// T5: the top help lists the group command as a normal command.
+func TestGroupHelp_TopHelp(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app, _, _, _, _ := newGroupApp()
+
+	var buf bytes.Buffer
+	app.SetOutput(&buf)
+
+	assert.NoErr(t, app.RunWithArgs([]string{"--help"}))
+
+	help := buf.String()
+	assert.StrContainsAll(t, help, []string{
+		"Commands:",
+		"session",
+		"Manage sessions",
+		`Use "myapp COMMAND --help" for about a command`,
+	})
+	// the sub commands are not listed on the top help
+	assert.StrNotContains(t, help, "list")
+	assert.StrNotContains(t, help, "SUBCOMMAND")
+}
 func TestSubCmd_Run(t *testing.T) {
 	app, _, _, _, opts := newGroupApp()
 
