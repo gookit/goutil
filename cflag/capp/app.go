@@ -10,11 +10,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/gookit/goutil/cflag"
-	"github.com/gookit/goutil/maputil"
 	"github.com/gookit/goutil/mathutil"
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/basefn"
@@ -28,9 +26,7 @@ type CFlags = cflag.CFlags
 type App struct {
 	*cflag.CFlags // save global flags
 	// added commands
-	names []string
-	cmds  map[string]*Cmd
-	cmdAs maputil.Aliases
+	commands *cmdSet
 
 	Name string
 	Desc string
@@ -67,13 +63,12 @@ func New(fns ...func(app *App)) *App {
 	})
 
 	app := &App{
-		CFlags: gfs,
-		cmds:   make(map[string]*Cmd),
-		cmdAs:  make(maputil.Aliases),
+		CFlags:   gfs,
+		commands: newCmdSet(),
 		// with default version
 		Version: "0.0.1",
 		// NameWidth default value
-		NameWidth: 12,
+		NameWidth: defaultNameWidth,
 	}
 
 	return app.WithConfigFn(fns...)
@@ -129,31 +124,15 @@ func (a *App) AddOrErr(cmds ...*Cmd) error {
 }
 
 func (a *App) addCmd(c *Cmd) error {
-	ln := len(c.Name)
-	if ln == 0 {
-		return errors.New("command name cannot be empty")
+	// NOTE: a command can only belong to one app.
+	c.setApp(a)
+
+	if err := a.commands.add(c); err != nil {
+		return err
 	}
 
-	if _, ok := a.cmds[c.Name]; ok {
-		return fmt.Errorf("command name %s has been exists", c.Name)
-	}
-
-	a.names = append(a.names, c.Name)
-	a.cmds[c.Name] = c
-
-	// add aliases
-	if len(c.Aliases) > 0 {
-		ln += len(strings.Join(c.Aliases, ", ")) + 4
-		a.cmdAs.AddAliases(c.Name, c.Aliases)
-	}
-	a.NameWidth = mathutil.MaxInt(a.NameWidth, ln)
-
-	// attach handle func
-	c.initCmd()
-
-	if c.OnAdd != nil {
-		c.OnAdd(c)
-	}
+	// sync the exported NameWidth with the added command
+	a.NameWidth = mathutil.MaxInt(a.NameWidth, a.commands.nameLen(c))
 	return nil
 }
 
@@ -205,17 +184,78 @@ func (a *App) RunWithArgs(args []string) error {
 		return fmt.Errorf("input not exists command %q", args[0])
 	}
 
-	cmdArgs := args[1:]
-	if a.BeforeRun != nil && !a.BeforeRun(cmd, cmdArgs) {
+	// parse command flags and execute func.
+	return a.runCmd(cmd, args[1:])
+}
+
+// runCmd run the command by args. will descend into the sub commands.
+func (a *App) runCmd(c *Cmd, args []string) error {
+	// leaf command: same as before
+	if !c.HasSubs() {
+		return a.execCmd(c, args, func() error { return c.Parse(args) })
+	}
+
+	// group command: parse its own options, stop on first argument.
+	//
+	// NOTE: only parse once. parse again will make the repeatable flags append twice.
+	if err := c.Prepare(); err != nil {
+		return err
+	}
+
+	if err := c.DoParseStopOnArg(args); err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			c.ShowHelp()
+			return nil
+		}
+		if errors.Is(err, cflag.ErrStopRun) {
+			return nil
+		}
+		return err
+	}
+
+	// TIP: not RemainArgs(). AddArg on a group command will bind the sub command name.
+	posArgs := c.Args()
+	if len(posArgs) > 0 {
+		if isHelp(posArgs[0]) { // help is a reserved name
+			c.ShowHelp()
+			return nil
+		}
+
+		sub, ok := c.subs.find(posArgs[0])
+		if !ok {
+			return fmt.Errorf("command %q not exists in %q", posArgs[0], c.Path())
+		}
+		return a.runCmd(sub, posArgs[1:])
+	}
+
+	// no positional args: run itself or show the group help
+	if c.Func == nil {
+		c.ShowHelp()
 		return nil
 	}
 
-	// parse command flags and execute func.
-	err := cmd.Parse(cmdArgs)
+	// same as the tail of cflag.CFlags.Parse(), but not parse the args again.
+	return a.execCmd(c, args, func() error {
+		if c.CFlags.BeforeRun != nil && !c.CFlags.BeforeRun(c.CFlags) {
+			return nil
+		}
+		return c.Func(c)
+	})
+}
+
+// execCmd run the command func, and fire the app hooks.
+//
+// NOTE: the app hooks only fire on the command that really runs.
+func (a *App) execCmd(c *Cmd, cmdArgs []string, run func() error) error {
+	if a.BeforeRun != nil && !a.BeforeRun(c, cmdArgs) {
+		return nil
+	}
+
+	err := run()
 
 	// fire after run hook
 	if a.AfterRun != nil {
-		a.AfterRun(cmd, err)
+		a.AfterRun(c, err)
 	}
 	return err
 }
@@ -257,10 +297,7 @@ func (a *App) findCmd(name string) (*Cmd, bool) {
 		return nil, false
 	}
 
-	// resolve alias
-	name = a.cmdAs.ResolveAlias(name)
-	cmd, ok := a.cmds[name]
-	return cmd, ok
+	return a.commands.find(name)
 }
 
 //
@@ -285,18 +322,7 @@ func (a *App) showHelp() error {
 	}
 
 	buf.WriteStr1Nl("\n<comment>Commands:</>")
-	sort.Strings(a.names)
-
-	gaMap := a.cmdAs.GroupAliases()
-	for _, name := range a.names {
-		c := a.cmds[name]
-		if len(gaMap[name]) > 0 {
-			name = name + ", " + strings.Join(gaMap[name], ", ")
-		}
-
-		name = strutil.PadRight(name, " ", a.NameWidth)
-		buf.Printf("  <green>%s</>    %s\n", name, strutil.UpperFirst(c.getDesc()))
-	}
+	a.commands.render(buf, a.NameWidth)
 
 	name := strutil.PadRight("help", " ", a.NameWidth)
 	buf.Printf("  <green>%s</>    Display application help\n", name)
