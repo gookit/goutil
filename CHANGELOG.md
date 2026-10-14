@@ -12,6 +12,8 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 
 ## [Unreleased]
 
+## [v0.8.3] - 2026-10-14
+
 ### Added
 
 - **`cflag/capp`**: two-level sub commands. Build a group command, register the sub
