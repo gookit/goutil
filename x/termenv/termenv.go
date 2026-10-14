@@ -24,8 +24,9 @@ var (
 	noColor = os.Getenv("NO_COLOR") != ""
 
 	// the color support level for current terminal
-	// needVTP - need enable VTP, only for Windows OS
-	colorLevel, needVTP = detectTermColorLevel()
+	//
+	// NOTE: it is set in the init() func. see init_windows.go and init_nonwin.go
+	colorLevel ColorLevel
 )
 
 // SetDebugMode sets debug mode.
