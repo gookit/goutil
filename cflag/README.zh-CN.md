@@ -275,3 +275,44 @@ myapp demo val0 -- --name inhere
 ```
 
 此时 `--name inhere` 会保留在命令参数中。
+
+## 两级子命令
+
+命令也可以再挂子命令：先把组命令加到 app，再把子命令加到组命令。完整示例见 [_example/group.go](_example/group.go)。
+
+```go
+group := capp.NewCmd("session", "manage sessions")
+group.BoolVar(&verbose, "verbose", false, "show verbose output;;v")
+
+list := capp.NewCmd("list", "list all sessions")
+list.Aliases = []string{"ls"} // 注意：别名要在 Add 之前设置
+list.StringVar(&format, "format", "text", "output format;;f")
+list.Func = func(c *capp.Cmd) error {
+	// ...
+	return nil
+}
+
+group.Add(list)
+app.Add(group)
+```
+
+规则：
+
+- 运行形式：`myapp session SUBCOMMAND [--Options...] [...Arguments]`。
+- 组命令的选项必须写在**子命令名之前**：`myapp session -v list`。
+  写在子命令名之后的组选项会被子命令解析，因此只属于组命令的选项会报 `flag provided but not defined`。
+- 组命令不能声明位置参数（`AddArg`/`BindArg`）；第一个位置参数始终是子命令名。
+- 不给位置参数时：组命令设置了 `Func` 就执行它，否则显示组帮助。
+  `myapp session -h`、`myapp session --help`、`myapp session help` 始终显示组帮助。
+- app 钩子 `BeforeRun`/`AfterRun` 只在真正执行的命令上触发：叶子命令，或执行自身 `Func` 的组命令。
+- 子命令支持自己的选项、位置参数、别名与帮助；别名在 Add 时读取，因此必须在 `Add`/`App.Add` 之前设置。
+- 实现上递归支持任意层级，但只把两级当作正式用法。
+
+显示组帮助并运行子命令：
+
+```shell
+go run ./cflag/_example/group.go -h
+go run ./cflag/_example/group.go session -h
+go run ./cflag/_example/group.go session -v list -f json
+go run ./cflag/_example/group.go session send -m hello s3
+```

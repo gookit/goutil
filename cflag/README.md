@@ -275,3 +275,44 @@ myapp demo val0 -- --name inhere
 ```
 
 Here `--name inhere` remains in command arguments.
+
+## Two-Level Subcommands
+
+A command can hold sub commands too. Add a group command to the app, then add the sub commands to the group. Examples are available in [_example/group.go](_example/group.go).
+
+```go
+group := capp.NewCmd("session", "manage sessions")
+group.BoolVar(&verbose, "verbose", false, "show verbose output;;v")
+
+list := capp.NewCmd("list", "list all sessions")
+list.Aliases = []string{"ls"} // NOTE: set aliases before add
+list.StringVar(&format, "format", "text", "output format;;f")
+list.Func = func(c *capp.Cmd) error {
+	// ...
+	return nil
+}
+
+group.Add(list)
+app.Add(group)
+```
+
+Rules:
+
+- Run with: `myapp session SUBCOMMAND [--Options...] [...Arguments]`.
+- Group options must be given **before** the sub command name: `myapp session -v list`.
+  A group option after the sub command name is parsed by the sub command, so an option that only belongs to the group errors with `flag provided but not defined`.
+- A group command cannot declare positional arguments (`AddArg`/`BindArg`); the first positional arg is always the sub command name.
+- With no positional args: the group runs its own `Func` when it is set, otherwise it displays the group help.
+  `myapp session -h`, `myapp session --help` and `myapp session help` always display the group help.
+- The app hooks `BeforeRun`/`AfterRun` only fire on the command that really runs: the leaf command, or the group command that runs its own `Func`.
+- Sub commands support their own options, arguments, aliases and help. Aliases are read on add, so they must be set before `Add`/`App.Add`.
+- Nesting is recursive, but only two levels are the documented usage.
+
+Show the group help and run the sub commands:
+
+```shell
+go run ./cflag/_example/group.go -h
+go run ./cflag/_example/group.go session -h
+go run ./cflag/_example/group.go session -v list -f json
+go run ./cflag/_example/group.go session send -m hello s3
+```
