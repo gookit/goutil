@@ -79,3 +79,37 @@ func TestSubstrCount(t *testing.T) {
 	assert.Err(t, err)
 	assert.Eq(t, 0, res)
 }
+
+func TestSubstrCountRuneRanges(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		text    string
+		substr  string
+		params  []uint64
+		want    int
+		wantErr bool
+	}{
+		{"unicode empty substring", "你好你好", "", []uint64{1}, 4, false},
+		{"unicode null substring", "你好", "\x00", []uint64{0}, 0, false},
+		{"unicode offset", "你好你好", "好", []uint64{1}, 2, false},
+		{"unicode length", "你好你好", "好", []uint64{1, 2}, 1, false},
+		{"clamped length", "你好你好", "好", []uint64{1, 100}, 2, false},
+		{"zero length", "你好", "好", []uint64{1, 0}, 0, false},
+		{"end offset", "你好", "好", []uint64{2}, 0, false},
+		{"empty string", "", "x", []uint64{0}, 0, false},
+		{"empty substring", "你好", "", []uint64{1, 1}, 2, false},
+		{"invalid offset", "abc", "a", []uint64{4}, 0, true},
+		{"overflowing offset", "abc", "a", []uint64{^uint64(0)}, 0, true},
+		{"overflowing length", "abcabc", "abc", []uint64{3, ^uint64(0)}, 1, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := strutil.SubstrCount(tc.text, tc.substr, tc.params...)
+			assert.Eq(t, tc.want, got)
+			if tc.wantErr {
+				assert.Err(t, err)
+			} else {
+				assert.NoErr(t, err)
+			}
+		})
+	}
+}
