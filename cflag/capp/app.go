@@ -190,6 +190,9 @@ func (a *App) RunWithArgs(args []string) error {
 
 // runCmd run the command by args. will descend into the sub commands.
 func (a *App) runCmd(c *Cmd, args []string) error {
+	// let the command write to the app output, on its own output not set.
+	a.syncOutput(c)
+
 	// leaf command: same as before
 	if !c.HasSubs() {
 		return a.execCmd(c, args, func() error { return c.Parse(args) })
@@ -258,6 +261,20 @@ func (a *App) execCmd(c *Cmd, cmdArgs []string, run func() error) error {
 		a.AfterRun(c, err)
 	}
 	return err
+}
+
+// syncOutput make the command write to the app output, when the command did not
+// set its own output. so `app.SetOutput(w)` also takes effect on the command help,
+// the flag package uses os.Stderr on the output not set.
+func (a *App) syncOutput(c *Cmd) {
+	if c.CFlags == nil || a.CFlags == nil {
+		return
+	}
+
+	out := a.Output()
+	if out != nil && out != os.Stderr && c.CFlags.Output() == os.Stderr {
+		c.CFlags.SetOutput(out)
+	}
 }
 
 func (a *App) preRun(args []string) (showHelp bool, err error) {

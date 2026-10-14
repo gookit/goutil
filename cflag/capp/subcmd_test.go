@@ -205,6 +205,52 @@ func TestGroupHelp_GroupHelp(t *testing.T) {
 	assert.Nil(t, group.Func)
 }
 
+// Cmd created by struct literal: no CFlags and no Func.
+func TestSubCmd_CmdWithoutCFlags(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app := capp.NewWith("myapp", "0.0.1", "test app")
+
+	demo := &capp.Cmd{Name: "demo"} // no Desc, no CFlags
+	other := &capp.Cmd{Name: "other", Desc: "this is other command"}
+	app.Add(demo, other)
+
+	var buf bytes.Buffer
+	app.SetOutput(&buf)
+
+	// render the help should not panic on the nil CFlags
+	assert.NoErr(t, app.RunWithArgs([]string{"--help"}))
+	assert.StrContains(t, buf.String(), "This is other command")
+
+	// parse on a Cmd without CFlags should not panic
+	assert.NotPanics(t, func() { demo.MustRun([]string{}) })
+}
+
+// The command help follows the app output on the command output not set.
+func TestSubCmd_HelpFollowsAppOutput(t *testing.T) {
+	ccolor.Disable()
+	defer ccolor.RevertColorSupport()
+
+	app, group, _, _, _ := newGroupApp()
+
+	// the command output is not set: it follows the app output
+	var appBuf bytes.Buffer
+	app.SetOutput(&appBuf)
+
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	assert.StrContains(t, appBuf.String(), "Commands:")
+
+	// an explicitly set command output is kept
+	cmdBuf := new(bytes.Buffer)
+	group.SetOutput(cmdBuf)
+	appBuf.Reset()
+
+	assert.NoErr(t, app.RunWithArgs([]string{"session", "-h"}))
+	assert.Eq(t, "", appBuf.String())
+	assert.StrContains(t, cmdBuf.String(), "Commands:")
+}
+
 // T6 (A2): the group command parses its own options only once.
 func TestSubCmd_RepeatableOptOnce(t *testing.T) {
 	app, group, _, _, opts := newGroupApp()

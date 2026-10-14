@@ -91,7 +91,7 @@ func (c *Cmd) MustParse(args []string) {
 func (c *Cmd) Parse(args []string) error {
 	// fix: cmd.xxRun not exec Cmd.Func
 	c.initCmd()
-	return c.CFlags.Parse(args)
+	return c.ensureCFlags().Parse(args)
 }
 
 func (c *Cmd) initCmd() {
@@ -289,6 +289,10 @@ func (c *Cmd) renderGroupHelp(cf *cflag.CFlags) {
 func (c *Cmd) getDesc() string {
 	if c.Desc != "" {
 		return c.Desc
+	}
+
+	if c.CFlags == nil { // Cmd created by struct literal
+		return ""
 	}
 	return c.CFlags.Desc
 }
