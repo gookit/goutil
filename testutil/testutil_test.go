@@ -10,6 +10,19 @@ import (
 	"github.com/gookit/goutil/x/assert"
 )
 
+// NOTE: set and restore can be used repeatedly in one process.
+func TestSetTimeLocal_RepeatRestore(t *testing.T) {
+	loc := time.Local
+
+	for i := 0; i < 3; i++ {
+		testutil.SetTimeLocalUTC()
+		assert.Eq(t, time.UTC, time.Local)
+
+		testutil.RestoreTimeLocal()
+		assert.Eq(t, loc, time.Local)
+	}
+}
+
 func TestDiscardStdout(t *testing.T) {
 	err := testutil.DiscardStdout()
 	fmt.Println("Hello, playground")

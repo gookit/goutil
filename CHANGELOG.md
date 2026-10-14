@@ -53,5 +53,8 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   (`app.SetOutput`) when the command did not set its own output.
 - **`x/termenv`**: the color support level is initialized by a platform-specific `init()`,
   so the non-Windows build no longer reports `needVTP` as unused (staticcheck `U1000`).
+- **`testutil`**: `RestoreTimeLocal()` left its saved location in place, so a second
+  `SetTimeLocal()` in the same process panicked with "time local already set" and a test
+  could not be repeated with `go test -count>1`.
 
 [#271]: https://github.com/gookit/goutil/pull/271

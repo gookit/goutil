@@ -146,7 +146,11 @@ func SetTimeLocalUTC() { SetTimeLocal(time.UTC) }
 
 // RestoreTimeLocal restore time.Local
 func RestoreTimeLocal() {
-	if timeLocBak != nil {
-		time.Local = timeLocBak
+	if timeLocBak == nil {
+		return
 	}
+
+	time.Local = timeLocBak
+	// clear it, so SetTimeLocal() can be used again in the same process.
+	timeLocBak = nil
 }
