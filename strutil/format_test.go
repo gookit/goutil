@@ -1,10 +1,11 @@
 package strutil_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/x/assert"
+	"github.com/gookit/goutil/testutil/assert"
 )
 
 func TestUpperOrLowerCase(t *testing.T) {
@@ -146,4 +147,17 @@ func TestReplaces(t *testing.T) {
 		"name": "tom",
 		"age":  "20",
 	}))
+}
+
+func TestNewReplacerEmptyKey(t *testing.T) {
+	pairs := map[string]string{"": ":"}
+	replacer := strutil.NewReplacer(pairs)
+	standard := strings.NewReplacer("", ":")
+	for _, input := range []string{"", "ab", "é中文"} {
+		t.Run(input, func(t *testing.T) {
+			want := standard.Replace(input)
+			assert.Eq(t, want, replacer.Replace(input))
+			assert.Eq(t, want, strutil.Replaces(input, pairs))
+		})
+	}
 }
