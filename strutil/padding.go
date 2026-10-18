@@ -53,6 +53,9 @@ func padding(s, pad string, sLen, wantLen int, padPos PosFlag) string {
 	}
 
 	// other character.
+	if pad == "" {
+		pad = " "
+	}
 	if padPos == PosRight { // to right
 		return s + Repeat(pad, -diff)
 	}
