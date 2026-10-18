@@ -213,7 +213,7 @@ func ChunkBy[T, R any](list []T, size int, mapFn func(el T) R) [][]R {
 		}
 
 		// 创建当前块的切片
-		currentChunk := make([]R, 0, size)
+		currentChunk := make([]R, 0, end-i)
 		for j := i; j < end; j++ {
 			currentChunk = append(currentChunk, mapFn(list[j]))
 		}
