@@ -100,6 +100,7 @@ func DateSN(prefix string) string {
 }
 
 // DateSNOpt 基于时间生成唯一编号
+// A DateSNOpt must not be copied after first use.
 type DateSNOpt struct {
 	Layout string // time layout
 	// RandMax   int    // rand max
@@ -108,6 +109,7 @@ type DateSNOpt struct {
 	// EnableSeq bool  // 需要高并发生成时可以启用自增序号。默认不启用
 	SeqMaxVal int   // 自增序号最大值，之后后自动重置
 	globalSeq int64 // 自增，确保同一时刻生成的编号不重复. EnableSeq=true 时启用
+	prepareMu sync.Mutex
 }
 
 // default setting: {时间年到秒14位}
@@ -132,6 +134,9 @@ func NewDateSNOpt() *DateSNOpt {
 
 // prepare for generate
 func (do *DateSNOpt) prepare() {
+	do.prepareMu.Lock()
+	defer do.prepareMu.Unlock()
+
 	if do.DateLen <= 0 {
 		do.DateLen = 8 // default 8 for yyyyMMdd
 	}
