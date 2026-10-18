@@ -217,6 +217,9 @@ func ToByteSize(sizeStr string) (uint64, error) {
 	}
 
 	if sizeStr[lastPos] == 'b' || sizeStr[lastPos] == 'B' {
+		if lastPos == 0 {
+			return 0, ErrInvalidSizeExpr
+		}
 		// last second char is k,m,g,t
 		lastSec := sizeStr[lastPos-1]
 		if lastSec > 'A' {
