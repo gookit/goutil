@@ -122,7 +122,7 @@ func MergeL2StrMap(mps ...map[string]map[string]string) map[string]map[string]st
 	for _, mp := range mps {
 		for k, v := range mp {
 			// merge level 2 value
-			if oldV, ok := newMp[k]; ok {
+			if oldV, ok := newMp[k]; ok && oldV != nil {
 				for k1, v1 := range v {
 					oldV[k1] = v1
 				}
