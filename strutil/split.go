@@ -179,20 +179,22 @@ func Substr(s string, pos, length int) string {
 func SplitInlineComment(val string, strict ...bool) (string, string) {
 	// strict check: must with a space
 	if len(strict) == 0 || strict[0] {
-		if pos := strings.Index(val, " #"); pos > -1 {
+		slash := strings.Index(val, " //")
+		if pos := strings.Index(val, " #"); pos > -1 && (slash < 0 || pos < slash) {
 			return strings.TrimRight(val[0:pos], " "), val[pos+1:]
 		}
-		if pos := strings.Index(val, " //"); pos > -1 {
-			return strings.TrimRight(val[0:pos], " "), val[pos+1:]
+		if slash > -1 {
+			return strings.TrimRight(val[0:slash], " "), val[slash+1:]
 		}
 		return val, ""
 	}
 
-	if pos := strings.IndexByte(val, '#'); pos > -1 {
+	slash := strings.Index(val, "//")
+	if pos := strings.IndexByte(val, '#'); pos > -1 && (slash < 0 || pos < slash) {
 		return strings.TrimRight(val[0:pos], " "), val[pos:]
 	}
-	if pos := strings.Index(val, "//"); pos > -1 {
-		return strings.TrimRight(val[0:pos], " "), val[pos:]
+	if slash > -1 {
+		return strings.TrimRight(val[0:slash], " "), val[slash:]
 	}
 	return val, ""
 }
