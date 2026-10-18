@@ -160,7 +160,7 @@ func Substr(s string, pos, length int) string {
 	}
 
 	stopIdx := pos + length
-	if length == 0 || stopIdx > strLn {
+	if length == 0 || (length > 0 && length > strLn-pos) {
 		stopIdx = strLn
 	} else if length < 0 {
 		stopIdx = strLn + length
