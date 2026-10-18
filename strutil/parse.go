@@ -76,6 +76,11 @@ func ToTimeIn(s string, loc *time.Location, layouts ...string) (t time.Time, err
 	}
 
 	// auto match use some commonly layouts.
+	if len(s) > 10 && s[10] == 'T' {
+		if parsed, parseErr := time.ParseInLocation(time.RFC3339Nano, s, loc); parseErr == nil {
+			return parsed, nil
+		}
+	}
 	strLn := len(s)
 	maybeLayouts, ok := layoutMap[strLn]
 	if !ok {
