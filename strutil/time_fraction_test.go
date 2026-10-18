@@ -18,4 +18,8 @@ func TestToTimeRFC3339Fractions(t *testing.T) {
 			assert.True(t, got.Equal(want))
 		})
 	}
+	loc := time.FixedZone("local", 3*60*60)
+	got, err := strutil.ToTimeIn("2026-01-02T03:04:05Z", loc)
+	assert.NoErr(t, err)
+	assert.True(t, got.Equal(time.Date(2026, 1, 2, 3, 4, 5, 0, loc)))
 }
