@@ -156,27 +156,16 @@ func Utf8Split(s string, w int) []string {
 	ss := make([]string, 0, sw/w+1)
 	for _, r := range s {
 		rw := RuneWidth(r)
-		if tmpW+rw == w {
-			tmpS += string(r)
+		if rw > 0 && tmpW+rw > w && tmpS != "" {
 			ss = append(ss, tmpS)
-
-			tmpW, tmpS = 0, "" // reset
-			continue
+			tmpW, tmpS = 0, ""
 		}
-
-		if tmpW+rw > w {
-			ss = append(ss, tmpS)
-
-			// append to next line.
-			tmpW, tmpS = rw, string(r)
-			continue
-		}
-
+		// Keep zero-width runes with the preceding base even at a full width.
 		tmpW += rw
 		tmpS += string(r)
 	}
 
-	if tmpW > 0 {
+	if tmpS != "" {
 		ss = append(ss, tmpS)
 	}
 	return ss
