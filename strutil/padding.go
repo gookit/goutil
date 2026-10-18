@@ -164,7 +164,7 @@ func resize(s string, sLen, wantLen int, align comdef.Align, cutOverflow bool) s
 
 	if align == comdef.Center {
 		padLn := (wantLen - sLen) / 2
-		if diff = wantLen - padLn*2; diff > 0 {
+		if (wantLen-sLen)%2 != 0 {
 			s += " "
 		}
 		padStr := string(RepeatBytes(' ', padLn))

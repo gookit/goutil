@@ -159,3 +159,26 @@ func TestPadRunes(t *testing.T) {
 func TestIssues_76(t *testing.T) {
 	// TODO
 }
+
+func TestCenteredAlignmentWidth(t *testing.T) {
+	tests := []struct {
+		name      string
+		align     func(string, int) string
+		input     string
+		width     int
+		even, odd string
+	}{
+		{"Align", func(s string, n int) string { return strutil.Align(s, n, comdef.Center) }, "go", 4, " go ", " go  "},
+		{"Resize", func(s string, n int) string { return strutil.Resize(s, n, comdef.Center) }, "go", 4, " go ", " go  "},
+		{"Utf8Align", func(s string, n int) string { return strutil.Utf8Align(s, n, comdef.Center) }, "你好", 6, " 你好 ", " 你好  "},
+		{"Utf8Resize", func(s string, n int) string { return strutil.Utf8Resize(s, n, comdef.Center) }, "你好", 6, " 你好 ", " 你好  "},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Eq(t, tt.even, tt.align(tt.input, tt.width))
+			assert.Eq(t, tt.odd, tt.align(tt.input, tt.width+1))
+			assert.Eq(t, "", tt.align("", 0))
+			assert.Eq(t, "  ", tt.align("", 2))
+		})
+	}
+}
