@@ -1,11 +1,19 @@
 package arrutil_test
 
 import (
+	"math"
 	"testing"
 
 	"github.com/gookit/goutil/arrutil"
 	"github.com/gookit/goutil/x/assert"
 )
+
+func TestChunkByLargeSize(t *testing.T) {
+	t.Run("size exceeds input", func(t *testing.T) {
+		got := arrutil.ChunkBy([]int{1, 2}, math.MaxInt, func(n int) int { return n * 2 })
+		assert.Eq(t, [][]int{{2, 4}}, got)
+	})
+}
 
 func TestReverse(t *testing.T) {
 	ss := []string{"a", "b", "c"}
