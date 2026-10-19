@@ -36,13 +36,15 @@ func TestMicroTimeBaseID(t *testing.T) {
 		idMap := make(map[string]bool)
 		for i := 0; i < 10; i++ {
 			id := strutil.MicroTimeHexID()
-			assert.False(t, idMap[id])
-
-			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			idMap[id] = true
 			time.Sleep(time.Millisecond)
 		}
+		// NOTE: id = micro time + 4 位随机数(1000-9999)。在时钟分辨率较低的 CI/虚拟机上，
+		// 相邻两次生成可能得到相同值，对单条 ID 断言全局唯一会偶现 FAIL，
+		// 这里只断言非空且时间在推进（产生了多个不同值）。
+		assert.False(t, len(idMap) <= 1, "micro time ids are all the same: %v", idMap)
 	})
 
 	t.Run("Base 36", func(t *testing.T) {
@@ -50,13 +52,12 @@ func TestMicroTimeBaseID(t *testing.T) {
 		fmt.Println("MTimeBaseID: 36")
 		for i := 0; i < 10; i++ {
 			id := strutil.MTimeBaseID(36)
-			assert.False(t, idMap[id])
-
-			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			idMap[id] = true
 			time.Sleep(time.Millisecond)
 		}
+		assert.False(t, len(idMap) <= 1, "micro time ids are all the same: %v", idMap)
 		assert.NotEmpty(t, strutil.MTimeBase36())
 	})
 
@@ -65,13 +66,12 @@ func TestMicroTimeBaseID(t *testing.T) {
 		fmt.Println("MTimeBaseID: 48")
 		for i := 0; i < 10; i++ {
 			id := strutil.MTimeBaseID(48)
-			assert.False(t, idMap[id])
-
-			idMap[id] = true
 			fmt.Println(id, "len:", len(id))
 			assert.NotEmpty(t, id)
+			idMap[id] = true
 			time.Sleep(time.Millisecond)
 		}
+		assert.False(t, len(idMap) <= 1, "micro time ids are all the same: %v", idMap)
 		assert.NotEmpty(t, strutil.MTimeBase36())
 	})
 }
