@@ -130,8 +130,14 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 			iVal = int(tVal)
 		}
 	case float32:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		iVal = int(tVal)
 	case float64:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		iVal = int(tVal)
 	case time.Duration:
 		if tVal > math.MaxInt32 {
@@ -403,8 +409,14 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 	case uint64:
 		uVal = uint(tVal)
 	case float32:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		uVal = uint(tVal)
 	case float64:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		uVal = uint(tVal)
 	case time.Duration:
 		uVal = uint(tVal)
@@ -527,8 +539,14 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 	case *uint64: // default support uint64 ptr type
 		u64 = *tVal
 	case float32:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		u64 = uint64(tVal)
 	case float64:
+		if opt != nil && opt.StrictMode {
+			return 0, comdef.ErrConvType
+		}
 		u64 = uint64(tVal)
 	case time.Duration:
 		u64 = uint64(tVal)
