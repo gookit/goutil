@@ -9,6 +9,16 @@ import (
 	"github.com/gookit/goutil/x/assert"
 )
 
+func TestMergeL2StrMapNilInnerMap(t *testing.T) {
+	t.Run("later values replace nil", func(t *testing.T) {
+		got := maputil.MergeL2StrMap(
+			map[string]map[string]string{"section": nil},
+			map[string]map[string]string{"section": {"key": "value"}},
+		)
+		assert.Eq(t, "value", got["section"]["key"])
+	})
+}
+
 func TestSimpleMerge(t *testing.T) {
 	src := map[string]any{"A": "v0"}
 	dst := map[string]any{"A": "v1", "B": "v2"}
