@@ -169,6 +169,7 @@ func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
 					return ToIntWith(rv.Interface(), optFns...)
 				}
 			}
+			err = comdef.ErrConvType
 		} else {
 			err = comdef.ErrConvType
 		}
@@ -305,6 +306,7 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 					return ToInt64With(rv.Interface(), optFns...)
 				}
 			}
+			err = comdef.ErrConvType
 		} else {
 			err = comdef.ErrConvType
 		}
@@ -439,6 +441,7 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 					return ToUintWith(rv.Interface(), optFns...)
 				}
 			}
+			err = comdef.ErrConvType
 		} else {
 			err = comdef.ErrConvType
 		}
@@ -569,6 +572,7 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 					return ToUint64With(rv.Interface(), optFns...)
 				}
 			}
+			err = comdef.ErrConvType
 		} else {
 			err = comdef.ErrConvType
 		}
