@@ -181,7 +181,10 @@ func ToFloat(in any) (float64, error) { return ToFloatWith(in) }
 // ToFloatWith try to convert value to float64. can with some option func, more see ConvOption.
 func ToFloatWith(in any, optFns ...ConvOptionFn[float64]) (f64 float64, err error) {
 	opt := NewConvOption(optFns...)
-	if !opt.NilAsFail && in == nil {
+	if in == nil || (reflect.ValueOf(in).Kind() == reflect.Ptr && reflect.ValueOf(in).IsNil()) {
+		if opt.NilAsFail {
+			return 0, comdef.ErrConvType
+		}
 		return 0, nil
 	}
 

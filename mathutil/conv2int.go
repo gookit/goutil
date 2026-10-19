@@ -65,7 +65,10 @@ func ToInt(in any) (int, error) { return ToIntWith(in) }
 //	ToIntWithFunc(val, mathutil.WithNilAsFail, mathutil.WithUserConvFn(func(in any) (int, error) {
 //	})
 func ToIntWith(in any, optFns ...ConvOptionFn[int]) (iVal int, err error) {
-	if len(optFns) == 0 && in == nil {
+	if in == nil || (reflect.ValueOf(in).Kind() == reflect.Ptr && reflect.ValueOf(in).IsNil()) {
+		if NewConvOption(optFns...).NilAsFail {
+			return 0, comdef.ErrConvType
+		}
 		return 0, nil
 	}
 
@@ -222,7 +225,10 @@ func Int64OrErr(in any) (int64, error) { return ToInt64With(in) }
 
 // ToInt64With try to convert value to int64. can with some option func, more see ConvOption.
 func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
-	if len(optFns) == 0 && in == nil {
+	if in == nil || (reflect.ValueOf(in).Kind() == reflect.Ptr && reflect.ValueOf(in).IsNil()) {
+		if NewConvOption(optFns...).NilAsFail {
+			return 0, comdef.ErrConvType
+		}
 		return 0, nil
 	}
 
@@ -359,7 +365,10 @@ func ToUint(in any) (u64 uint, err error) { return ToUintWith(in) }
 
 // ToUintWith try to convert value to uint. can with some option func, more see ConvOption.
 func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
-	if len(optFns) == 0 && in == nil {
+	if in == nil || (reflect.ValueOf(in).Kind() == reflect.Ptr && reflect.ValueOf(in).IsNil()) {
+		if NewConvOption(optFns...).NilAsFail {
+			return 0, comdef.ErrConvType
+		}
 		return 0, nil
 	}
 
@@ -494,7 +503,10 @@ func ToUint64(in any) (uint64, error) { return ToUint64With(in) }
 
 // ToUint64With try to convert value to uint64. can with some option func, more see ConvOption.
 func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error) {
-	if len(optFns) == 0 && in == nil {
+	if in == nil || (reflect.ValueOf(in).Kind() == reflect.Ptr && reflect.ValueOf(in).IsNil()) {
+		if NewConvOption(optFns...).NilAsFail {
+			return 0, comdef.ErrConvType
+		}
 		return 0, nil
 	}
 
