@@ -158,8 +158,8 @@ func ParseSizeRange(expr string, opt *ParseSizeOpt) (min, max uint64, err error)
 	}
 
 	// parse size range. eg: "1KB~2MB"
-	if strings.IndexByte(expr, '~') > -1 {
-		s1, s2 := TrimCut(expr, "~")
+	if strings.IndexByte(expr, opt.SepChar) > -1 {
+		s1, s2 := TrimCut(expr, string(opt.SepChar))
 		if s1 != "" {
 			min, err = ToByteSize(s1)
 			if err != nil {
