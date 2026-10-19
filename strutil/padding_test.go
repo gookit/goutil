@@ -9,6 +9,15 @@ import (
 	"github.com/gookit/goutil/x/assert"
 )
 
+func TestUtf8PaddingDefaultSpace(t *testing.T) {
+	t.Run("left", func(t *testing.T) {
+		assert.Eq(t, "  你", strutil.Utf8Padding("你", "", 4, strutil.PosLeft))
+	})
+	t.Run("right", func(t *testing.T) {
+		assert.Eq(t, "你  ", strutil.Utf8Padding("你", "", 4, strutil.PosRight))
+	})
+}
+
 func TestPadding(t *testing.T) {
 	tests := []struct {
 		want, give, pad string
