@@ -97,6 +97,9 @@ func BaseConvByTpl(src string, fromBase, toBase string) string {
 
 // BaseConvIntByTpl convert base int to new base string.
 func BaseConvIntByTpl(dec uint64, toBase string) string {
+	if dec == 0 && toBase != "" {
+		return toBase[:1]
+	}
 	// convert to new base
 	var res string
 	toLen := uint64(len(toBase))
