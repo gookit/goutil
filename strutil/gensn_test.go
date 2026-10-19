@@ -203,11 +203,13 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 		idMap := make(map[string]bool)
 		var mu sync.Mutex
 		var wg sync.WaitGroup
+		start := make(chan struct{})
 
 		for i := 0; i < 100; i++ {
 			wg.Add(1)
 			go func() {
 				defer wg.Done()
+				<-start
 				sn := opt.GenSN("")
 				mu.Lock()
 				assert.False(t, idMap[sn], "duplicate sn: %s", sn)
@@ -215,6 +217,7 @@ func TestDateSNOpt_GenSN(t *testing.T) {
 				mu.Unlock()
 			}()
 		}
+		close(start)
 		wg.Wait()
 	})
 
