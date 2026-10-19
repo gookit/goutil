@@ -38,10 +38,8 @@ func Filter[T any](ls []T, filter ...comdef.MatchFunc[T]) []T {
 		fn = filter[0]
 	} else {
 		fn = func(el T) bool {
-			// if el == nil { // Filter nil value
-			// 	return false
-			// }
-			return !reflect.ValueOf(el).IsZero()
+			value := reflect.ValueOf(el)
+			return value.IsValid() && !value.IsZero()
 		}
 	}
 
