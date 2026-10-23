@@ -1,6 +1,8 @@
 package fsutil_test
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/gookit/goutil/dump"
@@ -82,6 +84,32 @@ func TestUpdateContents(t *testing.T) {
 	})
 	assert.NoErr(t, err)
 	assert.Eq(t, "hello, world", fsutil.ReadString(of.Name()))
+}
+
+func TestUpdateContentsTransformsExistingContent(t *testing.T) {
+	for _, tt := range []struct {
+		name string
+		want string
+	}{
+		{"append", "hello, world"},
+		{"shorten", "hi"},
+		{"unchanged", "hello"},
+		{"empty", ""},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "contents.txt")
+			assert.NoErr(t, os.WriteFile(path, []byte("hello"), 0600))
+
+			err := fsutil.UpdateContents(path, func(bs []byte) []byte {
+				assert.Eq(t, "hello", string(bs))
+				return []byte(tt.want)
+			})
+			assert.NoErr(t, err)
+			got, err := os.ReadFile(path)
+			assert.NoErr(t, err)
+			assert.Eq(t, tt.want, string(got))
+		})
+	}
 }
 
 func TestOSTempFile(t *testing.T) {
