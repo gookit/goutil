@@ -68,7 +68,10 @@ func TestMustSave(t *testing.T) {
 }
 
 func TestUpdateContents(t *testing.T) {
-	err := fsutil.UpdateContents("testdata/not-exists-file", nil)
+	// the file not exists
+	err := fsutil.UpdateContents("testdata/not-exists-file", func(bs []byte) []byte {
+		return bs
+	})
 	assert.Err(t, err)
 
 	of, err := fsutil.TempFile("testdata", "test-update-contents-*.txt")
@@ -89,20 +92,25 @@ func TestUpdateContents(t *testing.T) {
 func TestUpdateContentsTransformsExistingContent(t *testing.T) {
 	for _, tt := range []struct {
 		name string
+		old  string
+		ret  []byte
 		want string
 	}{
-		{"append", "hello, world"},
-		{"shorten", "hi"},
-		{"unchanged", "hello"},
-		{"empty", ""},
+		{"append", "hello", []byte("hello, world"), "hello, world"},
+		{"longer multiline", "a\nb", []byte("a\nb\nc\nd"), "a\nb\nc\nd"},
+		{"shorten", "hello", []byte("hi"), "hi"},
+		{"unchanged", "hello", []byte("hello"), "hello"},
+		{"empty result", "hello", []byte(""), ""},
+		{"nil result", "hello", nil, ""},
+		{"from empty file", "", []byte("filled"), "filled"},
 	} {
 		t.Run(tt.name, func(t *testing.T) {
 			path := filepath.Join(t.TempDir(), "contents.txt")
-			assert.NoErr(t, os.WriteFile(path, []byte("hello"), 0600))
+			assert.NoErr(t, os.WriteFile(path, []byte(tt.old), 0600))
 
 			err := fsutil.UpdateContents(path, func(bs []byte) []byte {
-				assert.Eq(t, "hello", string(bs))
-				return []byte(tt.want)
+				assert.Eq(t, tt.old, string(bs))
+				return tt.ret
 			})
 			assert.NoErr(t, err)
 			got, err := os.ReadFile(path)
@@ -110,6 +118,31 @@ func TestUpdateContentsTransformsExistingContent(t *testing.T) {
 			assert.Eq(t, tt.want, string(got))
 		})
 	}
+}
+
+func TestUpdateContentsNilHandler(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "contents.txt")
+	assert.NoErr(t, os.WriteFile(path, []byte("hello"), 0600))
+
+	err := fsutil.UpdateContents(path, nil)
+	assert.ErrMsgContains(t, err, "handleFn is nil")
+
+	// the file must be left as it was
+	assert.Eq(t, "hello", fsutil.ReadString(path))
+}
+
+func TestUpdateContentsPanicInHandler(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "contents.txt")
+	assert.NoErr(t, os.WriteFile(path, []byte("hello"), 0600))
+
+	assert.Panics(t, func() {
+		_ = fsutil.UpdateContents(path, func(bs []byte) []byte {
+			panic("boom")
+		})
+	})
+
+	// the file is not emptied before the handleFn is called
+	assert.Eq(t, "hello", fsutil.ReadString(path))
 }
 
 func TestOSTempFile(t *testing.T) {

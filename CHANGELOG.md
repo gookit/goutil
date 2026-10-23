@@ -12,6 +12,12 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 
 ## [Unreleased]
 
+### Fixed
+
+- **`fsutil`**: `UpdateContents` truncated the file before reading it, so the callback always got
+  empty contents and the file ended up empty. It now reads the current contents first, writes from
+  offset 0 and truncates to the new length; a nil `handleFn` returns an error instead of panicking.
+
 ## [v0.8.3] - 2026-10-14
 
 ### Added

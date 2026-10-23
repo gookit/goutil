@@ -1,6 +1,7 @@
 package fsutil
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -169,24 +170,39 @@ func MustCopyFile(srcPath, dstPath string) {
 	}
 }
 
-// UpdateContents read file contents, call handleFn(contents) handle, then write updated contents to file
+// UpdateContents read the whole contents of the file, call handleFn(contents) to handle it,
+// then write the updated contents back to the same file.
+//
+// Notes:
+//   - the file must already exist, it will not be created
+//   - the write is in-place and not atomic, a crash in the middle can leave a half updated file
+//   - the returned contents will replace the file contents: a shorter result is truncated,
+//     so returning nil or empty contents will empty the file
 func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error {
-	osFile, err := os.OpenFile(filePath, os.O_RDWR, 0600)
+	if handleFn == nil {
+		return errors.New("fsutil: UpdateContents: the handleFn is nil")
+	}
+
+	// tip: open without O_TRUNC, otherwise the original contents are lost before it can be read
+	osFile, err := os.OpenFile(filePath, os.O_RDWR, 0)
 	if err != nil {
 		return err
 	}
 	defer osFile.Close()
 
-	// read file contents
-	if bs, err1 := io.ReadAll(osFile); err1 == nil {
-		bs = handleFn(bs)
-		if _, err = osFile.WriteAt(bs, 0); err == nil {
-			err = osFile.Truncate(int64(len(bs)))
-		}
-	} else {
-		err = err1
+	bs, err := io.ReadAll(osFile)
+	if err != nil {
+		return err
 	}
-	return err
+
+	// the file offset is at EOF after reading, so write from offset 0 explicitly.
+	bs = handleFn(bs)
+	if _, err = osFile.WriteAt(bs, 0); err != nil {
+		return err
+	}
+
+	// truncate to the new length, avoid a stale suffix when the new contents are shorter
+	return osFile.Truncate(int64(len(bs)))
 }
 
 // CreateSymlink creates a symbolic link
