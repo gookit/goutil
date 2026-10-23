@@ -132,6 +132,28 @@ func TestTryToTime(t *testing.T) {
 	}
 }
 
+func TestTryToTimeZeroBase(t *testing.T) {
+	for _, item := range []struct {
+		input string
+		delta time.Duration
+	}{
+		{"now", 0},
+		{"0", 0},
+		{"1h", time.Hour},
+		{"-1h", -time.Hour},
+		{"1day", 24 * time.Hour},
+	} {
+		t.Run(item.input, func(t *testing.T) {
+			before := time.Now().Add(item.delta)
+			got, err := timex.TryToTime(item.input, time.Time{})
+			after := time.Now().Add(item.delta)
+			assert.NoErr(t, err)
+			assert.True(t, !got.Before(before) && !got.After(after),
+				"got %s; want between %s and %s", got, before, after)
+		})
+	}
+}
+
 func TestParseRange(t *testing.T) {
 	testutil.SetTimeLocalUTC()
 	defer testutil.RestoreTimeLocal()
