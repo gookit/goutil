@@ -166,6 +166,9 @@ func TryToTime(s string, bt time.Time) (time.Time, error) {
 		if err != nil {
 			return ZeroTime, err
 		}
+		if bt.IsZero() {
+			bt = time.Now()
+		}
 		return bt.Add(dur), nil
 	}
 
