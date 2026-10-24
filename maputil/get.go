@@ -124,7 +124,7 @@ func getByPathKeys(item any, keys []string) (val any, ok bool) {
 
 			// k is index number
 			idx, err := strconv.Atoi(k)
-			if err != nil || idx >= len(tData) {
+			if err != nil || idx < 0 || idx >= len(tData) {
 				return nil, false
 			}
 			item = tData[idx]
@@ -159,7 +159,7 @@ func getByPathKeys(item any, keys []string) (val any, ok bool) {
 
 				// check k is index number
 				ii, err := strconv.Atoi(k)
-				if err != nil || ii >= rv.Len() {
+				if err != nil || ii < 0 || ii >= rv.Len() {
 					return nil, false
 				}
 
