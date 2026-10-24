@@ -2,9 +2,9 @@ package goutil_test
 
 import (
 	"errors"
-	"runtime"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gookit/goutil"
 	"github.com/gookit/goutil/x/assert"
@@ -103,64 +103,69 @@ func TestSafeRunWithError(t *testing.T) {
 }
 func TestSafeGo(t *testing.T) {
 	t.Run("Normal execution", func(t *testing.T) {
-		var called bool
+		// tip: the fn is run in a goroutine, use a channel instead of a plain bool.
+		// otherwise `go test -race` reports a data race on the flag.
+		done := make(chan struct{})
 		goutil.SafeGo(func() {
-			called = true
+			close(done)
 		}, func(err error) {
-			t.Fatal("Expected no error")
+			t.Errorf("Expected no error, but got %v", err)
 		})
-		waitForGoroutine()
-		if !called {
-			t.Fail()
-		}
+		waitDone(t, done)
 	})
 
 	t.Run("Panic captured", func(t *testing.T) {
 		expected := "panic occurred"
+		done := make(chan struct{})
 		goutil.SafeGo(func() {
 			panic(expected)
 		}, func(err error) {
 			if err == nil || !strings.Contains(err.Error(), expected) {
-				t.Fatalf("Expected error containing %q, got %v", expected, err)
+				t.Errorf("Expected error containing %q, got %v", expected, err)
 			}
+			close(done)
 		})
-		waitForGoroutine()
+		waitDone(t, done)
 	})
 }
 
 func TestSafeGoWithError(t *testing.T) {
 	t.Run("Function returns error", func(t *testing.T) {
 		expected := errors.New("test error")
+		done := make(chan struct{})
 		goutil.SafeGoWithError(func() error {
 			return expected
 		}, func(err error) {
 			if err != expected {
-				t.Fail()
+				t.Errorf("Expected error %v, but got %v", expected, err)
 			}
+			close(done)
 		})
-		waitForGoroutine()
+		waitDone(t, done)
 	})
 
 	t.Run("Panic captured in SafeGoWithError", func(t *testing.T) {
 		expected := "panic inside SafeGoWithError"
+		done := make(chan struct{})
 		goutil.SafeGoWithError(func() error {
 			panic(expected)
 		}, func(err error) {
 			if err == nil || !strings.Contains(err.Error(), expected) {
-				t.Fatalf("Expected error containing %q, got %v", expected, err)
+				t.Errorf("Expected error containing %q, got %v", expected, err)
 			}
+			close(done)
 		})
-		waitForGoroutine()
+		waitDone(t, done)
 	})
 }
 
-// 等待 goroutine 执行完成
-func waitForGoroutine() {
-	// 简单等待 goroutine 完成（适用于简单测试）
-	for i := 0; i < 10; i++ {
-		if active := runtime.NumGoroutine(); active <= 1 {
-			break
-		}
-		runtime.Gosched()
+// waitDone wait for the goroutine signal, and fail the test when it does not come.
+func waitDone(t *testing.T, done <-chan struct{}) {
+	t.Helper()
+
+	select {
+	case <-done:
+	case <-time.After(2 * time.Second):
+		t.Fatal("the goroutine did not run in time")
 	}
 }
