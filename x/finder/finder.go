@@ -28,14 +28,19 @@ type Finder struct {
 	err error
 	// num - founded fs elem number
 	num uint32
-	// ch - founded fs elem chan
-	ch chan Elem
-	// 等待组,跟踪任务完成
-	wg sync.WaitGroup
-	// dir queue channel, used for concurrency mode
-	dirQueue chan scanDir
 	// caches - cache found fs elem. if config.CacheResult is true
 	caches []Elem
+	// mu guard the c, err and caches fields, they are changed by the worker goroutines
+	mu sync.Mutex
+}
+
+// findRun holds the channels and the wait group of one find run. they can not be fields
+// of the Finder: a new find can start while the goroutines of the previous run are still
+// finishing their work(eg: the closer goroutine after it closed the result channel).
+type findRun struct {
+	wg       sync.WaitGroup
+	ch       chan Elem
+	dirQueue chan scanDir
 }
 
 // New instance with source dir paths.
@@ -149,25 +154,32 @@ func (f *Finder) EachContents(fn func(contents, filePath string)) {
 }
 
 // prepare for find.
-func (f *Finder) prepare() {
+func (f *Finder) prepare() *findRun {
+	f.mu.Lock()
 	f.err = nil
+	c := f.c
+	f.mu.Unlock()
+
 	if f.CacheNum() == 0 {
-		f.num = 0
+		atomic.StoreUint32(&f.num, 0)
 	}
 
 	// ensure config
-	if f.c == nil {
-		f.c = NewConfig()
+	if c == nil {
+		c = NewConfig()
+		f.setConfig(c)
 	} else {
-		f.c.Init()
+		c.Init()
 	}
 
-	coNum := f.c.Concurrency
-	f.debugf("PREPARE done. type-flag: %s, concurrency: %d", f.c.FindFlags, coNum)
-	f.debugf("config: %+v", f.c)
+	coNum := c.Concurrency
+	f.debugf("PREPARE done. type-flag: %s, concurrency: %d", c.FindFlags, coNum)
+	f.debugf("config: %+v", c)
 	// 创建队列
-	f.ch = make(chan Elem, coNum*8*3)
-	f.dirQueue = make(chan scanDir, coNum*8*2)
+	return &findRun{
+		ch:       make(chan Elem, coNum*8*3),
+		dirQueue: make(chan scanDir, coNum*8*2),
+	}
 }
 
 // Do finding
@@ -179,52 +191,53 @@ func (f *Finder) prepare() {
 //	}
 func (f *Finder) find() <-chan Elem {
 	// has caches, return it
-	if len(f.caches) > 0 {
-		f.ch = make(chan Elem, 8)
-		defer close(f.ch)
-		for _, el := range f.caches {
-			f.ch <- el
+	if caches := f.Caches(); len(caches) > 0 {
+		ch := make(chan Elem, 8)
+		for _, el := range caches {
+			ch <- el
 		}
-		return f.ch
+		close(ch)
+		return ch
 	}
 
-	f.prepare()
+	run := f.prepare()
 
 	// 添加初始任务
-	f.addRootDirs()
+	f.addRootDirs(run)
 
 	// 启动工作goroutine
-	for i := 0; i < f.c.Concurrency; i++ {
-		go f.worker(i)
+	coNum := f.config().Concurrency
+	for i := 0; i < coNum; i++ {
+		go f.worker(run, i)
 	}
 
 	// 等待所有任务完成并关闭通道
 	go func() {
 		f.debugf("waiting all task complete ...")
-		f.wg.Wait()
+		run.wg.Wait()
 
-		close(f.ch)
-		close(f.dirQueue)
-		f.debugf("all find task DONE. total found: %d", f.num)
+		// tip: close run.ch at the last. the consumer can start a new find on the same
+		// Finder as soon as run.ch is closed, and a new run will not touch this one.
+		close(run.dirQueue)
+		f.debugf("all find task DONE. total found: %d", f.Num())
 
-		// reset wg
-		// f.wg = sync.WaitGroup{}
+		close(run.ch)
 	}()
 
 	f.debugf("find task STARTING ...")
-	return f.ch
+	return run.ch
 }
 
 // worker 处理目录的工作goroutine
-func (f *Finder) worker(index int) {
+func (f *Finder) worker(run *findRun, index int) {
 	f.debugf("worker#%d STARTING ...", index)
-	for sd := range f.dirQueue {
-		f.safeFindDir(index, sd.path, sd.depth)
+	for sd := range run.dirQueue {
+		f.safeFindDir(run, index, sd.path, sd.depth)
 	}
 	f.debugf("worker#%d DONE.", index)
 }
 
-func (f *Finder) safeFindDir(index int, dirPath string, depth int) {
+func (f *Finder) safeFindDir(run *findRun, index int, dirPath string, depth int) {
 	f.debugf("worker#%d into dir: %s (depth: %d)", index, dirPath, depth)
 
 	// recover error and always call wg.Done()
@@ -233,18 +246,19 @@ func (f *Finder) safeFindDir(index int, dirPath string, depth int) {
 			f.debugf("worker#%d panic in dir: %s, ERROR: %v", index, dirPath, err)
 			f.setError(fmt.Errorf("worker#%d findDir panic, dir: %s, ERROR: %v", index, dirPath, err))
 		}
-		f.wg.Done()
+		run.wg.Done()
 	}()
 
-	f.findDir(dirPath, depth)
+	f.findDir(run, dirPath, depth)
 }
 
-func (f *Finder) addRootDirs() {
-	f.debugf("add scan root dirs: %v", f.c.ScanDirs)
+func (f *Finder) addRootDirs(run *findRun) {
+	cfg := f.config()
+	f.debugf("add scan root dirs: %v", cfg.ScanDirs)
 
 	var err error
-	for _, dirPath := range f.c.ScanDirs {
-		if f.c.UseAbsPath {
+	for _, dirPath := range cfg.ScanDirs {
+		if cfg.UseAbsPath {
 			dirPath, err = filepath.Abs(dirPath)
 			if err != nil {
 				f.setError(err)
@@ -254,19 +268,19 @@ func (f *Finder) addRootDirs() {
 
 		// add task
 		f.debugf("add root-dir: %s", dirPath)
-		f.wg.Add(1)
-		f.dirQueue <- scanDir{path: dirPath}
+		run.wg.Add(1)
+		run.dirQueue <- scanDir{path: dirPath}
 	}
 }
 
 // code refer filepath.glob()
-func (f *Finder) findDir(dirPath string, depth int) {
+func (f *Finder) findDir(run *findRun, dirPath string, depth int) {
 	deList, err := os.ReadDir(dirPath)
 	if err != nil {
 		return // ignore I/O error
 	}
 
-	cfg := f.c
+	cfg := f.config()
 	depth++
 	var ok bool
 
@@ -309,9 +323,9 @@ func (f *Finder) findDir(dirPath string, depth int) {
 			// match ok, send to consumer
 			if ok && cfg.FindFlags&FlagDir > 0 {
 				if cfg.CacheResult {
-					f.caches = append(f.caches, el)
+					f.cacheElem(el)
 				}
-				f.ch <- el
+				run.ch <- el
 				atomic.AddUint32(&f.num, 1)
 
 				// if cfg.FindFlags == FlagDir {
@@ -322,10 +336,10 @@ func (f *Finder) findDir(dirPath string, depth int) {
 			// find in sub dir. 添加子目录任务
 			if cfg.MaxDepth == 0 || depth < cfg.MaxDepth {
 				f.debugf("add sub-dir: %s (depth: %d)", fullPath, depth)
-				f.wg.Add(1)
+				run.wg.Add(1)
 				// fix: 创建一个 goroutine 添加子目录任务，不然会造成阻塞
 				go func(p string, d int) {
-					f.dirQueue <- scanDir{path: p, depth: d}
+					run.dirQueue <- scanDir{path: p, depth: d}
 				}(fullPath, depth)
 			}
 			continue
@@ -353,9 +367,9 @@ func (f *Finder) findDir(dirPath string, depth int) {
 		// write to consumer
 		if ok && cfg.FindFlags&FlagFile > 0 {
 			if cfg.CacheResult {
-				f.caches = append(f.caches, el)
+				f.cacheElem(el)
 			}
-			f.ch <- el
+			run.ch <- el
 			atomic.AddUint32(&f.num, 1)
 		}
 	}
@@ -381,52 +395,90 @@ func applyExMatchers(el Elem, fls []Matcher) bool {
 
 // Reset filters config setting and results info.
 func (f *Finder) Reset() {
-	c := NewConfig(f.c.ScanDirs...)
-	c.ExcludeDotDir = f.c.ExcludeDotDir
-	c.FindFlags = f.c.FindFlags
-	c.MaxDepth = f.c.MaxDepth
+	old := f.config()
+	c := NewConfig(old.ScanDirs...)
+	c.ExcludeDotDir = old.ExcludeDotDir
+	c.FindFlags = old.FindFlags
+	c.MaxDepth = old.MaxDepth
 
-	f.c = c
+	f.setConfig(c)
 	f.ResetResult()
 }
 
 // ResetResult reset result info.
 func (f *Finder) ResetResult() {
-	f.num = 0
+	atomic.StoreUint32(&f.num, 0)
+
+	f.mu.Lock()
 	f.err = nil
-	f.ch = make(chan Elem, 8)
 	f.caches = []Elem{}
+	f.mu.Unlock()
 }
 
 // Num get found elem num. only valid after finding.
-func (f *Finder) Num() uint { return uint(f.num) }
+func (f *Finder) Num() uint { return uint(atomic.LoadUint32(&f.num)) }
 
 // Err get last error
-func (f *Finder) Err() error { return f.err }
+func (f *Finder) Err() error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.err
+}
 
 // Caches get cached results. only valid after finding.
-func (f *Finder) Caches() []Elem { return f.caches }
+func (f *Finder) Caches() []Elem {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.caches
+}
 
-// CacheNum get
-func (f *Finder) CacheNum() int { return len(f.caches) }
+// CacheNum get the cached result number.
+func (f *Finder) CacheNum() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return len(f.caches)
+}
+
+// cacheElem add a found elem to the caches. it is called by the worker goroutines.
+func (f *Finder) cacheElem(el Elem) {
+	f.mu.Lock()
+	f.caches = append(f.caches, el)
+	f.mu.Unlock()
+}
 
 // Config get, NOTE: it's a copy of config.
-func (f *Finder) Config() Config { return *f.c }
+func (f *Finder) Config() Config { return *f.config() }
 
 // String all dir paths
 func (f *Finder) String() string {
-	return strings.Join(f.c.ScanDirs, ";")
+	return strings.Join(f.config().ScanDirs, ";")
+}
+
+// config get the config pointer. it's guarded by f.mu.
+func (f *Finder) config() *Config {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.c
+}
+
+// setConfig set the config pointer. it's guarded by f.mu.
+func (f *Finder) setConfig(c *Config) {
+	f.mu.Lock()
+	f.c = c
+	f.mu.Unlock()
 }
 
 func (f *Finder) debugf(tpl string, vs ...any) {
-	if f.c.DebugMode {
+	if c := f.config(); c != nil && c.DebugMode {
 		fmt.Printf("Finder: "+tpl+"\n", vs...)
 	}
 }
 
 func (f *Finder) setError(err error) {
 	if err != nil {
+		f.mu.Lock()
 		f.err = err
+		f.mu.Unlock()
 		f.debugf("ERROR=%v", err)
 	}
 }
