@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gookit/goutil/strutil"
-	"github.com/gookit/goutil/testutil/assert"
+	"github.com/gookit/goutil/x/assert"
 )
 
 func TestToTimeRFC3339Fractions(t *testing.T) {
