@@ -12,6 +12,9 @@ import (
 
 // NOTE: set and restore can be used repeatedly in one process.
 func TestSetTimeLocal_RepeatRestore(t *testing.T) {
+	if raceEnabled {
+		t.Skip("SetTimeLocal changes the global time.Local, it can not be race-free")
+	}
 	loc := time.Local
 
 	for i := 0; i < 3; i++ {
@@ -64,6 +67,9 @@ func TestNewDirEnt(t *testing.T) {
 
 // test testutil.SetTimeLocal
 func TestSetTimeLocal(t *testing.T) {
+	if raceEnabled {
+		t.Skip("SetTimeLocal changes the global time.Local, it can not be race-free")
+	}
 	testutil.SetTimeLocalUTC()
 	tt, err := time.ParseInLocation("2006-01-02 15:04:05", "2021-01-01 12:12:12", time.Local)
 	assert.NoError(t, err)
