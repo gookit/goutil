@@ -67,6 +67,25 @@ jobs:
           shallow: true
           parallel: true
 
+  # run the unit tests with the race detector. a plain `go test` can not catch a race
+  # between the goroutines of the async helpers(eg: SafeGo) and the test code.
+  race:
+    name: Race detector
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v7
+
+      - name: Setup Go SDK
+        uses: actions/setup-go@v7
+        timeout-minutes: 3
+        with:
+          go-version: stable
+
+      - name: Run unit tests with race detector
+        run: go test -race -count=1 ./...
+
   # notifies that all test jobs are finished.
   # https://github.com/shogo82148/actions-goveralls
   finish:
