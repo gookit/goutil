@@ -38,14 +38,18 @@ func SetByKeys(mp *map[string]any, keys []string, val any) (err error) {
 	}
 
 	topK := keys[0]
-	if kln == 1 {
+	// the top key may contain a slice index. eg: "list[1]"
+	hasArrKey := hasArrIndex(topK)
+	if kln == 1 && !hasArrKey {
 		mpv[topK] = val
 		return nil
 	}
 
-	if _, ok := mpv[topK]; !ok {
-		mpv[topK] = MakeByKeys(keys[1:], val)
-		return nil
+	if !hasArrKey {
+		if _, ok := mpv[topK]; !ok {
+			mpv[topK] = MakeByKeys(keys[1:], val)
+			return nil
+		}
 	}
 
 	rv := reflect.ValueOf(mp).Elem()
@@ -161,6 +165,10 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 					}
 				} else {
 					// last - set value
+					if nv, err = setElemValue(nv, tmpV.Type().Elem()); err != nil {
+						break
+					}
+
 					tmpV.Index(idx).Set(nv)
 					rv.SetMapIndex(rftK, tmpV)
 				}
@@ -182,6 +190,10 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 				}
 
 				if idx > -1 {
+					if nv, err = setElemValue(nv, rv.Type().Elem()); err != nil {
+						break
+					}
+
 					wantLen := idx + 1
 					sliLen := rv.Len()
 
@@ -240,6 +252,13 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 					if strutil.IsInt(nxtKey) {
 						if idx, err = parseIndexKey(nxtKey); err != nil {
 							break
+						}
+
+						// the elem value will be set directly on the last key
+						if i+1 == maxI {
+							if nv, err = setElemValue(nv, tmpV.Type().Elem()); err != nil {
+								break
+							}
 						}
 
 						sliLen := tmpV.Len()
@@ -327,6 +346,30 @@ func getRealVal(rv reflect.Value) (reflect.Value, bool) {
 	}
 
 	return rv, isPtr
+}
+
+// hasArrIndex check the key contains a slice index. eg: "arr[2]"
+func hasArrIndex(key string) bool {
+	pos := strings.IndexRune(key, '[')
+	return pos > 0 && strings.HasSuffix(key, "]")
+}
+
+// setElemValue returns the value to be set to the slice elem of the given type,
+// and checks the value can be set to it. a nil value is turned into the zero value
+// of the elem type, so it can be set to a nil-able elem type.
+func setElemValue(nv reflect.Value, elemTyp reflect.Type) (reflect.Value, error) {
+	if !nv.IsValid() { // the value is nil
+		switch elemTyp.Kind() {
+		case reflect.Interface, reflect.Ptr, reflect.Map, reflect.Slice, reflect.Chan, reflect.Func:
+			return reflect.Zero(elemTyp), nil
+		}
+		return nv, fmt.Errorf("cannot set a nil value to a %s slice elem", elemTyp)
+	}
+
+	if !nv.Type().AssignableTo(elemTyp) {
+		return nv, fmt.Errorf("cannot set %s value to a %s slice elem", nv.Type(), elemTyp)
+	}
+	return nv, nil
 }
 
 // parseIndexKey parse the slice index from the given key.

@@ -19,6 +19,12 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   is parsed and validated now, so an invalid index returns an error and the data is left as it was;
   `MakeByKeys` keeps a negative index as a literal key instead of panicking. The get side was
   fixed in [#294].
+- **`maputil.SetByPath`**: the bracket syntax works on the top key now — `SetByPath(&mp, "list[1]",
+  "b")` updates (or grows, or creates) the `list` slice. It was written as a literal `"list[1]"`
+  key before; a deep path like `"list[0].name"` works as well.
+- **`maputil.SetByPath`**: a value that does not match the slice elem type panicked with
+  `reflect.Set: value of type ... is not assignable to type ...`; it returns an error now and the
+  data is left as it was. A nil value is accepted by a nil-able elem type (`any`, pointer, map...).
 
 ## [v0.8.4] - 2026-10-24
 

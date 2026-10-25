@@ -229,3 +229,49 @@ func TestSetByPath_sliceIndex(t *testing.T) {
 	// make a new slice value by bracket syntax
 	assert.ContainsKey(t, maputil.MakeByPath("tags[1]", "v"), "tags")
 }
+
+func TestSetByPath_topSliceIndex(t *testing.T) {
+	// the top key contains the index
+	mp := map[string]any{"list": []any{"a"}}
+	assert.NoErr(t, maputil.SetByPath(&mp, "list[1]", "b"))
+	assert.Eq(t, []any{"a", "b"}, mp["list"])
+
+	// append at the end
+	assert.NoErr(t, maputil.SetByPath(&mp, "list[2]", "c"))
+	assert.Eq(t, []any{"a", "b", "c"}, mp["list"])
+
+	// create the slice when the top key does not exist
+	mp2 := map[string]any{"other": 1}
+	assert.NoErr(t, maputil.SetByPath(&mp2, "list[1]", "b"))
+	assert.Eq(t, []string{"", "b"}, mp2["list"])
+
+	// a deep path through the top slice key
+	mp3 := map[string]any{"list": []map[string]any{{"name": "a"}}}
+	assert.NoErr(t, maputil.SetByPath(&mp3, "list[0].name", "A"))
+	assert.Eq(t, "A", mp3["list"].([]map[string]any)[0]["name"])
+
+	// a negative index is rejected
+	assert.Err(t, maputil.SetByPath(&mp, "list[-1]", "x"))
+	assert.Eq(t, []any{"a", "b", "c"}, mp["list"])
+}
+
+func TestSetByPath_sliceTypeMismatch(t *testing.T) {
+	// the value type must match the slice elem type, it can not panic
+	mp := map[string]any{"list": []string{"a"}}
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp, "list[1]", 5), "cannot set int value to a string slice elem")
+	assert.Eq(t, []string{"a"}, mp["list"])
+
+	mp2 := map[string]any{"list": []string{"a"}}
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp2, "list.1", 5), "cannot set int value to a string slice elem")
+
+	mp3 := map[string]any{"app": map[string]any{"list": []string{"a", "b"}}}
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp3, "app.list[1]", 5), "cannot set int value to a string slice elem")
+
+	// a nil value can be set to a nil-able elem type
+	mp4 := map[string]any{"list": []any{"a"}}
+	assert.NoErr(t, maputil.SetByPath(&mp4, "list[0]", nil))
+	assert.Eq(t, []any{nil}, mp4["list"])
+
+	mp5 := map[string]any{"list": []string{"a"}}
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp5, "list[0]", nil), "cannot set a nil value to a string slice elem")
+}
