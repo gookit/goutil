@@ -181,6 +181,24 @@ func TestGetByPath_deepPath(t *testing.T) {
 	assert.False(t, ok)
 }
 
+func TestGetFromAny_negativeSliceIndex(t *testing.T) {
+	tests := []struct {
+		name string
+		data any
+	}{
+		{"map slice", []map[string]any{{"id": 1}}},
+		{"string slice", []string{"one"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val, ok := maputil.GetFromAny("-1", tt.data)
+			assert.Nil(t, val)
+			assert.False(t, ok)
+		})
+	}
+}
+
 func TestGetFromAny_sliceSubValue(t *testing.T) {
 	val, ok := maputil.GetByPath("coding.*.details.cpt", mlMp)
 	assert.True(t, ok)
