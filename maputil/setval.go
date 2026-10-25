@@ -76,6 +76,12 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 		if pos := strings.IndexRune(key, '['); pos > 0 {
 			var realKey string
 			if realKey, idx, ok = parseArrKeyIndex(key); ok {
+				// the slice index must not be negative
+				if idx < 0 {
+					err = fmt.Errorf("invalid slice index %d in key %q, must not be negative", idx, key)
+					break
+				}
+
 				// update value
 				key = realKey
 				if !isMap {
@@ -171,8 +177,8 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 
 			if isSlice {
 				// key is slice index
-				if strutil.IsInt(key) {
-					idx, _ = strconv.Atoi(key)
+				if v, e2 := parseIndexKey(key); e2 == nil {
+					idx = v
 				}
 
 				if idx > -1 {
@@ -232,7 +238,10 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 					// next key is index number.
 					nxtKey := keys[i+1]
 					if strutil.IsInt(nxtKey) {
-						idx, _ = strconv.Atoi(nxtKey)
+						if idx, err = parseIndexKey(nxtKey); err != nil {
+							break
+						}
+
 						sliLen := tmpV.Len()
 						wantLen := idx + 1
 
@@ -276,7 +285,10 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 
 			break
 		} else if isSlice && strutil.IsInt(key) { // (E). slice from ptr slice
-			idx, _ = strconv.Atoi(key)
+			if idx, err = parseIndexKey(key); err != nil {
+				break
+			}
+
 			sliLen := rv.Len()
 			wantLen := idx + 1
 
@@ -315,6 +327,20 @@ func getRealVal(rv reflect.Value) (reflect.Value, bool) {
 	}
 
 	return rv, isPtr
+}
+
+// parseIndexKey parse the slice index from the given key.
+// The index must be a non-negative integer.
+func parseIndexKey(key string) (int, error) {
+	idx, err := strconv.Atoi(key)
+	if err != nil {
+		return 0, fmt.Errorf("invalid slice index %q", key)
+	}
+
+	if idx < 0 {
+		return 0, fmt.Errorf("invalid slice index %d, must not be negative", idx)
+	}
+	return idx, nil
 }
 
 // "arr[2]" => "arr", 2, true

@@ -188,3 +188,44 @@ func TestSetByPath(t *testing.T) {
 
 	dump.P(mp)
 }
+
+func TestSetByPath_negativeSliceIndex(t *testing.T) {
+	t.Run("index key", func(t *testing.T) {
+		mp := map[string]any{"list": []any{"a", "b"}}
+
+		err := maputil.SetByPath(&mp, "list.-1", "x")
+		assert.ErrMsgContains(t, err, "must not be negative")
+		// the data must not be changed
+		assert.Eq(t, []any{"a", "b"}, mp["list"])
+	})
+
+	t.Run("bracket key", func(t *testing.T) {
+		mp := map[string]any{"app": map[string]any{"list": []string{"a", "b"}}}
+
+		err := maputil.SetByPath(&mp, "app.list[-1]", "x")
+		assert.ErrMsgContains(t, err, "must not be negative")
+		assert.Eq(t, []string{"a", "b"}, mp["app"].(map[string]any)["list"])
+	})
+
+	t.Run("make by path", func(t *testing.T) {
+		// a negative index can not panic, the key is kept as a literal key
+		mp := maputil.MakeByPath("tags[-1]", "v")
+		assert.NotEmpty(t, mp)
+	})
+}
+
+func TestSetByPath_sliceIndex(t *testing.T) {
+	mp := map[string]any{"list": []any{"a"}}
+
+	// the index at the end grows the slice
+	assert.NoErr(t, maputil.SetByPath(&mp, "list.2", "c"))
+	assert.Eq(t, []any{"a", nil, "c"}, mp["list"])
+
+	// bracket syntax on a nested path
+	mp2 := map[string]any{"app": map[string]any{"list": []any{"a", "b"}}}
+	assert.NoErr(t, maputil.SetByPath(&mp2, "app.list[1]", "B"))
+	assert.Eq(t, []any{"a", "B"}, mp2["app"].(map[string]any)["list"])
+
+	// make a new slice value by bracket syntax
+	assert.ContainsKey(t, maputil.MakeByPath("tags[1]", "v"), "tags")
+}
