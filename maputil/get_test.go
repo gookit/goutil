@@ -221,6 +221,71 @@ func TestGetFromAny_sliceSubValue(t *testing.T) {
 	assert.Nil(t, val)
 }
 
+func TestGetByPath_bracketIndex(t *testing.T) {
+	mp := map[string]any{
+		"top": map[string]any{
+			"arr":    []string{"a0", "a1", "a2"},
+			"matrix": []any{[]any{"m00", "m01"}, []any{"m10", "m11"}},
+			"items": []map[string]any{
+				{"name": "n0"},
+				{"name": "n1"},
+			},
+			// keys that really contain brackets must keep working
+			"child[x]": "literal",
+			"a[0]":     "literal-idx",
+			"a":        []string{"not-used"},
+		},
+		"tags": []any{"t0", "t1"},
+	}
+
+	tests := []struct {
+		path string
+		want any
+		ok   bool
+	}{
+		// top-level and nested index
+		{"tags[0]", "t0", true},
+		{"tags[1]", "t1", true},
+		{"top.arr[1]", "a1", true},
+		{"top.matrix[0][1]", "m01", true},
+		{"top.matrix[1][0]", "m10", true},
+		{"top.items[1].name", "n1", true},
+		// the dot-index style is unchanged
+		{"top.arr.1", "a1", true},
+		{"top.items.1.name", "n1", true},
+		// out of range and invalid indexes
+		{"top.arr[3]", nil, false},
+		{"top.arr[-1]", nil, false},
+		{"top.arr[]", nil, false},
+		// keys that literally contain brackets
+		{"top.child[x]", "literal", true},
+		{"top.a[0]", "literal-idx", true}, // the literal key wins over the index walk
+	}
+
+	for _, tt := range tests {
+		v, ok := maputil.GetByPath(tt.path, mp)
+		assert.Eq(t, tt.ok, ok, tt.path)
+		assert.Eq(t, tt.want, v, tt.path)
+	}
+
+	// the same through the other get entries
+	assert.Eq(t, "a1", maputil.DeepGet(mp, "top.arr[1]"))
+	assert.Eq(t, "t1", maputil.QuietGet(mp, "tags[1]"))
+
+	v, ok := maputil.GetByPathKeys(mp, []string{"top", "arr[1]"})
+	assert.True(t, ok)
+	assert.Eq(t, "a1", v)
+
+	v, ok = maputil.GetFromAny("top.arr[0]", mp)
+	assert.True(t, ok)
+	assert.Eq(t, "a0", v)
+
+	// a slice-rooted data: the index must follow a key name
+	v, ok = maputil.GetFromAny("1.name", []map[string]any{{"name": "n0"}, {"name": "n1"}})
+	assert.True(t, ok)
+	assert.Eq(t, "n1", v)
+}
+
 var testMp01 = map[string]any{
 	"key0": "v0",
 	"key1": "v1",

@@ -37,7 +37,18 @@ func GetFromAny(path string, data any) (val any, ok bool) {
 		return data, true
 	}
 
-	return getByPathKeys(data, strings.Split(path, "."))
+	keys := strings.Split(path, ".")
+	if val, ok = getByPathKeys(data, keys); ok {
+		return
+	}
+
+	// retry with the slice indexes expanded in the key segments. eg: "arr[2]"
+	if hasArrIndexIn(keys) {
+		if exp := expandPathKeys(keys); len(exp) > len(keys) {
+			return getByPathKeys(data, exp)
+		}
+	}
+	return nil, false
 }
 
 // GetByPath get value by key path from a map(map[string]any). eg "top" "top.sub"
@@ -49,12 +60,12 @@ func GetByPath(path string, mp map[string]any) (val any, ok bool) {
 		return val, true
 	}
 
-	// no sub key
-	if len(mp) == 0 || strings.IndexByte(path, '.') < 1 {
+	// no sub key. eg: "top", "[0]"
+	if len(mp) == 0 || (strings.IndexByte(path, '.') < 1 && !hasArrIndex(path)) {
 		return nil, false
 	}
 
-	// key is path. eg: "top.sub"
+	// key is path. eg: "top.sub", "top.arr[2]"
 	return GetByPathKeys(mp, strings.Split(path, "."))
 }
 
@@ -74,15 +85,83 @@ func GetByPathKeys(mp map[string]any, keys []string) (val any, ok bool) {
 		return mp, true
 	}
 
+	if val, ok = getByPathKeysOfMap(mp, keys); ok {
+		return
+	}
+
+	// retry with the slice indexes expanded in the key segments. eg: "arr[2]"
+	// NOTICE: the literal key is matched first, so a key that really contains
+	// brackets (eg. "child[x]", "a[0]") keeps working as before.
+	if hasArrIndexIn(keys) {
+		if exp := expandPathKeys(keys); len(exp) > kl {
+			return getByPathKeysOfMap(mp, exp)
+		}
+	}
+	return nil, false
+}
+
+// getByPathKeysOfMap get value from a map by the plain key path, no index expansion.
+func getByPathKeysOfMap(mp map[string]any, keys []string) (val any, ok bool) {
 	// find top item data use top key
 	var item any
-	topK := keys[0]
-	if item, ok = mp[topK]; !ok {
+	if item, ok = mp[keys[0]]; !ok {
 		return
 	}
 
 	// find sub item data use sub key
 	return getByPathKeys(item, keys[1:])
+}
+
+// hasArrIndexIn check if any key segment contains a slice index. eg: "arr[2]"
+func hasArrIndexIn(keys []string) bool {
+	for _, k := range keys {
+		if hasArrIndex(k) {
+			return true
+		}
+	}
+	return false
+}
+
+// expandPathKeys expands the trailing slice indexes of the key segments into
+// separate numeric keys. eg:
+//
+//	["top", "arr[2]"]  -> ["top", "arr", "2"]
+//	["top", "m[0][1]"] -> ["top", "m", "0", "1"]
+//
+// A segment without a valid trailing index is kept as-is.
+func expandPathKeys(keys []string) (expanded []string) {
+	expanded = make([]string, 0, len(keys))
+	for _, seg := range keys {
+		expanded = append(expanded, expandSegIndex(seg)...)
+	}
+	return
+}
+
+// expandSegIndex splits the trailing "[N]" indexes of a key segment.
+// eg: "arr[2]" -> ["arr", "2"], "matrix[0][1]" -> ["matrix", "0", "1"].
+// The segment is returned unchanged when it has no valid trailing index, so
+// a key with a literal bracket (eg. "child[x]", "arr[-1]") is kept as-is.
+func expandSegIndex(seg string) []string {
+	var idxs []string
+	for hasArrIndex(seg) {
+		pos := strings.LastIndexByte(seg, '[')
+		if pos <= 0 { // eg: "[0]", the index must follow a key name
+			break
+		}
+
+		idx := seg[pos+1 : len(seg)-1]
+		if i, err := strconv.Atoi(idx); err != nil || i < 0 {
+			break
+		}
+
+		idxs = append([]string{idx}, idxs...)
+		seg = seg[:pos]
+	}
+
+	if len(idxs) == 0 {
+		return []string{seg}
+	}
+	return append([]string{seg}, idxs...)
 }
 
 func getByPathKeys(item any, keys []string) (val any, ok bool) {

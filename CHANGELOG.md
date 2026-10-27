@@ -12,6 +12,15 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 
 ## [Unreleased]
 
+### Added
+
+- **`maputil.GetByPath`**: the bracket index syntax works on the get side now —
+  `GetByPath("top.arr[1]", mp)` reads the slice element, and a segment can carry more than one
+  index (`"top.matrix[0][1]"`). `GetByPathKeys` and `GetFromAny` support it as well, and the
+  top-level key is included (`"tags[0]"`), which `SetByPath` already did. The literal key is
+  always matched first, so a key that really contains brackets (eg. `"child[x]"`, `"a[0]"`)
+  keeps working; the dot-index style (`"top.arr.1"`) is unchanged.
+
 ### Fixed
 
 - **`maputil.SetByPath`**: a negative slice index panicked with `reflect: slice index out of
