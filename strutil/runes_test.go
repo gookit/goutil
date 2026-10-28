@@ -80,3 +80,36 @@ func TestWordWrap(t *testing.T) {
 	s = "hello, world"
 	assert.Eq(t, "hello,\nworld", strutil.WordWrap(s, 3))
 }
+
+func TestWordWrap_preservesWordSeparators(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		width int
+		want  string
+	}{
+		{"unwrapped words", "hello world", 80, "hello world"},
+		{"exact width", "alpha beta", 10, "alpha beta"},
+		{"separator exceeds width", "alpha beta", 9, "alpha\nbeta"},
+		{"multiple lines", "one two three", 6, "one\ntwo\nthree"},
+		{"wide runes", "你好 world", 10, "你好 world"},
+		{"combining rune", "a\u0301 b", 3, "a\u0301 b"},
+		{"zero width combining token", "\u0301 a", 1, "\u0301\na"},
+		{"zero width format token", "\u200b a", 1, "\u200b\na"},
+		{"zero width control token", "\t a", 1, "\t\na"},
+		{"existing newline without extra blank line", "\n a", 1, "\na"},
+		{"multiple spaces", "one  two", 20, "one  two"},
+		{"surrounding spaces", " one two ", 20, " one two "},
+		{"only spaces", "  ", 5, "  "},
+		{"existing newline without wrap", "one\ntwo three", 80, "one\ntwo three"},
+		{"single word", "hello", 80, "hello"},
+		{"long words", "hello, world", 3, "hello,\nworld"},
+		{"existing wide wrap", "hello 你好, world 世界", 6, "hello\n你好,\nworld\n世界"},
+		{"empty", "", 5, ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Eq(t, tt.want, strutil.WordWrap(tt.input, tt.width))
+		})
+	}
+}

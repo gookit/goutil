@@ -207,14 +207,21 @@ func WidthWrap(s string, w int) string {
 }
 
 // WordWrap text string and limit width.
+// Spaces between words are retained within a line and count toward its width.
+// A separating space becomes a newline when the next word does not fit;
+// words longer than w are kept whole.
 func WordWrap(s string, w int) string {
 	tmpW := 0
 	out := ""
 
-	for _, sub := range strings.Split(s, " ") {
+	for i, sub := range strings.Split(s, " ") {
 		cw := TextWidth(sub)
-		if tmpW+cw > w {
-			if tmpW != 0 {
+		separator := ""
+		if i > 0 {
+			separator = " "
+		}
+		if tmpW+len(separator)+cw > w {
+			if tmpW != 0 || (out != "" && !strings.HasSuffix(out, "\n")) {
 				out += "\n"
 			}
 
@@ -224,8 +231,8 @@ func WordWrap(s string, w int) string {
 			continue
 		}
 
-		out += sub
-		tmpW += cw
+		out += separator + sub
+		tmpW += len(separator) + cw
 	}
 	return out
 }
