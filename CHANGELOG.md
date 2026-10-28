@@ -23,6 +23,14 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 
 ### Fixed
 
+- **`strutil.WordWrap`**: dropped every word separator, so `WordWrap("hello world", 80)` returned
+  `helloworld`. The spaces between words are kept and count toward the line width now; a separator
+  becomes a newline when the next word does not fit, and a word longer than the width is still kept
+  whole. Note: because the separators count now, a line can wrap one position earlier than before.
+- **`jsonutil.StripComments`**: removed a `/* ... */` that sat inside a JSON string value, so
+  `{"header":"/* generated */"}` lost its value. The block-comment pass matches string literals
+  and line comments too and only drops the real block comments, so an escaped quote or backslash,
+  a URL and a marker inside a line comment all survive.
 - **`maputil.SetByPath`**: a negative slice index panicked with `reflect: slice index out of
   range`, both for an index key (`"list.-1"`) and for the bracket syntax (`"list[-1]"`). The index
   is parsed and validated now, so an invalid index returns an error and the data is left as it was;
