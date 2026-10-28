@@ -118,14 +118,19 @@ func IsObject(s string) bool {
 	return false
 }
 
-// `(?s:` enable match multi line
-var jsonMLComments = regexp.MustCompile(`(?s:/\*.*?\*/\s*)`)
+// Match strings and line comments too, so their contents cannot start a block comment.
+var jsonMLComments = regexp.MustCompile(`(?s:"(?:\\.|[^"\\])*"|//[^\r\n]*|/\*.*?\*/\s*)`)
 
 // StripComments strip comments for a JSON string
 func StripComments(src string) string {
 	// multi line comments
 	if strings.Contains(src, "/*") {
-		src = jsonMLComments.ReplaceAllString(src, "")
+		src = jsonMLComments.ReplaceAllStringFunc(src, func(s string) string {
+			if strings.HasPrefix(s, "/*") {
+				return ""
+			}
+			return s
+		})
 	}
 
 	// single line comments

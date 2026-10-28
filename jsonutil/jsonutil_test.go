@@ -1,6 +1,7 @@
 package jsonutil_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/gookit/goutil/jsonutil"
@@ -302,4 +303,30 @@ comments
 	ep := `{"name":"app","debug":false,"baseKey":"value","age":123,"envKey1":"${NotExist|defValue}","map1":{"key":"val","key1":"val1","key2":"val2"},"arr1":["val","val1","val2","http://a.com"],"lang":{"dir":"res/lang","allowed":{"en":"val","zh-CN":"val2"}}}`
 	s = jsonutil.StripComments(s)
 	assert.Eq(t, ep, s)
+}
+
+func TestStripComments_preservesStringValues(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		header string
+	}{
+		{"quoted marker", `{"header":"/* generated */"}`, "/* generated */"},
+		{"leading block", "/* config */\n" + `{"header":"/* generated */"}`, "/* generated */"},
+		{"mixed comments", `/* config */ {"header":"/* generated */"} // config`, "/* generated */"},
+		{"escaped quote and backslash", `{"header":"say \"/* generated */\" \\ keep"} // config`, `say "/* generated */" \ keep`},
+		{"URL", `{"header":"/* generated */","url":"https://example.org"}`, "/* generated */"},
+		{"marker in line comment", "// ignore the \"/* marker\n" + `{"header":"kept"} /* config */`, "kept"},
+		{"block at EOF", `{"header":"kept"} /* config */`, "kept"},
+		{"line at EOF", `{"header":"kept"} // config`, "kept"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var config struct {
+				Header string `json:"header"`
+			}
+			assert.NoErr(t, json.Unmarshal([]byte(jsonutil.StripComments(tt.input)), &config))
+			assert.Eq(t, tt.header, config.Header)
+		})
+	}
 }
