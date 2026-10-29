@@ -189,10 +189,13 @@ func MakeByKeys(keys []string, val any) (mp map[string]any) {
 	// tip: a negative index is not a valid slice index, keep it as a literal key.
 	lastKey := keys[size-1]
 	if newK, idx, ok := parseArrKeyIndex(lastKey); ok && idx >= 0 {
-		// valTyp := reflect.TypeOf(val)
-		sliTyp := reflect.SliceOf(reflect.TypeOf(val))
+		nv := reflect.ValueOf(val)
+		if !nv.IsValid() {
+			nv = reflect.ValueOf(&val).Elem()
+		}
+		sliTyp := reflect.SliceOf(nv.Type())
 		sliVal := reflect.MakeSlice(sliTyp, idx+1, idx+1)
-		sliVal.Index(idx).Set(reflect.ValueOf(val))
+		sliVal.Index(idx).Set(nv)
 
 		// update val and last key
 		val = sliVal.Interface()
