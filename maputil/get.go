@@ -213,6 +213,16 @@ func getByPathKeys(item any, keys []string) (val any, ok bool) {
 			}
 
 			rv := reflect.ValueOf(tData)
+
+			// a typed map that the cases above do not cover. eg: map[string]int
+			if rv.Kind() == reflect.Map {
+				if v := mapValueByStringKey(rv, k); v.IsValid() {
+					item = v.Interface()
+					continue
+				}
+				return nil, false
+			}
+
 			// check is slice
 			if rv.Kind() == reflect.Slice {
 				if k == Wildcard {
@@ -257,6 +267,22 @@ func getByPathKeys(item any, keys []string) (val any, ok bool) {
 	}
 
 	return item, true
+}
+
+// mapValueByStringKey returns the value of a string path segment in a map whose key
+// type is a string kind, so a typed map like map[string]int resolves too. The zero
+// Value means the key is not found (or the map is keyed by something else).
+func mapValueByStringKey(rv reflect.Value, segment string) reflect.Value {
+	keyTyp := rv.Type().Key()
+	if keyTyp.Kind() != reflect.String {
+		return reflect.Value{}
+	}
+
+	key := reflect.ValueOf(segment)
+	if !key.Type().AssignableTo(keyTyp) {
+		key = key.Convert(keyTyp)
+	}
+	return rv.MapIndex(key)
 }
 
 // Keys get all keys of the given map.

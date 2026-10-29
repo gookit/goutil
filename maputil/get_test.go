@@ -286,6 +286,41 @@ func TestGetByPath_bracketIndex(t *testing.T) {
 	assert.Eq(t, "n1", v)
 }
 
+// TestGetByPath_typedMap: a typed map the type switch does not cover, eg. map[string]int,
+// resolves by its string key, so a value stored by Set() can be read by path.
+func TestGetByPath_typedMap(t *testing.T) {
+	type strKey string
+
+	mp := map[string]any{
+		"ints":  map[string]int{"a": 1, "b": 2},
+		"bools": map[string]bool{"on": true},
+		"named": map[strKey]string{"k": "v"},
+		"deep":  map[string]any{"m": map[string]int{"x": 7}},
+	}
+
+	tests := []struct {
+		path string
+		want any
+		ok   bool
+	}{
+		{"ints.a", 1, true},
+		{"ints.b", 2, true},
+		{"ints.none", nil, false},
+		{"bools.on", true, true},
+		{"named.k", "v", true},
+		{"deep.m.x", 7, true},
+	}
+	for _, tt := range tests {
+		v, ok := maputil.GetByPath(tt.path, mp)
+		assert.Eq(t, tt.ok, ok, tt.path)
+		assert.Eq(t, tt.want, v, tt.path)
+	}
+
+	v, ok := maputil.GetByPathKeys(mp, []string{"deep", "m", "x"})
+	assert.True(t, ok)
+	assert.Eq(t, 7, v)
+}
+
 var testMp01 = map[string]any{
 	"key0": "v0",
 	"key1": "v1",
