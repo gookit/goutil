@@ -92,8 +92,11 @@ func MergeStringMap(src, dst map[string]string, ignoreCase bool) map[string]stri
 	if len(src) == 0 {
 		return dst
 	}
-	if len(dst) == 0 {
+	if len(dst) == 0 && !ignoreCase {
 		return src
+	}
+	if dst == nil {
+		dst = make(map[string]string, len(src))
 	}
 
 	for k, v := range src {
