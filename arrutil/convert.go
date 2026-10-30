@@ -85,7 +85,11 @@ func IntsToString[T comdef.Integer](ints []T) string {
 		if i > 0 {
 			sb.WriteByte(',')
 		}
-		sb.WriteString(strconv.FormatInt(int64(v), 10))
+		if v < 0 {
+			sb.WriteString(strconv.FormatInt(int64(v), 10))
+		} else {
+			sb.WriteString(strconv.FormatUint(uint64(v), 10))
+		}
 	}
 	sb.WriteByte(']')
 	return sb.String()
