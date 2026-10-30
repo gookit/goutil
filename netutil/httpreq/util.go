@@ -246,10 +246,15 @@ func AppendQueryToURLString(urlStr string, query url.Values) string {
 		return urlStr
 	}
 
-	if strings.ContainsRune(urlStr, '?') {
-		return urlStr + "&" + query.Encode()
+	var fragment string
+	if pos := strings.IndexByte(urlStr, '#'); pos >= 0 {
+		urlStr, fragment = urlStr[:pos], urlStr[pos:]
 	}
-	return urlStr + "?" + query.Encode()
+
+	if strings.ContainsRune(urlStr, '?') {
+		return urlStr + "&" + query.Encode() + fragment
+	}
+	return urlStr + "?" + query.Encode() + fragment
 }
 
 // MakeBody make request body, convert data to io.Reader
