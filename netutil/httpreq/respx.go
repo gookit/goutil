@@ -19,6 +19,8 @@ type RespX struct {
 	CostTime int64
 	// body data buffer
 	bodyBuf *bytes.Buffer
+	// error retained with the cached response bytes
+	bodyErr error
 }
 
 // WrapResp wrap http.Response to RespX
@@ -59,7 +61,7 @@ func (r *RespX) String() string { return ResponseToString(r.Response) }
 // NOTE: will close the response.Body
 func (r *RespX) ReadBody() error {
 	if r.bodyBuf != nil {
-		return nil
+		return r.bodyErr
 	}
 
 	// prof: assign memory before read
@@ -71,8 +73,8 @@ func (r *RespX) ReadBody() error {
 
 	// NOTICE: must close resp body.
 	defer r.SafeCloseBody()
-	_, err := r.bodyBuf.ReadFrom(r.Body)
-	return err
+	_, r.bodyErr = r.bodyBuf.ReadFrom(r.Body)
+	return r.bodyErr
 }
 
 // BodyBuffer read body to buffer. NOTE: will close the response.Body
@@ -114,6 +116,7 @@ func (r *RespX) CloseBuffer() {
 	if r.bodyBuf != nil {
 		r.bodyBuf.Reset()
 		r.bodyBuf = nil
+		r.bodyErr = nil
 	}
 }
 
