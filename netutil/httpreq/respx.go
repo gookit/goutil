@@ -106,7 +106,7 @@ func (r *RespX) bindJSON(ptr any, checkStatus bool) error {
 	if ptr == nil {
 		return nil
 	}
-	return json.NewDecoder(r.bodyBuf).Decode(ptr)
+	return json.NewDecoder(bytes.NewReader(r.bodyBuf.Bytes())).Decode(ptr)
 }
 
 // CloseBuffer close body buffer
