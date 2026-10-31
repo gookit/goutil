@@ -12,25 +12,28 @@ import (
 )
 
 func TestElapsedNow(t *testing.T) {
-	// hrs
-	st := time.Now().Add(-204 * time.Minute)
-	assert.Eq(t, "3.40hrs", timex.ElapsedNow(st))
+	// The exact formatting is checked with a fixed end time: ElapsedNow takes time.Now()
+	// itself, and the few microseconds between that call and the start time turn
+	// "204.00ms" into "204.01ms" on a slow CI runner.
+	now := time.Now()
+	cases := []struct {
+		elapsed time.Duration
+		want    string
+	}{
+		{204 * time.Minute, "3.40hrs"},
+		{184 * time.Second, "3.07mins"},
+		{1204 * time.Millisecond, "1.204s"},
+		{204 * time.Millisecond, "204.00ms"},
+	}
+	for _, c := range cases {
+		assert.Eq(t, c.want, timex.Elapsed(now.Add(-c.elapsed), now))
+	}
 
-	// min
-	st = time.Now().Add(-184 * time.Second)
-	assert.Eq(t, "3.07mins", timex.ElapsedNow(st))
+	// sub-microsecond values: only the unit is stable
+	assert.StrContains(t, timex.Elapsed(now.Add(-2304*time.Nanosecond), now), "2.")
 
-	// s
-	st = time.Now().Add(-1204 * time.Millisecond)
-	assert.Eq(t, "1.204s", timex.ElapsedNow(st))
-
-	// ms
-	st = time.Now().Add(-204 * time.Millisecond)
-	assert.Eq(t, "204.00ms", timex.ElapsedNow(st))
-
-	// us
-	st = time.Now().Add(-2304 * time.Nanosecond)
-	assert.StrContains(t, timex.ElapsedNow(st), "2.")
+	// ElapsedNow still measures from the given start time to now
+	assert.StrContains(t, timex.ElapsedNow(now.Add(-2*time.Hour)), "hrs")
 }
 
 func TestFormatDuration(t *testing.T) {
