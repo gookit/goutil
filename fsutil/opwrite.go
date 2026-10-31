@@ -144,6 +144,7 @@ func WriteOSFile(f *os.File, data any) (n int, err error) {
 }
 
 // CopyFile copy a file to another file path.
+// It returns an error if both opened paths refer to the same file.
 func CopyFile(srcPath, dstPath string) error {
 	srcFile, err := os.OpenFile(srcPath, FsRFlags, 0)
 	if err != nil {
@@ -151,12 +152,30 @@ func CopyFile(srcPath, dstPath string) error {
 	}
 	defer srcFile.Close()
 
-	// create and open file
-	dstFile, err := QuickOpenFile(dstPath, FsCWTFlags)
+	srcInfo, err := srcFile.Stat()
+	if err != nil {
+		return err
+	}
+
+	// Open without truncating so identity is checked against the opened file.
+	dstFile, err := QuickOpenFile(dstPath, FsCWTFlags&^os.O_TRUNC)
 	if err != nil {
 		return err
 	}
 	defer dstFile.Close()
+
+	dstInfo, err := dstFile.Stat()
+	if err != nil {
+		return err
+	}
+	if os.SameFile(srcInfo, dstInfo) {
+		return fmt.Errorf("fsutil: source and destination refer to the same file: %s", srcPath)
+	}
+	if dstInfo.Mode().IsRegular() {
+		if err := dstFile.Truncate(0); err != nil {
+			return err
+		}
+	}
 
 	_, err = io.Copy(dstFile, srcFile)
 	return err
