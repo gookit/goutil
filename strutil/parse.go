@@ -231,7 +231,7 @@ func ToByteSize(sizeStr string) (uint64, error) {
 			lastPos--
 		}
 	} else if IsNumChar(sizeStr[lastPos]) { // not unit suffix. eg: 346
-		return strconv.ParseUint(sizeStr, 10, 32)
+		return strconv.ParseUint(sizeStr, 10, 64)
 	}
 
 	multiplier := float64(1)
