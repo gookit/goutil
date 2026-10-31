@@ -205,10 +205,10 @@ func UpdateContents(filePath string, handleFn func(bs []byte) []byte) error {
 	return osFile.Truncate(int64(len(bs)))
 }
 
-// CreateSymlink creates a symbolic link
+// CreateSymlink creates a symbolic link, replacing existing links or files at linkPath.
 func CreateSymlink(target, linkPath string) error {
-	// Check if the link already exists
-	if IsFile(linkPath) {
+	// Check the link itself so dangling and directory links can be replaced too.
+	if IsSymlink(linkPath) || IsFile(linkPath) {
 		// Remove existing link/file
 		if err := os.Remove(linkPath); err != nil {
 			return fmt.Errorf("failed to remove existing symlink: %w", err)
