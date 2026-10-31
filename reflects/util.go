@@ -81,7 +81,7 @@ func Len(v reflect.Value) int {
 	case reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
 		return v.Len()
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		return len(strconv.FormatInt(int64(v.Uint()), 10))
+		return len(strconv.FormatUint(v.Uint(), 10))
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return len(strconv.FormatInt(v.Int(), 10))
 	case reflect.Float32, reflect.Float64:

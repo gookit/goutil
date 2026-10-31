@@ -1,6 +1,7 @@
 package reflects_test
 
 import (
+	"math"
 	"reflect"
 	"testing"
 	"time"
@@ -25,6 +26,8 @@ func TestLen(t *testing.T) {
 	for _, sample := range tests {
 		is.Eq(3, reflects.Len(reflect.ValueOf(sample)))
 	}
+
+	is.Eq(20, reflects.Len(reflect.ValueOf(uint64(math.MaxUint64))))
 
 	ptrArr := &[]string{"a", "b"}
 	is.Eq(2, reflects.Len(reflect.ValueOf(ptrArr)))
