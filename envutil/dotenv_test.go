@@ -100,3 +100,15 @@ func Test_Dotenv_envPriority(t *testing.T) {
 		assert.Eq(t, "dev", os.Getenv(key))
 	})
 }
+
+func Test_Dotenv_upperKey(t *testing.T) {
+	t.Setenv("t_app_key", "")
+	t.Setenv("T_APP_KEY", "")
+
+	c := envutil.NewDotenv()
+	c.UpperKey = false
+	c.DotenvFirst = true
+
+	assert.NoErr(t, c.LoadText("t_app_key=value"))
+	assert.Eq(t, map[string]string{"t_app_key": "value"}, c.LoadedData())
+}
