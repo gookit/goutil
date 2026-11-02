@@ -86,9 +86,15 @@ func (o *Option) WithClient(cli *Client) *Option {
 
 // Copy option for new request, use for repeat send request
 func (o *Option) Copy() *Option {
-	o.Body = nil
 	on := *o
+	on.Body = nil
 	on.sent = false
+	if o.HeaderMap != nil {
+		on.HeaderMap = make(map[string]string, len(o.HeaderMap))
+		for key, value := range o.HeaderMap {
+			on.HeaderMap[key] = value
+		}
+	}
 	return &on
 }
 
