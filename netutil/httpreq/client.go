@@ -71,9 +71,17 @@ func (h *Client) SetTimeout(ms int) *Client {
 // SetMaxIdleConns Set the maximum number of idle connections.
 func (h *Client) SetMaxIdleConns(maxIdleConns, maxIdleConnsPerHost int) {
 	if hc, ok := h.client.(*http.Client); ok {
-		transport := hc.Transport.(*http.Transport)
-		transport.MaxIdleConns = maxIdleConns
-		transport.MaxIdleConnsPerHost = maxIdleConnsPerHost
+		transport, _ := hc.Transport.(*http.Transport)
+		if hc.Transport == nil {
+			if defaultTransport, ok := http.DefaultTransport.(*http.Transport); ok {
+				transport = defaultTransport.Clone()
+				hc.Transport = transport
+			}
+		}
+		if transport != nil {
+			transport.MaxIdleConns = maxIdleConns
+			transport.MaxIdleConnsPerHost = maxIdleConnsPerHost
+		}
 	}
 }
 
