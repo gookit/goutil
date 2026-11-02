@@ -256,7 +256,7 @@ func (h *Client) SendWithOpt(url string, opt *Option) (*http.Response, error) {
 			url = AppendQueryToURLString(url, MakeQuery(opt.Data))
 			opt.Body = nil
 		} else if opt.Body == nil {
-			cType := strutil.OrElse(h.headerMap[httpctype.Key], opt.ContentType)
+			cType := strutil.OrElse(opt.ContentType, h.headerMap[httpctype.Key])
 			opt.Body = MakeBody(opt.Data, cType)
 		}
 	}
