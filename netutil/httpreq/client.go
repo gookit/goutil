@@ -297,7 +297,13 @@ func (h *Client) sendRequest(req *http.Request, opt *Option) (*http.Response, er
 
 	cli := h // if timeout changed, create new client
 	if opt.Timeout > 0 && opt.Timeout != cli.timeout {
-		cli = NewClient(opt.Timeout)
+		if httpClient, ok := h.client.(*http.Client); ok {
+			requestClient := *httpClient
+			requestClient.Timeout = time.Duration(opt.Timeout) * time.Millisecond
+			cli = &Client{client: &requestClient}
+		} else {
+			cli = NewClient(opt.Timeout)
+		}
 	}
 
 	if h.beforeSend != nil {
