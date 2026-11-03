@@ -132,7 +132,9 @@ func (c *Dotenv) parseAndSetEnv(contents string) error {
 
 	// Set to ENV
 	for key, val := range envMp {
-		key = strings.ToUpper(key)
+		if c.UpperKey {
+			key = strings.ToUpper(key)
+		}
 		if !c.DotenvFirst {
 			if _, ok := os.LookupEnv(key); ok {
 				if _, loaded := c.loadData[key]; !loaded {
