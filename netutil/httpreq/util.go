@@ -39,12 +39,13 @@ func IsSuccessful(statusCode int) bool {
 	return statusCode >= http.StatusOK && statusCode < 300
 }
 
-// IsRedirect check response status code is in [301, 302, 303, 307]
+// IsRedirect check response status code is in [301, 302, 303, 307, 308]
 func IsRedirect(statusCode int) bool {
 	return statusCode == http.StatusMovedPermanently ||
 		statusCode == http.StatusFound ||
 		statusCode == http.StatusSeeOther ||
-		statusCode == http.StatusTemporaryRedirect
+		statusCode == http.StatusTemporaryRedirect ||
+		statusCode == http.StatusPermanentRedirect
 }
 
 // IsForbidden is this response forbidden(403)
