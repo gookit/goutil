@@ -147,22 +147,11 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 				}
 
 				if !isLast {
-					if elemTyp.Kind() == reflect.Map {
-						err := setMapByKeys(tmpV.Index(idx), keys[i+1:], nv)
-						if err != nil {
-							return err
-						}
-
-						// tmpV.Index(idx).Set(elemV)
-						rv.SetMapIndex(rftK, tmpV)
-					} else {
-						err = fmt.Errorf(
-							"key %s[%d] elem must be map for set sub-value by remain path: %s",
-							key,
-							idx,
-							strings.Join(keys[i:], "."),
-						)
+					if err = setSliceElemByKeys(tmpV, idx, keys[i+1:], nv); err != nil {
+						err = fmt.Errorf("key %s[%d]: %w", key, idx, err)
+						break
 					}
+					rv.SetMapIndex(rftK, tmpV)
 				} else {
 					// last - set value
 					if nv, err = setElemValue(nv, tmpV.Type().Elem()); err != nil {
@@ -274,14 +263,11 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 							tmpV = reflect.AppendSlice(tmpV, newAdd)
 						}
 
-						// rv = tmpV.Index(idx) // TODO
 						if i+1 == maxI {
 							tmpV.Index(idx).Set(nv)
-						} else {
-							err := setMapByKeys(tmpV.Index(idx), keys[i+1:], nv)
-							if err != nil {
-								return err
-							}
+						} else if err = setSliceElemByKeys(tmpV, idx, keys[i+2:], nv); err != nil {
+							err = fmt.Errorf("key %s.%d: %w", key, idx, err)
+							break
 						}
 
 						rv.SetMapIndex(rftK, tmpV)
@@ -331,6 +317,33 @@ func setMapByKeys(rv reflect.Value, keys []string, nv reflect.Value) (err error)
 		}
 	}
 	return
+}
+
+// setSliceElemByKeys sets the value by the remaining keys in the map at index idx
+// of the slice. The elem may be a map, or an any/pointer holding one, like the
+// []any values decoded from JSON or YAML. An empty elem gets a new map.
+func setSliceElemByKeys(sli reflect.Value, idx int, keys []string, nv reflect.Value) error {
+	elem := sli.Index(idx)
+	realV, _ := getRealVal(elem)
+	if realV.Kind() == reflect.Map && !realV.IsNil() {
+		return setMapByKeys(realV, keys, nv)
+	}
+
+	if !realV.IsValid() || realV.IsZero() {
+		newVal := reflect.ValueOf(MakeByKeys(keys, nv.Interface()))
+		if !newVal.Type().AssignableTo(elem.Type()) {
+			return fmt.Errorf("cannot set %s value to a %s slice elem", newVal.Type(), elem.Type())
+		}
+		elem.Set(newVal)
+		return nil
+	}
+
+	return fmt.Errorf(
+		"slice elem#%d type is %s, cannot set sub-value by path %q",
+		idx,
+		realV.Kind(),
+		strings.Join(keys, "."),
+	)
 }
 
 func getRealVal(rv reflect.Value) (reflect.Value, bool) {
