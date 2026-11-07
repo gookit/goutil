@@ -275,3 +275,48 @@ func TestSetByPath_sliceTypeMismatch(t *testing.T) {
 	mp5 := map[string]any{"list": []string{"a"}}
 	assert.ErrMsgContains(t, maputil.SetByPath(&mp5, "list[0]", nil), "cannot set a nil value to a string slice elem")
 }
+
+func TestSetByPath_mapInSliceElem(t *testing.T) {
+	// []any of maps, as decoded from JSON or YAML
+	newMp := func() map[string]any {
+		return map[string]any{
+			"list": []any{map[string]any{"k": 1}},
+			"app":  map[string]any{"items": []any{1, map[string]any{"c": "x"}}},
+		}
+	}
+
+	for _, path := range []string{"list.0.k", "list[0].k"} {
+		mp := newMp()
+		assert.NoErr(t, maputil.SetByPath(&mp, path, 5))
+		assert.Eq(t, []any{map[string]any{"k": 5}}, mp["list"])
+	}
+	for _, path := range []string{"app.items.1.c", "app.items[1].c"} {
+		mp := newMp()
+		assert.NoErr(t, maputil.SetByPath(&mp, path, "y"))
+		assert.Eq(t, []any{1, map[string]any{"c": "y"}}, mp["app"].(map[string]any)["items"])
+	}
+
+	// a deeper path adds the sub map
+	mp := newMp()
+	assert.NoErr(t, maputil.SetByPath(&mp, "list.0.sub.k", 2))
+	assert.Eq(t, []any{map[string]any{"k": 1, "sub": map[string]any{"k": 2}}}, mp["list"])
+
+	// a new elem gets a new map
+	mp = newMp()
+	assert.NoErr(t, maputil.SetByPath(&mp, "list.1.k", 2))
+	assert.Eq(t, []any{map[string]any{"k": 1}, map[string]any{"k": 2}}, mp["list"])
+	mp = newMp()
+	assert.NoErr(t, maputil.SetByPath(&mp, "list[1].k", 2))
+	assert.Eq(t, []any{map[string]any{"k": 1}, map[string]any{"k": 2}}, mp["list"])
+
+	// a typed slice of maps: the index is not used as a key of the elem map
+	mp = map[string]any{"list": []map[string]any{{"k": 1}}}
+	assert.NoErr(t, maputil.SetByPath(&mp, "list.0.k", 5))
+	assert.Eq(t, []map[string]any{{"k": 5}}, mp["list"])
+
+	// the elem is not a map
+	mp = newMp()
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp, "app.items.0.c", "y"), "slice elem#0 type is int")
+	assert.ErrMsgContains(t, maputil.SetByPath(&mp, "app.items[0].c", "y"), "slice elem#0 type is int")
+	assert.Eq(t, []any{1, map[string]any{"c": "x"}}, mp["app"].(map[string]any)["items"])
+}
