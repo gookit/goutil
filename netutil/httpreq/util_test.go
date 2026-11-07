@@ -29,6 +29,10 @@ func TestBasicAuthConf_Value(t *testing.T) {
 	assert.True(t, bac.IsValid())
 }
 
+func TestIsRedirect(t *testing.T) {
+	assert.True(t, httpreq.IsRedirect(http.StatusPermanentRedirect))
+}
+
 func TestAddHeaders(t *testing.T) {
 	req, err := http.NewRequest("GET", "inhere.xyz", nil)
 	assert.NoErr(t, err)
