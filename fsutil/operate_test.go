@@ -1,7 +1,10 @@
 package fsutil_test
 
 import (
+	"archive/zip"
+	"bytes"
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -179,4 +182,25 @@ func TestQuietRemove(t *testing.T) {
 
 func TestUnzip(t *testing.T) {
 	assert.Err(t, fsutil.Unzip("/path-not-exists", ""))
+}
+
+func TestUnzipCreatesParentDir(t *testing.T) {
+	var buf bytes.Buffer
+	writer := zip.NewWriter(&buf)
+	file, err := writer.Create("docs/readme.txt")
+	if !assert.NoErr(t, err) {
+		return
+	}
+	_, err = file.Write([]byte("hello"))
+	assert.NoErr(t, err)
+	assert.NoErr(t, writer.Close())
+
+	dir := t.TempDir()
+	archive := filepath.Join(dir, "test.zip")
+	assert.NoErr(t, os.WriteFile(archive, buf.Bytes(), 0600))
+	target := filepath.Join(dir, "out")
+	assert.NoErr(t, fsutil.Unzip(archive, target))
+	content, err := os.ReadFile(filepath.Join(target, "docs", "readme.txt"))
+	assert.NoErr(t, err)
+	assert.Eq(t, "hello", string(content))
 }
