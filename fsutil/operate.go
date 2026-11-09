@@ -291,6 +291,7 @@ func Unzip(archive, targetDir string) (err error) {
 	if err != nil {
 		return err
 	}
+	defer reader.Close()
 
 	if err = os.MkdirAll(targetDir, DefaultDirPerm); err != nil {
 		return
@@ -316,7 +317,7 @@ func Unzip(archive, targetDir string) (err error) {
 			return err
 		}
 
-		targetFile, err := os.OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
+		targetFile, err := OpenFile(fullPath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, file.Mode())
 		if err != nil {
 			_ = fileReader.Close()
 			return err
