@@ -5,6 +5,7 @@
 package timex
 
 import (
+	"encoding/json"
 	"time"
 
 	"github.com/gookit/goutil/arrutil"
@@ -299,15 +300,20 @@ func (t *Time) HowLongAgo(before time.Time) string {
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
 //
-// Tip: will auto match a format by strutil.ToTime()
+// JSON strings are decoded before matching a format with strutil.ToTime().
+// JSON null leaves the receiver unchanged; other JSON types return an error.
 func (t *Time) UnmarshalJSON(data []byte) error {
+	var value *string
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
 	// Ignore null, like in the main JSON package.
-	if string(data) == "null" {
+	if value == nil {
 		return nil
 	}
 
 	// Fractional seconds are handled implicitly by Parse.
-	tt, err := strutil.ToTime(string(data[1 : len(data)-1]))
+	tt, err := strutil.ToTime(*value)
 	if err == nil {
 		t.Time = tt
 	}
