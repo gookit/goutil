@@ -73,6 +73,46 @@ func TestFromNow(t *testing.T) {
 
 func TestHowLongAgo(t *testing.T) {
 	assert.Eq(t, "< 1 sec ago", timex.HowLongAgo(-23))
+
+	tests := []struct {
+		sec  int64
+		want string
+	}{
+		{0, "< 1 sec ago"},
+		{1, "1 sec ago"},
+		{2, "2 secs ago"},
+		{45, "45 secs ago"},
+		{46, "1 min ago"},
+		{89, "1 min ago"},
+		{90, "2 mins ago"},
+		{119, "2 mins ago"},
+		{44 * 60, "44 mins ago"},
+		{44*60 + 1, "1 hour ago"},
+		{89*60 + 59, "1 hour ago"},
+		{90 * 60, "2 hours ago"},
+		{21 * 3600, "21 hours ago"},
+		{21*3600 + 1, "1 day ago"},
+		{35*3600 + 1, "1 day ago"},
+		{36 * 3600, "2 days ago"},
+		{30 * 86400, "30 days ago"},
+		{30*86400 + 1, "1 month ago"},
+		{45 * 86400, "1 month ago"},
+		{45*86400 + 1, "2 months ago"},
+		{319 * 86400, "11 months ago"},
+		{320 * 86400, "1 year ago"},
+		{547 * 86400, "1 year ago"},
+		{548 * 86400, "2 years ago"},
+		{1000 * 86400, "3 years ago"},
+	}
+	for _, tt := range tests {
+		assert.Eq(t, tt.want, timex.HowLongAgo(tt.sec))
+	}
+
+	// a plural message never comes with the number 1. eg: "1 mins ago"
+	for sec := int64(0); sec < 3*360*86400; sec += 7 {
+		s := timex.HowLongAgo(sec)
+		assert.False(t, strings.HasPrefix(s, "1 ") && strings.HasSuffix(s, "s ago"), "%d seconds: %s", sec, s)
+	}
 }
 
 func TestTryToTime(t *testing.T) {

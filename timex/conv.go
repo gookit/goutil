@@ -72,9 +72,9 @@ var TimeMessages = []TimeMessage{
 	{"%d secs ago", []int{45, 1}},
 	{"1 min ago", []int{89}},
 	{"%d mins ago", []int{44 * 60, 60}},       // 89s - 44min
-	{"1 hour ago", []int{89 * 60}},            // 45min - 89min
+	{"1 hour ago", []int{90*60 - 1}},          // 45min - 89min
 	{"%d hours ago", []int{21 * 3600, 3600}},  // 90min - 21hr
-	{"1 day ago", []int{35 * 3600}},           // 22 - 35 hours
+	{"1 day ago", []int{36*3600 - 1}},         // 22 - 35 hours
 	{"%d days ago", []int{30 * 86400, 86400}}, // 36hr - 30 day
 	// {"1 week ago", []int{10 * 86400}},          // 7 - 10 days
 	// {"%d weeks ago", []int{30 * 86400, 604800}},  // 10 - 30 days
@@ -120,7 +120,8 @@ func HowLongAgo2(diffSec int64, tms []TimeMessage) string {
 	if len(secs) == 1 {
 		return msg
 	}
-	return fmt.Sprintf(msg, int64(diffInt/secs[1]))
+	// round to the nearest unit, so the first value after "1 hour ago" is "2 hours ago"
+	return fmt.Sprintf(msg, int64((diffInt+secs[1]/2)/secs[1]))
 }
 
 //
