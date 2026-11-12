@@ -10,16 +10,19 @@ import "fmt"
 //	fl, err := file.Stat()
 //	fmtSize := DataSize(fl.Size())
 func DataSize(size uint64) string {
-	switch {
-	case size < 1024:
+	if size < 1024 {
 		return fmt.Sprintf("%dB", size)
-	case size < 1024*1024:
-		return fmt.Sprintf("%.2fK", float64(size)/1024)
-	case size < 1024*1024*1024:
-		return fmt.Sprintf("%.2fM", float64(size)/1024/1024)
-	default:
-		return fmt.Sprintf("%.2fG", float64(size)/1024/1024/1024)
 	}
+
+	val, units := float64(size)/1024, "KMG"
+	// "%.2f" rounds 1023.995 and up to "1024.00", so those go to the next unit
+	for i := 0; i < len(units); i++ {
+		if val < 1023.995 || i == len(units)-1 {
+			return fmt.Sprintf("%.2f%c", val, units[i])
+		}
+		val /= 1024
+	}
+	return ""
 }
 
 // FormatBytes Format the byte size to be a readable string. eg: 1024 => 1 KB
@@ -34,7 +37,14 @@ func FormatBytes(bytes int) string {
 		div *= unit
 		exp++
 	}
-	return fmt.Sprintf("%.2f %cB", float64(bytes)/float64(div), "KMGTPE"[exp])
+
+	val := float64(bytes) / float64(div)
+	// "%.2f" would print 1023.995 and up as "1024.00", show 1.00 of the next unit instead
+	if val >= 1023.995 && exp < 5 {
+		val /= unit
+		exp++
+	}
+	return fmt.Sprintf("%.2f %cB", val, "KMGTPE"[exp])
 }
 
 var timeFormats = [][]int{
