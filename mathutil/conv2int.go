@@ -266,7 +266,11 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case *int64: // default support int64 ptr type
 		i64 = *tVal
 	case uint:
-		i64 = int64(tVal)
+		if uint64(tVal) > math.MaxInt64 {
+			err = fmt.Errorf("value overflow int64. input: %v", tVal)
+		} else {
+			i64 = int64(tVal)
+		}
 	case uint8:
 		i64 = int64(tVal)
 	case uint16:
@@ -274,7 +278,11 @@ func ToInt64With(in any, optFns ...ConvOptionFn[int64]) (i64 int64, err error) {
 	case uint32:
 		i64 = int64(tVal)
 	case uint64:
-		i64 = int64(tVal)
+		if tVal > math.MaxInt64 {
+			err = fmt.Errorf("value overflow int64. input: %v", tVal)
+		} else {
+			i64 = int64(tVal)
+		}
 	case float32:
 		// in strict mode, cannot convert float to int
 		if opt != nil && opt.StrictMode {
