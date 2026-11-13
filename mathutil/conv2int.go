@@ -406,15 +406,15 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 
 	switch tVal := in.(type) {
 	case int:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case int8:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case int16:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case int32:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case int64:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case uint:
 		uVal = tVal
 	case *uint: // default support uint ptr type
@@ -431,18 +431,19 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 		if opt != nil && opt.StrictMode {
 			return 0, comdef.ErrConvType
 		}
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case float64:
 		if opt != nil && opt.StrictMode {
 			return 0, comdef.ErrConvType
 		}
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case time.Duration:
-		uVal = uint(tVal)
+		uVal, err = signedToUnsigned[uint](tVal)
 	case comdef.Int64able: // eg: json.Number
 		var i64 int64
-		i64, err = tVal.Int64()
-		uVal = uint(i64)
+		if i64, err = tVal.Int64(); err == nil {
+			uVal, err = signedToUnsigned[uint](i64)
+		}
 	default:
 		if opt == nil {
 			err = comdef.ErrConvType
@@ -464,6 +465,15 @@ func ToUintWith(in any, optFns ...ConvOptionFn[uint]) (uVal uint, err error) {
 		}
 	}
 	return
+}
+
+// signedToUnsigned converts a signed integer or float to an unsigned type,
+// returning an error for negative values instead of wrapping around.
+func signedToUnsigned[T uint | uint64, S ~int | ~int8 | ~int16 | ~int32 | ~int64 | ~float32 | ~float64](v S) (T, error) {
+	if v < 0 {
+		return 0, fmt.Errorf("value is negative, cannot convert to unsigned. input: %v", v)
+	}
+	return T(v), nil
 }
 
 /*************************************************************
@@ -540,15 +550,15 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 
 	switch tVal := in.(type) {
 	case int:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case int8:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case int16:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case int32:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case int64:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case uint:
 		u64 = uint64(tVal)
 	case uint8:
@@ -565,18 +575,19 @@ func ToUint64With(in any, optFns ...ConvOptionFn[uint64]) (u64 uint64, err error
 		if opt != nil && opt.StrictMode {
 			return 0, comdef.ErrConvType
 		}
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case float64:
 		if opt != nil && opt.StrictMode {
 			return 0, comdef.ErrConvType
 		}
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case time.Duration:
-		u64 = uint64(tVal)
+		u64, err = signedToUnsigned[uint64](tVal)
 	case comdef.Int64able: // eg: json.Number
 		var i64 int64
-		i64, err = tVal.Int64()
-		u64 = uint64(i64)
+		if i64, err = tVal.Int64(); err == nil {
+			u64, err = signedToUnsigned[uint64](i64)
+		}
 	default:
 		if opt == nil {
 			err = comdef.ErrConvType

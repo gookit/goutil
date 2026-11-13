@@ -27,6 +27,14 @@ func TestToInt(t *testing.T) {
 		[]int{1},
 	}
 
+	negTests := []any{
+		-2,
+		int8(-2), int16(-2), int32(-2), int64(-2),
+		float32(-2.2), -2.3,
+		time.Duration(-2),
+		json.Number("-2"),
+	}
+
 	overTests := []any{
 		// case for overflow
 		int64(math.MaxInt32 + 1),
@@ -111,6 +119,13 @@ func TestToInt(t *testing.T) {
 		is.Panics(func() {
 			mathutil.MustUint([]int{23})
 		})
+
+		// case for negative input
+		for _, in := range negTests {
+			_, err = mathutil.ToUint(in)
+			is.Err(err, "input: %v", in)
+			is.Eq(uint(7), mathutil.UintOr(in, 7))
+		}
 	})
 
 	// To uint64
@@ -143,6 +158,13 @@ func TestToInt(t *testing.T) {
 		is.Panics(func() {
 			mathutil.MustUint64([]int{23})
 		})
+
+		// case for negative input
+		for _, in := range negTests {
+			_, err = mathutil.ToUint64(in)
+			is.Err(err, "input: %v", in)
+			is.Eq(uint64(7), mathutil.Uint64Or(in, 7))
+		}
 	})
 
 	// To int64
