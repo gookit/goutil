@@ -176,6 +176,17 @@ func TestToInt(t *testing.T) {
 		is.Panics(func() {
 			mathutil.MustInt64([]int{23})
 		})
+
+		// case for overflow
+		for _, in := range []any{uint(math.MaxInt64 + 1), uint64(math.MaxInt64 + 1), uint64(math.MaxUint64)} {
+			i64Val, err = mathutil.ToInt64(in)
+			is.Err(err, "input: %v", in)
+			is.Eq(int64(0), i64Val)
+			is.Eq(int64(7), mathutil.Int64Or(in, 7))
+		}
+		i64Val, err = mathutil.ToInt64(uint64(math.MaxInt64))
+		is.Nil(err)
+		is.Eq(int64(math.MaxInt64), i64Val)
 	})
 }
 
