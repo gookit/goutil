@@ -98,12 +98,24 @@ func IndexFunc[T any](ls []T, fn comdef.MatchFunc[T]) int {
 //
 // The slice is modified and the elements after the returned length are zeroed.
 func Compact[T comparable](ls []T) []T {
-	return slices.Compact(ls)
+	return compactTail(ls, slices.Compact(ls))
 }
 
 // CompactFunc is like Compact, but uses eq to compare the elements.
 func CompactFunc[T any](ls []T, eq func(a, b T) bool) []T {
-	return slices.CompactFunc(ls, eq)
+	return compactTail(ls, slices.CompactFunc(ls, eq))
+}
+
+// compactTail zeroes the elements between the compacted length and the original length.
+//
+// slices.Compact only zeroes them from go1.22, so do it here to keep the result the same
+// on every Go version.
+func compactTail[T any](ls, compacted []T) []T {
+	var zero T
+	for i := len(compacted); i < len(ls); i++ {
+		ls[i] = zero
+	}
+	return compacted
 }
 
 // Max returns the maximum value of the slice. It panics on an empty slice.
