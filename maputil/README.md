@@ -23,13 +23,13 @@ go get github.com/gookit/goutil/maputil
 ```go
 mp := map[string]any {
 	"top1": "val1",
-	"arr1": []string{"ab", "cd"}
+	"arr1": []string{"ab", "cd"},
 	"map1": map[string]any{
 	    "sub1": "val2",	
     },
 }
 
-fmt.Println(maputil.DeepGet(mp, "map1.sub1")) // Output: VAL3
+fmt.Println(maputil.DeepGet(mp, "map1.sub1")) // Output: val2
 
 // get value from slice.
 fmt.Println(maputil.DeepGet(mp, "arr1.1")) // Output: cd
@@ -41,7 +41,7 @@ fmt.Println(maputil.DeepGet(mp, "arr1[1]")) // Output: cd
 ```go
 mp := map[string]any {
 	"top1": "val1",
-	"arr1": []string{"ab"}
+	"arr1": []string{"ab"},
 	"map1": map[string]any{
 	    "sub1": "val2",	
     },
