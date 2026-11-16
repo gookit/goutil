@@ -43,10 +43,7 @@ func AfterLast(s, sep string) string {
 
 // Cut alias of the strings.Cut
 func Cut(s, sep string) (before string, after string, found bool) {
-	if i := strings.Index(s, sep); i >= 0 {
-		return s[:i], s[i+len(sep):], true
-	}
-	return s, "", false
+	return strings.Cut(s, sep)
 }
 
 // QuietCut always returns two substring.

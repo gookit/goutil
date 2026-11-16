@@ -2,7 +2,8 @@ package maputil
 
 import (
 	"fmt"
-	"sort"
+
+	"github.com/gookit/goutil/arrutil"
 )
 
 // Aliases implemented a simple string alias map.
@@ -53,7 +54,7 @@ func (as Aliases) AliasesNames() []string {
 	for alias := range as {
 		ns = append(ns, alias)
 	}
-	sort.Strings(ns)
+	arrutil.Sort(ns)
 	return ns
 }
 

@@ -263,18 +263,8 @@ func CloneAnyMap(items map[string]any) map[string]any {
 	return Clone(items)
 }
 
-// Clone copy and return a new map.
-func Clone[M ~map[K]V, K comparable, V any](items M) M {
-	if len(items) == 0 {
-		return nil
-	}
-
-	cloned := make(M, len(items))
-	for key, value := range items {
-		cloned[key] = value
-	}
-	return cloned
-}
+// NOTE: Clone lives in maps_go121.go and maps_legacy.go, it uses the maps
+// package on go1.21+.
 
 /*************************************************************
  * Flat convert tree map to flatten key-value map.

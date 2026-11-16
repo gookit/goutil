@@ -8,45 +8,8 @@ import (
 	"github.com/gookit/goutil/mathutil"
 )
 
-// SliceHas check the slice contains the given value
-func SliceHas[T comdef.ScalarType](slice []T, val T) bool {
-	for _, ele := range slice {
-		if ele == val {
-			return true
-		}
-	}
-	return false
-}
-
-// IntsHas check the []comdef.Integer contains the given value
-func IntsHas[T comdef.Integer](ints []T, val T) bool {
-	for _, ele := range ints {
-		if ele == val {
-			return true
-		}
-	}
-	return false
-}
-
-// Int64sHas check the []int64 contains the given value
-func Int64sHas(ints []int64, val int64) bool {
-	for _, ele := range ints {
-		if ele == val {
-			return true
-		}
-	}
-	return false
-}
-
-// StringsHas check the []string contains the given element
-func StringsHas[T ~string](ss []T, val T) bool {
-	for _, ele := range ss {
-		if ele == val {
-			return true
-		}
-	}
-	return false
-}
+// NOTE: SliceHas, IntsHas, Int64sHas, StringsHas and In live in slices_go121.go
+// and slices_legacy.go, they use the slices package on go1.21+.
 
 // InStrings check elem in the ss. alias of StringsHas()
 func InStrings[T ~string](elem T, ss []T) bool {
@@ -56,16 +19,6 @@ func InStrings[T ~string](elem T, ss []T) bool {
 // NotIn check the given value whether not in the list
 func NotIn[T comdef.ScalarType](value T, list []T) bool {
 	return !In(value, list)
-}
-
-// In check the given value whether in the list
-func In[T comdef.ScalarType](value T, list []T) bool {
-	for _, elem := range list {
-		if elem == value {
-			return true
-		}
-	}
-	return false
 }
 
 // ContainsAll check given values is sub-list of sample list.

@@ -98,16 +98,6 @@ func TwowaySearch[T any](data []T, item T, fn Comparer[T]) (int, error) {
 	return -1, ErrElementNotFound
 }
 
-// CloneSlice Clone a slice.
-//
-//	data: the slice to clone.
-//	returns: the cloned slice.
-func CloneSlice[T any](data []T) []T {
-	nt := make([]T, 0, len(data))
-	nt = append(nt, data...)
-	return nt
-}
-
 // Diff Produces the set difference of two slice according to a comparer function. alias of Differences
 func Diff[T any](first, second []T, fn Comparer[T]) []T {
 	return Differences(first, second, fn)

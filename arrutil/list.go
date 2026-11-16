@@ -1,7 +1,6 @@
 package arrutil
 
 import (
-	"sort"
 	"strings"
 
 	"github.com/gookit/goutil/comdef"
@@ -17,12 +16,7 @@ func (is Ints[T]) String() string {
 
 // Has given element
 func (is Ints[T]) Has(i T) bool {
-	for _, iv := range is {
-		if i == iv {
-			return true
-		}
-	}
-	return false
+	return IntsHas(is, i)
 }
 
 // First element value.
@@ -51,7 +45,7 @@ func (is Ints[T]) Last(defVal ...T) T {
 
 // Sort the int slice
 func (is Ints[T]) Sort() {
-	sort.Sort(is)
+	Sort(is)
 }
 
 // Len get length
@@ -89,12 +83,7 @@ func (ss Strings) Has(sub string) bool {
 
 // Contains given element
 func (ss Strings) Contains(sub string) bool {
-	for _, s := range ss {
-		if s == sub {
-			return true
-		}
-	}
-	return false
+	return StringsHas(ss, sub)
 }
 
 // First element value.
@@ -123,7 +112,7 @@ func (ss Strings) Last(defVal ...string) string {
 
 // Sort the string slice
 func (ss Strings) Sort() {
-	sort.Strings(ss)
+	Sort(ss)
 }
 
 // SortedList definition for compared type
@@ -161,12 +150,7 @@ func (ls SortedList[T]) Has(el T) bool {
 
 // Contains given element
 func (ls SortedList[T]) Contains(el T) bool {
-	for _, v := range ls {
-		if v == el {
-			return true
-		}
-	}
-	return false
+	return In(el, ls)
 }
 
 // First element value.
@@ -212,5 +196,5 @@ func (ls SortedList[T]) Filter(filter ...comdef.MatchFunc[T]) SortedList[T] {
 
 // Sort the slice
 func (ls SortedList[T]) Sort() {
-	sort.Sort(ls)
+	Sort(ls)
 }

@@ -6,21 +6,8 @@ import (
 	"github.com/gookit/goutil/comdef"
 )
 
-// Min compare two value and return max value
-func Min[T comdef.Number](x, y T) T {
-	if x < y {
-		return x
-	}
-	return y
-}
-
-// Max compare two value and return max value
-func Max[T comdef.Number](x, y T) T {
-	if x > y {
-		return x
-	}
-	return y
-}
+// NOTE: Min and Max live in compare_go121.go and compare_legacy.go, they use the
+// min and max builtins on go1.21+.
 
 // SwapMin compare and always return [min, max] value
 func SwapMin[T comdef.Number](x, y T) (T, T) {
@@ -40,10 +27,7 @@ func SwapMax[T comdef.Number](x, y T) (T, T) {
 
 // MaxInt compare and return max value
 func MaxInt(x, y int) int {
-	if x > y {
-		return x
-	}
-	return y
+	return Max(x, y)
 }
 
 // SwapMaxInt compare and return max, min value
@@ -56,10 +40,7 @@ func SwapMaxInt(x, y int) (int, int) {
 
 // MaxI64 compare and return max value
 func MaxI64(x, y int64) int64 {
-	if x > y {
-		return x
-	}
-	return y
+	return Max(x, y)
 }
 
 // SwapMaxI64 compare and return max, min value

@@ -6,16 +6,8 @@ import (
 	"github.com/gookit/goutil/comdef"
 )
 
-// Reverse any T slice.
-//
-// eg: []string{"site", "user", "info", "0"} -> []string{"0", "info", "user", "site"}
-func Reverse[T any](ls []T) {
-	ln := len(ls)
-	for i := 0; i < ln/2; i++ {
-		li := ln - i - 1
-		ls[i], ls[li] = ls[li], ls[i]
-	}
-}
+// NOTE: Reverse and IndexOf live in slices_go121.go and slices_legacy.go,
+// they use the slices package on go1.21+.
 
 // Remove give element from slice []T.
 //
@@ -116,16 +108,6 @@ func Unique[T comdef.NumberOrString](list []T) []T {
 		}
 	}
 	return uniArr
-}
-
-// IndexOf value in given slice.
-func IndexOf[T comdef.NumberOrString](val T, list []T) int {
-	for i, v := range list {
-		if v == val {
-			return i
-		}
-	}
-	return -1
 }
 
 // FirstOr get first value of slice, if slice is empty, return the default value.
