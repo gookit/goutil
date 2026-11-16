@@ -20,7 +20,6 @@ var (
 	ErrInvalidParam = errors.New("invalid input for parse time")
 
 	// some regex for convert string.
-	toSnakeReg  = regexp.MustCompile("[A-Z][a-z]")
 	toCamelRegs = map[string]*regexp.Regexp{
 		" ": regexp.MustCompile(" +[a-zA-Z]"),
 		"-": regexp.MustCompile("-+[a-zA-Z]"),

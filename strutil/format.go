@@ -115,11 +115,22 @@ func SnakeCase(s string, sep ...string) string {
 		sepChar = sep[0]
 	}
 
-	str := toSnakeReg.ReplaceAllStringFunc(s, func(s string) string {
-		return sepChar + LowerFirst(s)
-	})
+	// Split before an upper case letter that follows a lower case letter or digit, or that
+	// starts a word after an acronym: "UserID" -> "user_id", "HTTPServer" -> "http_server".
+	rs := []rune(s)
+	var sb strings.Builder
+	for i, r := range rs {
+		if unicode.IsUpper(r) && i > 0 {
+			prev := rs[i-1]
+			nextLower := i+1 < len(rs) && unicode.IsLower(rs[i+1])
+			if unicode.IsLower(prev) || unicode.IsDigit(prev) || (nextLower && string(prev) != sepChar) {
+				sb.WriteString(sepChar)
+			}
+		}
+		sb.WriteRune(unicode.ToLower(r))
+	}
 
-	return strings.TrimLeft(str, sepChar)
+	return strings.TrimLeft(sb.String(), sepChar)
 }
 
 // Camel alias of the CamelCase

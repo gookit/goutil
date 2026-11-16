@@ -91,6 +91,8 @@ func TestSnakeCase(t *testing.T) {
 		"rangePrice":  "range_price",
 		"range_price": "range_price",
 		"中文Snake":     "中文_snake",
+		"UserID":      "user_id",
+		"HTTPServer":  "http_server",
 	}
 
 	for sample, want := range tests {
