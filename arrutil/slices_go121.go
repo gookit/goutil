@@ -169,3 +169,10 @@ func BinarySearch[T comdef.Compared](ls []T, target T) (int, bool) {
 func BinarySearchFunc[T any](ls []T, target T, cmp Comparer[T]) (int, bool) {
 	return slices.BinarySearchFunc(ls, target, cmp)
 }
+
+// DeleteFunc removes the elements for which del returns true, in place.
+//
+// The elements after the returned length are zeroed.
+func DeleteFunc[T any](ls []T, del func(T) bool) []T {
+	return compactTail(ls, slices.DeleteFunc(ls, del))
+}

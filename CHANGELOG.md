@@ -17,10 +17,10 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 - **`arrutil`**: generic slice helpers that the `slices` package has and the package was
   missing: `Sort`, `SortFunc`, `SortStableFunc`, `IsSorted`, `IsSortedFunc`, `ContainsFunc`,
   `IndexFunc`, `Compact`, `CompactFunc`, `Max`, `Min`, `MaxFunc`, `MinFunc`, `Equal`,
-  `EqualFunc`, `Grow`, `BinarySearch`, `BinarySearchFunc`, plus `Clip`, `Insert`, `Concat`,
-  `DeleteRange`, `Replace` and `Repeat`.
+  `EqualFunc`, `Grow`, `BinarySearch`, `BinarySearchFunc`, `DeleteFunc`, plus `Clip`, `Insert`,
+  `Concat`, `DeleteRange`, `Replace`, `Repeat`, `Count` and `CountFunc`.
 - **`maputil`**: `Equal` and `EqualFunc` compare two maps by their key/value pairs, `Filter`,
-  `MapValues` and `Invert` build a new map from an existing one.
+  `MapValues`, `Invert`, `Pick`, `Omit` and `MergeFunc` build a new map from an existing one.
 
 ### Changed
 
@@ -31,12 +31,20 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   `maputil.TypedKeys`/`TypedValues` use `slices.Collect(maps.Keys/Values(...))` on go1.23+.
   The hand-written versions live in the `*_legacy.go` files for the older toolchains, both
   paths run in CI (go1.19 and go1.21+). `strutil.Cut` delegates to `strings.Cut`.
+- **`maputil.CloneStringMap`**: is a thin wrapper of `maputil.Clone` now, same result and the
+  same nil for an empty map.
 
 ### Fixed
 
 - **`strutil.SnakeCase`**: a known acronym stays in one word in front of a plural `s` or a
   version suffix, so `IDs` gives `ids` (was `i_ds`) and `IPv4Address` gives `ipv4_address`
   (was `i_pv4_address`). Other capitals still split, eg. `HTTPServer` -> `http_server`.
+- **`strutil.ToTime`**: a `Z` at the end of a 20-char timestamp (`2024-02-29T10:00:00Z`) was a
+  literal character in the layout, so the zone was dropped and the time was read in
+  `time.Local`. A timestamp with fractional seconds took another path and came back as UTC,
+  so the same value shifted by the local offset depending on the format. `Z` is the UTC
+  designator now in both cases, which also fixes `timex.Time.UnmarshalJSON` and
+  `reflects.ToTimeOrDuration` (see [#321](https://github.com/gookit/goutil/issues/321)).
 
 ## [v0.8.6] - 2026-10-29
 

@@ -220,7 +220,7 @@ func TestToTimeOrDuration(t *testing.T) {
 		expected any
 	}{
 		{"3s", reflect.TypeOf(time.Duration(0)), false, 3 * time.Second},
-		{"2023-01-01T00:00:00Z", reflect.TypeOf(time.Time{}), false, time.Date(2023, 1, 1, 0, 0, 0, 0, time.Local)},
+		{"2023-01-01T00:00:00Z", reflect.TypeOf(time.Time{}), false, time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)},
 		{"1h2m3s", reflect.TypeOf(time.Duration(0)), false, 3723 * time.Second},
 		{"a message", reflect.TypeOf(34), false, "a message"},
 		{"2023-01-02T00:00:00Z", reflect.TypeOf(""), false, "2023-01-02T00:00:00Z"},

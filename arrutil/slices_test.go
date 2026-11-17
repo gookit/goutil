@@ -216,3 +216,22 @@ func TestRepeat(t *testing.T) {
 		arrutil.Repeat(1, -1)
 	})
 }
+
+func TestDeleteFunc(t *testing.T) {
+	ls := []int{1, 2, 3, 4, 5, 6}
+	got := arrutil.DeleteFunc(ls, func(v int) bool { return v%2 == 0 })
+	assert.Eq(t, []int{1, 3, 5}, got)
+	// the elements after the new length are zeroed
+	assert.Eq(t, []int{1, 3, 5, 0, 0, 0}, ls)
+
+	// nothing removed
+	assert.Eq(t, 3, len(arrutil.DeleteFunc([]int{1, 2, 3}, func(v int) bool { return false })))
+	// all removed
+	assert.Eq(t, 0, len(arrutil.DeleteFunc([]int{1, 2}, func(v int) bool { return true })))
+}
+
+func TestCount(t *testing.T) {
+	assert.Eq(t, 2, arrutil.Count([]int{1, 2, 1, 3}, 1))
+	assert.Eq(t, 0, arrutil.Count([]int{1, 2}, 9))
+	assert.Eq(t, 2, arrutil.CountFunc([]string{"a", "bb", "cc"}, func(s string) bool { return len(s) == 2 }))
+}

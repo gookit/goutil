@@ -32,6 +32,28 @@ func TestTimeUnmarshalJSONEscapes(t *testing.T) {
 	}
 }
 
+// A JSON timestamp that ends in "Z" is UTC, whatever time.Local is.
+// See https://github.com/gookit/goutil/issues/321
+func TestTimeUnmarshalJSONUTC(t *testing.T) {
+	local := time.Local
+	time.Local = time.FixedZone("local", 3*60*60)
+	defer func() { time.Local = local }()
+
+	want := time.Date(2024, 2, 29, 10, 0, 0, 0, time.UTC)
+	for _, input := range []string{`"2024-02-29T10:00:00Z"`, `"2024-02-29T10:00:00.5Z"`} {
+		t.Run(input, func(t *testing.T) {
+			got := timex.Time{}
+			assert.NoErr(t, json.Unmarshal([]byte(input), &got))
+
+			expect := want
+			if input == `"2024-02-29T10:00:00.5Z"` {
+				expect = want.Add(500 * time.Millisecond)
+			}
+			assert.True(t, got.Equal(expect), "got %s want %s", got, expect)
+		})
+	}
+}
+
 func TestTimeUnmarshalJSONInvalid(t *testing.T) {
 	for _, input := range []string{`1201810160`, `0`, `1`, `true`, `false`, `[]`, `{}`, `""`, `"invalid"`, `"2018-10-16\q12:34:01"`, ``, `"`, `"2018-10-16`} {
 		t.Run(input, func(t *testing.T) {

@@ -1,5 +1,7 @@
 package arrutil
 
+import "github.com/gookit/goutil/comdef"
+
 // Clip removes the unused capacity of the given slice.
 //
 // The result shares the same backing array, use it to drop references to
@@ -96,4 +98,26 @@ func Repeat[T any](v T, n int) []T {
 		newLs[i] = v
 	}
 	return newLs
+}
+
+// Count the occurrences of the given value in the slice.
+func Count[T comparable](ls []T, v T) int {
+	count := 0
+	for _, item := range ls {
+		if item == v {
+			count++
+		}
+	}
+	return count
+}
+
+// CountFunc counts the elements that satisfy the given function.
+func CountFunc[T any](ls []T, fn comdef.MatchFunc[T]) int {
+	count := 0
+	for _, item := range ls {
+		if fn(item) {
+			count++
+		}
+	}
+	return count
 }

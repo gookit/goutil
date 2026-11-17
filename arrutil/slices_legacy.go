@@ -322,3 +322,24 @@ func BinarySearchFunc[T any](ls []T, target T, cmp Comparer[T]) (int, bool) {
 	}
 	return low, low < len(ls) && cmp(ls[low], target) == 0
 }
+
+// DeleteFunc removes the elements for which del returns true, in place.
+//
+// The elements after the returned length are zeroed.
+func DeleteFunc[T any](ls []T, del func(T) bool) []T {
+	i := 0
+	for _, v := range ls {
+		if !del(v) {
+			if i != 0 {
+				ls[i] = v
+			}
+			i++
+		}
+	}
+
+	var zero T
+	for k := i; k < len(ls); k++ {
+		ls[k] = zero
+	}
+	return ls[:i]
+}

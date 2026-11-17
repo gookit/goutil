@@ -246,16 +246,9 @@ func StrMapToText(m map[string]string) string {
 	return strings.Join(lines, "\n")
 }
 
-// CloneStringMap copy and return a new string map
+// CloneStringMap copy and return a new string map. A nil or empty map gives back nil.
 func CloneStringMap(items map[string]string) map[string]string {
-	if len(items) == 0 {
-		return nil
-	}
-	cloned := make(map[string]string, len(items))
-	for key, value := range items {
-		cloned[key] = value
-	}
-	return cloned
+	return Clone(items)
 }
 
 // CloneAnyMap copy and return a new any map.

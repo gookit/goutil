@@ -51,6 +51,30 @@ func TestInvert(t *testing.T) {
 	assert.Nil(t, maputil.Invert(map[string]int{}))
 }
 
+func TestPickOmit(t *testing.T) {
+	mp := map[string]int{"a": 1, "b": 2, "c": 3}
+
+	assert.Eq(t, map[string]int{"a": 1, "c": 3}, maputil.Pick(mp, "a", "c"))
+	// a key that is not in the map is ignored
+	assert.Eq(t, map[string]int{"a": 1}, maputil.Pick(mp, "a", "x"))
+	assert.Nil(t, maputil.Pick(mp))
+	assert.Nil(t, maputil.Pick(map[string]int{}))
+
+	assert.Eq(t, map[string]int{"a": 1}, maputil.Omit(mp, "b", "c"))
+	// omit more keys than the map has
+	assert.Eq(t, 0, len(maputil.Omit(mp, "a", "b", "c", "d")))
+	assert.Eq(t, mp, maputil.Omit(mp))
+	assert.Nil(t, maputil.Omit(map[string]int{}, "a"))
+}
+
+func TestMergeFunc(t *testing.T) {
+	dst := map[string]int{"a": 1, "b": 2}
+	maputil.MergeFunc(dst, map[string]int{"a": 10, "c": 3}, func(dstVal, srcVal int) int {
+		return dstVal + srcVal
+	})
+	assert.Eq(t, map[string]int{"a": 11, "b": 2, "c": 3}, dst)
+}
+
 func TestTypedKeysValues(t *testing.T) {
 	mp := map[string]int{"a": 1, "b": 2}
 	keys := maputil.TypedKeys(mp)
