@@ -45,3 +45,55 @@ func Concat[T any](ls ...[]T) []T {
 	}
 	return newLs
 }
+
+// DeleteRange removes the elements ls[i:j] from the slice, in place.
+//
+// It panics if the indexes are out of the range [0, len(ls)] or i > j. The elements
+// after the returned length are zeroed.
+func DeleteRange[T any](ls []T, i, j int) []T {
+	if i < 0 || j > len(ls) || i > j {
+		panic("arrutil.DeleteRange: index out of range")
+	}
+	if i == j {
+		return ls
+	}
+
+	n := copy(ls[i:], ls[j:])
+
+	var zero T
+	for k := i + n; k < len(ls); k++ {
+		ls[k] = zero
+	}
+	return ls[:i+n]
+}
+
+// Replace replaces the elements ls[i:j] with the given values and returns the result.
+//
+// It panics if the indexes are out of the range [0, len(ls)] or i > j. Unlike
+// slices.Replace it always returns a new slice, the given slice is never modified.
+func Replace[T any](ls []T, i, j int, vs ...T) []T {
+	if i < 0 || j > len(ls) || i > j {
+		panic("arrutil.Replace: index out of range")
+	}
+
+	newLs := make([]T, 0, len(ls)-(j-i)+len(vs))
+	newLs = append(newLs, ls[:i]...)
+	newLs = append(newLs, vs...)
+	newLs = append(newLs, ls[j:]...)
+	return newLs
+}
+
+// Repeat returns a new slice with the given value repeated n times.
+//
+// It panics if n is negative.
+func Repeat[T any](v T, n int) []T {
+	if n < 0 {
+		panic("arrutil.Repeat: negative count")
+	}
+
+	newLs := make([]T, n)
+	for i := range newLs {
+		newLs[i] = v
+	}
+	return newLs
+}

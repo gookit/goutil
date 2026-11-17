@@ -17,8 +17,10 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 - **`arrutil`**: generic slice helpers that the `slices` package has and the package was
   missing: `Sort`, `SortFunc`, `SortStableFunc`, `IsSorted`, `IsSortedFunc`, `ContainsFunc`,
   `IndexFunc`, `Compact`, `CompactFunc`, `Max`, `Min`, `MaxFunc`, `MinFunc`, `Equal`,
-  `EqualFunc`, `Grow`, plus `Clip`, `Insert` and `Concat`.
-- **`maputil`**: `Equal` and `EqualFunc` compare two maps by their key/value pairs.
+  `EqualFunc`, `Grow`, `BinarySearch`, `BinarySearchFunc`, plus `Clip`, `Insert`, `Concat`,
+  `DeleteRange`, `Replace` and `Repeat`.
+- **`maputil`**: `Equal` and `EqualFunc` compare two maps by their key/value pairs, `Filter`,
+  `MapValues` and `Invert` build a new map from an existing one.
 
 ### Changed
 
@@ -26,8 +28,15 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   behind go version build tags. On go1.21+ `SliceHas`/`IntsHas`/`Int64sHas`/`StringsHas`/`In`/
   `IndexOf`/`Reverse`/`CloneSlice` and the new slice helpers use `slices`, `Clone`/`Copy`/
   `DeleteFunc`/`Equal`/`EqualFunc` use `maps`, and `Min`/`Max` use the `min`/`max` builtins.
+  `maputil.TypedKeys`/`TypedValues` use `slices.Collect(maps.Keys/Values(...))` on go1.23+.
   The hand-written versions live in the `*_legacy.go` files for the older toolchains, both
   paths run in CI (go1.19 and go1.21+). `strutil.Cut` delegates to `strings.Cut`.
+
+### Fixed
+
+- **`strutil.SnakeCase`**: a known acronym stays in one word in front of a plural `s` or a
+  version suffix, so `IDs` gives `ids` (was `i_ds`) and `IPv4Address` gives `ipv4_address`
+  (was `i_pv4_address`). Other capitals still split, eg. `HTTPServer` -> `http_server`.
 
 ## [v0.8.6] - 2026-10-29
 

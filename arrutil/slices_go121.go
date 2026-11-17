@@ -156,3 +156,16 @@ func EqualFunc[T any](a, b []T, eq func(a, b T) bool) bool {
 func Grow[T any](ls []T, n int) []T {
 	return slices.Grow(ls, n)
 }
+
+// BinarySearch searches for target in the sorted slice and returns the position where it is
+// or where it would be inserted, and whether target is in the slice.
+func BinarySearch[T comdef.Compared](ls []T, target T) (int, bool) {
+	return slices.BinarySearch(ls, target)
+}
+
+// BinarySearchFunc is like BinarySearch, but compares the elements with cmp.
+//
+// The slice must be sorted in increasing order by cmp.
+func BinarySearchFunc[T any](ls []T, target T, cmp Comparer[T]) (int, bool) {
+	return slices.BinarySearchFunc(ls, target, cmp)
+}

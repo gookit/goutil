@@ -299,14 +299,6 @@ func Keys(mp any) (keys []string) {
 	return
 }
 
-// TypedKeys get all keys of the given typed map.
-func TypedKeys[K comdef.SimpleType, V any](mp map[K]V) (keys []K) {
-	for key := range mp {
-		keys = append(keys, key)
-	}
-	return
-}
-
 // FirstKey returns the first key of the given map.
 func FirstKey[T any](mp map[string]T) string {
 	for key := range mp {
@@ -325,14 +317,6 @@ func Values(mp any) (values []any) {
 	values = make([]any, 0, rv.Len())
 	for _, key := range rv.MapKeys() {
 		values = append(values, rv.MapIndex(key).Interface())
-	}
-	return
-}
-
-// TypedValues get all values from the given typed map.
-func TypedValues[K comdef.SimpleType, V any](mp map[K]V) (values []V) {
-	for _, val := range mp {
-		values = append(values, val)
 	}
 	return
 }

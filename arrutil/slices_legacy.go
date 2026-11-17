@@ -292,3 +292,33 @@ func Grow[T any](ls []T, n int) []T {
 	copy(newLs, ls)
 	return newLs
 }
+
+// BinarySearch searches for target in the sorted slice and returns the position where it is
+// or where it would be inserted, and whether target is in the slice.
+func BinarySearch[T comdef.Compared](ls []T, target T) (int, bool) {
+	return BinarySearchFunc(ls, target, func(a, b T) int {
+		switch {
+		case a < b:
+			return -1
+		case a > b:
+			return 1
+		}
+		return 0
+	})
+}
+
+// BinarySearchFunc is like BinarySearch, but compares the elements with cmp.
+//
+// The slice must be sorted in increasing order by cmp.
+func BinarySearchFunc[T any](ls []T, target T, cmp Comparer[T]) (int, bool) {
+	low, high := 0, len(ls)
+	for low < high {
+		mid := int(uint(low+high) >> 1)
+		if cmp(ls[mid], target) < 0 {
+			low = mid + 1
+		} else {
+			high = mid
+		}
+	}
+	return low, low < len(ls) && cmp(ls[low], target) == 0
+}

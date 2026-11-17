@@ -108,6 +108,20 @@ func UpperFirst(s string) string {
 	return s
 }
 
+// snakeAcronyms are the initialisms that SnakeCase keeps in one word, so that
+// "IDs" gives "ids" and "IPv4" gives "ipv4" instead of "i_ds" and "i_pv4".
+//
+// NOTE: "https" is not listed on purpose: the acronym run of "HTTPServer" is
+// "HTTPS", which must still split to "http_server".
+var snakeAcronyms = map[string]struct{}{
+	"acl": {}, "api": {}, "ascii": {}, "cpu": {}, "css": {}, "dns": {}, "eof": {},
+	"guid": {}, "html": {}, "http": {}, "id": {}, "ip": {}, "json": {}, "lhs": {},
+	"qps": {}, "ram": {}, "rhs": {}, "rpc": {}, "sla": {}, "smtp": {}, "sql": {},
+	"ssh": {}, "tcp": {}, "tls": {}, "ttl": {}, "udp": {}, "ui": {}, "uid": {},
+	"uri": {}, "url": {}, "utf8": {}, "uuid": {}, "vm": {}, "xml": {}, "xmpp": {},
+	"xsrf": {}, "xss": {},
+}
+
 // SnakeCase convert. eg "RangePrice" -> "range_price"
 func SnakeCase(s string, sep ...string) string {
 	sepChar := "_"
@@ -123,7 +137,8 @@ func SnakeCase(s string, sep ...string) string {
 		if unicode.IsUpper(r) && i > 0 {
 			prev := rs[i-1]
 			nextLower := i+1 < len(rs) && unicode.IsLower(rs[i+1])
-			if unicode.IsLower(prev) || unicode.IsDigit(prev) || (nextLower && string(prev) != sepChar) {
+			if unicode.IsLower(prev) || unicode.IsDigit(prev) ||
+				(nextLower && !isSnakeAcronymTail(rs, i) && string(prev) != sepChar) {
 				sb.WriteString(sepChar)
 			}
 		}
@@ -131,6 +146,26 @@ func SnakeCase(s string, sep ...string) string {
 	}
 
 	return strings.TrimLeft(sb.String(), sepChar)
+}
+
+// isSnakeAcronymTail reports whether the upper case run that ends at rs[i] is a known
+// acronym followed by a plural "s" ("IDs", "IDsList") or a version suffix ("IPv4").
+// Such a run is one word, so no separator goes in front of its last letter.
+func isSnakeAcronymTail(rs []rune, i int) bool {
+	start := i
+	for start > 0 && unicode.IsUpper(rs[start-1]) {
+		start--
+	}
+	if _, ok := snakeAcronyms[strings.ToLower(string(rs[start:i+1]))]; !ok {
+		return false
+	}
+
+	// rs[i+1] exists: the caller only asks when the next rune is lower case
+	rest := rs[i+1:]
+	if rest[0] == 's' && (len(rest) == 1 || unicode.IsUpper(rest[1])) {
+		return true // plural of the acronym
+	}
+	return rest[0] == 'v' && len(rest) > 1 && unicode.IsDigit(rest[1])
 }
 
 // Camel alias of the CamelCase

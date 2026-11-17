@@ -93,6 +93,20 @@ func TestSnakeCase(t *testing.T) {
 		"中文Snake":     "中文_snake",
 		"UserID":      "user_id",
 		"HTTPServer":  "http_server",
+		// known acronyms stay in one word before a plural "s" or a version
+		"IDs":         "ids",
+		"IDsList":     "ids_list",
+		"APIs":        "apis",
+		"URLs":        "urls",
+		"IPv4Address": "ipv4_address",
+		"IPv6Addr":    "ipv6_addr",
+		"UUIDv4":      "uuidv4",
+		"ID":          "id",
+		// other capitals still split
+		"HTTPS":     "https",
+		"IDCard":    "id_card",
+		"IPAddress": "ip_address",
+		"JSONData":  "json_data",
 	}
 
 	for sample, want := range tests {

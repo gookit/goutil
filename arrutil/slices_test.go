@@ -146,3 +146,73 @@ func TestGrow(t *testing.T) {
 		arrutil.Grow([]int{1}, -1)
 	})
 }
+
+func TestBinarySearch(t *testing.T) {
+	ints := []int{1, 3, 5, 7}
+	pos, found := arrutil.BinarySearch(ints, 5)
+	assert.True(t, found)
+	assert.Eq(t, 2, pos)
+
+	// not found: the insert position
+	pos, found = arrutil.BinarySearch(ints, 4)
+	assert.False(t, found)
+	assert.Eq(t, 2, pos)
+
+	pos, found = arrutil.BinarySearch(ints, 0)
+	assert.False(t, found)
+	assert.Eq(t, 0, pos)
+
+	pos, found = arrutil.BinarySearch(ints, 9)
+	assert.False(t, found)
+	assert.Eq(t, 4, pos)
+
+	// by length
+	ss := []string{"a", "bb", "ccc"}
+	pos, found = arrutil.BinarySearchFunc(ss, "bb", func(a, b string) int { return len(a) - len(b) })
+	assert.True(t, found)
+	assert.Eq(t, 1, pos)
+}
+
+func TestDeleteRange(t *testing.T) {
+	ls := []int{1, 2, 3, 4, 5}
+	got := arrutil.DeleteRange(ls, 1, 3)
+	assert.Eq(t, []int{1, 4, 5}, got)
+	// the elements after the new length are zeroed
+	assert.Eq(t, []int{1, 4, 5, 0, 0}, ls)
+
+	// i == j: nothing removed
+	assert.Eq(t, 3, len(arrutil.DeleteRange([]int{1, 2, 3}, 1, 1)))
+
+	assert.Panics(t, func() {
+		arrutil.DeleteRange([]int{1}, 2, 1)
+	})
+	assert.Panics(t, func() {
+		arrutil.DeleteRange([]int{1}, 0, 2)
+	})
+}
+
+func TestReplace(t *testing.T) {
+	ls := []int{1, 2, 3, 4}
+	got := arrutil.Replace(ls, 1, 3, 9, 8, 7)
+	assert.Eq(t, []int{1, 9, 8, 7, 4}, got)
+	// the given slice is not modified
+	assert.Eq(t, []int{1, 2, 3, 4}, ls)
+
+	// insert: i == j
+	assert.Eq(t, []int{1, 2, 9, 3, 4}, arrutil.Replace(ls, 2, 2, 9))
+	// remove: no value
+	assert.Eq(t, []int{1, 4}, arrutil.Replace(ls, 1, 3))
+
+	assert.Panics(t, func() {
+		arrutil.Replace(ls, 3, 1)
+	})
+}
+
+func TestRepeat(t *testing.T) {
+	assert.Eq(t, []string{"a", "a", "a"}, arrutil.Repeat("a", 3))
+	assert.Eq(t, 0, len(arrutil.Repeat(0, 0)))
+
+	assert.Panics(t, func() {
+		arrutil.Repeat(1, -1)
+	})
+}
