@@ -21,6 +21,10 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 - **`envutil`** (via `internal/comfunc.ParseEnvLines`): a ` #` inside a quoted value was cut as an inline
   comment (`DB_PASS="pa#ss #1" # prod` gave `"pa#ss`), and a value that was only a quote after removing the
   comment panicked (`KEY=" # comment`). This backs `envutil.SplitText2map`, `Dotenv.LoadFiles` and `textutil`.
+- **`envutil.Dotenv.LoadFiles`**: `LoadFirstExist` counted the files loaded by earlier calls, so a second load
+  stopped after its first file even when that one did not exist; it compares with the count at the start of the
+  call now. A file name is also trimmed before `BaseDir` is joined, so `LoadFiles(" .env ")` works with a
+  `BaseDir` too.
 
 ## [v0.9.0] - 2026-11-17
 
