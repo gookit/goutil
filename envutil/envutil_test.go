@@ -120,6 +120,8 @@ APP = kite
 ; comment2
 DEBUG = true
 RUN_OPT = 
+DB_PASS = "pa#ss #1" # prod password
+BAD_QUOTE = " # unclosed
 # must split with =
 INVALID
 `)
@@ -130,4 +132,6 @@ INVALID
 	assert.True(t, has)
 	_, has = envMp["INVALID"]
 	assert.False(t, has)
+	assert.Eq(t, "pa#ss #1", envMp["DB_PASS"])
+	assert.Eq(t, `"`, envMp["BAD_QUOTE"])
 }
