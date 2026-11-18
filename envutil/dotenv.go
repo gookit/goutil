@@ -67,18 +67,19 @@ func (c *Dotenv) LoadText(contents string) error {
 
 // do load dotenv files
 func (c *Dotenv) doLoadFiles(files []string) error {
-	var filePath string
+	// loadFiles also holds files from earlier calls
+	loadedNum := len(c.loadFiles)
 	for _, file := range files {
-		filePath = strings.TrimSpace(file)
-		if c.BaseDir != "" && !filepath.IsAbs(file) {
-			filePath = filepath.Join(c.BaseDir, file)
+		filePath := strings.TrimSpace(file)
+		if c.BaseDir != "" && !filepath.IsAbs(filePath) {
+			filePath = filepath.Join(c.BaseDir, filePath)
 		}
 
 		// load and parse to ENV
 		if err := c.loadFile(filePath); err != nil {
 			return err
 		}
-		if c.LoadFirstExist && len(c.loadFiles) > 0 {
+		if c.LoadFirstExist && len(c.loadFiles) > loadedNum {
 			break
 		}
 	}

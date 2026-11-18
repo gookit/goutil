@@ -2,6 +2,7 @@ package envutil_test
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/gookit/goutil/envutil"
@@ -111,4 +112,46 @@ func Test_Dotenv_upperKey(t *testing.T) {
 
 	assert.NoErr(t, c.LoadText("t_app_key=value"))
 	assert.Eq(t, map[string]string{"t_app_key": "value"}, c.LoadedData())
+}
+
+func Test_Dotenv_loadFirstExist(t *testing.T) {
+	t.Run("first existing file only", func(t *testing.T) {
+		c := envutil.NewDotenv()
+		defer c.Reset()
+		c.BaseDir = "testdata"
+		c.DotenvFirst = true
+		c.LoadFirstExist = true
+		c.IgnoreNotExist = true
+
+		err := c.LoadFiles("not-exist-file.env", ".env.prod", ".env")
+		assert.NoErr(t, err)
+		assert.Eq(t, []string{filepath.Join("testdata", ".env.prod")}, c.LoadedFiles())
+		assert.Eq(t, "prod", os.Getenv("T_APP_ENV"))
+	})
+
+	t.Run("files loaded by an earlier call", func(t *testing.T) {
+		c := envutil.NewDotenv()
+		defer c.Reset()
+		c.BaseDir = "testdata"
+		c.DotenvFirst = true
+		c.IgnoreNotExist = true
+		assert.NoErr(t, c.LoadFiles(".env"))
+		assert.Eq(t, "dev", os.Getenv("T_APP_ENV"))
+
+		c.LoadFirstExist = true
+		err := c.LoadFiles("not-exist-file.env", ".env.prod")
+		assert.NoErr(t, err)
+		assert.Eq(t, []string{filepath.Join("testdata", ".env"), filepath.Join("testdata", ".env.prod")}, c.LoadedFiles())
+		assert.Eq(t, "prod", os.Getenv("T_APP_ENV"))
+	})
+}
+
+func Test_Dotenv_trimFileWithBaseDir(t *testing.T) {
+	c := envutil.NewDotenv()
+	defer c.Reset()
+	c.BaseDir = "testdata"
+
+	err := c.LoadFiles(" .env.prod ")
+	assert.NoErr(t, err)
+	assert.Eq(t, []string{filepath.Join("testdata", ".env.prod")}, c.LoadedFiles())
 }
