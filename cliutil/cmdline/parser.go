@@ -98,6 +98,10 @@ func (p *LineParser) Parse() []string {
 	for i := 0; i < len(p.nodes); i++ {
 		node := p.nodes[i]
 		if node == "" {
+			// keep repeated spaces inside quotes. eg: `"a  b"`
+			if p.quoteChar != 0 {
+				p.tempNode.WriteByte(' ')
+			}
 			continue
 		}
 
@@ -105,7 +109,8 @@ func (p *LineParser) Parse() []string {
 	}
 
 	p.nodes = p.nodes[:0]
-	if p.tempNode.Len() > 0 {
+	// quote not closed. eg: `-m "msg` or `-m "`
+	if p.quoteChar != 0 || p.tempNode.Len() > 0 {
 		p.appendTempNode()
 	}
 	return p.args
@@ -135,8 +140,8 @@ func (p *LineParser) parseNode(node string) {
 
 	// quote start
 	if start == comdef.DoubleQuote || start == comdef.SingleQuote {
-		// only one words. eg: `-m "msg"`
-		if end == start {
+		// only one words. eg: `-m "msg"`. a lone quote char opens a quote. eg: `-m " msg"`
+		if end == start && maxIdx > 0 {
 			p.args = append(p.args, node[1:maxIdx])
 			return
 		}

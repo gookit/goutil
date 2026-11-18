@@ -145,3 +145,35 @@ func TestLineParser_BinAndArgs(t *testing.T) {
 	assert.Eq(t, "git", b)
 	assert.Empty(t, a)
 }
+
+func TestParseLine_quoteSpaces(t *testing.T) {
+	tests := []struct {
+		line string
+		want []string
+	}{
+		// lone quote char as a node: used to panic with "slice bounds out of range [1:0]"
+		{`git commit -m " msg"`, []string{"git", "commit", "-m", " msg"}},
+		{`echo "msg "`, []string{"echo", "msg "}},
+		{`echo " "`, []string{"echo", " "}},
+		{`echo "`, []string{"echo", ""}},
+		{`echo '`, []string{"echo", ""}},
+		// repeated spaces inside quotes are kept
+		{`echo "a  b"`, []string{"echo", "a  b"}},
+		{`echo '  a   b  '`, []string{"echo", "  a   b  "}},
+		{`echo --msg="a  b"`, []string{"echo", `--msg="a  b"`}},
+		// repeated spaces outside quotes still split
+		{`echo  a   "b  c"  d`, []string{"echo", "a", "b  c", "d"}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.line, func(t *testing.T) {
+			assert.Eq(t, tt.want, cmdline.ParseLine(tt.line))
+		})
+	}
+}
+
+func TestParseLine_buildRoundTrip(t *testing.T) {
+	args := []string{"git", "commit", "-m", "a  b", " c ", "d"}
+	line := cmdline.LineBuild("", args)
+	assert.Eq(t, args, cmdline.ParseLine(line))
+}
