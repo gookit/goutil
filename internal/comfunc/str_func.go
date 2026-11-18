@@ -99,6 +99,16 @@ func splitKvBySepPos(line string, sepPos, sepLen int, rmInlineComments bool) (ke
 	}
 	val = strings.TrimSpace(line[sepPos+sepLen:])
 
+	// quoted value followed by an inline comment: KEY="a #1" # comment.
+	// a ' #' inside the quotes is part of the value.
+	if rmInlineComments && len(val) >= 2 && (val[0] == '"' || val[0] == '\'') {
+		if end := strings.IndexByte(val[1:], val[0]) + 1; end > 0 {
+			if rest := strings.TrimSpace(val[end+1:]); rest != "" && rest[0] == '#' {
+				return key, val[1:end]
+			}
+		}
+	}
+
 	// check quotes if present
 	if vln := len(val); vln >= 2 {
 		// remove quotes
@@ -121,8 +131,8 @@ func splitKvBySepPos(line string, sepPos, sepLen int, rmInlineComments bool) (ke
 		if pos := strings.Index(val, " #"); pos > 0 {
 			val = strings.TrimRight(val[0:pos], " \t")
 			vln = len(val)
-			// remove quotes
-			if (val[0] == '"' && val[vln-1] == '"') || (val[0] == '\'' && val[vln-1] == '\'') {
+			// remove quotes. vln >= 2: `KEY=" # comment` leaves only `"`
+			if vln >= 2 && ((val[0] == '"' && val[vln-1] == '"') || (val[0] == '\'' && val[vln-1] == '\'')) {
 				val = val[1 : vln-1]
 				return
 			}
