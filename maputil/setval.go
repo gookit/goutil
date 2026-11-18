@@ -12,6 +12,10 @@ import (
 // SetByPath set sub-map value by key path.
 // Supports dot syntax to set deep values.
 //
+// A nil value is stored as a nil value, it does NOT delete the key. When the
+// destination type cannot hold nil (eg. a `map[string]string` value) an error is
+// returned and the old value is kept. Use DeleteByPath to delete a value.
+//
 // For example:
 //
 //	SetByPath("name.first", "Mat")
@@ -21,6 +25,8 @@ func SetByPath(mp *map[string]any, path string, val any) error {
 
 // SetByKeys set sub-map value by path keys.
 // Supports dot syntax to set deep values.
+//
+// See SetByPath for the nil value rules.
 //
 // For example:
 //

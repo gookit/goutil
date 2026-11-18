@@ -40,6 +40,9 @@ func (d Data) Set(key string, val any) {
 // SetByPath sets a value in the map.
 // Supports dot syntax to set deep values.
 //
+// A nil value is stored as a nil value, it does NOT delete the key, see
+// maputil.SetByPath. Use DeleteByPath to delete a value.
+//
 // Example:
 //
 //	d.SetByPath("name.first", "Mat")
@@ -48,6 +51,19 @@ func (d Data) SetByPath(path string, value any) error {
 		return nil
 	}
 	return d.SetByKeys(strings.Split(path, KeySepStr), value)
+}
+
+// DeleteByPath deletes the value at the given key path.
+//
+// It supports the dot syntax and the slice index syntax of SetByPath, see
+// maputil.DeleteByPath. Deleting a path that does not exist is not an error.
+//
+// Example:
+//
+//	d.DeleteByPath("user.name")
+func (d Data) DeleteByPath(path string) error {
+	mp := map[string]any(d)
+	return DeleteByPath(&mp, path)
 }
 
 // SetByKeys sets a value in the map by path keys.

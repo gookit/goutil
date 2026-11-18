@@ -12,6 +12,20 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 
 ## [Unreleased]
 
+### Added
+
+- **`maputil`**: `DeleteByPath`, `DeleteByKeys` and `Data.DeleteByPath` delete a value by key path.
+  They take the dot syntax and the `list[1]` / `list.1` slice index syntax of `SetByPath`, deleting
+  a missing path is not an error, and deleting a slice element shrinks the slice.
+
+### Changed
+
+- **`maputil.SetByPath`/`SetByKeys`** (and `Data.SetByPath`): a `nil` value is stored as a nil value
+  now instead of deleting the key, so a JSON `null` survives the setter. It already worked that way
+  for a single key or a new top-level key — only the nested reflection path deleted the key. When the
+  destination type cannot hold nil (eg. a `map[string]string` value) an error is returned and the old
+  value is kept. `config.Set(path, nil)` follows the same rules. Use `DeleteByPath` to delete a value.
+
 ### Fixed
 
 - **`cliutil/cmdline.ParseLine`** (and `cliutil.String2OSArgs`): a node that is only a quote char panicked with
@@ -25,6 +39,8 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   stopped after its first file even when that one did not exist; it compares with the count at the start of the
   call now. A file name is also trimmed before `BaseDir` is joined, so `LoadFiles(" .env ")` works with a
   `BaseDir` too.
+- **`maputil.MakeByPath`/`MakeByKeys`**: a nil value on a slice index path (`"list[1]"`) panicked with a nil
+  pointer dereference, the element is set to nil now.
 
 ## [v0.9.0] - 2026-11-17
 
