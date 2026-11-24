@@ -224,7 +224,7 @@ func (t *TableBuilder) buildRow(cells []string, isHeader bool) string {
 
 		// 应用对齐
 		width := t.colWidths[i]
-		alignment := 0 // 默认左对齐
+		alignment := t.DefaultAlign
 		if t.Align != nil && i < len(t.Align) {
 			alignment = t.Align[i]
 		}
