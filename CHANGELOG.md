@@ -41,6 +41,12 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   `BaseDir` too.
 - **`maputil.MakeByPath`/`MakeByKeys`**: a nil value on a slice index path (`"list[1]"`) panicked with a nil
   pointer dereference, the element is set to nil now.
+- **`cliutil/cmdline.ParseLine`**: a line with a single word returned the word as its node, so the quotes of
+  a quoted word stayed in the arg (`ParseLine("\"/bin/pwd\"")` gave `["\"/bin/pwd\""]`). A single word takes
+  the same path as the other nodes now, which also fixes `sysutil.ExecLine("/bin/pwd")` and the `cmdr` helpers.
+- **`cliutil.FormatTable`**: `TableStyle.DefaultAlign` was documented but `buildRow` always started at left
+  alignment, so only the columns listed in `Align` could be aligned. A column starts at `DefaultAlign` now
+  and an `Align` entry still takes precedence.
 
 ## [v0.9.0] - 2026-11-17
 
