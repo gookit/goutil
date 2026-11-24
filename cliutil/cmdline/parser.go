@@ -90,11 +90,6 @@ func (p *LineParser) Parse() []string {
 	}
 
 	p.nodes = strings.Split(p.Line, " ")
-	if len(p.nodes) == 1 {
-		p.args = p.nodes
-		return p.args
-	}
-
 	for i := 0; i < len(p.nodes); i++ {
 		node := p.nodes[i]
 		if node == "" {

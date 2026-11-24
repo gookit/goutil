@@ -161,6 +161,13 @@ func TestParseLine_quoteSpaces(t *testing.T) {
 		{`echo "a  b"`, []string{"echo", "a  b"}},
 		{`echo '  a   b  '`, []string{"echo", "  a   b  "}},
 		{`echo --msg="a  b"`, []string{"echo", `--msg="a  b"`}},
+		// the line is one quoted word
+		{`"msg"`, []string{"msg"}},
+		{`'msg'`, []string{"msg"}},
+		{`""`, []string{""}},
+		{`"`, []string{""}},
+		{`git`, []string{"git"}},
+		{`--msg="a"`, []string{`--msg="a"`}},
 		// repeated spaces outside quotes still split
 		{`echo  a   "b  c"  d`, []string{"echo", "a", "b  c", "d"}},
 	}
@@ -176,4 +183,10 @@ func TestParseLine_buildRoundTrip(t *testing.T) {
 	args := []string{"git", "commit", "-m", "a  b", " c ", "d"}
 	line := cmdline.LineBuild("", args)
 	assert.Eq(t, args, cmdline.ParseLine(line))
+}
+
+func TestLineParser_BinAndArgs_quotedBin(t *testing.T) {
+	b, a := cmdline.NewParser(`"/usr/bin/git"`).BinAndArgs()
+	assert.Eq(t, "/usr/bin/git", b)
+	assert.Empty(t, a)
 }
