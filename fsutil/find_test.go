@@ -2,6 +2,8 @@ package fsutil_test
 
 import (
 	"io/fs"
+	"os"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
@@ -53,6 +55,43 @@ func TestFilePathInDirs(t *testing.T) {
 
 	result = fsutil.FilePathInDirs("find.go")
 	assert.NotEmpty(t, result)
+}
+
+func TestFilePathInDirsSearchOrder(t *testing.T) {
+	root := t.TempDir()
+	first := filepath.Join(root, "first")
+	second := filepath.Join(root, "second")
+	third := filepath.Join(root, "third")
+	assert.NoErr(t, os.Mkdir(first, 0700))
+	name := "lookup-target.conf"
+	nested := filepath.Join("nested", name)
+	for _, dir := range []string{second, third} {
+		for _, file := range []string{name, nested} {
+			fullPath := filepath.Join(dir, file)
+			assert.NoErr(t, os.MkdirAll(filepath.Dir(fullPath), 0700))
+			assert.NoErr(t, os.WriteFile(fullPath, []byte("present"), 0600))
+		}
+	}
+
+	for _, tc := range []struct {
+		name string
+		file string
+		dirs []string
+		want string
+	}{
+		{"second directory", name, []string{first, second}, filepath.Join(second, name)},
+		{"third directory", name, []string{first, filepath.Join(root, "missing"), third}, filepath.Join(third, name)},
+		{"first match wins", name, []string{second, third}, filepath.Join(second, name)},
+		{"reversed priority", name, []string{third, second}, filepath.Join(third, name)},
+		{"direct path", filepath.Join(second, name), []string{first, third}, filepath.Join(second, name)},
+		{"nested file", nested, []string{first, second}, filepath.Join(second, nested)},
+		{"missing file", "absent.conf", []string{first, second, third}, ""},
+		{"no directories", name, nil, ""},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			assert.Eq(t, tc.want, fsutil.FilePathInDirs(tc.file, tc.dirs...))
+		})
+	}
 }
 
 func TestMatchFirst(t *testing.T) {

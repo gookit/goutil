@@ -23,9 +23,9 @@ func FilePathInDirs(fPath string, dirs ...string) string {
 	}
 
 	for _, dirPath := range dirs {
-		fPath = JoinSubPaths(dirPath, fPath)
-		if FileExists(fPath) {
-			return fPath
+		filePath := JoinSubPaths(dirPath, fPath)
+		if FileExists(filePath) {
+			return filePath
 		}
 	}
 	return "" // not found
