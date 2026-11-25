@@ -47,6 +47,8 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
 - **`cliutil.FormatTable`**: `TableStyle.DefaultAlign` was documented but `buildRow` always started at left
   alignment, so only the columns listed in `Align` could be aligned. A column starts at `DefaultAlign` now
   and an `Align` entry still takes precedence.
+- **`fsutil.FilePathInDirs`**: the first directory was joined onto the file name and that path was reused for
+  the later directories, so a file that only exists in the second or a later directory was not found.
 
 ## [v0.9.0] - 2026-11-17
 
