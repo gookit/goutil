@@ -151,22 +151,23 @@ func Utf8Split(s string, w int) []string {
 	}
 
 	tmpW := 0
-	tmpS := ""
+	var tmpS strings.Builder
 
 	ss := make([]string, 0, sw/w+1)
 	for _, r := range s {
 		rw := RuneWidth(r)
-		if rw > 0 && tmpW+rw > w && tmpS != "" {
-			ss = append(ss, tmpS)
-			tmpW, tmpS = 0, ""
+		if rw > 0 && tmpW+rw > w && tmpS.Len() > 0 {
+			ss = append(ss, tmpS.String())
+			tmpW = 0
+			tmpS.Reset()
 		}
 		// Keep zero-width runes with the preceding base even at a full width.
 		tmpW += rw
-		tmpS += string(r)
+		tmpS.WriteRune(r)
 	}
 
-	if tmpS != "" {
-		ss = append(ss, tmpS)
+	if tmpS.Len() > 0 {
+		ss = append(ss, tmpS.String())
 	}
 	return ss
 }
@@ -182,28 +183,29 @@ func TextWrap(s string, w int) string { return WidthWrap(s, w) }
 //	 s1 := strutil.TextWrap(s, 6) // "hello \n你好, \nworld \n世界"
 func WidthWrap(s string, w int) string {
 	tmpW := 0
-	out := ""
+	var out strings.Builder
+	out.Grow(len(s))
 
 	for _, r := range s {
 		cw := RuneWidth(r)
 		if r == '\n' {
-			out += string(r)
+			out.WriteRune(r)
 			tmpW = 0
 			continue
 		}
 
 		if tmpW+cw > w {
-			out += "\n"
+			out.WriteByte('\n')
 			tmpW = 0
-			out += string(r)
+			out.WriteRune(r)
 			tmpW += cw
 			continue
 		}
 
-		out += string(r)
+		out.WriteRune(r)
 		tmpW += cw
 	}
-	return out
+	return out.String()
 }
 
 // WordWrap text string and limit width.
@@ -212,7 +214,8 @@ func WidthWrap(s string, w int) string {
 // words longer than w are kept whole.
 func WordWrap(s string, w int) string {
 	tmpW := 0
-	out := ""
+	var out strings.Builder
+	out.Grow(len(s))
 
 	for i, sub := range strings.Split(s, " ") {
 		cw := TextWidth(sub)
@@ -221,20 +224,21 @@ func WordWrap(s string, w int) string {
 			separator = " "
 		}
 		if tmpW+len(separator)+cw > w {
-			if tmpW != 0 || (out != "" && !strings.HasSuffix(out, "\n")) {
-				out += "\n"
+			if tmpW != 0 || (out.Len() > 0 && !strings.HasSuffix(out.String(), "\n")) {
+				out.WriteByte('\n')
 			}
 
 			tmpW = 0
-			out += sub
+			out.WriteString(sub)
 			tmpW += cw
 			continue
 		}
 
-		out += separator + sub
+		out.WriteString(separator)
+		out.WriteString(sub)
 		tmpW += len(separator) + cw
 	}
-	return out
+	return out.String()
 }
 
 // Runes data slice
