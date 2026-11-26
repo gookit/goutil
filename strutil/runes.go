@@ -144,9 +144,11 @@ func utf8Truncate(s string, sw, w int, tail string) string {
 func TextSplit(s string, w int) []string { return Utf8Split(s, w) }
 
 // Utf8Split split a string by width.
+//
+// A width below 1 cannot be split, so the whole string is returned as one item.
 func Utf8Split(s string, w int) []string {
 	sw := Utf8Width(s)
-	if sw <= w {
+	if w < 1 || sw <= w {
 		return []string{s}
 	}
 

@@ -1,12 +1,26 @@
 package strutil_test
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/gookit/goutil/strutil"
 	"github.com/gookit/goutil/x/assert"
 )
+
+func TestUtf8Split_invalidWidth(t *testing.T) {
+	// a width below 1 could not be split and used to panic (divide by zero / a negative
+	// make capacity), the whole string is one item now.
+	for _, w := range []int{0, -1, -10} {
+		t.Run("w"+strconv.Itoa(w), func(t *testing.T) {
+			for _, split := range []func(string, int) []string{strutil.Utf8Split, strutil.TextSplit} {
+				assert.Eq(t, []string{"hello 你好"}, split("hello 你好", w))
+				assert.Eq(t, []string{""}, split("", w))
+			}
+		})
+	}
+}
 
 func TestUtf8SplitPreservesZeroWidthRunes(t *testing.T) {
 	tests := []struct {

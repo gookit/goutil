@@ -49,6 +49,8 @@ user-visible changes, so a release only has to rename `[Unreleased]` to the new 
   and an `Align` entry still takes precedence.
 - **`fsutil.FilePathInDirs`**: the first directory was joined onto the file name and that path was reused for
   the later directories, so a file that only exists in the second or a later directory was not found.
+- **`strutil.Utf8Split`/`TextSplit`**: a width below 1 panicked with an integer divide by zero (or a negative
+  `make` capacity), the whole string is returned as one item now.
 
 ## [v0.9.0] - 2026-11-17
 
